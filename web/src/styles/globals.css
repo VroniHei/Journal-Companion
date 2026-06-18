@@ -33,6 +33,11 @@
 
   --font-sans: "Figtree", "Open Sauce Sans", system-ui, -apple-system, sans-serif;
   --font-serif: "Newsreader", Georgia, serif; /* nur Italic-Akzent (.g) */
+
+  /* Elevation + Motion (aus dem Design System, weiche weite Schatten) */
+  --shadow-card: 0 6px 22px rgba(35, 34, 26, 0.05);
+  --shadow-lift: 0 18px 44px rgba(35, 34, 26, 0.1);
+  --ease-out: cubic-bezier(0.2, 0.7, 0.15, 1);
 }
 
 @theme inline {
@@ -76,6 +81,42 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* Fröhliche, weich verlaufende Farb-Blobs hinter allem — geben dem hellen
+   Hintergrund Tiefe & Wärme. Stark geblurrt, dezent, fixiert. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -12vmax;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(38vmax 38vmax at 10% 4%, rgba(168, 232, 79, 0.28), transparent 68%),
+    radial-gradient(42vmax 42vmax at 92% -2%, rgba(205, 138, 91, 0.2), transparent 68%),
+    radial-gradient(46vmax 46vmax at 82% 96%, rgba(203, 190, 244, 0.22), transparent 70%),
+    radial-gradient(34vmax 34vmax at 16% 98%, rgba(168, 232, 79, 0.16), transparent 70%);
+  filter: blur(64px) saturate(118%);
+  opacity: 0.9;
+}
+
+/* Glasmorphismus: halbtransparente, geblurrte Flächen — modern & leicht. */
+.glass {
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  backdrop-filter: blur(16px) saturate(135%);
+  -webkit-backdrop-filter: blur(16px) saturate(135%);
+}
+
+/* Sanfter Hover-Lift für interaktive Karten. */
+.lift {
+  transition:
+    transform var(--dur, 0.28s) var(--ease-out),
+    box-shadow var(--dur, 0.28s) var(--ease-out),
+    border-color 0.2s ease;
+}
+.lift:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
 }
 
 textarea,

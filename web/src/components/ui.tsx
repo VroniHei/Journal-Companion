@@ -7,9 +7,10 @@ export function Card({
   children: ReactNode;
   className?: string;
 }) {
+  // Innerline: weiche, leicht frostige Glas-Karte mit geschichtetem Schatten.
   return (
     <div
-      className={`rounded-[26px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_8px_30px_rgba(47,43,35,0.04)] ${className}`}
+      className={`glass rounded-[26px] border border-[var(--border)] p-6 shadow-[var(--shadow-card)] ${className}`}
     >
       {children}
     </div>
@@ -23,16 +24,27 @@ export function Button({
   className = "",
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant }) {
-  // Innerline: Pill-Buttons, Figtree 600. Primär = Lime-Fill mit Ink-Text.
+  // Innerline: Pill-Buttons, Figtree 600, sanfter Lift beim Hover.
   const base =
-    "rounded-full px-5 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40";
+    "inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-[transform,background-color,color,border-color] duration-150 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0";
   const styles: Record<ButtonVariant, string> = {
-    primary: "bg-[var(--accent)] text-[var(--accent-contrast)] hover:opacity-90",
+    primary:
+      "bg-[var(--accent)] text-[var(--accent-contrast)] hover:bg-[#bdf06a] hover:-translate-y-0.5 disabled:hover:bg-[var(--accent)]",
     ghost:
-      "border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface-2)] hover:border-[var(--foreground)]",
+      "border border-[var(--border)] text-[var(--foreground)] hover:-translate-y-0.5 hover:border-[var(--foreground)] hover:bg-[var(--surface-2)]",
     danger: "text-[var(--danger)] hover:underline",
   };
   return <button className={`${base} ${styles[variant]} ${className}`} {...props} />;
+}
+
+export function Eyebrow({ children }: { children: ReactNode }) {
+  // Innerline-Signatur: kleines Label mit grünem Punkt.
+  return (
+    <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+      <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+      {children}
+    </span>
+  );
 }
 
 export function FieldLabel({

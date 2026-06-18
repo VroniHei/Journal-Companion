@@ -15,9 +15,9 @@ const navItems = [
 export function Layout() {
   const settings = useSettings();
   return (
-    <div className="mx-auto flex min-h-screen max-w-3xl flex-col px-5 py-8">
+    <div className="mx-auto flex min-h-screen max-w-3xl flex-col px-5 py-6">
       <DisclaimerGate />
-      <header className="mb-8">
+      <header className="glass sticky top-3 z-40 mb-8 rounded-[24px] border border-[var(--border)] px-5 py-4 shadow-[var(--shadow-card)]">
         <NavLink to="/" aria-label={settings.appName} className="inline-block">
           <img
             src="/innerline-wordmark.svg"
@@ -25,7 +25,7 @@ export function Layout() {
             className="h-7 w-auto"
           />
         </NavLink>
-        <nav className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+        <nav className="mt-4 flex flex-wrap gap-1.5 text-sm">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -33,8 +33,8 @@ export function Layout() {
               end={item.end}
               className={({ isActive }) =>
                 isActive
-                  ? "text-[var(--accent-text)]"
-                  : "text-[var(--muted)] transition hover:text-[var(--foreground)]"
+                  ? "rounded-full bg-[var(--accent-soft)] px-3 py-1.5 font-semibold text-[var(--accent-text)]"
+                  : "rounded-full px-3 py-1.5 text-[var(--muted)] transition hover:bg-[var(--surface-2)] hover:text-[var(--foreground)]"
               }
             >
               {item.label}

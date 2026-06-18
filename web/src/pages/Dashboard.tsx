@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Card } from "../components/ui";
+import { Card, Eyebrow } from "../components/ui";
 import { useEntries } from "../hooks/useData";
 import { formatDateTime } from "../lib/format";
 import { INTENT_OPTIONS } from "../lib/intents";
@@ -36,18 +36,23 @@ export function Dashboard() {
 
   return (
     <section className="space-y-6">
-      <div>
-        <h1 className="serif text-3xl font-semibold">{greeting()}.</h1>
-        <p className="mt-1 text-[var(--muted)]">Was brauchst du gerade?</p>
+      <div className="space-y-2">
+        <Eyebrow>Dein Raum</Eyebrow>
+        <h1 className="serif text-3xl font-semibold">
+          {greeting()}.
+        </h1>
+        <p className="text-[var(--muted)]">
+          Was brauchst du <span className="g">gerade</span>?
+        </p>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         {INTENT_OPTIONS.map((o) => (
           <button
             key={o.intent}
             type="button"
             onClick={() => choose(o.intent)}
-            className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-left text-sm transition hover:border-[var(--accent)]"
+            className="lift glass rounded-2xl border border-[var(--border)] px-4 py-3.5 text-left text-sm font-medium shadow-[var(--shadow-card)] hover:border-[var(--accent)]"
           >
             {o.label}
           </button>
@@ -130,7 +135,7 @@ export function Dashboard() {
           <div className="space-y-3">
             {last5.map((e) => (
               <Link key={e.id} to={`/eintrag/${e.id}`} className="block">
-                <Card className="transition hover:border-[var(--accent)]">
+                <Card className="lift hover:border-[var(--accent)]">
                   <div className="mb-1 flex items-center gap-2 text-xs text-[var(--muted)]">
                     <span>{formatDateTime(e.createdAt)}</span>
                     <span>· Stimmung {e.mood}</span>

@@ -103,7 +103,7 @@ export function Patterns() {
           <div className="space-y-2">
             {a.highIntensity.slice(0, 8).map((e) => (
               <Link key={e.id} to={`/eintrag/${e.id}`} className="block">
-                <Card className="transition hover:border-[var(--accent)]">
+                <Card className="lift hover:border-[var(--accent)]">
                   <div className="text-xs text-[var(--muted)]">
                     {formatDateTime(e.createdAt)} · Intensität {e.intensity}
                   </div>
