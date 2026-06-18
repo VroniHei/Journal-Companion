@@ -8,14 +8,14 @@
    ========================================================= */
 :root {
   /* Innerline-Rohwerte */
-  --chalk: #f8f5ee;
-  --sand: #efeadd;
-  --ink: #23221a;
-  --ink-soft: #5d564a;
+  --chalk: #fcfbf6;
+  --sand: #f3efe6;
+  --ink: #2f2b23; /* warmes Anthrazit (heller/freundlicher als fast-Schwarz) */
+  --ink-soft: #79735f;
   --forest: #2c3522;
   --green: #a8e84f;
   --green-deep: #6e9b2c;
-  --green-text: #447510;
+  --green-text: #4a7d12;
   --clay: #cd8a5b;
 
   /* Semantische App-Tokens */
@@ -25,11 +25,11 @@
   --foreground: var(--ink);
   --muted: var(--ink-soft);
   --accent: var(--green); /* Signatur-Lime — Fills/Highlights, mit Ink-Text */
-  --accent-contrast: var(--ink); /* Textfarbe AUF Akzent-Flächen */
+  --accent-contrast: #23221a; /* tiefes Ink AUF Lime (Kontrast) */
   --accent-text: var(--green-text); /* lesbares Grün für Akzent-TEXT/Links/Fokus */
-  --accent-soft: #e6f4cc; /* weicher Lime-Ton — aktive Chips/Hover */
-  --border: rgba(35, 34, 26, 0.12);
-  --danger: #9c3b2e; /* warmes Brick-Rot für Krise/Löschen */
+  --accent-soft: #edf7d9; /* heller, freundlicher Lime-Ton — aktive Chips/Hover */
+  --border: rgba(47, 43, 35, 0.1); /* hellere, weiche Hairline */
+  --danger: #b04a38; /* etwas wärmeres, weicheres Brick-Rot */
 
   --font-sans: "Figtree", "Open Sauce Sans", system-ui, -apple-system, sans-serif;
   --font-serif: "Newsreader", Georgia, serif; /* nur Italic-Akzent (.g) */
@@ -75,10 +75,10 @@ body {
 
 body {
   background: var(--background);
-  /* Innerline-Signatur: weiche, weit gestreute Farbschleier */
+  /* Heller & freundlicher: frischer Grün-Hauch oben, sanfte Clay-Wärme — luftig */
   background-image:
-    radial-gradient(900px 520px at 88% -4%, rgba(155, 163, 131, 0.12), transparent 60%),
-    radial-gradient(760px 460px at 4% 18%, rgba(205, 138, 91, 0.07), transparent 60%);
+    radial-gradient(1000px 560px at 90% -8%, rgba(168, 232, 79, 0.09), transparent 62%),
+    radial-gradient(820px 480px at -2% 12%, rgba(205, 138, 91, 0.05), transparent 60%);
   background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans);

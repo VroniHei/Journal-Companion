@@ -9,7 +9,7 @@ export function Card({
 }) {
   return (
     <div
-      className={`rounded-[26px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_6px_22px_rgba(35,34,26,0.05)] ${className}`}
+      className={`rounded-[26px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_8px_30px_rgba(47,43,35,0.04)] ${className}`}
     >
       {children}
     </div>
