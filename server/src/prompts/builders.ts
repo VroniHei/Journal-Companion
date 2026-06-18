@@ -159,6 +159,37 @@ function formatPattern(p: PatternSummary | null): string {
     : "";
 }
 
+const CHAT_DIRECTIVE = `Dies ist ein fortlaufendes, ruhiges Gespräch zu einem Tagebucheintrag. Antworte natürlich und knapp, ohne starre Nummerierung. Geh auf das ein, was die Nutzerin sagt.
+Wenn sie sich wiederholt oder im Kreis dreht, analysiere nicht tiefer, sondern benenne sanft die Schleife und hilf beim Stabilisieren (Körper, nächste 20 Minuten, ein kleiner Schritt). Spekuliere nicht weiter über andere Personen.
+Wenn es passt, schließe mit einer einzelnen offenen Frage oder einem kleinen nächsten Schritt — aber nicht zwanghaft.`;
+
+export function buildChatSystem(opts: {
+  style: ResponseStyle;
+  entry: JournalEntry;
+  conversationSummary?: string;
+}): string {
+  const background = [
+    "Hintergrund — der Eintrag, um den es geht:",
+    formatEntry(opts.entry),
+    opts.conversationSummary
+      ? `\nBisheriges Gespräch (Zusammenfassung):\n${opts.conversationSummary}`
+      : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return [
+    BASE_SYSTEM_PROMPT,
+    "",
+    CHAT_DIRECTIVE,
+    styleInstruction(opts.style),
+    "",
+    background,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
 export function buildReflectionUser(
   entry: JournalEntry,
   context: ReflectionContext,

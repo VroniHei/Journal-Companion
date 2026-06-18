@@ -7,6 +7,10 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 ## Offen
 
+- 🟡 **Automatische Gesprächs-Zusammenfassung** bei sehr langen Chats (>~12
+  Nachrichten): ältere Turns serverseitig zu `conversationSummary` verdichten,
+  statt nur die letzten 8 zu schicken.
+
 - 🟡 **Adaptives Thinking reaktivieren**, sobald die SDK-Version `adaptive`
   typisiert — verbessert die Qualität der Reflexionen.
 - 🟡 **Rate-Limiting / Missbrauchsschutz** für `/api/reflect`, bevor öffentlich

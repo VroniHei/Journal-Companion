@@ -1,4 +1,4 @@
-import type { ReflectRequest } from "@journal/shared";
+import type { ChatRequest, ReflectRequest } from "@journal/shared";
 
 export async function getConfig(): Promise<{ hasApiKey: boolean }> {
   try {
@@ -48,4 +48,11 @@ export function streamReflect(
   onDelta: (text: string) => void,
 ): Promise<StreamResult> {
   return streamPost("/api/reflect", body, onDelta);
+}
+
+export function streamChat(
+  body: ChatRequest,
+  onDelta: (text: string) => void,
+): Promise<StreamResult> {
+  return streamPost("/api/chat", body, onDelta);
 }

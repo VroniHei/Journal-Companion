@@ -8,7 +8,7 @@ import {
   buildReflectionUser,
   maxTokensFor,
 } from "../prompts/builders";
-import { streamToResponse } from "../services/claude";
+import { singleUser, streamToResponse } from "../services/claude";
 
 export const reflectRouter = Router();
 
@@ -107,7 +107,7 @@ reflectRouter.post("/reflect", async (req, res) => {
     await streamToResponse(res, {
       model: prefs.model,
       system,
-      userText,
+      messages: singleUser(userText),
       maxTokens: maxTokensFor(prefs.length, rumination),
     });
   } catch (err) {

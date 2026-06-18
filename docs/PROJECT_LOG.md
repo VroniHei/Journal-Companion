@@ -5,6 +5,25 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-18 — Phase 4: Gesprächsmodus + .env-Fix
+
+**Was:**
+- Claude-Service auf Mehr-Nachrichten-Verläufe verallgemeinert (`ChatTurn[]`).
+- `/api/chat`: Krisen-Gate auf die neue Nachricht, Eintrags-Hintergrund +
+  optionale Gesprächs-Zusammenfassung im System-Prompt, nur die letzten ~8
+  Nachrichten (Kosten/Fokus), Schleifen-Erkennung im Prompt.
+- Frontend: `streamChat`, `ChatThread` (Bubbles, Live-Streaming, Cmd/Strg+Enter),
+  in EntryDetail unter „Weiter darüber sprechen".
+- Bugfix: `dotenv.config({ override: true })` — `.env` hat Vorrang.
+
+**Warum:** Weiterreden zu einem Eintrag, ohne den ganzen Verlauf teuer mitzuschicken.
+
+**Ergebnis/Status:** Typecheck/Lint/Build grün; `/api/chat` live, Krisen-Gate
+verifiziert. Reflexion von Nutzerin erfolgreich getestet (echter Key).
+Offen/Backlog: automatische Gesprächs-Zusammenfassung bei sehr langen Chats.
+
+---
+
 ## 2026-06-18 — Phase 3: Backend + Reflexion (+ Produkt-Nachschärfungen)
 
 **Was:**

@@ -9,11 +9,21 @@ function getClient(): Anthropic {
   return client;
 }
 
+export interface ChatTurn {
+  role: "user" | "assistant";
+  content: string;
+}
+
 export interface GenInput {
   model: string;
   system: string;
-  userText: string;
+  messages: ChatTurn[];
   maxTokens: number;
+}
+
+/** Bequemer Helfer: ein einzelner User-Text wird zu einer Nachricht. */
+export function singleUser(text: string): ChatTurn[] {
+  return [{ role: "user", content: text }];
 }
 
 /**
@@ -29,7 +39,7 @@ export async function streamToResponse(res: Response, input: GenInput): Promise<
     max_tokens: input.maxTokens,
     thinking: { type: "adaptive" },
     system: input.system,
-    messages: [{ role: "user", content: input.userText }],
+    messages: input.messages,
   });
 
   stream.on("text", (delta) => res.write(delta));
@@ -44,7 +54,7 @@ export async function generateText(input: GenInput): Promise<string> {
     max_tokens: input.maxTokens,
     thinking: { type: "adaptive" },
     system: input.system,
-    messages: [{ role: "user", content: input.userText }],
+    messages: input.messages,
   });
   return message.content
     .filter((b): b is Anthropic.TextBlock => b.type === "text")

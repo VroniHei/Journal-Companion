@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button, Card } from "../components/ui";
 import { ReflectionView } from "../components/ReflectionView";
 import { SessionClose } from "../components/SessionClose";
+import { ChatThread } from "../components/ChatThread";
 import { useEntry, useSettings } from "../hooks/useData";
 import {
   deleteEntry,
@@ -165,6 +166,10 @@ export function EntryDetail() {
       {!reflecting && e.aiReflection && (
         <SessionClose onClose={closeSession} note={CLOSE_MICROCOPY} />
       )}
+
+      <Card>
+        <ChatThread entry={e} />
+      </Card>
 
       <div className="flex items-center justify-between">
         <Button onClick={reflect} disabled={reflecting}>
