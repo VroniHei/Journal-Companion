@@ -7,29 +7,29 @@
    gemappt. Figtree = UI/Body & Headlines; Newsreader-Italic = Akzent (.g).
    ========================================================= */
 :root {
-  /* Innerline-Rohwerte */
-  --chalk: #fdfdfb; /* sehr helles, luftiges Warmweiß */
-  --sand: #f1f4ea; /* zart grün-getöntes Neutral (freundlich) */
-  --ink: #353026; /* warmes Anthrazit — weich, nicht fast-schwarz */
-  --ink-soft: #847e6b; /* etwas heller → luftiger */
+  /* Innerline-Rohwerte — 1:1 aus dem Design System (tokens.css, hell-only) */
+  --chalk: #f8f5ee; /* warmes, helles Creme — Seiten-Hintergrund */
+  --sand: #efeadd; /* sandfarbenes Neutral — Chips/Sekundärflächen */
+  --ink: #23221a; /* tiefes warmes Anthrazit — Haupttext */
+  --ink-soft: #5d564a; /* gedämpftes Warmgrau — Sekundärtext */
   --forest: #2c3522;
   --green: #a8e84f;
   --green-deep: #6e9b2c;
-  --green-text: #5a8a1e; /* freundliches, frisches Grün für Text/Links */
+  --green-text: #447510; /* WCAG-konformes Dunkelgrün auf Creme (Links/Fokus) */
   --clay: #cd8a5b;
 
   /* Semantische App-Tokens */
   --background: var(--chalk);
-  --surface: #ffffff;
+  --surface: #ffffff; /* reinweiße Karten — heben sich vom Creme ab */
   --surface-2: var(--sand);
   --foreground: var(--ink);
   --muted: var(--ink-soft);
   --accent: var(--green); /* Signatur-Lime — Fills/Highlights, mit Ink-Text */
   --accent-contrast: #23221a; /* tiefes Ink AUF Lime (Kontrast) */
   --accent-text: var(--green-text); /* lesbares Grün für Akzent-TEXT/Links/Fokus */
-  --accent-soft: #e8f6cf; /* heller, freundlicher Lime-Ton — aktive Chips/Hover */
-  --border: rgba(53, 48, 38, 0.09); /* sehr feine, helle Hairline */
-  --danger: #b75444; /* warmes, weiches Brick-Rot */
+  --accent-soft: #edf7d9; /* heller Lime-Ton — aktive Chips/Hover */
+  --border: rgba(35, 34, 26, 0.12); /* --hair aus dem Design System */
+  --danger: #9c3b2e; /* warmes Brick-Rot für Krise/Löschen */
 
   --font-sans: "Figtree", "Open Sauce Sans", system-ui, -apple-system, sans-serif;
   --font-serif: "Newsreader", Georgia, serif; /* nur Italic-Akzent (.g) */
@@ -47,20 +47,11 @@
   --color-danger: var(--danger);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #1b1d17;
-    --surface: #23261d;
-    --surface-2: #2c3522; /* forest */
-    --foreground: #ece7dd;
-    --muted: #a39c8f;
-    --accent: #a8e84f;
-    --accent-contrast: #23221a; /* Ink bleibt auf Lime lesbar */
-    --accent-text: #bfe88a; /* helleres Grün für Text auf Dunkel */
-    --accent-soft: rgba(168, 232, 79, 0.16);
-    --border: rgba(248, 245, 238, 0.14);
-    --danger: #e0816f;
-  }
+/* Hell-only: Das Innerline Design System hat bewusst KEINE Dark-Variante.
+   color-scheme: light verhindert, dass der Browser Formular-/Scrollbar-Chrome
+   dunkel rendert, auch wenn das OS im Dark Mode ist. */
+:root {
+  color-scheme: light;
 }
 
 * {
@@ -75,12 +66,10 @@ body {
 
 body {
   background: var(--background);
-  /* Heller & freundlicher: frisches Grün oben rechts, warmer Pfirsich oben links,
-     sanfter Grünschimmer unten — spürbar, aber ruhig. */
+  /* Exakt wie die Innerline-Website (style.css): zarter Sage- + Clay-Schimmer. */
   background-image:
-    radial-gradient(1100px 600px at 88% -10%, rgba(168, 232, 79, 0.16), transparent 60%),
-    radial-gradient(900px 520px at -5% 6%, rgba(255, 190, 130, 0.12), transparent 58%),
-    radial-gradient(760px 700px at 50% 118%, rgba(168, 232, 79, 0.06), transparent 62%);
+    radial-gradient(900px 520px at 88% -4%, rgba(155, 163, 131, 0.12), transparent 60%),
+    radial-gradient(760px 460px at 4% 18%, rgba(205, 138, 91, 0.07), transparent 60%);
   background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans);

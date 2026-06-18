@@ -22,12 +22,7 @@ export function Layout() {
           <img
             src="/innerline-wordmark.svg"
             alt={settings.appName}
-            className="h-7 w-auto dark:hidden"
-          />
-          <img
-            src="/innerline-wordmark-light.svg"
-            alt={settings.appName}
-            className="hidden h-7 w-auto dark:block"
+            className="h-7 w-auto"
           />
         </NavLink>
         <nav className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm">
