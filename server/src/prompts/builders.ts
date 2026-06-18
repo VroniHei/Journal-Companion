@@ -190,6 +190,55 @@ export function buildChatSystem(opts: {
     .join("\n");
 }
 
+// --- Wochenrückblick -------------------------------------------------------
+
+const WEEKLY_DIRECTIVE = `Erstelle einen ruhigen, ehrlichen Wochenrückblick aus den Einträgen. Nicht motivational überdreht, kein „Du rockst das" — erwachsen, klar, hilfreich.
+Gliedere mit kurzen Überschriften:
+- Häufigste Emotionen
+- Häufigste Themen
+- Häufigste Bedürfnisse
+- Stärkste Trigger
+- Kontaktimpulse
+- Stabilisierende Handlungen
+- Wiederkehrende Muster (vorsichtig formuliert)
+- Was du nächste Woche beobachten könntest
+Keine Diagnosen, keine Spekulation über andere Personen. Wenn die Datenlage dünn ist, sag das ehrlich.`;
+
+export function buildWeeklyReviewSystem(style: ResponseStyle): string {
+  return [BASE_SYSTEM_PROMPT, "", WEEKLY_DIRECTIVE, styleInstruction(style)].join(
+    "\n",
+  );
+}
+
+export function buildWeeklyReviewUser(
+  periodStart: string,
+  periodEnd: string,
+  digests: EntryDigest[],
+): string {
+  if (!digests.length) {
+    return `Zeitraum ${periodStart.slice(0, 10)} bis ${periodEnd.slice(0, 10)}: keine Einträge.`;
+  }
+  const lines = digests.map((d) => {
+    const meta = [
+      d.createdAt.slice(0, 10),
+      `Stimmung ${d.mood}`,
+      `Intensität ${d.intensity}`,
+      d.emotions.length ? `Emotionen: ${d.emotions.join(", ")}` : "",
+      d.topics.length ? `Themen: ${d.topics.join(", ")}` : "",
+      d.needs.length ? `Bedürfnisse: ${d.needs.join(", ")}` : "",
+      d.impulse ? `Impuls: ${d.impulse}` : "",
+    ]
+      .filter(Boolean)
+      .join(" · ");
+    return `- ${meta}\n  ${d.excerpt}`;
+  });
+  return [
+    `Zeitraum: ${periodStart.slice(0, 10)} bis ${periodEnd.slice(0, 10)} (${digests.length} Einträge)`,
+    "",
+    lines.join("\n"),
+  ].join("\n");
+}
+
 // --- Kontaktimpuls ---------------------------------------------------------
 
 const CONTACT_DIRECTIVE = `Die Nutzerin möchte jemandem schreiben, ist aber emotional aktiviert. Deine Aufgabe: zuerst regulieren, nicht zum Senden drängen.

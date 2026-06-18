@@ -4,6 +4,8 @@ import type {
   ContactImpulseResponse,
   CrisisResponse,
   ReflectRequest,
+  WeeklyReviewRequest,
+  WeeklyReviewResponse,
 } from "@journal/shared";
 
 export async function getConfig(): Promise<{ hasApiKey: boolean }> {
@@ -78,4 +80,21 @@ export async function postContactImpulse(
     );
   }
   return data as ContactImpulseResponse | CrisisResponse;
+}
+
+export async function postWeeklyReview(
+  body: WeeklyReviewRequest,
+): Promise<WeeklyReviewResponse> {
+  const res = await fetch("/api/weekly-review", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(
+      (data as { error?: string }).error ?? `Fehler ${res.status}`,
+    );
+  }
+  return data as WeeklyReviewResponse;
 }

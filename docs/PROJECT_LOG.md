@@ -5,6 +5,20 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-18 — Phase 7: Muster + Wochenrückblick
+
+**Was:**
+- `/api/weekly-review` (nicht-streamend): ruhiger Wochenrückblick aus Eintrags-Digests.
+- Muster-Seite: Aggregate aus den lokalen Daten (Ø Stimmung/Intensität, häufigste
+  Emotionen/Themen/Bedürfnisse, hohe Intensität, Kontaktimpulse, Schleifen,
+  stabilisierende Handlungen) + Liste der „stabilen Momente".
+- Wochenrückblick-Seite: Zeitraum wählen → Rückblick erstellen → als
+  `PatternSummary` speichern (fließt als Ebene 3 in spätere Reflexionen).
+
+**Ergebnis/Status:** Typecheck/Lint/Build grün; Route gemountet.
+
+---
+
 ## 2026-06-18 — Phase 5: Kontaktimpuls-Schutzraum
 
 **Was:**

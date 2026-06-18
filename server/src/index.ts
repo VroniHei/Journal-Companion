@@ -3,6 +3,7 @@ import { env, hasApiKey } from "./env";
 import { reflectRouter } from "./routes/reflect";
 import { chatRouter } from "./routes/chat";
 import { contactImpulseRouter } from "./routes/contactImpulse";
+import { weeklyReviewRouter } from "./routes/weeklyReview";
 
 const app = express();
 app.use(express.json({ limit: "2mb" }));
@@ -21,7 +22,7 @@ app.get("/api/config", (_req, res) => {
 app.use("/api", reflectRouter);
 app.use("/api", chatRouter);
 app.use("/api", contactImpulseRouter);
-// Weitere folgen: /api/weekly-review (Phase 7)
+app.use("/api", weeklyReviewRouter);
 
 app.listen(env.port, () => {
   console.log(`[server] läuft auf http://localhost:${env.port}`);

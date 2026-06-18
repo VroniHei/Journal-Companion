@@ -169,6 +169,17 @@ export async function recentDigests(
     .map(toDigest);
 }
 
+/** Digests aller Einträge in einem Zeitraum (für den Wochenrückblick). */
+export async function digestsInRange(
+  startIso: string,
+  endIso: string,
+): Promise<EntryDigest[]> {
+  const all = await db.entries.orderBy("createdAt").toArray();
+  return all
+    .filter((e) => e.createdAt >= startIso && e.createdAt <= endIso)
+    .map(toDigest);
+}
+
 /** Anzahl jüngerer Einträge zum selben Thema am selben Tag (für Grübel-Hinweis). */
 export async function sameTopicSameDayCount(entry: JournalEntry): Promise<number> {
   const day = entry.createdAt.slice(0, 10);
