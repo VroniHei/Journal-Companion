@@ -28,7 +28,7 @@ export function ScaleField({
               style={{
                 borderColor: active ? "var(--accent)" : "var(--border)",
                 background: active ? "var(--accent)" : "transparent",
-                color: active ? "#fff" : "var(--foreground)",
+                color: active ? "var(--accent-contrast)" : "var(--foreground)",
               }}
             >
               {n}

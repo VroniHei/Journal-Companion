@@ -123,7 +123,7 @@ export function Patterns() {
           <ul className="space-y-1.5 text-sm">
             {moments.slice(0, 12).map((m) => (
               <li key={m.id} className="flex items-baseline gap-2">
-                <span style={{ color: "var(--accent)" }}>•</span>
+                <span style={{ color: "var(--accent-text)" }}>•</span>
                 <span>{m.label}</span>
                 <span className="text-xs text-[var(--muted)]">
                   {formatDateTime(m.createdAt)}

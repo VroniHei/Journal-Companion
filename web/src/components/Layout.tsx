@@ -18,8 +18,17 @@ export function Layout() {
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col px-5 py-8">
       <DisclaimerGate />
       <header className="mb-8">
-        <NavLink to="/" className="serif text-2xl font-semibold tracking-tight">
-          {settings.appName}
+        <NavLink to="/" aria-label={settings.appName} className="inline-block">
+          <img
+            src="/innerline-wordmark.svg"
+            alt={settings.appName}
+            className="h-7 w-auto dark:hidden"
+          />
+          <img
+            src="/innerline-wordmark-light.svg"
+            alt={settings.appName}
+            className="hidden h-7 w-auto dark:block"
+          />
         </NavLink>
         <nav className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm">
           {navItems.map((item) => (
@@ -29,7 +38,7 @@ export function Layout() {
               end={item.end}
               className={({ isActive }) =>
                 isActive
-                  ? "text-[var(--accent)]"
+                  ? "text-[var(--accent-text)]"
                   : "text-[var(--muted)] transition hover:text-[var(--foreground)]"
               }
             >

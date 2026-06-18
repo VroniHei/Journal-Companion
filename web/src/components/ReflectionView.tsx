@@ -5,7 +5,7 @@ export function ReflectionView({
   text: string;
   crisis?: boolean;
 }) {
-  const color = crisis ? "var(--danger)" : "var(--accent)";
+  const color = crisis ? "var(--danger)" : "var(--accent-text)";
   return (
     <div
       className="rounded-lg border-l-2 p-4"

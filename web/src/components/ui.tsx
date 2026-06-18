@@ -9,7 +9,7 @@ export function Card({
 }) {
   return (
     <div
-      className={`rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 ${className}`}
+      className={`rounded-[26px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_6px_22px_rgba(35,34,26,0.05)] ${className}`}
     >
       {children}
     </div>
@@ -23,12 +23,13 @@ export function Button({
   className = "",
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant }) {
+  // Innerline: Pill-Buttons, Figtree 600. Primär = Lime-Fill mit Ink-Text.
   const base =
-    "rounded-lg px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40";
+    "rounded-full px-5 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40";
   const styles: Record<ButtonVariant, string> = {
-    primary: "bg-[var(--accent)] text-white hover:opacity-90",
+    primary: "bg-[var(--accent)] text-[var(--accent-contrast)] hover:opacity-90",
     ghost:
-      "border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface-2)]",
+      "border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface-2)] hover:border-[var(--foreground)]",
     danger: "text-[var(--danger)] hover:underline",
   };
   return <button className={`${base} ${styles[variant]} ${className}`} {...props} />;

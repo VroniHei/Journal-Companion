@@ -5,6 +5,25 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-18 — Innerline-Design importiert & angewendet
+
+**Was:**
+- Claude-Design-Connector (DesignSync) genutzt: Projekt „Innerline Design System"
+  gelesen (tokens.css, colors_and_type.css, comp-buttons, Wortmarke-SVGs).
+- `globals.css` auf Innerline gemappt: Palette (Chalk/Sand/Ink/Lime/Clay/Forest),
+  warmer Hintergrund-Schleier, `accent` = Lime mit Ink-Text, `accent-text` =
+  lesbares Grün, Dark-Theme abgeleitet.
+- Typo: Figtree (UI/Headlines via `.serif`→Sans-Display) + Newsreader-Italic (`.g`),
+  via Google Fonts. Wortmarke = echtes Innerline-SVG-Logo (Light/Dark) im Header.
+- Komponenten: Buttons als Pills (Lime-Fill/Ink-Text, Outline-Sekundär), Card mit
+  weicheren Radien + Innerline-Schatten, ScaleField Ink-auf-Lime, Akzent-Texte/Fokus
+  auf lesbares Grün (A11y).
+
+**Ergebnis/Status:** Typecheck/Lint/Build/10 Tests grün. Token-getrieben → Light +
+Dark + Fokus bleiben intakt.
+
+---
+
 ## 2026-06-18 — Latenz-Tuning (Antworten schneller)
 
 **Was:**

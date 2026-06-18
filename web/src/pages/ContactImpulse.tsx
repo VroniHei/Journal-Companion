@@ -222,7 +222,7 @@ export function ContactImpulse() {
 
           {result.draftMessage && (
             <div className="rounded-lg border-l-2 border-l-[var(--accent)] bg-[var(--surface-2)] p-3">
-              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--accent)]">
+              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--accent-text)]">
                 Würdevolle Kurzversion
               </p>
               <p className="whitespace-pre-wrap text-sm">{result.draftMessage}</p>

@@ -201,7 +201,7 @@ export function VoiceCheckin() {
 
           {result.dontDoNow.length > 0 && (
             <div className="rounded-lg border-l-2 border-l-[var(--accent)] bg-[var(--surface-2)] p-3">
-              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--accent)]">
+              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--accent-text)]">
                 Was jetzt eher nicht hilfreich wäre
               </p>
               <ul className="list-disc space-y-1 pl-5 text-sm">

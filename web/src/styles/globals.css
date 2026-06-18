@@ -1,16 +1,38 @@
 @import "tailwindcss";
 
-/* Ruhige, editoriale, warme Palette — bewusst keine grelle Mental-Health-Optik. */
+/* =========================================================
+   Innerline Design System → App-Tokens
+   Quelle: Claude Design „Innerline Design System" (tokens.css /
+   colors_and_type.css). Hier auf die semantischen App-Token-Namen
+   gemappt. Figtree = UI/Body & Headlines; Newsreader-Italic = Akzent (.g).
+   ========================================================= */
 :root {
-  --background: #f4f1ea;
-  --surface: #fbf9f4;
-  --surface-2: #f0ece1;
-  --foreground: #2c2a26;
-  --muted: #6f6a60;
-  --accent: #b5673f;
-  --accent-soft: #e8d9cd;
-  --border: #e4ddd0;
-  --danger: #9c3b2e;
+  /* Innerline-Rohwerte */
+  --chalk: #f8f5ee;
+  --sand: #efeadd;
+  --ink: #23221a;
+  --ink-soft: #5d564a;
+  --forest: #2c3522;
+  --green: #a8e84f;
+  --green-deep: #6e9b2c;
+  --green-text: #447510;
+  --clay: #cd8a5b;
+
+  /* Semantische App-Tokens */
+  --background: var(--chalk);
+  --surface: #ffffff;
+  --surface-2: var(--sand);
+  --foreground: var(--ink);
+  --muted: var(--ink-soft);
+  --accent: var(--green); /* Signatur-Lime — Fills/Highlights, mit Ink-Text */
+  --accent-contrast: var(--ink); /* Textfarbe AUF Akzent-Flächen */
+  --accent-text: var(--green-text); /* lesbares Grün für Akzent-TEXT/Links/Fokus */
+  --accent-soft: #e6f4cc; /* weicher Lime-Ton — aktive Chips/Hover */
+  --border: rgba(35, 34, 26, 0.12);
+  --danger: #9c3b2e; /* warmes Brick-Rot für Krise/Löschen */
+
+  --font-sans: "Figtree", "Open Sauce Sans", system-ui, -apple-system, sans-serif;
+  --font-serif: "Newsreader", Georgia, serif; /* nur Italic-Akzent (.g) */
 }
 
 @theme inline {
@@ -23,19 +45,20 @@
   --color-accent-soft: var(--accent-soft);
   --color-border: var(--border);
   --color-danger: var(--danger);
-  --font-serif: Georgia, "Times New Roman", serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1c1a17;
-    --surface: #262320;
-    --surface-2: #211e1b;
+    --background: #1b1d17;
+    --surface: #23261d;
+    --surface-2: #2c3522; /* forest */
     --foreground: #ece7dd;
     --muted: #a39c8f;
-    --accent: #d98b5f;
-    --accent-soft: #3a302a;
-    --border: #38332d;
+    --accent: #a8e84f;
+    --accent-contrast: #23221a; /* Ink bleibt auf Lime lesbar */
+    --accent-text: #bfe88a; /* helleres Grün für Text auf Dunkel */
+    --accent-soft: rgba(168, 232, 79, 0.16);
+    --border: rgba(248, 245, 238, 0.14);
     --danger: #e0816f;
   }
 }
@@ -52,10 +75,16 @@ body {
 
 body {
   background: var(--background);
+  /* Innerline-Signatur: weiche, weit gestreute Farbschleier */
+  background-image:
+    radial-gradient(900px 520px at 88% -4%, rgba(155, 163, 131, 0.12), transparent 60%),
+    radial-gradient(760px 460px at 4% 18%, rgba(205, 138, 91, 0.07), transparent 60%);
+  background-attachment: fixed;
   color: var(--foreground);
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 textarea,
@@ -65,15 +94,37 @@ button {
   font-family: inherit;
 }
 
-/* Sichtbarer Fokus für Tastatur-Navigation (Barrierefreiheit) */
+/* Display/Headlines: Innerline nutzt die Sans (Figtree) bold & eng — NICHT Serif.
+   Klassenname bleibt „serif" (im Code verbreitet), Bedeutung = Display-Headline. */
+.serif {
+  font-family: var(--font-sans);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+/* Die Innerline-Signatur: einzelne Wörter in Newsreader-Italic. */
+.g {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.06em;
+  letter-spacing: -0.005em;
+}
+
+/* Sichtbarer Fokus (Barrierefreiheit) — lesbares Grün statt Lime. */
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent-text);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 button {
   cursor: pointer;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -81,8 +132,4 @@ button {
     transition: none !important;
     scroll-behavior: auto !important;
   }
-}
-
-.serif {
-  font-family: var(--font-serif);
 }
