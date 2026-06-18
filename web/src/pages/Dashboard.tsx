@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Card, Eyebrow } from "../components/ui";
+import { Card } from "../components/ui";
 import { useEntries } from "../hooks/useData";
 import { formatDateTime } from "../lib/format";
 import { INTENT_OPTIONS } from "../lib/intents";
@@ -36,14 +36,26 @@ export function Dashboard() {
 
   return (
     <section className="space-y-6">
-      <div className="space-y-2">
-        <Eyebrow>Dein Raum</Eyebrow>
-        <h1 className="serif text-3xl font-semibold">
-          {greeting()}.
-        </h1>
-        <p className="text-[var(--muted)]">
-          Was brauchst du <span className="g">gerade</span>?
-        </p>
+      <div className="relative overflow-hidden rounded-[26px] border border-[var(--border)] shadow-[var(--shadow-card)]">
+        <img
+          src="/img/hero-see.webp"
+          alt=""
+          aria-hidden="true"
+          className="h-44 w-full object-cover object-[center_60%] sm:h-56"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(28,26,20,0.62)] via-[rgba(28,26,20,0.18)] to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 space-y-1 p-5 sm:p-6">
+          <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/85">
+            <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+            Dein Raum
+          </span>
+          <h1 className="serif text-3xl font-semibold text-white">
+            {greeting()}.
+          </h1>
+          <p className="text-sm text-white/90">
+            Was brauchst du <span className="g">gerade</span>?
+          </p>
+        </div>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -125,12 +137,20 @@ export function Dashboard() {
           Letzte Einträge
         </h2>
         {last5.length === 0 ? (
-          <Card>
-            <p className="text-[var(--muted)]">
-              Noch keine Einträge. Dein erster Gedanke ist nur ein paar Zeilen
-              entfernt.
-            </p>
-          </Card>
+          <div className="glass overflow-hidden rounded-[26px] border border-[var(--border)] shadow-[var(--shadow-card)]">
+            <img
+              src="/img/journaling-desk.webp"
+              alt=""
+              aria-hidden="true"
+              className="h-44 w-full object-cover object-[center_35%]"
+            />
+            <div className="p-6">
+              <p className="text-[var(--muted)]">
+                Noch keine Einträge. Dein erster Gedanke ist nur ein paar Zeilen
+                entfernt.
+              </p>
+            </div>
+          </div>
         ) : (
           <div className="space-y-3">
             {last5.map((e) => (
