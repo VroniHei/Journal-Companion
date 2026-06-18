@@ -4,6 +4,7 @@ import { reflectRouter } from "./routes/reflect";
 import { chatRouter } from "./routes/chat";
 import { contactImpulseRouter } from "./routes/contactImpulse";
 import { weeklyReviewRouter } from "./routes/weeklyReview";
+import { voiceReflectRouter } from "./routes/voiceReflect";
 
 const app = express();
 app.use(express.json({ limit: "2mb" }));
@@ -23,6 +24,7 @@ app.use("/api", reflectRouter);
 app.use("/api", chatRouter);
 app.use("/api", contactImpulseRouter);
 app.use("/api", weeklyReviewRouter);
+app.use("/api", voiceReflectRouter);
 
 app.listen(env.port, () => {
   console.log(`[server] läuft auf http://localhost:${env.port}`);

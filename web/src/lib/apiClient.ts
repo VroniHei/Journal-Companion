@@ -6,6 +6,8 @@ import type {
   ReflectRequest,
   WeeklyReviewRequest,
   WeeklyReviewResponse,
+  VoiceReflectRequest,
+  VoiceReflectResponse,
 } from "@journal/shared";
 
 export async function getConfig(): Promise<{ hasApiKey: boolean }> {
@@ -97,4 +99,21 @@ export async function postWeeklyReview(
     );
   }
   return data as WeeklyReviewResponse;
+}
+
+export async function postVoiceReflect(
+  body: VoiceReflectRequest,
+): Promise<VoiceReflectResponse | CrisisResponse> {
+  const res = await fetch("/api/voice-reflect", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(
+      (data as { error?: string }).error ?? `Fehler ${res.status}`,
+    );
+  }
+  return data as VoiceReflectResponse | CrisisResponse;
 }

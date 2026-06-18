@@ -5,6 +5,25 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-18 — Sprach-Check-in (strukturierte Voice-Reflexion)
+
+**Was:**
+- `/api/voice-reflect` (nicht-streamend): strukturierte JSON-Auswertung eines
+  Transkripts (Zusammenfassung, Haupt-Emotionen, Bedürfnis, Trigger, Erkenntnisse,
+  was jetzt hilft, **was jetzt eher nicht hilfreich wäre**, nächster Schritt);
+  Krisen-Gate; robustes Parsing (geteilte `extractJson`-Util, auch von Kontaktimpuls).
+- Neue Seite **„Sprechen"** (/sprechen): frei erzählen (Diktat) → Auswerten →
+  strukturierte Anzeige → als `JournalEntry` speichern (`inputType:"voice"`,
+  Transkript + strukturierte Felder + komponierte Reflexion).
+- Nav-Eintrag + Router.
+
+**Warum:** Voice-Journaling end-to-end mit strukturierter, regulierender Auswertung
+(Lightly/Honestly-inspiriert).
+
+**Ergebnis/Status:** Typecheck/Lint/Build/10 Tests grün; Route + Krisen-Gate verifiziert.
+
+---
+
 ## 2026-06-18 — Spracheingabe (Diktat)
 
 **Was:**

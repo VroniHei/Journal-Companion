@@ -26,9 +26,12 @@ Prompt-Strukturkonstante `VOICE_REFLECTION_STRUCTURE` in
 `DictationButton`) in neuem Eintrag, Gespräch und Kontaktimpuls; Voice-Einträge
 mit `inputType: "voice"` + `transcript`. Sprechen → Text → normale Reflexion.
 
-**Noch offen:** eigener strukturierter Voice-Check-in (Zusammenfassung,
-keyInsights, dontDoNow, mainTrigger, mainNeed …) als dedizierter Modus; optionale
-Audioaufnahme/Transkription für Browser ohne Web Speech API.
+**Umgesetzt (strukturierter Sprach-Check-in):** Seite „Sprechen" + `/api/voice-reflect`
+liefern Zusammenfassung, Haupt-Emotionen/Bedürfnis/Trigger, Erkenntnisse, was jetzt
+hilft / eher nicht hilfreich wäre, nächster Schritt; speicherbar als Voice-Eintrag.
+
+**Noch offen:** optionale Audioaufnahme/Transkription für Browser ohne Web Speech
+API (z.B. Whisper) — bewusst zurückgestellt (Privacy, kein Extra-Key).
 
 ## „Was jetzt eher nicht hilfreich wäre" als wiederkehrender Baustein
 

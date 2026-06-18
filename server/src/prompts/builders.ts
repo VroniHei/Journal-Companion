@@ -190,6 +190,36 @@ export function buildChatSystem(opts: {
     .join("\n");
 }
 
+// --- Voice-Check-in --------------------------------------------------------
+
+const VOICE_JSON_CONTRACT = `Antworte AUSSCHLIESSLICH mit gültigem JSON (kein Markdown, keine Code-Fences), genau in diesem Format:
+{
+  "entrySummary": "<2-3 ruhige Sätze, die zusammenfassen, was los ist>",
+  "mainEmotions": ["<die spürbarsten Emotionen, 1-4>"],
+  "mainNeed": "<ein zentrales Bedürfnis darunter>",
+  "mainTrigger": "<der zentrale Auslöser, kurz>",
+  "keyInsights": ["<eine wichtige Erkenntnis>", "<optional eine weitere>"],
+  "supportiveImpulse": "<was jetzt hilfreich wäre, ein Satz>",
+  "dontDoNow": ["<was jetzt eher nicht hilfreich wäre>", "<optional weiteres>"],
+  "nextStep": "<ein kleiner, konkreter nächster Schritt>"
+}
+Halte alles knapp und konkret. Keine Spekulation über andere Personen, keine Diagnosen.`;
+
+export function buildVoiceReflectSystem(style: ResponseStyle): string {
+  return [
+    BASE_SYSTEM_PROMPT,
+    "",
+    "Die Nutzerin hat frei gesprochen; hier ist das Transkript. Werte es ruhig und strukturiert aus.",
+    styleInstruction(style),
+    "",
+    VOICE_JSON_CONTRACT,
+  ].join("\n");
+}
+
+export function buildVoiceReflectUser(transcript: string): string {
+  return `Transkript:\n${transcript}`;
+}
+
 // --- Wochenrückblick -------------------------------------------------------
 
 const WEEKLY_DIRECTIVE = `Erstelle einen ruhigen, ehrlichen Wochenrückblick aus den Einträgen. Nicht motivational überdreht, kein „Du rockst das" — erwachsen, klar, hilfreich.

@@ -221,6 +221,23 @@ export interface WeeklyReviewResponse {
   summary: string;
 }
 
+export interface VoiceReflectRequest {
+  transcript: string;
+  prefs: ResponsePrefs;
+}
+
+/** Strukturierte Auswertung eines (gesprochenen) Eintrags. */
+export interface VoiceReflectResponse {
+  entrySummary: string;
+  mainEmotions: string[];
+  mainNeed: string;
+  mainTrigger: string;
+  keyInsights: string[];
+  supportiveImpulse: string; // was jetzt hilfreich wäre
+  dontDoNow: string[]; // was jetzt eher nicht hilfreich wäre
+  nextStep: string;
+}
+
 /**
  * Deterministische Sicherheitsantwort bei erkannten Krisenhinweisen.
  * Wird von Nicht-Streaming-Endpunkten anstelle der Normalantwort zurückgegeben;

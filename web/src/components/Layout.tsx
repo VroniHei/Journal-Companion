@@ -5,6 +5,7 @@ import { useSettings } from "../hooks/useData";
 const navItems = [
   { to: "/", label: "Übersicht", end: true },
   { to: "/neu", label: "Neuer Eintrag" },
+  { to: "/sprechen", label: "Sprechen" },
   { to: "/kontaktimpuls", label: "Kontaktimpuls" },
   { to: "/muster", label: "Muster" },
   { to: "/wochenrueckblick", label: "Wochenrückblick" },

@@ -11,6 +11,7 @@ import {
   buildContactImpulseUser,
 } from "../prompts/builders";
 import { generateText, singleUser } from "../services/claude";
+import { extractJson } from "../lib/extractJson";
 
 export const contactImpulseRouter = Router();
 
@@ -31,15 +32,6 @@ const schema = z.object({
     model: z.string().min(1),
   }),
 });
-
-/** Extrahiert ein JSON-Objekt, auch wenn es in ```-Fences oder Text eingebettet ist. */
-function extractJson(text: string): unknown {
-  const fenced = text.replace(/```(?:json)?/gi, "");
-  const start = fenced.indexOf("{");
-  const end = fenced.lastIndexOf("}");
-  if (start === -1 || end === -1 || end <= start) throw new Error("kein JSON");
-  return JSON.parse(fenced.slice(start, end + 1));
-}
 
 contactImpulseRouter.post("/contact-impulse", async (req, res) => {
   const parsed = schema.safeParse(req.body);
