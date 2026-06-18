@@ -2,6 +2,7 @@ import express from "express";
 import { env, hasApiKey } from "./env";
 import { reflectRouter } from "./routes/reflect";
 import { chatRouter } from "./routes/chat";
+import { contactImpulseRouter } from "./routes/contactImpulse";
 
 const app = express();
 app.use(express.json({ limit: "2mb" }));
@@ -19,7 +20,8 @@ app.get("/api/config", (_req, res) => {
 // API-Routen
 app.use("/api", reflectRouter);
 app.use("/api", chatRouter);
-// Weitere folgen: /api/contact-impulse (Phase 5), /api/weekly-review (Phase 7)
+app.use("/api", contactImpulseRouter);
+// Weitere folgen: /api/weekly-review (Phase 7)
 
 app.listen(env.port, () => {
   console.log(`[server] läuft auf http://localhost:${env.port}`);

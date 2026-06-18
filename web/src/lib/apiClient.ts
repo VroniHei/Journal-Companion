@@ -1,4 +1,10 @@
-import type { ChatRequest, ReflectRequest } from "@journal/shared";
+import type {
+  ChatRequest,
+  ContactImpulseRequest,
+  ContactImpulseResponse,
+  CrisisResponse,
+  ReflectRequest,
+} from "@journal/shared";
 
 export async function getConfig(): Promise<{ hasApiKey: boolean }> {
   try {
@@ -55,4 +61,21 @@ export function streamChat(
   onDelta: (text: string) => void,
 ): Promise<StreamResult> {
   return streamPost("/api/chat", body, onDelta);
+}
+
+export async function postContactImpulse(
+  body: ContactImpulseRequest,
+): Promise<ContactImpulseResponse | CrisisResponse> {
+  const res = await fetch("/api/contact-impulse", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(
+      (data as { error?: string }).error ?? `Fehler ${res.status}`,
+    );
+  }
+  return data as ContactImpulseResponse | CrisisResponse;
 }

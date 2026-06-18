@@ -190,6 +190,51 @@ export function buildChatSystem(opts: {
     .join("\n");
 }
 
+// --- Kontaktimpuls ---------------------------------------------------------
+
+const CONTACT_DIRECTIVE = `Die Nutzerin möchte jemandem schreiben, ist aber emotional aktiviert. Deine Aufgabe: zuerst regulieren, nicht zum Senden drängen.
+Hilf einzuschätzen: Was will sie wirklich erreichen (Klärung, Verbindung, Beruhigung)? Aus welchem Zustand heraus? Würde sie die Nachricht morgen noch stimmig finden? Braucht es gerade Kontakt oder zuerst Beruhigung?
+Empfiehl eine Nachricht NUR, wenn sie klar, kurz, würdevoll und nicht manipulativ ist. Keine Druck-/Schuld-/Strategie-Nachrichten. Bei hoher Aktivierung ist Nicht-Senden oder späteres Prüfen meist stabiler.`;
+
+const CONTACT_JSON_CONTRACT = `Antworte AUSSCHLIESSLICH mit gültigem JSON (kein Markdown, keine Code-Fences), genau in diesem Format:
+{
+  "recommendation": "nicht-senden" | "später-prüfen" | "kurze-würdevolle-nachricht",
+  "activationLevel": <Zahl 1-10, die genannte Aktivierung>,
+  "likelyNeed": "<kurzes Bedürfnis darunter>",
+  "reflection": "<2-4 ruhige Sätze, die spiegeln>",
+  "why": "<1-3 Sätze, warum diese Empfehlung>",
+  "nextStep": "<ein kleiner, konkreter nächster Schritt>",
+  "draftMessage": "<NUR wenn recommendation = kurze-würdevolle-nachricht: eine klare, kurze, würdevolle Nachricht; sonst dieses Feld ganz weglassen>"
+}`;
+
+export function buildContactImpulseSystem(style: ResponseStyle): string {
+  return [
+    BASE_SYSTEM_PROMPT,
+    "",
+    CONTACT_DIRECTIVE,
+    styleInstruction(style),
+    "",
+    CONTACT_JSON_CONTRACT,
+  ].join("\n");
+}
+
+export function buildContactImpulseUser(opts: {
+  situation: string;
+  goal: string;
+  activation: number;
+  draft?: string;
+}): string {
+  return [
+    `Aktivierung: ${opts.activation}/10`,
+    opts.goal ? `Ziel der Nachricht (laut Nutzerin): ${opts.goal}` : "",
+    "Situation / worum es geht:",
+    opts.situation,
+    opts.draft ? `\nEntwurf, den sie schreiben möchte:\n${opts.draft}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
 export function buildReflectionUser(
   entry: JournalEntry,
   context: ReflectionContext,

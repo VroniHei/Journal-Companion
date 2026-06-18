@@ -5,6 +5,24 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-18 — Phase 5: Kontaktimpuls-Schutzraum
+
+**Was:**
+- `/api/contact-impulse` (nicht-streamend): strukturierte Empfehlung als JSON
+  (nicht-senden / später-prüfen / kurze-würdevolle-nachricht) mit robustem
+  JSON-Parsing + Fallback; Krisen-Gate; Nachricht nur, wenn würdevoll/kurz.
+- Frontend-Seite: Check-in (Situation, Ziel, Aktivierungsskala, optional Entwurf)
+  → Empfehlung + Reflexion/Bedürfnis/Begründung/nächster Schritt.
+- **Schutzraum**: Entwürfe „in Quarantäne" (localStorage) mit 20-Minuten- bzw.
+  „morgen prüfen"-Wartezeit, Re-Check nach Ablauf, Verwerfen. Kein Senden-Button
+  (drängt bewusst nicht). Gentle-Gamification-Moment „entwurf-statt-senden".
+
+**Warum:** Impulse aus hoher Aktivierung abfangen, Regulation vor Kontakt.
+
+**Ergebnis/Status:** Typecheck/Lint/Build grün; Route + Krisen-Gate verifiziert.
+
+---
+
 ## 2026-06-18 — Phase 4: Gesprächsmodus + .env-Fix
 
 **Was:**
