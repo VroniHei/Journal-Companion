@@ -21,7 +21,9 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
   Reflexionsfluss).
 - 🟢 **Barrierefreiheit prüfen** mit `web-design-guidelines` (Fokus-Reihenfolge,
   Kontraste, Screenreader-Labels der Mood-Buttons).
-- 🟢 **Export/Import** der Einträge (JSON) als Backup-Möglichkeit für Nutzer.
+- 🟢 **Import** von JSON-Backups (Export ist da; Re-Import noch offen).
+- 🟢 **Tieferer Design-/A11y-Audit** mit `web-design-guidelines` / `ui-ux-pro-max`
+  (aktuell nur leichter Fokus-/Motion-Feinschliff gemacht).
 - 🟢 **Daten-Migrationsstrategie** für `STORAGE_KEY`-Versionen, falls sich das
   Eintragsschema ändert.
 
@@ -30,4 +32,6 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 - ✅ Next.js auf gepatchte Version `^15.5.19` angehoben (CVE-2025-66478).
 - ✅ Engineering-Doku (`CLAUDE.md` + `docs/`) als selbstpflegendes Setup angelegt.
 - ✅ Automatik-Hooks: pre-commit (Lint/Typecheck-Gate) + Stop-Hook (Doku-Erinnerung).
-- ✅ Lint sauber (keine Warnungen in `app/page.tsx`).
+- ✅ Export (Markdown je Eintrag/Wochenrückblick, JSON für alle Daten).
+- ✅ Unit-Tests für Krisen-/Grübel-Heuristik (Vitest, 10 grün).
+- ✅ Barrierefreiheit-Basis: sichtbarer Fokus, reduzierte Bewegung.

@@ -9,6 +9,7 @@ import { postWeeklyReview } from "../lib/apiClient";
 import { aggregate } from "../lib/patterns";
 import { createId, nowIso } from "../lib/ids";
 import { formatDate } from "../lib/format";
+import { downloadPatternMarkdown } from "../lib/export";
 
 const RANGES = [
   { label: "Letzte 7 Tage", days: 7 },
@@ -143,9 +144,34 @@ export function WeeklyReview() {
           <div className="whitespace-pre-wrap text-[15px] leading-relaxed">
             {summary}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Button variant="ghost" onClick={save} disabled={savedHint}>
               {savedHint ? "Gespeichert ✓" : "Rückblick speichern"}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() =>
+                downloadPatternMarkdown({
+                  id: "",
+                  createdAt: nowIso(),
+                  periodStart,
+                  periodEnd,
+                  summary,
+                  recurringThemes: [],
+                  recurringNeeds: [],
+                  stabilizingActions: [],
+                  riskPatterns: [],
+                  personalContextNotes: [],
+                  helpfulRegulationStrategies: [],
+                  contactImpulsePatterns: [],
+                  helpfulSentences: [],
+                  unhelpfulThoughtLoops: [],
+                  groundingActionsThatWorked: [],
+                  contactDecisionsThatFeltGoodLater: [],
+                })
+              }
+            >
+              Als Markdown
             </Button>
             <span className="text-xs text-[var(--muted)]">
               Gespeicherte Muster fließen als Hintergrund in spätere Reflexionen.
@@ -160,13 +186,16 @@ export function WeeklyReview() {
             Gespeicherte Rückblicke
           </h2>
           {saved.slice(0, 6).map((p) => (
-            <Card key={p.id}>
-              <div className="mb-1 text-xs text-[var(--muted)]">
+            <Card key={p.id} className="space-y-2">
+              <div className="text-xs text-[var(--muted)]">
                 {formatDate(p.periodStart)} – {formatDate(p.periodEnd)}
               </div>
               <p className="line-clamp-3 whitespace-pre-wrap text-sm">
                 {p.summary}
               </p>
+              <Button variant="ghost" onClick={() => downloadPatternMarkdown(p)}>
+                Als Markdown
+              </Button>
             </Card>
           ))}
         </div>

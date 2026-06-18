@@ -3,6 +3,7 @@ import { Button, Card } from "../components/ui";
 import { useSettings } from "../hooks/useData";
 import { updateSettings } from "../lib/settings";
 import { db } from "../db/dexie";
+import { exportAllJson } from "../lib/export";
 import type {
   ApiMode,
   ClaudeModel,
@@ -145,10 +146,13 @@ export function Settings() {
       <Card className="space-y-3">
         <h2 className="text-sm font-medium text-[var(--muted)]">Daten</h2>
         <p className="text-sm">
-          Deine Einträge liegen ausschließlich lokal in diesem Browser. Export
-          (Markdown/JSON) folgt. Zum Aufräumen:
+          Deine Einträge liegen ausschließlich lokal in diesem Browser. Du kannst
+          sie jederzeit als Sicherung exportieren oder alles löschen.
         </p>
-        <div>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="ghost" onClick={exportAllJson}>
+            Alle Daten exportieren (JSON)
+          </Button>
           <Button variant="danger" onClick={clearAll}>
             Alle Daten löschen
           </Button>

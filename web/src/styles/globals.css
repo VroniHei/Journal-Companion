@@ -65,6 +65,24 @@ button {
   font-family: inherit;
 }
 
+/* Sichtbarer Fokus für Tastatur-Navigation (Barrierefreiheit) */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button {
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .serif {
   font-family: var(--font-serif);
 }

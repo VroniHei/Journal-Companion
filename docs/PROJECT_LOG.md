@@ -5,6 +5,25 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-18 — Phase 8: Export, Tests, README, A11y-Feinschliff
+
+**Was:**
+- Export: einzelner Eintrag & Wochenrückblick als **Markdown**, alle Daten als
+  **JSON** (`lib/export.ts`); Buttons in EntryDetail, WeeklyReview, Settings.
+- **Tests** (Vitest) für die Sicherheits-Heuristiken: `crisis.test.ts` (5) und
+  `rumination.test.ts` (5) — alle grün. `npm test` läuft im Server-Workspace.
+- README mit Funktionsübersicht + Doku-Links vervollständigt.
+- A11y-Feinschliff: sichtbarer `:focus-visible`-Fokus, `prefers-reduced-motion`,
+  Button-Cursor.
+
+**Warum:** „Definition of Done" des MVP erfüllen (Export, README) und die
+sicherheitskritische Logik absichern.
+
+**Ergebnis/Status:** Typecheck + Lint + Build + 10 Tests grün. **MVP funktional
+vollständig.**
+
+---
+
 ## 2026-06-18 — Phase 7: Muster + Wochenrückblick
 
 **Was:**

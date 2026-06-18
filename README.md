@@ -20,6 +20,23 @@ Monorepo (npm workspaces) mit klarer Trennung:
 Das Frontend ruft ausschließlich `/api/*` des eigenen Backends; das Backend ruft
 Claude. Details der Entscheidungen: [docs/DECISIONS.md](docs/DECISIONS.md).
 
+## Funktionen
+
+- **Startscreen „Was brauchst du gerade?"** — wählt Modus & Tonalität.
+- **Tagebuch** mit Stimmung, Intensität, Emotionen, Körpergefühl, Themen,
+  Bedürfnissen, Impuls, Absicht und optionalem Alltagstracking (Schlaf/Bewegung/
+  Draußen/Kiffen).
+- **KI-Reflexion** (Streaming, 8-teilige Struktur; aktivierungs-sensibel).
+- **Gesprächsmodus** — zu einem Eintrag weiterschreiben (mit Verlaufs-Kontext).
+- **Kontaktimpuls-Schutzraum** — Impuls prüfen, Entwurf „in Quarantäne" (20 Min /
+  morgen), strukturierte Empfehlung statt Drängen.
+- **Grübelschleifen-Erkennung** — kurze, stabilisierende Antwort statt tieferer
+  Analyse.
+- **Muster** & **Wochenrückblick** — Aggregate + ruhige Zusammenfassung, speicherbar.
+- **Krisen-Schutz** — deterministische Sicherheitsantwort mit Hilfehinweisen.
+- **Export** — Eintrag/Wochenrückblick als Markdown, alle Daten als JSON.
+- **Gentle Gamification** — ruhige Bestärkungen für Selbstführung, kein Nutzungsdruck.
+
 ## Einrichtung
 
 1. Abhängigkeiten installieren (vom Repo-Root):
@@ -69,6 +86,15 @@ Standard: `claude-sonnet-4-6` (kosteneffizient). Optionaler Qualitätsmodus:
 Keine Cloud, kein Login, kein Tracking. Alle Einträge liegen lokal (IndexedDB).
 Der API-Key verlässt nie das Backend.
 
+## Doku
+
+- [docs/PROJECT_LOG.md](docs/PROJECT_LOG.md) — Protokoll der Arbeitseinheiten
+- [docs/DECISIONS.md](docs/DECISIONS.md) — technische Entscheidungen
+- [docs/LEARNINGS.md](docs/LEARNINGS.md) — Erkenntnisse
+- [docs/OPTIMIZATIONS.md](docs/OPTIMIZATIONS.md) — offene Verbesserungen
+- [docs/ROADMAP.md](docs/ROADMAP.md) — geplante Erweiterungen (z.B. Voice-Reflection)
+
 ## Status
 
-Im Aufbau nach Phasenplan (siehe [docs/PROJECT_LOG.md](docs/PROJECT_LOG.md)).
+MVP funktional vollständig (alle Modi + Muster/Wochenrückblick + Export). Weitere
+Ideen siehe Roadmap.

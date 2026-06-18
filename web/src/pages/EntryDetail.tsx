@@ -16,6 +16,7 @@ import { streamReflect } from "../lib/apiClient";
 import { buildReflectionContext, clientRuminationHint } from "../lib/context";
 import { intentLabel } from "../lib/intents";
 import { CLOSE_MICROCOPY, reflectionMicrocopy } from "../lib/microcopy";
+import { downloadEntryMarkdown } from "../lib/export";
 
 function MetaRow({ label, values }: { label: string; values: string[] }) {
   if (values.length === 0) return null;
@@ -171,7 +172,7 @@ export function EntryDetail() {
         <ChatThread entry={e} />
       </Card>
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <Button onClick={reflect} disabled={reflecting}>
           {reflecting
             ? "Der Begleiter denkt nach…"
@@ -179,9 +180,14 @@ export function EntryDetail() {
               ? "Neu reflektieren"
               : "Mit dem Begleiter reflektieren"}
         </Button>
-        <Button variant="danger" onClick={remove}>
-          Eintrag löschen
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" onClick={() => downloadEntryMarkdown(e)}>
+            Als Markdown
+          </Button>
+          <Button variant="danger" onClick={remove}>
+            Löschen
+          </Button>
+        </div>
       </div>
     </section>
   );
