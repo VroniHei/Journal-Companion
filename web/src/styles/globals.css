@@ -8,14 +8,14 @@
    ========================================================= */
 :root {
   /* Innerline-Rohwerte */
-  --chalk: #fcfbf6;
-  --sand: #f3efe6;
-  --ink: #2f2b23; /* warmes Anthrazit (heller/freundlicher als fast-Schwarz) */
-  --ink-soft: #79735f;
+  --chalk: #fdfdfb; /* sehr helles, luftiges Warmweiß */
+  --sand: #f1f4ea; /* zart grün-getöntes Neutral (freundlich) */
+  --ink: #353026; /* warmes Anthrazit — weich, nicht fast-schwarz */
+  --ink-soft: #847e6b; /* etwas heller → luftiger */
   --forest: #2c3522;
   --green: #a8e84f;
   --green-deep: #6e9b2c;
-  --green-text: #4a7d12;
+  --green-text: #5a8a1e; /* freundliches, frisches Grün für Text/Links */
   --clay: #cd8a5b;
 
   /* Semantische App-Tokens */
@@ -27,9 +27,9 @@
   --accent: var(--green); /* Signatur-Lime — Fills/Highlights, mit Ink-Text */
   --accent-contrast: #23221a; /* tiefes Ink AUF Lime (Kontrast) */
   --accent-text: var(--green-text); /* lesbares Grün für Akzent-TEXT/Links/Fokus */
-  --accent-soft: #edf7d9; /* heller, freundlicher Lime-Ton — aktive Chips/Hover */
-  --border: rgba(47, 43, 35, 0.1); /* hellere, weiche Hairline */
-  --danger: #b04a38; /* etwas wärmeres, weicheres Brick-Rot */
+  --accent-soft: #e8f6cf; /* heller, freundlicher Lime-Ton — aktive Chips/Hover */
+  --border: rgba(53, 48, 38, 0.09); /* sehr feine, helle Hairline */
+  --danger: #b75444; /* warmes, weiches Brick-Rot */
 
   --font-sans: "Figtree", "Open Sauce Sans", system-ui, -apple-system, sans-serif;
   --font-serif: "Newsreader", Georgia, serif; /* nur Italic-Akzent (.g) */
@@ -75,10 +75,12 @@ body {
 
 body {
   background: var(--background);
-  /* Heller & freundlicher: frischer Grün-Hauch oben, sanfte Clay-Wärme — luftig */
+  /* Heller & freundlicher: frisches Grün oben rechts, warmer Pfirsich oben links,
+     sanfter Grünschimmer unten — spürbar, aber ruhig. */
   background-image:
-    radial-gradient(1000px 560px at 90% -8%, rgba(168, 232, 79, 0.09), transparent 62%),
-    radial-gradient(820px 480px at -2% 12%, rgba(205, 138, 91, 0.05), transparent 60%);
+    radial-gradient(1100px 600px at 88% -10%, rgba(168, 232, 79, 0.16), transparent 60%),
+    radial-gradient(900px 520px at -5% 6%, rgba(255, 190, 130, 0.12), transparent 58%),
+    radial-gradient(760px 700px at 50% 118%, rgba(168, 232, 79, 0.06), transparent 62%);
   background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans);
