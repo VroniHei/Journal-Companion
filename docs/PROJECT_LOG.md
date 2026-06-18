@@ -5,6 +5,27 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-18 — Baseline auf GitHub & Automatik-Hooks
+
+**Was:**
+- Baseline committet & nach `main` gepusht (Repo: Journal-Companion).
+- Git pre-commit Hook (`.githooks/pre-commit`) eingerichtet: Lint + Typecheck
+  als Commit-Gate; aktiviert via `git config core.hooksPath .githooks`.
+  Dafür `typecheck`-Script (`tsc --noEmit`) ergänzt.
+- Stop-Hook in `.claude/settings.json`: erinnert an Doku-Pflege, wenn `app/`/
+  `lib/` ohne `docs/PROJECT_LOG.md`-Update geändert wurde.
+- Lint-Warnungen in `app/page.tsx` behoben (ungenutzter Import, redundantes
+  eslint-disable → `for (;;)`).
+- `.gitignore`: Skill-Inhalte (`.agents/`, `.claude/skills/`) und
+  `settings.local.json` ausgeschlossen; `skills-lock.json` versioniert.
+
+**Warum:** Qualität automatisch absichern und die Living Docs zuverlässig
+aktuell halten.
+
+**Ergebnis/Status:** Hooks getestet (jq-Schema-Check + Befehlslauf grün).
+
+---
+
 ## 2026-06-18 — Projekt-Setup & Grundgerüst
 
 **Was:**

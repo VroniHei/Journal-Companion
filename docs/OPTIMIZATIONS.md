@@ -25,3 +25,5 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 - ✅ Next.js auf gepatchte Version `^15.5.19` angehoben (CVE-2025-66478).
 - ✅ Engineering-Doku (`CLAUDE.md` + `docs/`) als selbstpflegendes Setup angelegt.
+- ✅ Automatik-Hooks: pre-commit (Lint/Typecheck-Gate) + Stop-Hook (Doku-Erinnerung).
+- ✅ Lint sauber (keine Warnungen in `app/page.tsx`).

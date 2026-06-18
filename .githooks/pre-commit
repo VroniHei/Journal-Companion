@@ -1,0 +1,12 @@
+#!/bin/sh
+# Qualitäts-Gate: blockt den Commit, wenn Lint oder Typecheck fehlschlägt.
+# Aktivierung (einmalig): git config core.hooksPath .githooks
+set -e
+
+echo "▶ pre-commit: Lint…"
+npm run lint --silent
+
+echo "▶ pre-commit: Typecheck…"
+npm run typecheck --silent
+
+echo "✓ pre-commit: Lint & Typecheck grün."

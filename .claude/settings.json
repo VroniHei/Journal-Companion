@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "paths=$(git status --porcelain 2>/dev/null | cut -c4-); echo \"$paths\" | grep -qE '^(app|lib)/' && ! echo \"$paths\" | grep -q '^docs/PROJECT_LOG\\.md$' && echo '{\"systemMessage\":\"📝 Erinnerung: app/ oder lib/ wurde geändert — bitte docs/PROJECT_LOG.md (und ggf. LEARNINGS.md / OPTIMIZATIONS.md) aktualisieren.\"}' || true"
+          }
+        ]
+      }
+    ]
+  }
+}

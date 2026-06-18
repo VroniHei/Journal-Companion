@@ -70,6 +70,17 @@ docs/                     Protokoll, Learnings, Optimierungen (siehe unten)
 - UI-Texte auf Deutsch, ruhiger, wertschätzender Ton (passend zum Produkt).
 - Commits klein & thematisch; Nachricht beschreibt das Warum.
 
+## Automatik (Hooks)
+
+- **Git pre-commit Gate** (`.githooks/pre-commit`): blockt Commits, wenn
+  `lint` oder `typecheck` fehlschlägt. **Einmalig nach dem Klonen aktivieren:**
+  ```bash
+  git config core.hooksPath .githooks
+  ```
+- **Stop-Hook** (`.claude/settings.json`): erinnert nach einer Arbeitseinheit
+  daran, die Living Docs zu pflegen — aber nur, wenn `app/` oder `lib/` geändert
+  wurde, ohne dass `docs/PROJECT_LOG.md` mitgepflegt wurde (sonst still).
+
 ## Modell-Hinweis
 
 Standardmodell ist `claude-opus-4-8`. Adaptives Thinking aktivieren, sobald die
