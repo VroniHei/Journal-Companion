@@ -5,6 +5,28 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-18 — Phase 1 & 2: Datenebene + Kern-Journaling-UI
+
+**Was:**
+- Phase 1: Dexie-Schema (`entries`/`chatMessages`/`patternSummaries`/`settings`),
+  Query-Helfer (CRUD, `recentDigests`, `sameTopicSameDayCount`), Options-Listen
+  (Emotionen/Körper/Themen/Bedürfnisse/Impulse/Absichten), Settings-Defaults
+  (Sonnet, `toPrefs`/`effectiveModel`), Disclaimer (localStorage), Dexie-Hooks
+  (`useSettings`/`useEntries`/`useEntry`/`useMessages`).
+- Phase 2: UI-Bausteine (Card/Button/Felder: ScaleField, ChipSelect), Layout mit
+  Live-App-Name + Disclaimer-Gate, Dashboard (Begrüßung, Aktionen, letzte Einträge,
+  Stimmungsverlauf, häufige Themen, Themen-Hinweis), NewEntry (alle Felder),
+  EntryDetail (Eintrag + Löschen), Settings (Name/Modell/Stil/Länge/API-Modus +
+  Daten löschen).
+
+**Warum:** Lokales Journaling soll vollständig ohne KI funktionieren (Privacy-first);
+KI wird in Phase 3 ergänzt.
+
+**Ergebnis/Status:** Typecheck + Lint + Web-Build grün. Reflexion/Chat-Sektionen in
+EntryDetail bewusst für Phase 3/4 freigelassen.
+
+---
+
 ## 2026-06-18 — Neuausrichtung nach Briefing: Plan + Phase 0
 
 **Was:**

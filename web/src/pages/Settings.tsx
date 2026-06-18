@@ -1,8 +1,165 @@
-export function Settings() {
+import type { ReactNode } from "react";
+import { Button, Card } from "../components/ui";
+import { useSettings } from "../hooks/useData";
+import { updateSettings } from "../lib/settings";
+import { db } from "../db/dexie";
+import type {
+  ApiMode,
+  ClaudeModel,
+  ResponseLength,
+  ResponseStyle,
+} from "@journal/shared";
+
+function Row({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: ReactNode;
+}) {
   return (
-    <section>
+    <div className="flex flex-col gap-1.5">
+      <span className="text-sm font-medium">{label}</span>
+      {hint && <span className="text-xs text-[var(--muted)]">{hint}</span>}
+      {children}
+    </div>
+  );
+}
+
+const selectClass =
+  "rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--accent)]";
+
+export function Settings() {
+  const s = useSettings();
+
+  async function clearAll() {
+    if (
+      !confirm(
+        "Wirklich ALLE Einträge, Gespräche und Muster löschen? Das kann nicht rückgängig gemacht werden.",
+      )
+    )
+      return;
+    await db.transaction(
+      "rw",
+      db.entries,
+      db.chatMessages,
+      db.patternSummaries,
+      async () => {
+        await db.entries.clear();
+        await db.chatMessages.clear();
+        await db.patternSummaries.clear();
+      },
+    );
+    alert("Alle Daten wurden gelöscht.");
+  }
+
+  return (
+    <section className="space-y-6">
       <h1 className="serif text-3xl font-semibold">Einstellungen</h1>
-      <p className="mt-2 text-[var(--muted)]">Wird in Phase 2 gebaut.</p>
+
+      <Card className="space-y-5">
+        <Row label="App-Name">
+          <input
+            className={selectClass}
+            value={s.appName}
+            onChange={(e) => updateSettings({ appName: e.target.value })}
+          />
+        </Row>
+
+        <Row label="Claude-Modell" hint="Sonnet ist Standard und kosteneffizient.">
+          <select
+            className={selectClass}
+            value={s.claudeModel}
+            onChange={(e) =>
+              updateSettings({ claudeModel: e.target.value as ClaudeModel })
+            }
+          >
+            <option value="claude-sonnet-4-6">claude-sonnet-4-6 (Standard)</option>
+            <option value="claude-opus-4-8">claude-opus-4-8 (Qualität)</option>
+          </select>
+        </Row>
+
+        <Row
+          label="Qualitätsmodus"
+          hint="Nutzt Opus für besonders tiefe Auswertungen — unabhängig vom gewählten Modell."
+        >
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={Boolean(s.highQualityMode)}
+              onChange={(e) =>
+                updateSettings({ highQualityMode: e.target.checked })
+              }
+            />
+            High-Quality-Modus (Opus)
+          </label>
+        </Row>
+
+        <Row label="Antwortstil">
+          <select
+            className={selectClass}
+            value={s.responseStyle}
+            onChange={(e) =>
+              updateSettings({ responseStyle: e.target.value as ResponseStyle })
+            }
+          >
+            <option value="sanft">sanft</option>
+            <option value="klar">klar</option>
+            <option value="direkt">direkt</option>
+            <option value="sehr-direkt-warm">sehr direkt &amp; warm</option>
+          </select>
+        </Row>
+
+        <Row label="Antwortlänge">
+          <select
+            className={selectClass}
+            value={s.maxResponseLength}
+            onChange={(e) =>
+              updateSettings({
+                maxResponseLength: e.target.value as ResponseLength,
+              })
+            }
+          >
+            <option value="kurz">kurz</option>
+            <option value="mittel">mittel</option>
+            <option value="ausführlich">ausführlich</option>
+          </select>
+        </Row>
+
+        <Row label="API-Modus" hint="Lokaler Modus (Ollama) ist für später vorgesehen.">
+          <select
+            className={selectClass}
+            value={s.apiMode}
+            onChange={(e) =>
+              updateSettings({ apiMode: e.target.value as ApiMode })
+            }
+          >
+            <option value="claude">Claude API</option>
+            <option value="local">Lokal (später)</option>
+          </select>
+        </Row>
+      </Card>
+
+      <Card className="space-y-3">
+        <h2 className="text-sm font-medium text-[var(--muted)]">Daten</h2>
+        <p className="text-sm">
+          Deine Einträge liegen ausschließlich lokal in diesem Browser. Export
+          (Markdown/JSON) folgt. Zum Aufräumen:
+        </p>
+        <div>
+          <Button variant="danger" onClick={clearAll}>
+            Alle Daten löschen
+          </Button>
+        </div>
+      </Card>
+
+      <p className="text-xs text-[var(--muted)]">
+        Diese App ersetzt keine Therapie. Sie unterstützt beim Sortieren,
+        Reflektieren und Stabilisieren. Bei akuter Gefahr: 112 ·
+        TelefonSeelsorge 0800 111 0 111.
+      </p>
     </section>
   );
 }

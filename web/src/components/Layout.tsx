@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { APP_NAME } from "../lib/appName";
+import { DisclaimerGate } from "./DisclaimerGate";
+import { useSettings } from "../hooks/useData";
 
 const navItems = [
   { to: "/", label: "Übersicht", end: true },
@@ -11,11 +12,13 @@ const navItems = [
 ];
 
 export function Layout() {
+  const settings = useSettings();
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col px-5 py-8">
+      <DisclaimerGate />
       <header className="mb-8">
         <NavLink to="/" className="serif text-2xl font-semibold tracking-tight">
-          {APP_NAME}
+          {settings.appName}
         </NavLink>
         <nav className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm">
           {navItems.map((item) => (
