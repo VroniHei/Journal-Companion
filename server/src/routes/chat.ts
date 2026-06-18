@@ -3,7 +3,7 @@ import { z } from "zod";
 import { hasApiKey } from "../env";
 import { detectCrisis, CRISIS_MESSAGE } from "../safety/crisis";
 import { buildChatSystem } from "../prompts/builders";
-import { streamToResponse, type ChatTurn } from "../services/claude";
+import { streamToResponse, tuningFor, type ChatTurn } from "../services/claude";
 
 export const chatRouter = Router();
 
@@ -85,12 +85,16 @@ chatRouter.post("/chat", async (req, res) => {
     { role: "user", content: userMessage },
   ];
 
+  const tuning = tuningFor(prefs.model);
   try {
     await streamToResponse(res, {
       model: prefs.model,
       system,
       messages,
       maxTokens: CHAT_MAX_TOKENS,
+      // Gespräch soll snappy sein.
+      effort: "low",
+      think: tuning.think,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unbekannter Fehler.";

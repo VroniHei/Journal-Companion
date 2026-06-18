@@ -5,6 +5,22 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-18 — Latenz-Tuning (Antworten schneller)
+
+**Was:**
+- Claude-Service: `effort` + `think` pro Aufruf steuerbar (`tuningFor(model)`).
+- Standard (Sonnet): **kein adaptives Thinking**, niedrigere `effort` → erstes Byte
+  ~2s statt langer Denkpause. Grübelmodus & strukturierte Antworten bewusst flott.
+- High-Quality-Modus (Opus): Thinking + höhere `effort` (gründlicher, langsamer).
+
+**Warum:** Nutzerin-Feedback „ein bisschen langsam". Geschwindigkeit zählt für das
+„Gefühl"; Tiefe bleibt über den Opus-Modus wählbar.
+
+**Ergebnis/Status:** Typecheck/Lint/10 Tests grün; echter Reflexions-Call verifiziert
+(HTTP 200, erstes Byte ~2s).
+
+---
+
 ## 2026-06-18 — Sprach-Check-in (strukturierte Voice-Reflexion)
 
 **Was:**

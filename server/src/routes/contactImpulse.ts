@@ -10,7 +10,7 @@ import {
   buildContactImpulseSystem,
   buildContactImpulseUser,
 } from "../prompts/builders";
-import { generateText, singleUser } from "../services/claude";
+import { generateText, singleUser, tuningFor } from "../services/claude";
 import { extractJson } from "../lib/extractJson";
 
 export const contactImpulseRouter = Router();
@@ -56,6 +56,7 @@ contactImpulseRouter.post("/contact-impulse", async (req, res) => {
   }
 
   try {
+    const tuning = tuningFor(prefs.model);
     const raw = await generateText({
       model: prefs.model,
       system: buildContactImpulseSystem(prefs.style),
@@ -63,6 +64,8 @@ contactImpulseRouter.post("/contact-impulse", async (req, res) => {
         buildContactImpulseUser({ situation, goal, activation, draft }),
       ),
       maxTokens: 700,
+      effort: tuning.think ? "medium" : "low",
+      think: false, // strukturierte JSON-Antwort — kein Overthinking
     });
 
     let result: ContactImpulseResponse;

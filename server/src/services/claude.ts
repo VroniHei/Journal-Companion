@@ -14,16 +14,45 @@ export interface ChatTurn {
   content: string;
 }
 
+export type Effort = "low" | "medium" | "high" | "xhigh" | "max";
+
 export interface GenInput {
   model: string;
   system: string;
   messages: ChatTurn[];
   maxTokens: number;
+  /** Tiefe/Token-Aufwand. Niedriger = schneller. Default: kein output_config. */
+  effort?: Effort;
+  /** Adaptives Thinking aktivieren (langsamer, gründlicher). Default: aus. */
+  think?: boolean;
 }
 
 /** Bequemer Helfer: ein einzelner User-Text wird zu einer Nachricht. */
 export function singleUser(text: string): ChatTurn[] {
   return [{ role: "user", content: text }];
+}
+
+/**
+ * Latenz/Qualität nach Modell: Sonnet (Standard) schnell, Opus (Qualitätsmodus)
+ * gründlicher. Aufrufer können `effort` überschreiben.
+ */
+export function tuningFor(model: string): { effort: Effort; think: boolean } {
+  const isOpus = model.includes("opus");
+  return isOpus ? { effort: "high", think: true } : { effort: "medium", think: false };
+}
+
+// Die SDK-Typen dieser Version führen output_config/effort noch nicht; daher
+// gezielt als Zusatzfeld anhängen (vom Endpoint unterstützt).
+function buildParams(input: GenInput): Record<string, unknown> {
+  const params: Record<string, unknown> = {
+    model: input.model,
+    max_tokens: input.maxTokens,
+    system: input.system,
+    messages: input.messages,
+  };
+  if (input.think) params.thinking = { type: "adaptive" };
+  if (input.effort) params.output_config = { effort: input.effort };
+  return params;
 }
 
 /**
@@ -34,13 +63,10 @@ export async function streamToResponse(res: Response, input: GenInput): Promise<
   res.setHeader("Content-Type", "text/plain; charset=utf-8");
   res.setHeader("Cache-Control", "no-store");
 
-  const stream = getClient().messages.stream({
-    model: input.model,
-    max_tokens: input.maxTokens,
-    thinking: { type: "adaptive" },
-    system: input.system,
-    messages: input.messages,
-  });
+  const client = getClient();
+  const stream = client.messages.stream(
+    buildParams(input) as unknown as Parameters<typeof client.messages.stream>[0],
+  );
 
   stream.on("text", (delta) => res.write(delta));
   await stream.finalMessage();
@@ -49,13 +75,10 @@ export async function streamToResponse(res: Response, input: GenInput): Promise<
 
 /** Nicht-streamende Variante: liefert den vollständigen Antworttext. */
 export async function generateText(input: GenInput): Promise<string> {
-  const message = await getClient().messages.create({
-    model: input.model,
-    max_tokens: input.maxTokens,
-    thinking: { type: "adaptive" },
-    system: input.system,
-    messages: input.messages,
-  });
+  const client = getClient();
+  const message = (await client.messages.create(
+    buildParams(input) as unknown as Parameters<typeof client.messages.create>[0],
+  )) as Anthropic.Message;
   return message.content
     .filter((b): b is Anthropic.TextBlock => b.type === "text")
     .map((b) => b.text)

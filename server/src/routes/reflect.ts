@@ -8,7 +8,7 @@ import {
   buildReflectionUser,
   maxTokensFor,
 } from "../prompts/builders";
-import { singleUser, streamToResponse } from "../services/claude";
+import { singleUser, streamToResponse, tuningFor } from "../services/claude";
 
 export const reflectRouter = Router();
 
@@ -103,12 +103,16 @@ reflectRouter.post("/reflect", async (req, res) => {
     { recentDigest: context.recentDigest, latestPattern: context.latestPattern },
   );
 
+  const tuning = tuningFor(prefs.model);
   try {
     await streamToResponse(res, {
       model: prefs.model,
       system,
       messages: singleUser(userText),
       maxTokens: maxTokensFor(prefs.length, rumination),
+      // Grübelmodus = bewusst kurz & schnell; sonst nach Modell.
+      effort: rumination ? "low" : tuning.effort,
+      think: rumination ? false : tuning.think,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unbekannter Fehler.";

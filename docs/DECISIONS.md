@@ -38,6 +38,11 @@ unten anhängen.
   nicht gesetzt (würden ohnehin abgelehnt). Steuerung des Antwortverhaltens über
   Systemprompt, Response-Style, Antwortlänge, App-Modus, `max_tokens` und klare
   Promptstruktur.
+- **Latenz-Tuning (Geschwindigkeit)** — Standardmodell (Sonnet) antwortet ohne
+  adaptives Thinking und mit niedrigerer `effort`-Stufe → erstes Byte in ~2s statt
+  langer „Denk"-Pause. Grübel-/Struktur-Antworten bewusst flott (`effort: low`).
+  Der **High-Quality-Modus (Opus)** schaltet Thinking + höhere `effort` zu
+  (gründlicher, langsamer). Steuerung zentral in `services/claude.ts` (`tuningFor`).
 - **Streaming nur für Reflexion & Chat** — `/api/reflect` und `/api/chat` streamen
   (natürlichere UX). `/api/contact-impulse` (saubere strukturierte Empfehlung) und
   `/api/weekly-review` (vollständige, stabile Antwort) liefern im MVP nicht-streamend.

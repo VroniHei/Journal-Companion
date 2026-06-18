@@ -7,7 +7,7 @@ import {
   buildVoiceReflectSystem,
   buildVoiceReflectUser,
 } from "../prompts/builders";
-import { generateText, singleUser } from "../services/claude";
+import { generateText, singleUser, tuningFor } from "../services/claude";
 import { extractJson } from "../lib/extractJson";
 
 export const voiceReflectRouter = Router();
@@ -47,11 +47,14 @@ voiceReflectRouter.post("/voice-reflect", async (req, res) => {
   }
 
   try {
+    const tuning = tuningFor(prefs.model);
     const raw = await generateText({
       model: prefs.model,
       system: buildVoiceReflectSystem(prefs.style),
       messages: singleUser(buildVoiceReflectUser(transcript)),
       maxTokens: 900,
+      effort: tuning.think ? "medium" : "low",
+      think: false,
     });
 
     const obj = extractJson(raw) as Partial<VoiceReflectResponse>;

@@ -6,7 +6,7 @@ import {
   buildWeeklyReviewSystem,
   buildWeeklyReviewUser,
 } from "../prompts/builders";
-import { generateText, singleUser } from "../services/claude";
+import { generateText, singleUser, tuningFor } from "../services/claude";
 
 export const weeklyReviewRouter = Router();
 
@@ -54,6 +54,7 @@ weeklyReviewRouter.post("/weekly-review", async (req, res) => {
   }
 
   try {
+    const tuning = tuningFor(prefs.model);
     const summary = await generateText({
       model: prefs.model,
       system: buildWeeklyReviewSystem(prefs.style),
@@ -61,6 +62,8 @@ weeklyReviewRouter.post("/weekly-review", async (req, res) => {
         buildWeeklyReviewUser(periodStart, periodEnd, digests),
       ),
       maxTokens: 1500,
+      effort: tuning.effort, // Rückblick darf etwas gründlicher sein
+      think: tuning.think,
     });
     const response: WeeklyReviewResponse = { summary };
     res.json(response);
