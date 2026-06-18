@@ -32,6 +32,8 @@ export type NewEntryInput = Pick<
       | "movementToday"
       | "outsideToday"
       | "cannabisToday"
+      | "inputType"
+      | "transcript"
     >
   >;
 

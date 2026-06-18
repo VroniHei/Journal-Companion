@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { JournalEntry } from "@journal/shared";
 import { Button } from "./ui";
+import { DictationButton } from "./DictationButton";
 import { useMessages, useSettings } from "../hooks/useData";
 import { addChatMessage, updateEntry } from "../db/queries";
 import { toPrefs } from "../lib/settings";
@@ -98,9 +99,14 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
           rows={2}
           className="flex-1 resize-y rounded-lg border border-[var(--border)] bg-transparent p-2 text-sm outline-none focus:border-[var(--accent)]"
         />
-        <Button onClick={send} disabled={!input.trim() || streaming}>
-          {streaming ? "…" : "Senden"}
-        </Button>
+        <div className="flex flex-col gap-2">
+          <Button onClick={send} disabled={!input.trim() || streaming}>
+            {streaming ? "…" : "Senden"}
+          </Button>
+          <DictationButton
+            onText={(seg) => setInput((p) => (p ? `${p} ${seg}` : seg))}
+          />
+        </div>
       </div>
     </div>
   );

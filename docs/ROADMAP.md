@@ -20,8 +20,15 @@ Ablauf (später):
 
 **Vorbereitet:** Datenmodellfelder in `JournalEntry` (siehe `shared/src/types.ts`),
 Prompt-Strukturkonstante `VOICE_REFLECTION_STRUCTURE` in
-`server/src/prompts/builders.ts`. Offen: Audioaufnahme + Transkriptions-Anbindung,
-UI für Aufnahme, Anzeige der strukturierten Felder.
+`server/src/prompts/builders.ts`.
+
+**Umgesetzt (Diktat):** Spracheingabe via Web Speech API (`useDictation` +
+`DictationButton`) in neuem Eintrag, Gespräch und Kontaktimpuls; Voice-Einträge
+mit `inputType: "voice"` + `transcript`. Sprechen → Text → normale Reflexion.
+
+**Noch offen:** eigener strukturierter Voice-Check-in (Zusammenfassung,
+keyInsights, dontDoNow, mainTrigger, mainNeed …) als dedizierter Modus; optionale
+Audioaufnahme/Transkription für Browser ohne Web Speech API.
 
 ## „Was jetzt eher nicht hilfreich wäre" als wiederkehrender Baustein
 

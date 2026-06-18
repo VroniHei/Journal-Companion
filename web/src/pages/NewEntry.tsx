@@ -5,6 +5,7 @@ import { Button, Card, FieldLabel } from "../components/ui";
 import { ScaleField } from "../components/fields/ScaleField";
 import { ChipSelect } from "../components/fields/ChipSelect";
 import { BoolField } from "../components/fields/BoolField";
+import { DictationButton } from "../components/DictationButton";
 import {
   BODY_SIGNALS,
   EMOTIONS,
@@ -38,7 +39,13 @@ export function NewEntry() {
   const [movementToday, setMovement] = useState<boolean | null>(null);
   const [outsideToday, setOutside] = useState<boolean | null>(null);
   const [cannabisToday, setCannabis] = useState<boolean | null>(null);
+  const [usedVoice, setUsedVoice] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  function appendSpoken(segment: string) {
+    setText((t) => (t ? `${t} ${segment}` : segment));
+    setUsedVoice(true);
+  }
 
   async function save() {
     if (!text.trim() || saving) return;
@@ -53,6 +60,8 @@ export function NewEntry() {
       needs,
       impulse: impulse[0] ?? "",
       intention,
+      inputType: usedVoice ? "voice" : "text",
+      transcript: usedVoice ? text.trim() : undefined,
       startIntent: intent,
       sleepQuality: (sleep[0] as SleepQuality | undefined) ?? null,
       movementToday,
@@ -72,13 +81,21 @@ export function NewEntry() {
       </div>
 
       <Card className="space-y-6">
-        <textarea
-          value={text}
-          onChange={(ev) => setText(ev.target.value)}
-          placeholder="Schreib einfach drauflos – so ungeordnet, wie es gerade ist."
-          rows={7}
-          className="w-full resize-y rounded-lg border border-[var(--border)] bg-transparent p-3 outline-none focus:border-[var(--accent)]"
-        />
+        <div className="space-y-2">
+          <textarea
+            value={text}
+            onChange={(ev) => setText(ev.target.value)}
+            placeholder="Schreib einfach drauflos – oder sprich es ein."
+            rows={7}
+            className="w-full resize-y rounded-lg border border-[var(--border)] bg-transparent p-3 outline-none focus:border-[var(--accent)]"
+          />
+          <div className="flex items-center gap-3">
+            <DictationButton onText={appendSpoken} />
+            <span className="text-xs text-[var(--muted)]">
+              Sprechen statt tippen (Chrome/Edge)
+            </span>
+          </div>
+        </div>
 
         <div className="grid gap-6 sm:grid-cols-2">
           <ScaleField

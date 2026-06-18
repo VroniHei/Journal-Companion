@@ -4,6 +4,7 @@ import type {
   ContactImpulseResponse,
 } from "@journal/shared";
 import { Button, Card, FieldLabel } from "../components/ui";
+import { DictationButton } from "../components/DictationButton";
 import { ScaleField } from "../components/fields/ScaleField";
 import { ChipSelect } from "../components/fields/ChipSelect";
 import { useSettings } from "../hooks/useData";
@@ -118,6 +119,13 @@ export function ContactImpulse() {
             placeholder="Was möchtest du schreiben – und warum gerade jetzt?"
             className="w-full resize-y rounded-lg border border-[var(--border)] bg-transparent p-3 text-sm outline-none focus:border-[var(--accent)]"
           />
+          <div className="mt-2">
+            <DictationButton
+              onText={(seg) =>
+                setSituation((p) => (p ? `${p} ${seg}` : seg))
+              }
+            />
+          </div>
         </div>
 
         <ChipSelect

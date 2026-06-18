@@ -5,6 +5,23 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-18 — Spracheingabe (Diktat)
+
+**Was:**
+- `useDictation`-Hook + `DictationButton` auf Basis der Web Speech API (de-DE),
+  mit Browser-Support-Erkennung und freundlichem Fallback.
+- Diktieren statt Tippen in: neuer Eintrag, Gesprächsmodus, Kontaktimpuls.
+- Voice-Einträge werden mit `inputType: "voice"` + `transcript` gespeichert.
+
+**Warum:** Frei sprechen, was los ist (aus dem Briefing/ROADMAP) — ohne extra Key
+oder Audio-Versand an Dritte (Web Speech API läuft im Browser).
+
+**Ergebnis/Status:** Typecheck/Lint/Build/Tests grün. Funktioniert in Chrome/Edge
+(HTTPS + Mikro-Erlaubnis). Offen: vollständige strukturierte Voice-Reflexion
+(`VOICE_REFLECTION_STRUCTURE`) als eigener Modus.
+
+---
+
 ## 2026-06-18 — Phase 8: Export, Tests, README, A11y-Feinschliff
 
 **Was:**
