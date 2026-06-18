@@ -44,3 +44,27 @@ unten anhängen.
 - **3-Ebenen-Kontext** — An Claude gehen: (1) aktueller Eintrag, (2) kurzer Digest
   der letzten relevanten Einträge, (3) gespeicherte `PatternSummary`. Nie der ganze
   Verlauf — spart Kosten, schärft den Fokus, vermeidet überlange Prompts.
+
+## Produkt & UX
+
+- **Intent-gesteuerter Start** — Startscreen „Was brauchst du gerade?" wählt den
+  Modus/die Promptstruktur (z.B. „Ich hänge in einer Schleife" → Grübelmodus,
+  „Ich will ihm schreiben" → Kontaktimpuls). Der Intent fließt als Anliegen-Hinweis
+  in den Prompt.
+- **Aktivierungs-sensibel** — Die KI schätzt intern ein (Klarheit/Beruhigung/
+  Kontrolle/Grübel) und antwortet bei hoher Aktivierung kürzer, konkreter,
+  regulierender — statt weiter zu analysieren.
+- **Abschluss statt Endlosschleife** — Nach Reflexion/Grübelmodus bietet die App
+  aktiv einen Session-Abschluss an (kleiner körperlicher Schritt, was heute nicht
+  entschieden werden muss). Ziel: Selbstregulation, nicht endloses Weiterreden.
+- **Gentle Gamification (statt Verzicht)** — Erlaubt sind leichte, warme
+  Bestärkungen, die **Selbstführung** sichtbar machen: „stabile Momente"
+  (sortiert-vor-handeln, Impuls gehalten, Schleife erkannt, Abschluss, …), ruhige
+  Microcopy, sanfte Fortschrittsmarker. Belohnt wird bewusste Regulation — **nicht**
+  App-Nutzung. Ausdrücklich vermieden: harte Streaks, Nutzungsdruck, Punkte, Level,
+  App-Store-Badges, Leaderboards, Healing-/Prozent-Scores, Bestrafung bei
+  Nicht-Nutzung. MVP: nur leicht vorbereitet (`StabilityMoment`-Datenstruktur +
+  Microcopy nach Reflexionen + „stabiler Schritt erkannt"), keine Gamification-Engine.
+- **Minimales Alltagstracking** (Schlaf/Bewegung/Draußen/Kiffen, optional) dient nur
+  dazu, später in Mustern/Wochenrückblick Zusammenhänge sichtbar zu machen — kein
+  Tracking-Zwang, keine Auswertung „von außen".

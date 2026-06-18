@@ -5,6 +5,8 @@ import type {
   EntryDigest,
   JournalEntry,
   PatternSummary,
+  StabilityKind,
+  StabilityMoment,
 } from "@journal/shared";
 import { createId, nowIso } from "../lib/ids";
 
@@ -21,7 +23,17 @@ export type NewEntryInput = Pick<
   | "needs"
   | "impulse"
   | "intention"
->;
+> &
+  Partial<
+    Pick<
+      JournalEntry,
+      | "startIntent"
+      | "sleepQuality"
+      | "movementToday"
+      | "outsideToday"
+      | "cannabisToday"
+    >
+  >;
 
 export async function createEntry(input: NewEntryInput): Promise<JournalEntry> {
   const now = nowIso();
@@ -101,6 +113,26 @@ export async function getLatestPattern(): Promise<PatternSummary | null> {
 
 export async function savePattern(p: PatternSummary): Promise<void> {
   await db.patternSummaries.put(p);
+}
+
+// --- Gentle Gamification: stabile Momente -------------------------------
+
+export async function recordStabilityMoment(
+  kind: StabilityKind,
+  label: string,
+  entryId?: string,
+): Promise<void> {
+  await db.stabilityMoments.put({
+    id: createId(),
+    createdAt: nowIso(),
+    kind,
+    label,
+    entryId,
+  });
+}
+
+export function listStabilityMoments(): Promise<StabilityMoment[]> {
+  return db.stabilityMoments.orderBy("createdAt").reverse().toArray();
 }
 
 // --- Kontext-Digest (Ebene 2 des 3-Ebenen-Prompts) ------------------------

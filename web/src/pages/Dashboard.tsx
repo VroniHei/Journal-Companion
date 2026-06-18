@@ -1,7 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Card } from "../components/ui";
+import { Card } from "../components/ui";
 import { useEntries } from "../hooks/useData";
 import { formatDateTime } from "../lib/format";
+import { INTENT_OPTIONS } from "../lib/intents";
+import type { StartIntent } from "@journal/shared";
 
 function greeting(): string {
   const h = new Date().getHours();
@@ -24,20 +26,32 @@ export function Dashboard() {
   const topics = topTopics(entries.map((e) => e.topics));
   const recurring = topics.find(([, n]) => n >= 3);
 
+  function choose(intent: StartIntent) {
+    if (intent === "ihm-schreiben") {
+      navigate("/kontaktimpuls");
+    } else {
+      navigate(`/neu?intent=${intent}`);
+    }
+  }
+
   return (
     <section className="space-y-6">
       <div>
         <h1 className="serif text-3xl font-semibold">{greeting()}.</h1>
-        <p className="mt-1 text-[var(--muted)]">
-          Was möchtest du gerade sortieren?
-        </p>
+        <p className="mt-1 text-[var(--muted)]">Was brauchst du gerade?</p>
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        <Button onClick={() => navigate("/neu")}>Neuer Eintrag</Button>
-        <Button variant="ghost" onClick={() => navigate("/kontaktimpuls")}>
-          Kontaktimpuls prüfen
-        </Button>
+      <div className="grid gap-2 sm:grid-cols-2">
+        {INTENT_OPTIONS.map((o) => (
+          <button
+            key={o.intent}
+            type="button"
+            onClick={() => choose(o.intent)}
+            className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-left text-sm transition hover:border-[var(--accent)]"
+          >
+            {o.label}
+          </button>
+        ))}
       </div>
 
       {recurring && (

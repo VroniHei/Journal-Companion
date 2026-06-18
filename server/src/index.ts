@@ -1,8 +1,9 @@
 import express from "express";
 import { env, hasApiKey } from "./env";
+import { reflectRouter } from "./routes/reflect";
 
 const app = express();
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "2mb" }));
 
 // Health-Check
 app.get("/api/health", (_req, res) => {
@@ -14,9 +15,10 @@ app.get("/api/config", (_req, res) => {
   res.json({ hasApiKey: hasApiKey() });
 });
 
-// Routen werden in den folgenden Phasen ergänzt:
-//   /api/reflect (Phase 3), /api/chat (Phase 4),
-//   /api/contact-impulse (Phase 5), /api/weekly-review (Phase 7)
+// API-Routen
+app.use("/api", reflectRouter);
+// Weitere folgen: /api/chat (Phase 4), /api/contact-impulse (Phase 5),
+// /api/weekly-review (Phase 7)
 
 app.listen(env.port, () => {
   console.log(`[server] läuft auf http://localhost:${env.port}`);

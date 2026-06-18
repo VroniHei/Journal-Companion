@@ -13,6 +13,18 @@ export type ClaudeModel = "claude-sonnet-4-6" | "claude-opus-4-8";
 // Datenmodelle (lokal in IndexedDB / Dexie gespeichert)
 // ---------------------------------------------------------------------------
 
+/** Auswahl im Startscreen „Was brauchst du gerade?" — steuert Modus/Promptstruktur. */
+export type StartIntent =
+  | "schreiben" // Ich will einfach schreiben
+  | "schleife" // Ich hänge in einer Schleife
+  | "ihm-schreiben" // Ich will ihm schreiben → Kontaktimpuls
+  | "beruhigung" // Ich brauche Beruhigung
+  | "spiegel" // Ich brauche einen klaren Spiegel
+  | "abend-abschliessen" // Ich will den Abend abschließen
+  | "tag-sortieren"; // Ich will meinen Tag sortieren
+
+export type SleepQuality = "gut" | "mittel" | "schlecht";
+
 export type ChatRole = "user" | "assistant";
 
 export interface ChatMessage {
@@ -37,10 +49,28 @@ export interface JournalEntry {
   impulse: string;
   intention: string[];
   aiReflection: string | null;
+  /** Auswahl aus dem Startscreen (optional). */
+  startIntent?: StartIntent;
+  // Minimales Alltagstracking (optional) — fließt später in Muster & Wochenrückblick.
+  sleepQuality?: SleepQuality | null;
+  movementToday?: boolean | null;
+  outsideToday?: boolean | null;
+  cannabisToday?: boolean | null;
   /** Laufende Gesprächs-Zusammenfassung (für günstigeres Chat-Prompting). */
   conversationSummary?: string;
   crisisFlag: boolean;
   ruminationFlag: boolean;
+  // Voice-Reflection (vorbereitet, noch nicht im MVP gebaut — siehe docs/ROADMAP.md)
+  inputType?: "text" | "voice";
+  audioNoteId?: string | null;
+  transcript?: string | null;
+  // Strukturierte KI-Auswertung (optional, für Voice-Check-in & spätere Anzeige)
+  entrySummary?: string | null;
+  keyInsights?: string[];
+  dontDoNow?: string[];
+  supportiveImpulse?: string | null;
+  mainTrigger?: string | null;
+  mainNeed?: string | null;
 }
 
 export interface PatternSummary {
@@ -57,6 +87,33 @@ export interface PatternSummary {
   personalContextNotes: string[];
   helpfulRegulationStrategies: string[];
   contactImpulsePatterns: string[];
+  // Persönliche Strategien-Bibliothek: was der Nutzerin wirklich hilft
+  helpfulSentences: string[];
+  unhelpfulThoughtLoops: string[];
+  groundingActionsThatWorked: string[];
+  contactDecisionsThatFeltGoodLater: string[];
+}
+
+/**
+ * Gentle Gamification: „stabile Momente" — belohnt Selbstführung/Regulation,
+ * NICHT App-Nutzung. Keine Punkte/Streaks/Scores. Siehe docs/DECISIONS.md.
+ */
+export type StabilityKind =
+  | "sortiert-vor-handeln"
+  | "impuls-gehalten"
+  | "schleife-erkannt"
+  | "koerperlicher-schritt"
+  | "beduerfnis-benannt"
+  | "entwurf-statt-senden"
+  | "woche-reflektiert"
+  | "abschluss";
+
+export interface StabilityMoment {
+  id: string;
+  createdAt: string; // ISO
+  entryId?: string;
+  kind: StabilityKind;
+  label: string;
 }
 
 export type ResponseStyle = "sanft" | "klar" | "direkt" | "sehr-direkt-warm";
@@ -113,6 +170,8 @@ export interface ReflectRequest {
   context: ReflectionContext;
   /** Vom Client vorab erkannte Grübel-Signale (aus der Dexie-Historie). */
   ruminationHint?: boolean;
+  /** Anliegen aus dem Startscreen (menschenlesbar), z.B. „Ich brauche Beruhigung". */
+  intent?: string;
   prefs: ResponsePrefs;
 }
 

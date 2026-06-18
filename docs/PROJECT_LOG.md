@@ -5,6 +5,34 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-18 — Phase 3: Backend + Reflexion (+ Produkt-Nachschärfungen)
+
+**Was:**
+- Backend: Claude-Service (`@anthropic-ai/sdk`, adaptives Thinking, Streaming +
+  nicht-streamend), System-Prompt (separat pflegbar), Prompt-Builder (Stil/Länge,
+  8-teilige bzw. 5-teilige Grübel-Struktur, interner Klarheit/Beruhigung/Kontrolle/
+  Grübel-Check, Aktivierungs-Sensibilität, 3-Ebenen-Kontext), **deterministisches
+  Krisen-Gate** (`safety/crisis.ts`), serverseitige Grübel-Signale
+  (`analysis/rumination.ts`), Route `POST /api/reflect`.
+- Frontend: API-Client (Streaming, X-Crisis/X-Rumination), Kontext-Builder
+  (`buildReflectionContext`, `clientRuminationHint`), Reflexion in EntryDetail mit
+  Live-Streaming, Krisen-Styling, Session-Abschluss.
+- Nachschärfungen eingearbeitet: Startscreen „Was brauchst du gerade?" (Intent →
+  Modus/Prompt), minimales Alltagstracking (Schlaf/Bewegung/Draußen/Kiffen),
+  PatternSummary-Erweiterungen (Strategien-Bibliothek), Voice-Reflection
+  vorbereitet (Datenmodell + `VOICE_REFLECTION_STRUCTURE` + `docs/ROADMAP.md`),
+  Leitplanke „keine Gamification" dokumentiert.
+
+**Warum:** KI-Reflexion ist das Herzstück; Sicherheit (Krise) muss verlässlich und
+modellunabhängig sein.
+
+**Ergebnis/Status:** Typecheck + Lint grün. Backend-Smoke-Test verifiziert:
+Krisen-Pfad liefert ohne API-Key die feste Sicherheitsantwort (HTTP 200, X-Crisis);
+ohne Key bei Normaleintrag → 503 mit freundlicher Erklärung. Echte Reflexion
+benötigt `server/.env` mit `ANTHROPIC_API_KEY` (noch zu testen durch Nutzerin).
+
+---
+
 ## 2026-06-18 — Phase 1 & 2: Datenebene + Kern-Journaling-UI
 
 **Was:**

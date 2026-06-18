@@ -4,6 +4,7 @@ import type {
   ChatMessage,
   JournalEntry,
   PatternSummary,
+  StabilityMoment,
 } from "@journal/shared";
 
 // Lokale Datenbank (IndexedDB). Keine Cloud, kein Login.
@@ -12,6 +13,7 @@ export class JournalDB extends Dexie {
   chatMessages!: Table<ChatMessage, string>;
   patternSummaries!: Table<PatternSummary, string>;
   settings!: Table<AppSettings, string>;
+  stabilityMoments!: Table<StabilityMoment, string>;
 
   constructor() {
     super("journal-companion");
@@ -21,6 +23,9 @@ export class JournalDB extends Dexie {
       chatMessages: "id, entryId, createdAt",
       patternSummaries: "id, createdAt, periodStart, periodEnd",
       settings: "id",
+    });
+    this.version(2).stores({
+      stabilityMoments: "id, createdAt, kind, entryId",
     });
   }
 }
