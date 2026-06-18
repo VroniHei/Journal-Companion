@@ -5,6 +5,31 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-18 — Neuausrichtung nach Briefing: Plan + Phase 0
+
+**Was:**
+- Ausführliches Briefing erhalten → im Plan-Modus vollständigen Umsetzungsplan
+  erstellt (`~/.claude/plans/…`), Stack-Entscheidung: **Vite + React + Express +
+  Dexie** (Monorepo). Nachschärfungen eingearbeitet (Sonnet als Default, Opus als
+  Qualitätsmodus; Streaming nur reflect/chat; AppSettings ohne API-Key +
+  `highQualityMode`; PatternSummary erweitert; Kontaktimpuls strukturiert).
+- `docs/DECISIONS.md` angelegt (Begründungen Stack/Sicherheit/Modell/Streaming).
+- **Phase 0:** Next.js-Prototyp entfernt; npm-workspaces `shared`/`web`/`server`;
+  Frontend (Vite+React+TS+Tailwind v4, React Router, Platzhalterseiten);
+  Backend (Express+dotenv, /api/health, /api/config); `shared/types.ts`
+  (Datenmodelle + API-Verträge); Root-ESLint, Dev-Script (concurrently), Vite-Proxy
+  /api→:3001; README neu.
+- SDK auf `@anthropic-ai/sdk@0.104.2` (adaptives Thinking getypt); vite@6.4.3 /
+  vitest@3 → Audit 0 Vulnerabilities.
+
+**Warum:** Das Briefing beschreibt eine deutlich größere App als der Prototyp;
+sauberes Fundament mit klarer FE/BE-Trennung.
+
+**Ergebnis/Status:** Typecheck + Lint grün; Web-Build ok; Backend bootet,
+Endpunkte antworten. Bereit für Phase 1 (Dexie/Settings).
+
+---
+
 ## 2026-06-18 — Baseline auf GitHub & Automatik-Hooks
 
 **Was:**

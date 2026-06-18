@@ -1,58 +1,74 @@
 # Journal Companion
 
-Ein ruhiges Tagebuch mit einem einfühlsamen KI-Begleiter (Claude), der dir beim
-Reflektieren hilft – statt Ratschläge zu erteilen, spiegelt er behutsam und
-stellt offene Fragen.
+Ein privates, lokales Tagebuch mit KI-gestützter Reflexion (Claude) — ein ruhiger,
+therapeutisch *informierter* (nicht therapeutischer) Begleiter für Gedanken,
+Gefühle, Beziehungsthemen, Kontaktimpulse und Grübelschleifen.
 
-## Tech-Stack
+> Kein Ersatz für Therapie. Einträge bleiben lokal auf deinem Gerät. Nur bei
+> angeforderten KI-Funktionen wird der jeweilige Text an die Claude-API gesendet.
 
-- **Next.js 15** (App Router) + **React 19** + **TypeScript**
-- **Tailwind CSS v4**
-- **Claude API** (`@anthropic-ai/sdk`, Modell `claude-opus-4-8`) mit Streaming
+## Architektur
 
-## Funktionen
+Monorepo (npm workspaces) mit klarer Trennung:
 
-- Tagebucheinträge schreiben, mit optionaler Stimmungs-Markierung
-- Einträge bleiben **lokal im Browser** (localStorage) – nichts wird automatisch hochgeladen
-- Auf Knopfdruck eine einfühlsame **Reflexion** vom Begleiter (Text wird live gestreamt)
+- **`web/`** — Frontend: Vite + React + TypeScript + Tailwind v4, Daten lokal in
+  IndexedDB (Dexie).
+- **`server/`** — Backend: Express + TypeScript, dünner Claude-Proxy. Der
+  API-Key liegt ausschließlich hier (`server/.env`), nie im Frontend.
+- **`shared/`** — gemeinsame TypeScript-Typen (Datenmodelle + API-Verträge).
+
+Das Frontend ruft ausschließlich `/api/*` des eigenen Backends; das Backend ruft
+Claude. Details der Entscheidungen: [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Einrichtung
 
-1. Abhängigkeiten installieren:
+1. Abhängigkeiten installieren (vom Repo-Root):
 
    ```bash
    npm install
    ```
 
-2. API-Key hinterlegen – `.env.local.example` nach `.env.local` kopieren und
-   deinen Schlüssel von <https://console.anthropic.com/> eintragen:
+2. API-Key hinterlegen:
 
    ```bash
-   cp .env.local.example .env.local
-   # ANTHROPIC_API_KEY=sk-ant-...
+   cp server/.env.example server/.env
+   # ANTHROPIC_API_KEY=sk-ant-...   (Key von https://console.anthropic.com/)
    ```
 
-3. Entwicklungsserver starten:
+3. Git-Hook (Qualitäts-Gate) einmalig aktivieren:
+
+   ```bash
+   git config core.hooksPath .githooks
+   ```
+
+4. Entwicklung starten (Frontend + Backend gleichzeitig):
 
    ```bash
    npm run dev
    ```
 
-   Dann <http://localhost:3000> öffnen.
+   Frontend: <http://localhost:5173> · Backend: <http://localhost:3001>
+
+## Skripte (Root)
+
+| Befehl | Wirkung |
+|---|---|
+| `npm run dev` | Vite (:5173) + Express (:3001) parallel |
+| `npm run build` | Build Frontend + Typecheck Backend |
+| `npm run typecheck` | Typecheck aller Workspaces |
+| `npm run lint` | ESLint über das ganze Repo |
+| `npm test` | Unit-Tests (Backend, u.a. Sicherheits-Heuristiken) |
+
+## Modell
+
+Standard: `claude-sonnet-4-6` (kosteneffizient). Optionaler Qualitätsmodus:
+`claude-opus-4-8`. In den Einstellungen umstellbar.
 
 ## Datenschutz
 
-Einträge werden ausschließlich lokal im Browser gespeichert. Nur wenn du die
-Reflexion anforderst, wird der jeweilige Eintrag an die Claude-API gesendet.
+Keine Cloud, kein Login, kein Tracking. Alle Einträge liegen lokal (IndexedDB).
+Der API-Key verlässt nie das Backend.
 
-## Projektstruktur
+## Status
 
-```
-app/
-  layout.tsx            Grundlayout + Metadaten
-  page.tsx              Journal-UI (Editor, Einträge, Reflexion)
-  globals.css           Theme & Styles (Tailwind v4)
-  api/reflect/route.ts  Server-Route, ruft Claude (Streaming) auf
-lib/
-  journal.ts            Typen + localStorage-Logik
-```
+Im Aufbau nach Phasenplan (siehe [docs/PROJECT_LOG.md](docs/PROJECT_LOG.md)).

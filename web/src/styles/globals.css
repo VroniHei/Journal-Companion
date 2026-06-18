@@ -1,22 +1,28 @@
 @import "tailwindcss";
 
+/* Ruhige, editoriale, warme Palette — bewusst keine grelle Mental-Health-Optik. */
 :root {
   --background: #f4f1ea;
   --surface: #fbf9f4;
+  --surface-2: #f0ece1;
   --foreground: #2c2a26;
   --muted: #6f6a60;
   --accent: #b5673f;
+  --accent-soft: #e8d9cd;
   --border: #e4ddd0;
+  --danger: #9c3b2e;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
   --color-border: var(--border);
-  --font-sans: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+  --color-danger: var(--danger);
   --font-serif: Georgia, "Times New Roman", serif;
 }
 
@@ -24,10 +30,13 @@
   :root {
     --background: #1c1a17;
     --surface: #262320;
+    --surface-2: #211e1b;
     --foreground: #ece7dd;
     --muted: #a39c8f;
     --accent: #d98b5f;
+    --accent-soft: #3a302a;
     --border: #38332d;
+    --danger: #e0816f;
   }
 }
 
@@ -37,18 +46,25 @@
 
 html,
 body {
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-textarea {
+textarea,
+input,
+select,
+button {
   font-family: inherit;
+}
+
+.serif {
+  font-family: var(--font-serif);
 }
