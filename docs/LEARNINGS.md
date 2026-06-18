@@ -29,3 +29,13 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
   Der Integrations-Token darf das Repo nicht selbst umbenennen (HTTP 403).
 - **Agent-Skills** liegen unter `.agents/skills/` und sind nach `.claude/skills/`
   verlinkt; sie erscheinen erst ab der nächsten Session in der Skill-Liste.
+- **`.env` & dotenv:** `dotenv.config()` überschreibt **nicht** bereits gesetzte
+  Umgebungsvariablen. Lösung: `dotenv.config({ override: true })`, damit
+  `server/.env` immer gewinnt.
+- **API-Key-Fehler (401 invalid x-api-key)** hatte mehrere Ursachen-Kandidaten:
+  Platzhalter nicht ersetzt / Editor nicht gespeichert / `ANTHROPIC_API_KEY=`-Prefix
+  gelöscht / Terminalbefehl in die `.env` getippt / **alter Dev-Prozess lief weiter**.
+  Schnellster Test der Key-Gültigkeit: direkter Mini-Call gegen
+  `api.anthropic.com/v1/messages` (max_tokens 1).
+- **`pkill -f "<muster>"`** kann sich selbst treffen, wenn das Muster im eigenen
+  Kommando vorkommt → lieber per PID killen.
