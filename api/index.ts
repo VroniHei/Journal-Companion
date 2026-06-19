@@ -9,7 +9,10 @@ export default async function handler(
   res: ServerResponse,
 ) {
   try {
-    const mod = await import("../server/src/app");
+    // Gebündelte Express-App (beim Build per esbuild erzeugt, siehe vercel.json).
+    // So liegt der gesamte Server-Code in einer Datei neben der Funktion —
+    // kein ungebündelter Cross-Verzeichnis-Import, der auf Vercel fehlschlägt.
+    const mod = await import("./_server-app.mjs");
     const app = mod.default as unknown as (
       r: IncomingMessage,
       s: ServerResponse,

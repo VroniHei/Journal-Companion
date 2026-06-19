@@ -25,3 +25,6 @@ npm-debug.log*
 /.agents/
 /.claude/skills/
 .claude/settings.local.json
+
+# Vercel: gebündelte API-Funktion (Build-Artefakt)
+/api/_server-app.mjs

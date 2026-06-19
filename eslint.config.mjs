@@ -11,6 +11,7 @@ export default tseslint.config(
       "**/node_modules/**",
       "**/*.config.{js,mjs,ts}",
       ".agents/**",
+      "api/_*", // generierte/gebündelte API-Artefakte
     ],
   },
   js.configs.recommended,
