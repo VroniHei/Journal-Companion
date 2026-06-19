@@ -49,6 +49,38 @@ export function recentStats(entries: JournalEntry[], days = 7): RecentStats {
   };
 }
 
+function moodLevel(m: number): number {
+  if (m <= 3.5) return 0;
+  if (m <= 5.5) return 1;
+  if (m <= 7.5) return 2;
+  return 3;
+}
+
+export interface MoodDay {
+  day: string; // Wochentags-Kürzel
+  level: number | null; // 0..3, null = kein Eintrag
+}
+
+/** Stimmung der letzten `days` Tage als Tagespunkte (für die Punkt-Visualisierung). */
+export function moodByDay(entries: JournalEntry[], days = 7): MoodDay[] {
+  const out: MoodDay[] = [];
+  const now = new Date();
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    const key = dkey(d);
+    const dayMoods = entries
+      .filter((e) => dkey(new Date(e.createdAt)) === key)
+      .map((e) => e.mood);
+    const m = avg(dayMoods);
+    out.push({
+      day: d.toLocaleDateString("de-DE", { weekday: "short" }).replace(".", ""),
+      level: m === null ? null : moodLevel(m),
+    });
+  }
+  return out;
+}
+
 /** Letzte `n` Stimmungswerte in chronologischer Reihenfolge (alt → neu). */
 export function moodSeries(entries: JournalEntry[], n = 14): number[] {
   return [...entries]

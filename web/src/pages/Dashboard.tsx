@@ -1,21 +1,30 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
-import type { StartIntent } from "@journal/shared";
 import { Card } from "../components/ui";
-import { Sparkline } from "../components/Sparkline";
 import { JournalCard } from "../components/JournalCard";
 import { useEntries, useSettings } from "../hooks/useData";
 import { listStabilityMoments } from "../db/queries";
 import { formatShort } from "../lib/format";
 import { entryMode } from "../lib/entryCard";
-import { INTENT_OPTIONS } from "../lib/intents";
 import {
   buildInsights,
   computeStreak,
+  moodByDay,
   moodSeries,
   recentStats,
 } from "../lib/insights";
+
+// Ruhige Mood-Skala (4 Stufen): clay → gold → sage → grün.
+const MOOD_COLORS = ["#CD8A5B", "#B79A66", "#9BA383", "#A8E84F"];
+
+// Schreib-Impulse für „Heute im Blick" (sanft, konkret, nicht coachig).
+const PROMPTS: { pre: string; accent: string; post: string }[] = [
+  { pre: "Was war heute ", accent: "leichter", post: ", als du erwartet hast?" },
+  { pre: "Worüber hast du heute mehr ", accent: "nachgedacht", post: " als sonst?" },
+  { pre: "Was möchtest du festhalten, bevor der Tag ", accent: "kippt", post: "?" },
+  { pre: "Was hat dich heute kurz ", accent: "innehalten", post: " lassen?" },
+];
 
 type TimeOfDay = "morgen" | "tag" | "abend";
 
@@ -68,6 +77,7 @@ export function Dashboard() {
   const settings = useSettings();
   const moments = useLiveQuery(() => listStabilityMoments(), [], []);
   const [filter, setFilter] = useState("alle");
+  const [promptIdx, setPromptIdx] = useState(0);
 
   const name = settings.userName?.trim();
   const tod = timeOfDay();
@@ -77,7 +87,9 @@ export function Dashboard() {
   const streak = computeStreak(entries);
   const week = recentStats(entries, 7);
   const series = moodSeries(entries, 14);
+  const moodDays = moodByDay(entries, 7);
   const insights = buildInsights(entries);
+  const prompt = PROMPTS[promptIdx % PROMPTS.length];
 
   const closedIds = new Set<string>();
   for (const m of moments) {
@@ -90,11 +102,6 @@ export function Dashboard() {
     return true;
   }
   const shown = entries.filter(matchesFilter).slice(0, 6);
-
-  function choose(intent: StartIntent) {
-    if (intent === "ihm-schreiben") navigate("/kontaktimpuls");
-    else navigate(`/neu?intent=${intent}`);
-  }
 
   const dateLabel = new Date().toLocaleDateString("de-DE", {
     weekday: "long",
@@ -147,19 +154,40 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* Schnellzugriff */}
-      <div className="grid gap-3 sm:grid-cols-2">
-        {INTENT_OPTIONS.map((o) => (
-          <button
-            key={o.intent}
-            type="button"
-            onClick={() => choose(o.intent)}
-            className="lift rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3.5 text-left text-sm font-medium shadow-[var(--shadow-card)] hover:border-[var(--accent)]"
-          >
-            {o.label}
-          </button>
-        ))}
-      </div>
+      {/* HEUTE IM BLICK · Schreib-Impuls */}
+      <Card className="bg-[radial-gradient(420px_240px_at_0%_0%,rgba(168,232,79,0.10),transparent_60%)]">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="mb-2 inline-flex items-center gap-2.5">
+              <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+              <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+                Heute im Blick
+              </span>
+            </div>
+            <p className="max-w-[520px] text-xl font-medium leading-snug">
+              {prompt.pre}
+              <em className="g text-[var(--accent-text)]">{prompt.accent}</em>
+              {prompt.post}
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setPromptIdx((i) => i + 1)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--foreground)] hover:bg-[var(--surface-2)]"
+            >
+              ↻ Anderer Impuls
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/neu")}
+              className="rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] transition hover:-translate-y-0.5 hover:bg-[#bdf06a]"
+            >
+              Damit schreiben
+            </button>
+          </div>
+        </div>
+      </Card>
 
       {hasData && (
         <>
@@ -172,15 +200,23 @@ export function Dashboard() {
               <div className="serif text-[26px] font-semibold leading-tight">
                 {moodTrend(series)}
               </div>
-              {series.length >= 2 && (
-                <div className="mt-5">
-                  <Sparkline values={series} />
-                  <div className="mt-2 flex justify-between text-xs text-[var(--muted)]">
-                    <span>früher</span>
-                    <span>jetzt</span>
+              <div className="mt-6 flex items-end justify-between">
+                {moodDays.map((d, i) => (
+                  <div key={i} className="flex flex-col items-center gap-2.5">
+                    <span
+                      className="h-5 w-5 rounded-full"
+                      style={{
+                        background:
+                          d.level === null
+                            ? "var(--surface-2)"
+                            : MOOD_COLORS[d.level],
+                      }}
+                      title={d.level === null ? "kein Eintrag" : undefined}
+                    />
+                    <span className="text-xs text-[var(--muted)]">{d.day}</span>
                   </div>
-                </div>
-              )}
+                ))}
+              </div>
             </Card>
 
             <Card className="flex flex-col justify-between sm:col-span-3">
