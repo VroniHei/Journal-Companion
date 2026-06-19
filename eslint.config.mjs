@@ -40,4 +40,11 @@ export default tseslint.config(
       globals: globals.node,
     },
   },
+  // Vercel-Serverless-Funktion + Edge-Middleware (Node + Web-APIs)
+  {
+    files: ["api/**/*.ts", "middleware.ts"],
+    languageOptions: {
+      globals: { ...globals.node, ...globals.browser },
+    },
+  },
 );
