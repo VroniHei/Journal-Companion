@@ -11,8 +11,9 @@ export const env = {
   // Sprachausgabe (ElevenLabs) — optional. Wenn gesetzt, nutzt das Frontend die
   // natürliche neuronale Stimme statt der Browser-Sprachausgabe.
   elevenLabsApiKey: process.env.ELEVENLABS_API_KEY ?? "",
-  // Standard: „Adam" — tiefe, ruhige männliche Stimme (per Env überschreibbar).
-  elevenLabsVoiceId: process.env.ELEVENLABS_VOICE_ID ?? "pNInz6obpgDQGcFmaJgB",
+  // Standard: „Brian" — tiefe, warme, natürliche männliche Stimme
+  // (per ELEVENLABS_VOICE_ID überschreibbar).
+  elevenLabsVoiceId: process.env.ELEVENLABS_VOICE_ID ?? "nPczCjzI2devNBz1zQrb",
 };
 
 export function hasApiKey(): boolean {

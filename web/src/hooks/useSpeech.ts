@@ -2,14 +2,38 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchTts, getConfig } from "../lib/apiClient";
 
 // Sprachausgabe. Bevorzugt die natürliche neuronale Stimme (ElevenLabs über das
-// Backend), wenn konfiguriert; sonst Fallback auf die Browser-Sprachausgabe
-// (Web Speech API). Die Tagebuchtexte bleiben lokal — nur der vorzulesende
-// Begleiter-Text geht (bei Cloud-Stimme) an das eigene Backend → ElevenLabs.
+// Backend), wenn konfiguriert; sonst Fallback auf die Browser-Sprachausgabe.
+//
+// Die Wiedergabe ist GLOBAL (modul-weite Referenz + Abbruch-Token): Es läuft
+// immer höchstens ein Ton, und „Stopp" bricht ihn zuverlässig ab — auch wenn er
+// von einer anderen Schaltfläche gestartet wurde oder gerade noch lädt.
 
 const MALE_HINTS = [
   "stefan", "conrad", "markus", "hans", "viktor",
   "klaus", "bernd", "fabian", "jonas", "male", "männ", "mann",
 ];
+
+let currentAudio: HTMLAudioElement | null = null;
+let currentUrl: string | null = null;
+let playToken = 0;
+// Instanzen, die ihren „speaking"-Zustand zurücksetzen wollen, wenn global gestoppt wird.
+const stopListeners = new Set<() => void>();
+
+function hardStop() {
+  playToken++; // macht laufende/ladende Wiedergaben ungültig
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+  }
+  if (currentUrl) {
+    URL.revokeObjectURL(currentUrl);
+    currentUrl = null;
+  }
+  if (typeof window !== "undefined" && "speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+  stopListeners.forEach((fn) => fn());
+}
 
 function germanVoices(): SpeechSynthesisVoice[] {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return [];
@@ -45,23 +69,27 @@ export function useVoices(): SpeechSynthesisVoice[] {
   return voices;
 }
 
-function browserSpeak(text: string, voiceURI?: string, onEnd?: () => void) {
-  window.speechSynthesis.cancel();
+function browserSpeak(text: string, voiceURI: string | undefined, token: number, onEnd: () => void) {
   const voice = pickVoice(voiceURI);
   const chunks = text.match(/[^.!?\n]+[.!?]*/g) ?? [text];
   const parts = chunks.map((c) => c.trim()).filter(Boolean);
   if (!parts.length) {
-    onEnd?.();
+    onEnd();
     return;
   }
   parts.forEach((part, i) => {
     const u = new SpeechSynthesisUtterance(part);
     u.lang = "de-DE";
     if (voice) u.voice = voice;
-    u.rate = 0.95;
-    u.pitch = 0.9;
-    if (i === parts.length - 1) u.onend = () => onEnd?.();
-    u.onerror = () => onEnd?.();
+    u.rate = 1;
+    u.pitch = 0.85;
+    if (i === parts.length - 1)
+      u.onend = () => {
+        if (token === playToken) onEnd();
+      };
+    u.onerror = () => {
+      if (token === playToken) onEnd();
+    };
     window.speechSynthesis.speak(u);
   });
 }
@@ -71,10 +99,10 @@ export function useSpeech(opts?: { voiceURI?: string }) {
     typeof window !== "undefined" && "speechSynthesis" in window;
   const [speaking, setSpeaking] = useState(false);
   const [cloud, setCloud] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const urlRef = useRef<string | null>(null);
   const optsRef = useRef(opts);
   optsRef.current = opts;
+  const speakingRef = useRef(false);
+  speakingRef.current = speaking;
 
   useEffect(() => {
     let alive = true;
@@ -88,52 +116,54 @@ export function useSpeech(opts?: { voiceURI?: string }) {
     };
   }, []);
 
-  const cleanupAudio = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
-    if (urlRef.current) {
-      URL.revokeObjectURL(urlRef.current);
-      urlRef.current = null;
-    }
+  // Auf globalen Stopp reagieren (z. B. wenn anderswo Vorlesen gestartet wird).
+  useEffect(() => {
+    const reset = () => setSpeaking(false);
+    stopListeners.add(reset);
+    return () => {
+      stopListeners.delete(reset);
+    };
   }, []);
 
   const stop = useCallback(() => {
-    cleanupAudio();
-    if (browserSupported) window.speechSynthesis.cancel();
+    hardStop();
     setSpeaking(false);
-  }, [browserSupported, cleanupAudio]);
+  }, []);
 
   const speak = useCallback(
     (text: string) => {
       const clean = text.trim();
       if (!clean) return;
-      cleanupAudio();
-      if (browserSupported) window.speechSynthesis.cancel();
+      hardStop(); // bricht alles Vorherige ab und vergibt neuen Token
+      const token = playToken;
+      setSpeaking(true);
 
-      const fallback = () => {
-        if (browserSupported) {
-          browserSpeak(clean, optsRef.current?.voiceURI, () =>
-            setSpeaking(false),
-          );
-        } else {
+      const finish = () => {
+        if (token === playToken) {
           setSpeaking(false);
+          if (currentUrl) {
+            URL.revokeObjectURL(currentUrl);
+            currentUrl = null;
+          }
+          currentAudio = null;
         }
       };
 
-      setSpeaking(true);
+      const fallback = () => {
+        if (token !== playToken) return;
+        if (browserSupported) browserSpeak(clean, optsRef.current?.voiceURI, token, finish);
+        else setSpeaking(false);
+      };
+
       if (cloud) {
         fetchTts(clean)
           .then((blob) => {
+            if (token !== playToken) return; // zwischenzeitlich gestoppt
             const url = URL.createObjectURL(blob);
-            urlRef.current = url;
+            currentUrl = url;
             const audio = new Audio(url);
-            audioRef.current = audio;
-            audio.onended = () => {
-              setSpeaking(false);
-              cleanupAudio();
-            };
+            currentAudio = audio;
+            audio.onended = finish;
             audio.onerror = () => fallback();
             return audio.play();
           })
@@ -142,15 +172,16 @@ export function useSpeech(opts?: { voiceURI?: string }) {
         fallback();
       }
     },
-    [browserSupported, cloud, cleanupAudio],
+    [browserSupported, cloud],
   );
 
-  useEffect(() => {
-    return () => {
-      cleanupAudio();
-      if (browserSupported) window.speechSynthesis.cancel();
-    };
-  }, [browserSupported, cleanupAudio]);
+  // Beim Verlassen nur stoppen, wenn DIESE Instanz gerade vorliest.
+  useEffect(
+    () => () => {
+      if (speakingRef.current) hardStop();
+    },
+    [],
+  );
 
   return { supported: cloud || browserSupported, cloud, speaking, speak, stop };
 }
