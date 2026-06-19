@@ -9,8 +9,16 @@ import {
   entryTitle,
   MODE_LABEL,
   STATUS_LABEL,
+  type EntryMode,
   type EntryStatus,
 } from "../lib/entryCard";
+
+const MODE_COLOR: Record<EntryMode, string> = {
+  text: "var(--ink-soft)",
+  voice: "var(--green-deep)",
+  contact: "var(--clay)",
+  rumination: "var(--danger)",
+};
 
 const STATUS_STYLE: Record<EntryStatus, { bg: string; color: string }> = {
   offen: { bg: "var(--surface-2)", color: "var(--muted)" },
@@ -18,48 +26,73 @@ const STATUS_STYLE: Record<EntryStatus, { bg: string; color: string }> = {
   abgeschlossen: { bg: "var(--accent-soft)", color: "var(--green-deep)" },
 };
 
+function moodBg(mood: number): string {
+  if (mood >= 7) return "var(--accent-soft)";
+  if (mood <= 4) return "color-mix(in srgb, var(--clay) 16%, transparent)";
+  return "var(--surface-2)";
+}
+
 export function JournalCard({
   entry,
   closedIds,
+  featured = false,
 }: {
   entry: JournalEntry;
   closedIds: Set<string>;
+  featured?: boolean;
 }) {
   const e = entry;
   const status = entryStatus(e, closedIds);
   const mode = entryMode(e);
-  const topics = e.topics.slice(0, 3);
+  const topics = e.topics.slice(0, featured ? 4 : 3);
 
   return (
-    <Link to={`/eintrag/${e.id}`} className="block">
-      <Card className="lift space-y-2.5 hover:border-[var(--accent)]">
-        <div className="flex items-start justify-between gap-3">
-          <h3 className="font-semibold leading-snug">{entryTitle(e)}</h3>
+    <Link to={`/eintrag/${e.id}`} className="block h-full">
+      <Card
+        className={`flex h-full flex-col gap-3 transition duration-200 hover:-translate-y-0.5 hover:border-[var(--accent)] hover:shadow-[var(--shadow-lift)] ${
+          featured ? "sm:p-7" : ""
+        }`}
+      >
+        {/* Kopf: Modus + Status */}
+        <div className="flex items-center justify-between gap-3">
+          <span className="inline-flex items-center gap-2 text-xs font-medium text-[var(--muted)]">
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ background: MODE_COLOR[mode] }}
+            />
+            {MODE_LABEL[mode]}
+          </span>
           <span
             className="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium"
-            style={{ background: STATUS_STYLE[status].bg, color: STATUS_STYLE[status].color }}
+            style={{
+              background: STATUS_STYLE[status].bg,
+              color: STATUS_STYLE[status].color,
+            }}
           >
             {STATUS_LABEL[status]}
           </span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[var(--muted)]">
-          <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 font-medium">
-            {MODE_LABEL[mode]}
-          </span>
-          <span>{formatDateTime(e.createdAt)}</span>
-          <span>· Stimmung {e.mood}</span>
-          <span>· Intensität {e.intensity}</span>
-          {e.crisisFlag && (
-            <span className="text-[var(--danger)]">· Schutzhinweis</span>
-          )}
+        {/* Titel + Zusammenfassung */}
+        <div className="space-y-1.5">
+          <h3
+            className={`serif font-semibold leading-snug ${
+              featured ? "text-xl" : "text-base"
+            }`}
+          >
+            {entryTitle(e)}
+          </h3>
+          <p
+            className={`text-sm text-[var(--muted)] ${
+              featured ? "line-clamp-3" : "line-clamp-2"
+            }`}
+          >
+            {entrySummaryText(e)}
+          </p>
         </div>
 
-        <p className="line-clamp-2 text-sm text-[var(--foreground)]">
-          {entrySummaryText(e)}
-        </p>
-
-        {topics.length > 0 && (
+        {/* Fuß: Themen-Chips + Stimmung */}
+        <div className="mt-auto flex items-end justify-between gap-3 pt-1">
           <div className="flex flex-wrap gap-1.5">
             {topics.map((t) => (
               <span
@@ -70,16 +103,23 @@ export function JournalCard({
               </span>
             ))}
           </div>
-        )}
+          <div className="flex shrink-0 items-center gap-2">
+            <span
+              className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold tabular-nums"
+              style={{ background: moodBg(e.mood) }}
+              title={`Stimmung ${e.mood}/10`}
+            >
+              {e.mood}
+            </span>
+          </div>
+        </div>
 
-        {e.supportiveImpulse && (
-          <p className="text-xs text-[var(--muted)]">
-            <span className="font-medium text-[var(--foreground)]">
-              Nächster Schritt:
-            </span>{" "}
-            {e.supportiveImpulse}
-          </p>
-        )}
+        <div className="text-xs text-[var(--muted)]">
+          {formatDateTime(e.createdAt)}
+          {e.crisisFlag && (
+            <span className="text-[var(--danger)]"> · Schutzhinweis</span>
+          )}
+        </div>
       </Card>
     </Link>
   );

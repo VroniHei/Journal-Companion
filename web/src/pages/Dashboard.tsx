@@ -308,9 +308,11 @@ export function Dashboard() {
             </div>
           </div>
         ) : (
-          <div className="space-y-3">
-            {last5.map((e) => (
-              <JournalCard key={e.id} entry={e} closedIds={closedIds} />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {last5.map((e, i) => (
+              <div key={e.id} className={i === 0 ? "sm:col-span-2" : ""}>
+                <JournalCard entry={e} closedIds={closedIds} featured={i === 0} />
+              </div>
             ))}
           </div>
         )}
