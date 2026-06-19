@@ -63,6 +63,16 @@ export async function streamToResponse(res: Response, input: GenInput): Promise<
   res.setHeader("Content-Type", "text/plain; charset=utf-8");
   res.setHeader("Cache-Control", "no-store");
 
+  // Auf Vercel ist echtes HTTP-Streaming über die gewrappte Express-Funktion
+  // unzuverlässig (führt zu 500). Dort den vollständigen Text in einem Stück
+  // senden — der Client liest den Body weiterhin als Stream (nur nicht Token für
+  // Token). Lokal/Express bleibt es echtes Streaming für die feinere UX.
+  if (process.env.VERCEL) {
+    const text = await generateText(input);
+    res.send(text);
+    return;
+  }
+
   const client = getClient();
   const stream = client.messages.stream(
     buildParams(input) as unknown as Parameters<typeof client.messages.stream>[0],
