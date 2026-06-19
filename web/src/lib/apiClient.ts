@@ -10,13 +10,31 @@ import type {
   VoiceReflectResponse,
 } from "@journal/shared";
 
-export async function getConfig(): Promise<{ hasApiKey: boolean }> {
+export async function getConfig(): Promise<{
+  hasApiKey: boolean;
+  hasTts: boolean;
+}> {
   try {
     const r = await fetch("/api/config");
-    return await r.json();
+    const data = await r.json();
+    return { hasApiKey: Boolean(data.hasApiKey), hasTts: Boolean(data.hasTts) };
   } catch {
-    return { hasApiKey: false };
+    return { hasApiKey: false, hasTts: false };
   }
+}
+
+/** Holt natürliche Sprachausgabe (MP3) vom Backend (ElevenLabs). */
+export async function fetchTts(text: string, voiceId?: string): Promise<Blob> {
+  const res = await fetch("/api/tts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, voiceId }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}) as { error?: string });
+    throw new Error(data.error ?? `Fehler ${res.status}`);
+  }
+  return res.blob();
 }
 
 export interface StreamResult {

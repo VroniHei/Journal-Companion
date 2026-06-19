@@ -36,9 +36,11 @@ const selectClass =
 export function Settings() {
   const s = useSettings();
   const voices = useVoices();
-  const { supported: speechSupported, speak } = useSpeech({
-    voiceURI: s.speechVoiceURI,
-  });
+  const {
+    supported: speechSupported,
+    cloud: naturalVoice,
+    speak,
+  } = useSpeech({ voiceURI: s.speechVoiceURI });
 
   async function clearAll() {
     if (
@@ -152,6 +154,13 @@ export function Settings() {
         <h2 className="text-sm font-medium text-[var(--muted)]">
           Stimme &amp; Vorlesen
         </h2>
+
+        {naturalVoice && (
+          <p className="rounded-lg border-l-2 border-l-[var(--accent)] bg-[var(--surface-2)] p-3 text-sm">
+            Natürliche Stimme aktiv (ElevenLabs). Die untenstehende Browser-Stimme
+            dient nur als Fallback, falls die natürliche Stimme nicht erreichbar ist.
+          </p>
+        )}
 
         {!speechSupported ? (
           <p className="text-sm text-[var(--muted)]">

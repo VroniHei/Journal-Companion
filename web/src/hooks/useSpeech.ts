@@ -1,24 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { fetchTts, getConfig } from "../lib/apiClient";
 
-// Sprachausgabe per Browser (Web Speech API · SpeechSynthesis). Lokal, ohne
-// API-Key/Cloud. Wählt nach Möglichkeit eine deutsche (bevorzugt männliche)
-// Stimme, liest tief/ruhig und in Satz-Häppchen vor (umgeht den Chrome-Abbruch
-// bei langen Texten). Hinweis: Die Qualität hängt von den Stimmen des
-// Betriebssystems ab — für eine wirklich organische Stimme braucht es Cloud-TTS.
+// Sprachausgabe. Bevorzugt die natürliche neuronale Stimme (ElevenLabs über das
+// Backend), wenn konfiguriert; sonst Fallback auf die Browser-Sprachausgabe
+// (Web Speech API). Die Tagebuchtexte bleiben lokal — nur der vorzulesende
+// Begleiter-Text geht (bei Cloud-Stimme) an das eigene Backend → ElevenLabs.
 
 const MALE_HINTS = [
-  "stefan",
-  "conrad",
-  "markus",
-  "hans",
-  "viktor",
-  "klaus",
-  "bernd",
-  "fabian",
-  "jonas",
-  "male",
-  "männ",
-  "mann",
+  "stefan", "conrad", "markus", "hans", "viktor",
+  "klaus", "bernd", "fabian", "jonas", "male", "männ", "mann",
 ];
 
 function germanVoices(): SpeechSynthesisVoice[] {
@@ -38,11 +28,10 @@ function pickVoice(preferredURI?: string): SpeechSynthesisVoice | null {
   const male = de.find((v) =>
     MALE_HINTS.some((h) => v.name.toLowerCase().includes(h)),
   );
-  if (male) return male;
-  return de.find((v) => v.localService) ?? de[0];
+  return male ?? de.find((v) => v.localService) ?? de[0];
 }
 
-/** Reaktive Liste der verfügbaren deutschen Stimmen (für die Auswahl). */
+/** Reaktive Liste der verfügbaren deutschen Browser-Stimmen (für die Auswahl). */
 export function useVoices(): SpeechSynthesisVoice[] {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   useEffect(() => {
@@ -56,65 +45,112 @@ export function useVoices(): SpeechSynthesisVoice[] {
   return voices;
 }
 
-export function useSpeech(opts?: {
-  voiceURI?: string;
-  rate?: number;
-  pitch?: number;
-}) {
-  const supported =
+function browserSpeak(text: string, voiceURI?: string, onEnd?: () => void) {
+  window.speechSynthesis.cancel();
+  const voice = pickVoice(voiceURI);
+  const chunks = text.match(/[^.!?\n]+[.!?]*/g) ?? [text];
+  const parts = chunks.map((c) => c.trim()).filter(Boolean);
+  if (!parts.length) {
+    onEnd?.();
+    return;
+  }
+  parts.forEach((part, i) => {
+    const u = new SpeechSynthesisUtterance(part);
+    u.lang = "de-DE";
+    if (voice) u.voice = voice;
+    u.rate = 0.95;
+    u.pitch = 0.9;
+    if (i === parts.length - 1) u.onend = () => onEnd?.();
+    u.onerror = () => onEnd?.();
+    window.speechSynthesis.speak(u);
+  });
+}
+
+export function useSpeech(opts?: { voiceURI?: string }) {
+  const browserSupported =
     typeof window !== "undefined" && "speechSynthesis" in window;
   const [speaking, setSpeaking] = useState(false);
+  const [cloud, setCloud] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const urlRef = useRef<string | null>(null);
   const optsRef = useRef(opts);
   optsRef.current = opts;
 
   useEffect(() => {
-    if (!supported) return;
-    // Stimmen vorab laden (manche Browser liefern sie erst nach diesem Event).
-    const warm = () => window.speechSynthesis.getVoices();
-    warm();
-    window.speechSynthesis.addEventListener("voiceschanged", warm);
+    let alive = true;
+    getConfig()
+      .then((c) => {
+        if (alive) setCloud(c.hasTts);
+      })
+      .catch(() => {});
     return () => {
-      window.speechSynthesis.removeEventListener("voiceschanged", warm);
-      window.speechSynthesis.cancel();
+      alive = false;
     };
-  }, [supported]);
+  }, []);
+
+  const cleanupAudio = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    if (urlRef.current) {
+      URL.revokeObjectURL(urlRef.current);
+      urlRef.current = null;
+    }
+  }, []);
 
   const stop = useCallback(() => {
-    if (!supported) return;
-    window.speechSynthesis.cancel();
+    cleanupAudio();
+    if (browserSupported) window.speechSynthesis.cancel();
     setSpeaking(false);
-  }, [supported]);
+  }, [browserSupported, cleanupAudio]);
 
   const speak = useCallback(
     (text: string) => {
-      if (!supported) return;
       const clean = text.trim();
       if (!clean) return;
-      window.speechSynthesis.cancel();
+      cleanupAudio();
+      if (browserSupported) window.speechSynthesis.cancel();
 
-      const voice = pickVoice(optsRef.current?.voiceURI);
-      // Tief & ruhig: etwas langsamer, tiefere Tonhöhe → weniger „Roboter".
-      const rate = optsRef.current?.rate ?? 0.9;
-      const pitch = optsRef.current?.pitch ?? 0.85;
-
-      const chunks = clean.match(/[^.!?\n]+[.!?]*/g) ?? [clean];
-      const parts = chunks.map((c) => c.trim()).filter(Boolean);
-      if (!parts.length) return;
+      const fallback = () => {
+        if (browserSupported) {
+          browserSpeak(clean, optsRef.current?.voiceURI, () =>
+            setSpeaking(false),
+          );
+        } else {
+          setSpeaking(false);
+        }
+      };
 
       setSpeaking(true);
-      parts.forEach((part, i) => {
-        const u = new SpeechSynthesisUtterance(part);
-        u.lang = "de-DE";
-        if (voice) u.voice = voice;
-        u.rate = rate;
-        u.pitch = pitch;
-        if (i === parts.length - 1) u.onend = () => setSpeaking(false);
-        u.onerror = () => setSpeaking(false);
-        window.speechSynthesis.speak(u);
-      });
+      if (cloud) {
+        fetchTts(clean)
+          .then((blob) => {
+            const url = URL.createObjectURL(blob);
+            urlRef.current = url;
+            const audio = new Audio(url);
+            audioRef.current = audio;
+            audio.onended = () => {
+              setSpeaking(false);
+              cleanupAudio();
+            };
+            audio.onerror = () => fallback();
+            return audio.play();
+          })
+          .catch(() => fallback());
+      } else {
+        fallback();
+      }
     },
-    [supported],
+    [browserSupported, cloud, cleanupAudio],
   );
 
-  return { supported, speaking, speak, stop };
+  useEffect(() => {
+    return () => {
+      cleanupAudio();
+      if (browserSupported) window.speechSynthesis.cancel();
+    };
+  }, [browserSupported, cleanupAudio]);
+
+  return { supported: cloud || browserSupported, cloud, speaking, speak, stop };
 }
