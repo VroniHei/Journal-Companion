@@ -1,4 +1,20 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(awk '{print $2, $11, $12, $13, $14}')",
+      "Bash(curl -s -o /dev/null -w \"GET /api/reflect -> %{http_code}\\\\n\" http://localhost:3001/api/reflect)",
+      "Bash(curl -s -o /dev/null -w \"POST /api/reflect -> %{http_code}\\\\n\" -X POST http://localhost:3001/api/reflect -H \"Content-Type: application/json\" -d '{}')",
+      "Bash(curl -s -o /dev/null -w \"POST /api/reflect \\(proxy\\) -> %{http_code}\\\\n\" -X POST http://localhost:5173/api/reflect -H \"Content-Type: application/json\" -d '{}')",
+      "Bash(npm run *)",
+      "Bash(echo \"Dev gestartet \\(PID $!\\). Warte auf Hochlauf…\")",
+      "Bash(git commit -q -m 'Spracheingabe live, Chat-Formatierung & fundierte Tag-Listen *)",
+      "Bash(git commit -q -m 'Sprachausgabe: Begleiter-Antworten vorlesen \\(Web Speech API\\) *)",
+      "Bash(nohup npm run dev)",
+      "Bash(disown)",
+      "Bash(git commit -q -m 'Stimme tiefer/männlich/auswählbar, Auto-Vorlesen, Nummerierungs-Fix *)",
+      "Bash(pkill -f \"node_modules/.bin/vite\")"
+    ]
+  },
   "hooks": {
     "Stop": [
       {

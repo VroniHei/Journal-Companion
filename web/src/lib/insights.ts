@@ -1,0 +1,170 @@
+// Persönliche Auswertungen fürs Dashboard. Rein lokal aus den Dexie-Einträgen
+// berechnet — ruhig, wertschätzend, ohne Bewertung. Inspiriert von Mustererkennung
+// in Mood-Trackern (Daylio u.a.), aber bewusst nicht-klinisch.
+import type { JournalEntry } from "@journal/shared";
+
+const DAY = 86_400_000;
+
+function dkey(d: Date): string {
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+function avg(nums: number[]): number | null {
+  if (!nums.length) return null;
+  return Math.round((nums.reduce((a, b) => a + b, 0) / nums.length) * 10) / 10;
+}
+
+/** Aufeinanderfolgende Tage mit mindestens einem Eintrag (heute oder gestern als Start). */
+export function computeStreak(entries: JournalEntry[]): number {
+  if (!entries.length) return 0;
+  const days = new Set(entries.map((e) => dkey(new Date(e.createdAt))));
+  const cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+  if (!days.has(dkey(cursor))) {
+    cursor.setDate(cursor.getDate() - 1);
+    if (!days.has(dkey(cursor))) return 0;
+  }
+  let streak = 0;
+  while (days.has(dkey(cursor))) {
+    streak++;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
+}
+
+export interface RecentStats {
+  count: number;
+  avgMood: number | null;
+  avgIntensity: number | null;
+}
+
+/** Kennzahlen der letzten `days` Tage. */
+export function recentStats(entries: JournalEntry[], days = 7): RecentStats {
+  const since = Date.now() - days * DAY;
+  const recent = entries.filter((e) => new Date(e.createdAt).getTime() >= since);
+  return {
+    count: recent.length,
+    avgMood: avg(recent.map((e) => e.mood)),
+    avgIntensity: avg(recent.map((e) => e.intensity)),
+  };
+}
+
+/** Letzte `n` Stimmungswerte in chronologischer Reihenfolge (alt → neu). */
+export function moodSeries(entries: JournalEntry[], n = 14): number[] {
+  return [...entries]
+    .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+    .slice(-n)
+    .map((e) => e.mood);
+}
+
+function moodOn(entries: JournalEntry[], pick: (e: JournalEntry) => boolean) {
+  return avg(entries.filter(pick).map((e) => e.mood));
+}
+
+const WEEKDAYS = [
+  "sonntags",
+  "montags",
+  "dienstags",
+  "mittwochs",
+  "donnerstags",
+  "freitags",
+  "samstags",
+];
+
+/**
+ * Sanfte, persönliche Beobachtungen (max. 3). Spiegeln Muster, ohne Ratschläge
+ * zu geben oder zu werten. Nur, wenn genug Daten da sind.
+ */
+export function buildInsights(entries: JournalEntry[]): string[] {
+  const out: string[] = [];
+  if (entries.length < 3) return out;
+
+  // 1) Bewegung & Stimmung
+  const moveYes = moodOn(entries, (e) => e.movementToday === true);
+  const moveNo = moodOn(entries, (e) => e.movementToday === false);
+  const moveYesN = entries.filter((e) => e.movementToday === true).length;
+  const moveNoN = entries.filter((e) => e.movementToday === false).length;
+  if (moveYes !== null && moveNo !== null && moveYesN >= 2 && moveNoN >= 2) {
+    const diff = Math.round((moveYes - moveNo) * 10) / 10;
+    if (diff >= 0.8) {
+      out.push(
+        `An Tagen mit Bewegung liegt deine Stimmung im Schnitt um ${diff} höher.`,
+      );
+    }
+  }
+
+  // 2) Draußen & Stimmung (nur wenn Bewegung nichts ergab, um Redundanz zu vermeiden)
+  if (out.length === 0) {
+    const outYes = moodOn(entries, (e) => e.outsideToday === true);
+    const outNo = moodOn(entries, (e) => e.outsideToday === false);
+    const oYesN = entries.filter((e) => e.outsideToday === true).length;
+    const oNoN = entries.filter((e) => e.outsideToday === false).length;
+    if (outYes !== null && outNo !== null && oYesN >= 2 && oNoN >= 2) {
+      const diff = Math.round((outYes - outNo) * 10) / 10;
+      if (diff >= 0.8) {
+        out.push(
+          `An Tagen draußen ist deine Stimmung im Schnitt um ${diff} leichter.`,
+        );
+      }
+    }
+  }
+
+  // 3) Stimmungs-Trend: letzte 7 Tage vs. die 7 Tage davor
+  const now = Date.now();
+  const thisWeek = entries.filter(
+    (e) => new Date(e.createdAt).getTime() >= now - 7 * DAY,
+  );
+  const lastWeek = entries.filter((e) => {
+    const t = new Date(e.createdAt).getTime();
+    return t < now - 7 * DAY && t >= now - 14 * DAY;
+  });
+  const aThis = avg(thisWeek.map((e) => e.mood));
+  const aLast = avg(lastWeek.map((e) => e.mood));
+  if (aThis !== null && aLast !== null && thisWeek.length >= 2 && lastWeek.length >= 2) {
+    const diff = Math.round((aThis - aLast) * 10) / 10;
+    if (diff >= 0.5) {
+      out.push(`Diese Woche war deine Stimmung etwas leichter als letzte (+${diff}).`);
+    } else if (diff <= -0.5) {
+      out.push(
+        `Diese Woche war deine Stimmung etwas schwerer als letzte (${diff}). Das darf sein.`,
+      );
+    }
+  }
+
+  // 4) Bester Wochentag (genug Streuung vorausgesetzt)
+  if (out.length < 3) {
+    const byDay = new Map<number, number[]>();
+    for (const e of entries) {
+      const wd = new Date(e.createdAt).getDay();
+      const arr = byDay.get(wd) ?? [];
+      arr.push(e.mood);
+      byDay.set(wd, arr);
+    }
+    let best: { wd: number; m: number } | null = null;
+    for (const [wd, moods] of byDay) {
+      if (moods.length < 2) continue;
+      const m = avg(moods);
+      if (m === null) continue;
+      if (!best || m > best.m) best = { wd, m };
+    }
+    if (best && byDay.size >= 3) {
+      out.push(`${capitalize(WEEKDAYS[best.wd])} ist deine Stimmung im Schnitt am höchsten.`);
+    }
+  }
+
+  // 5) Häufigstes Thema als Spiegel
+  if (out.length < 3) {
+    const counts = new Map<string, number>();
+    for (const e of entries) for (const t of e.topics) counts.set(t, (counts.get(t) ?? 0) + 1);
+    const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
+    if (top && top[1] >= 3) {
+      out.push(`„${top[0]}" beschäftigt dich zurzeit besonders (${top[1]} Einträge).`);
+    }
+  }
+
+  return out.slice(0, 3);
+}
+
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}

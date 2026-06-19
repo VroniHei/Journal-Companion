@@ -266,3 +266,28 @@ selbstpflegender Doku.
 
 **Offen:** Mit ChatGPT ausgearbeitete Feature-Spec im Plan-Modus planen
 (Inhalt steht noch aus). Adaptives Thinking aktivieren, sobald SDK es typisiert.
+
+## 2026-06-18 — Innerline-Design, Bildwelt, personalisiertes Dashboard
+
+**Was:**
+- Design auf das Innerline Design System (Claude Design) ausgerichtet; Dark Mode
+  entfernt (Design System ist bewusst hell-only), `color-scheme: light`.
+- Moderner/fröhlicher Pass: Glasmorphismus (`.glass`), fröhliche Blur-Blobs im
+  Hintergrund, Lift-Hover (`.lift`), Eyebrow-Komponente (Label + grüner Punkt),
+  Newsreader-Kursiv-Signatur, frostiger Sticky-Header mit Pill-Navigation.
+- Bildwelt eingebaut: See-Panorama als Dashboard-Hero (Scrim + Gruß),
+  Schreibtisch-Stillleben im Empty-State (aus dem Design-System-Bildordner).
+- Personalisiertes Dashboard mit Auswertungen: `lib/insights.ts` (Streak,
+  Wochenwerte, Stimmungsverlauf, sanfte Beobachtungen) + `Sparkline.tsx`
+  (abhängigkeitsfreies SVG). Stat-Kacheln, Verlaufschart, „Was sich zeigt".
+- Filterauswahl übersichtlicher: `ChipSelect` mit Häkchen + Zähler; `NewEntry`
+  gruppiert (Gefühl · Worum es geht · Impuls & Absicht, 2-Spalten) + „Alltag"
+  als aufklappbares `<details>` (Progressive Disclosure, Daylio-Prinzip).
+
+**Warum:** Hellere, freundlichere, modernere Anmutung passend zur Marke; weniger
+Reizüberflutung im Eintragsformular; ein Dashboard, das eigene Muster spiegelt.
+
+**Ergebnis/Status:** `npm run build` + `npm run lint` grün. Deployt im Codespace.
+
+**Offen:** Bilder ggf. auf weitere Seiten (Muster/Wochenrückblick/Kontaktimpuls);
+Insights um KI-gestützte Beobachtungen erweitern; Monatsansicht des Verlaufs.

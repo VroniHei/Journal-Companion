@@ -1,9 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Card } from "../components/ui";
+import type { StartIntent } from "@journal/shared";
+import { Card, Eyebrow } from "../components/ui";
+import { Sparkline } from "../components/Sparkline";
 import { useEntries } from "../hooks/useData";
 import { formatDateTime } from "../lib/format";
 import { INTENT_OPTIONS } from "../lib/intents";
-import type { StartIntent } from "@journal/shared";
+import {
+  buildInsights,
+  computeStreak,
+  moodSeries,
+  recentStats,
+} from "../lib/insights";
 
 function greeting(): string {
   const h = new Date().getHours();
@@ -19,12 +26,26 @@ function topTopics(topics: string[][]): [string, number][] {
   return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
 }
 
+function StatTile({ value, label }: { value: string; label: string }) {
+  return (
+    <Card className="text-center">
+      <div className="text-3xl font-semibold tabular-nums">{value}</div>
+      <div className="mt-0.5 text-xs text-[var(--muted)]">{label}</div>
+    </Card>
+  );
+}
+
 export function Dashboard() {
   const navigate = useNavigate();
   const entries = useEntries();
   const last5 = entries.slice(0, 5);
   const topics = topTopics(entries.map((e) => e.topics));
-  const recurring = topics.find(([, n]) => n >= 3);
+  const hasData = entries.length > 0;
+
+  const streak = computeStreak(entries);
+  const week = recentStats(entries, 7);
+  const series = moodSeries(entries, 14);
+  const insights = buildInsights(entries);
 
   function choose(intent: StartIntent) {
     if (intent === "ihm-schreiben") {
@@ -35,7 +56,7 @@ export function Dashboard() {
   }
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-8">
       <div className="relative overflow-hidden rounded-[26px] border border-[var(--border)] shadow-[var(--shadow-card)]">
         <img
           src="/img/hero-see.webp"
@@ -71,66 +92,87 @@ export function Dashboard() {
         ))}
       </div>
 
-      {recurring && (
-        <Card className="border-l-2 border-l-[var(--accent)]">
-          <p className="text-sm">
-            Du hast in letzter Zeit mehrfach über{" "}
-            <strong>{recurring[0]}</strong> geschrieben ({recurring[1]} Einträge).
-            Das darf sein — vielleicht magst du im Wochenrückblick schauen, was
-            sich da zeigt.
-          </p>
-        </Card>
-      )}
+      {hasData && (
+        <div className="space-y-4">
+          <Eyebrow>Deine Auswertung</Eyebrow>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Card>
-          <h2 className="mb-3 text-sm font-medium text-[var(--muted)]">
-            Stimmung zuletzt
-          </h2>
-          {entries.length === 0 ? (
-            <p className="text-sm text-[var(--muted)]">Noch keine Daten.</p>
-          ) : (
-            <div className="flex flex-wrap gap-1.5">
-              {entries
-                .slice(0, 10)
-                .reverse()
-                .map((e) => (
-                  <span
-                    key={e.id}
-                    title={`${formatDateTime(e.createdAt)} · Stimmung ${e.mood}`}
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-xs"
-                    style={{
-                      background: "var(--accent-soft)",
-                      color: "var(--foreground)",
-                    }}
-                  >
-                    {e.mood}
-                  </span>
+          <div className="grid grid-cols-3 gap-3">
+            <StatTile
+              value={String(streak)}
+              label={streak === 1 ? "Tag in Folge" : "Tage in Folge"}
+            />
+            <StatTile value={String(week.count)} label="Einträge · 7 Tage" />
+            <StatTile
+              value={week.avgMood?.toString() ?? "—"}
+              label="Ø Stimmung · 7 T"
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Card>
+              <h2 className="mb-3 text-sm font-medium text-[var(--muted)]">
+                Stimmungsverlauf
+              </h2>
+              {series.length >= 2 ? (
+                <>
+                  <Sparkline values={series} />
+                  <div className="mt-1 flex justify-between text-xs text-[var(--muted)]">
+                    <span>früher</span>
+                    <span>schwer 1 – 10 leicht</span>
+                    <span>jetzt</span>
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-[var(--muted)]">
+                  Sobald du ein paar Einträge hast, zeigt sich hier dein Verlauf.
+                </p>
+              )}
+            </Card>
+
+            <Card>
+              <h2 className="mb-3 text-sm font-medium text-[var(--muted)]">
+                Häufige Themen
+              </h2>
+              {topics.length === 0 ? (
+                <p className="text-sm text-[var(--muted)]">Noch keine Daten.</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {topics.map(([t, n]) => (
+                    <span
+                      key={t}
+                      className="rounded-full border border-[var(--border)] px-3 py-1 text-sm"
+                    >
+                      {t} · {n}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </div>
+
+          {insights.length > 0 && (
+            <Card className="space-y-3">
+              <h2 className="text-sm font-medium text-[var(--muted)]">
+                Was sich zeigt
+              </h2>
+              <ul className="space-y-2 text-sm">
+                {insights.map((t) => (
+                  <li key={t} className="flex items-baseline gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" />
+                    <span>{t}</span>
+                  </li>
                 ))}
-            </div>
+              </ul>
+              <Link
+                to="/muster"
+                className="inline-block text-sm font-medium text-[var(--accent-text)] hover:underline"
+              >
+                Mehr Muster ansehen →
+              </Link>
+            </Card>
           )}
-        </Card>
-
-        <Card>
-          <h2 className="mb-3 text-sm font-medium text-[var(--muted)]">
-            Häufige Themen
-          </h2>
-          {topics.length === 0 ? (
-            <p className="text-sm text-[var(--muted)]">Noch keine Daten.</p>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {topics.map(([t, n]) => (
-                <span
-                  key={t}
-                  className="rounded-full border border-[var(--border)] px-3 py-1 text-sm"
-                >
-                  {t} · {n}
-                </span>
-              ))}
-            </div>
-          )}
-        </Card>
-      </div>
+        </div>
+      )}
 
       <div>
         <h2 className="mb-3 text-sm font-medium text-[var(--muted)]">
