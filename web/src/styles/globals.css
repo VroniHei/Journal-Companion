@@ -83,24 +83,8 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Fröhliche, weich verlaufende Farb-Blobs hinter allem — geben dem hellen
-   Hintergrund Tiefe & Wärme. Stark geblurrt, dezent, fixiert. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: -12vmax;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    radial-gradient(38vmax 38vmax at 10% 4%, rgba(168, 232, 79, 0.28), transparent 68%),
-    radial-gradient(42vmax 42vmax at 92% -2%, rgba(205, 138, 91, 0.2), transparent 68%),
-    radial-gradient(46vmax 46vmax at 82% 96%, rgba(203, 190, 244, 0.22), transparent 70%),
-    radial-gradient(34vmax 34vmax at 16% 98%, rgba(168, 232, 79, 0.16), transparent 70%);
-  filter: blur(64px) saturate(118%);
-  opacity: 0.9;
-}
-
-/* Glasmorphismus: halbtransparente, geblurrte Flächen — modern & leicht. */
+/* Glasmorphismus: halbtransparente, geblurrte Flächen — nur noch für die
+   Top-Leiste (ruhiger, wie im Claude-Design). Karten sind klar weiß. */
 .glass {
   background: color-mix(in srgb, var(--surface) 72%, transparent);
   backdrop-filter: blur(16px) saturate(135%);

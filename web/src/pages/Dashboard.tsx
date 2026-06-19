@@ -154,7 +154,7 @@ export function Dashboard() {
             key={o.intent}
             type="button"
             onClick={() => choose(o.intent)}
-            className="lift glass rounded-2xl border border-[var(--border)] px-4 py-3.5 text-left text-sm font-medium shadow-[var(--shadow-card)] hover:border-[var(--accent)]"
+            className="lift rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3.5 text-left text-sm font-medium shadow-[var(--shadow-card)] hover:border-[var(--accent)]"
           >
             {o.label}
           </button>
@@ -316,7 +316,7 @@ export function Dashboard() {
       </div>
 
       {!hasData ? (
-        <div className="glass grid grid-cols-1 overflow-hidden rounded-[26px] border border-[var(--border)] shadow-[var(--shadow-card)] sm:grid-cols-[1fr_300px]">
+        <div className="grid grid-cols-1 overflow-hidden rounded-[26px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)] sm:grid-cols-[1fr_300px]">
           <div className="flex flex-col justify-center p-8 sm:p-11">
             <h3 className="serif mb-3 text-2xl font-semibold">
               Noch nichts notiert. <em className="g text-[var(--green-deep)]">Auch gut.</em>

@@ -10,7 +10,7 @@ export function Card({
   // Innerline: weiche, leicht frostige Glas-Karte mit geschichtetem Schatten.
   return (
     <div
-      className={`glass rounded-[26px] border border-[var(--border)] p-6 shadow-[var(--shadow-card)] ${className}`}
+      className={`rounded-[26px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] ${className}`}
     >
       {children}
     </div>
