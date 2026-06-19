@@ -1,11 +1,12 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDictation } from "../hooks/useDictation";
+import { useServerDictation } from "../hooks/useServerDictation";
+import { getConfig } from "../lib/apiClient";
 
 /**
- * Mikrofon-Button: schreibt erkannten Sprachtext live in das Feld.
- * `value` ist der aktuelle Feldinhalt, `onChange` setzt den neuen Gesamtwert
- * (Basis + Gesprochenes). Blendet sich aus, wenn der Browser keine
- * Spracherkennung unterstützt.
+ * Mikrofon-Button. Bevorzugt serverseitige Spracherkennung (ElevenLabs Scribe,
+ * zuverlässiges Deutsch) — Aufnahme → Transkription → Text einfügen. Fällt auf
+ * die Browser-Spracherkennung zurück, wenn kein STT konfiguriert ist.
  */
 export function DictationButton({
   value,
@@ -20,14 +21,31 @@ export function DictationButton({
 }) {
   const valueRef = useRef(value);
   valueRef.current = value;
+  const [cloud, setCloud] = useState(false);
 
-  const { supported, listening, toggle } = useDictation({
+  useEffect(() => {
+    let alive = true;
+    getConfig()
+      .then((c) => {
+        if (alive) setCloud(c.hasStt);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const common = {
     getBase: () => valueRef.current,
     onChange,
     onActivate,
-  });
+  };
+  const server = useServerDictation(common);
+  const browser = useDictation(common);
 
-  if (!supported) {
+  const useServer = cloud && server.supported;
+
+  if (!useServer && !browser.supported && !server.supported) {
     return (
       <span
         className={`text-xs text-[var(--muted)] ${className}`}
@@ -38,24 +56,35 @@ export function DictationButton({
     );
   }
 
+  const active = useServer ? server.recording : browser.listening;
+  const busy = useServer && server.busy;
+  const toggle = useServer ? server.toggle : browser.toggle;
+
+  const label = busy
+    ? "Verarbeite…"
+    : active
+      ? "Hört zu… (stopp)"
+      : "Sprechen";
+
   return (
     <button
       type="button"
       onClick={toggle}
-      aria-pressed={listening}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition ${className}`}
+      aria-pressed={active}
+      disabled={busy}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition disabled:opacity-60 ${className}`}
       style={{
-        borderColor: listening ? "var(--danger)" : "var(--border)",
-        background: listening
+        borderColor: active ? "var(--danger)" : "var(--border)",
+        background: active
           ? "color-mix(in srgb, var(--danger) 12%, transparent)"
           : "transparent",
-        color: listening ? "var(--danger)" : "var(--foreground)",
+        color: active ? "var(--danger)" : "var(--foreground)",
       }}
     >
-      <span aria-hidden="true" className={listening ? "animate-pulse" : ""}>
-        {listening ? "●" : "🎙"}
+      <span aria-hidden="true" className={active || busy ? "animate-pulse" : ""}>
+        {busy ? "⋯" : active ? "●" : "🎙"}
       </span>
-      {listening ? "Hört zu… (stopp)" : "Sprechen"}
+      {label}
     </button>
   );
 }

@@ -25,3 +25,8 @@ export function hasApiKey(): boolean {
 export function hasTts(): boolean {
   return env.elevenLabsApiKey.trim().length > 0;
 }
+
+// Speech-to-Text nutzt denselben ElevenLabs-Key (Scribe).
+export function hasStt(): boolean {
+  return env.elevenLabsApiKey.trim().length > 0;
+}

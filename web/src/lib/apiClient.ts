@@ -15,14 +15,34 @@ import type {
 export async function getConfig(): Promise<{
   hasApiKey: boolean;
   hasTts: boolean;
+  hasStt: boolean;
 }> {
   try {
     const r = await fetch("/api/config");
     const data = await r.json();
-    return { hasApiKey: Boolean(data.hasApiKey), hasTts: Boolean(data.hasTts) };
+    return {
+      hasApiKey: Boolean(data.hasApiKey),
+      hasTts: Boolean(data.hasTts),
+      hasStt: Boolean(data.hasStt),
+    };
   } catch {
-    return { hasApiKey: false, hasTts: false };
+    return { hasApiKey: false, hasTts: false, hasStt: false };
   }
+}
+
+/** Sendet eine Audioaufnahme ans Backend (ElevenLabs STT) und erhält den Text. */
+export async function postStt(audio: Blob): Promise<string> {
+  const res = await fetch("/api/stt", {
+    method: "POST",
+    headers: { "Content-Type": audio.type || "audio/webm" },
+    body: audio,
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}) as { error?: string });
+    throw new Error(data.error ?? `Fehler ${res.status}`);
+  }
+  const data = (await res.json()) as { text?: string };
+  return (data.text ?? "").trim();
 }
 
 /** Holt natürliche Sprachausgabe (MP3) vom Backend (ElevenLabs). */
