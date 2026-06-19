@@ -1,75 +1,106 @@
-// Auswahllisten für das Eintrags-Formular (aus dem Briefing, leicht erweiterbar).
+// Auswahllisten für das Eintrags-Formular.
+//
+// Bewusst fundiert statt zufällig zusammengestellt:
+// - EMOTIONS: an Gloria Willcox' „Feelings Wheel" (Kernfamilien traurig/wütend/
+//   ängstlich/kraftvoll/freudig/friedlich) angelehnt, kuratiert für den Kontext
+//   Trennung & Selbstführung. Geordnet nach Familie für schnelles Wiederfinden.
+// - NEEDS: am Bedürfnis-Inventar der Gewaltfreien Kommunikation (Rosenberg)
+//   orientiert (Verbindung, Autonomie, Sicherheit, Sinn, Selbstwirksamkeit).
+// - BODY_SIGNALS: körperliche/interozeptive Marker (Anspannung, Weite …).
+// - TOPICS: persönliche Lebensbereiche (inkl. „Lukas") — leicht anpassbar.
+// - IMPULSES: Handlungsdrang im Moment (Kontaktimpuls, Regulation, Vermeidung).
+// - INTENTIONS: was die Reflexion gerade leisten soll (kurz, scannbar).
 
 export const EMOTIONS = [
-  "Angst",
+  // traurig
   "Trauer",
-  "Wut",
   "Sehnsucht",
-  "Hoffnung",
-  "Scham",
-  "Erleichterung",
+  "Einsamkeit",
+  "Enttäuschung",
+  // wütend
+  "Wut",
+  "Gereiztheit",
+  "Eifersucht",
+  // ängstlich
+  "Angst",
+  "Unsicherheit",
   "Überforderung",
-  "Ruhe",
+  // beschämt
+  "Scham",
+  // leer
   "Leere",
+  // friedlich / kraftvoll
+  "Hoffnung",
+  "Erleichterung",
+  "Dankbarkeit",
+  "Ruhe",
 ] as const;
 
 export const BODY_SIGNALS = [
-  "Brustdruck",
+  "Enge in der Brust",
   "Kloß im Hals",
-  "Unruhe",
+  "Flau im Bauch",
+  "Herzklopfen",
+  "Anspannung",
+  "Innere Unruhe",
+  "Zittern",
+  "Schwere",
   "Müdigkeit",
-  "Enge",
   "Wärme",
-  "Ruhe",
-  "Leere",
-  "Druck im Bauch",
+  "Entspannung",
 ] as const;
 
 export const TOPICS = [
-  "Beziehung",
   "Trennung",
+  "Beziehung",
   "Lukas",
+  "Kontakt & Nähe",
   "Selbstwert",
-  "Sport",
-  "Kiffen",
-  "Arbeit",
   "Zukunft",
   "Kinderwunsch",
   "Familie",
-  "Einsamkeit",
-  "Unsicherheit",
+  "Freund:innen",
+  "Arbeit",
+  "Körper & Gesundheit",
+  "Kiffen",
 ] as const;
 
 export const NEEDS = [
-  "Sicherheit",
+  // Verbindung
   "Nähe",
-  "Klarheit",
-  "Ruhe",
+  "Verbundenheit",
+  "Verstanden werden",
   "Wertschätzung",
-  "Autonomie",
-  "Kontakt",
-  "Abstand",
+  // Sicherheit
+  "Sicherheit",
   "Stabilität",
-  "Verbindlichkeit",
+  "Klarheit",
+  // Autonomie
+  "Autonomie",
+  "Freiraum",
+  // Frieden / Kraft
+  "Ruhe",
+  "Selbstwirksamkeit",
+  "Vertrauen",
 ] as const;
 
 export const IMPULSES = [
-  "ihm schreiben",
-  "warten",
-  "reden",
-  "laufen",
-  "weinen",
-  "schlafen",
-  "rauchen",
-  "essen",
-  "atmen",
-  "jemanden anrufen",
+  "Lukas schreiben",
+  "Nachsehen bei ihm",
+  "Jemanden anrufen",
+  "Mich mitteilen",
+  "Mich zurückziehen",
+  "Weinen",
+  "Mich bewegen",
+  "Atmen & innehalten",
+  "Kiffen",
+  "Mich ablenken",
 ] as const;
 
 export const INTENTIONS = [
-  "Ich möchte sortieren",
-  "Ich möchte beruhigt werden",
-  "Ich möchte ehrlich gespiegelt werden",
-  "Ich möchte eine Nachricht formulieren",
-  "Ich möchte den Impuls halten, ohne zu handeln",
+  "Sortieren",
+  "Beruhigt werden",
+  "Ehrlich gespiegelt werden",
+  "Eine Nachricht formulieren",
+  "Den Impuls halten",
 ] as const;

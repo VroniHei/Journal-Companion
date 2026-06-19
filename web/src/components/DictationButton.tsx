@@ -1,17 +1,31 @@
+import { useRef } from "react";
 import { useDictation } from "../hooks/useDictation";
 
 /**
- * Mikrofon-Button: hängt erkannten Sprachtext über `onText` an.
- * Blendet sich aus, wenn der Browser keine Spracherkennung unterstützt.
+ * Mikrofon-Button: schreibt erkannten Sprachtext live in das Feld.
+ * `value` ist der aktuelle Feldinhalt, `onChange` setzt den neuen Gesamtwert
+ * (Basis + Gesprochenes). Blendet sich aus, wenn der Browser keine
+ * Spracherkennung unterstützt.
  */
 export function DictationButton({
-  onText,
+  value,
+  onChange,
+  onActivate,
   className = "",
 }: {
-  onText: (segment: string) => void;
+  value: string;
+  onChange: (full: string) => void;
+  onActivate?: () => void;
   className?: string;
 }) {
-  const { supported, listening, toggle } = useDictation(onText);
+  const valueRef = useRef(value);
+  valueRef.current = value;
+
+  const { supported, listening, toggle } = useDictation({
+    getBase: () => valueRef.current,
+    onChange,
+    onActivate,
+  });
 
   if (!supported) {
     return (
@@ -38,7 +52,9 @@ export function DictationButton({
         color: listening ? "var(--danger)" : "var(--foreground)",
       }}
     >
-      <span>{listening ? "●" : "🎙"}</span>
+      <span aria-hidden="true" className={listening ? "animate-pulse" : ""}>
+        {listening ? "●" : "🎙"}
+      </span>
       {listening ? "Hört zu… (stopp)" : "Sprechen"}
     </button>
   );

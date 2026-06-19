@@ -36,7 +36,7 @@ export function aggregate(entries: JournalEntry[]): Aggregates {
     topTopics: tally(entries.map((e) => e.topics)),
     topNeeds: tally(entries.map((e) => e.needs)),
     highIntensity: entries.filter((e) => e.intensity >= 8),
-    contactImpulses: entries.filter((e) => e.impulse === "ihm schreiben").length,
+    contactImpulses: entries.filter((e) => e.impulse.includes("schreiben")).length,
     ruminations: entries.filter((e) => e.ruminationFlag).length,
     movementDays: entries.filter((e) => e.movementToday === true).length,
     outsideDays: entries.filter((e) => e.outsideToday === true).length,

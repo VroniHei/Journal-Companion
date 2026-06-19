@@ -1,3 +1,5 @@
+import { FormattedText } from "./FormattedText";
+
 export function ReflectionView({
   text,
   crisis = false,
@@ -20,9 +22,11 @@ export function ReflectionView({
       >
         {crisis ? "Schutzhinweis" : "Reflexion des Begleiters"}
       </p>
-      <div className="whitespace-pre-wrap text-[15px] leading-relaxed">
-        {text || "…"}
-      </div>
+      {text ? (
+        <FormattedText text={text} className="text-[15px]" />
+      ) : (
+        <div className="text-[15px] text-[var(--muted)]">…</div>
+      )}
     </div>
   );
 }

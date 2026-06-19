@@ -117,7 +117,7 @@ export function VoiceCheckin() {
             placeholder="Sprich los – oder tippe. Du kannst den Text danach noch anpassen."
             className="w-full resize-y rounded-lg border border-[var(--border)] bg-transparent p-3 text-sm outline-none focus:border-[var(--accent)]"
           />
-          <DictationButton onText={(seg) => setTranscript((p) => (p ? `${p} ${seg}` : seg))} />
+          <DictationButton value={transcript} onChange={setTranscript} />
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2">

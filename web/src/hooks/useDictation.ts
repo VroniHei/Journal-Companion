@@ -41,13 +41,29 @@ function getCtor(): SpeechRecognitionCtor | undefined {
 
 /**
  * Diktat per Browser-Spracherkennung (Web Speech API, de-DE).
- * `onFinalText` wird mit jedem abgeschlossenen Satzstück aufgerufen (zum Anhängen).
+ *
+ * Nutzt `interimResults` für sofortiges Feedback: Während des Sprechens wird der
+ * laufende (noch nicht finale) Text live mitgeschrieben und nach jedem fertigen
+ * Satzstück verfestigt. Das Feld zeigt damit `Basis + gesprochener Text`.
+ *
+ * - `getBase()` liefert den Feldinhalt beim Start (an den angehängt wird).
+ * - `onChange(full)` wird bei jeder Erkennung mit dem vollständigen neuen Wert
+ *   aufgerufen (Basis + bisher Gesprochenes, inkl. Live-Zwischenstand).
+ * - `onActivate()` feuert einmal, sobald das erste finale Stück erkannt wurde
+ *   (z. B. um „per Stimme erstellt" zu markieren).
  */
-export function useDictation(onFinalText: (text: string) => void) {
+export function useDictation(opts: {
+  getBase: () => string;
+  onChange: (full: string) => void;
+  onActivate?: () => void;
+}) {
   const [listening, setListening] = useState(false);
   const recRef = useRef<SpeechRecognitionLike | null>(null);
-  const callbackRef = useRef(onFinalText);
-  callbackRef.current = onFinalText;
+  const baseRef = useRef("");
+  const activatedRef = useRef(false);
+
+  const optsRef = useRef(opts);
+  optsRef.current = opts;
 
   const supported = Boolean(getCtor());
 
@@ -61,14 +77,27 @@ export function useDictation(onFinalText: (text: string) => void) {
     const rec = new Ctor();
     rec.lang = "de-DE";
     rec.continuous = true;
-    rec.interimResults = false;
+    rec.interimResults = true; // Live-Zwischenergebnisse → sofort sichtbar
+    baseRef.current = optsRef.current.getBase();
+    activatedRef.current = false;
+
     rec.onresult = (event) => {
-      for (let i = event.resultIndex; i < event.results.length; i++) {
+      let finalText = "";
+      let interim = "";
+      for (let i = 0; i < event.results.length; i++) {
         const result = event.results[i];
-        if (result.isFinal) {
-          const text = result[0]?.transcript?.trim();
-          if (text) callbackRef.current(text);
-        }
+        const t = result[0]?.transcript ?? "";
+        if (result.isFinal) finalText += t;
+        else interim += t;
+      }
+      const spoken = `${finalText} ${interim}`.replace(/\s+/g, " ").trim();
+      const base = baseRef.current;
+      const full = base ? (spoken ? `${base} ${spoken}` : base) : spoken;
+      optsRef.current.onChange(full);
+
+      if (finalText.trim() && !activatedRef.current) {
+        activatedRef.current = true;
+        optsRef.current.onActivate?.();
       }
     };
     rec.onerror = () => setListening(false);

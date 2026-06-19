@@ -2,24 +2,34 @@ import { useState } from "react";
 import type { JournalEntry } from "@journal/shared";
 import { Button } from "./ui";
 import { DictationButton } from "./DictationButton";
+import { FormattedText } from "./FormattedText";
 import { useMessages, useSettings } from "../hooks/useData";
 import { addChatMessage, updateEntry } from "../db/queries";
 import { toPrefs } from "../lib/settings";
 import { streamChat } from "../lib/apiClient";
 
 function Bubble({ role, text }: { role: "user" | "assistant"; text: string }) {
-  const isUser = role === "user";
+  if (role === "user") {
+    return (
+      <div className="flex justify-end">
+        <div className="max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-tr-md bg-[var(--accent-soft)] px-4 py-2.5 text-sm leading-relaxed">
+          {text || "…"}
+        </div>
+      </div>
+    );
+  }
   return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-      <div
-        className="max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-2 text-sm"
-        style={{
-          background: isUser ? "var(--accent-soft)" : "var(--surface-2)",
-          borderTopRightRadius: isUser ? 4 : undefined,
-          borderTopLeftRadius: isUser ? undefined : 4,
-        }}
-      >
-        {text || "…"}
+    <div className="flex justify-start">
+      <div className="max-w-[88%] rounded-2xl rounded-tl-md border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-[15px] shadow-[var(--shadow-card)]">
+        <div className="mb-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--muted)]">
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+          Begleiter
+        </div>
+        {text ? (
+          <FormattedText text={text} />
+        ) : (
+          <span className="text-[var(--muted)]">…</span>
+        )}
       </div>
     </div>
   );
@@ -103,9 +113,7 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
           <Button onClick={send} disabled={!input.trim() || streaming}>
             {streaming ? "…" : "Senden"}
           </Button>
-          <DictationButton
-            onText={(seg) => setInput((p) => (p ? `${p} ${seg}` : seg))}
-          />
+          <DictationButton value={input} onChange={setInput} />
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import type { SleepQuality } from "@journal/shared";
-import { Button, Card, FieldLabel } from "../components/ui";
+import { Button, Card, Eyebrow, FieldLabel } from "../components/ui";
 import { ScaleField } from "../components/fields/ScaleField";
 import { ChipSelect } from "../components/fields/ChipSelect";
 import { BoolField } from "../components/fields/BoolField";
@@ -41,11 +41,6 @@ export function NewEntry() {
   const [cannabisToday, setCannabis] = useState<boolean | null>(null);
   const [usedVoice, setUsedVoice] = useState(false);
   const [saving, setSaving] = useState(false);
-
-  function appendSpoken(segment: string) {
-    setText((t) => (t ? `${t} ${segment}` : segment));
-    setUsedVoice(true);
-  }
 
   async function save() {
     if (!text.trim() || saving) return;
@@ -90,7 +85,11 @@ export function NewEntry() {
             className="w-full resize-y rounded-lg border border-[var(--border)] bg-transparent p-3 outline-none focus:border-[var(--accent)]"
           />
           <div className="flex items-center gap-3">
-            <DictationButton onText={appendSpoken} />
+            <DictationButton
+              value={text}
+              onChange={setText}
+              onActivate={() => setUsedVoice(true)}
+            />
             <span className="text-xs text-[var(--muted)]">
               Sprechen statt tippen (Chrome/Edge)
             </span>
@@ -112,72 +111,96 @@ export function NewEntry() {
           />
         </div>
 
-        <ChipSelect
-          label="Emotionen"
-          options={EMOTIONS}
-          selected={emotions}
-          onChange={setEmotions}
-        />
-        <ChipSelect
-          label="Körpergefühl"
-          options={BODY_SIGNALS}
-          selected={bodySignals}
-          onChange={setBodySignals}
-        />
-        <ChipSelect
-          label="Themen"
-          options={TOPICS}
-          selected={topics}
-          onChange={setTopics}
-        />
-        <ChipSelect
-          label="Bedürfnisse"
-          options={NEEDS}
-          selected={needs}
-          onChange={setNeeds}
-        />
-        <ChipSelect
-          label="Impuls"
-          hint="einer reicht"
-          options={IMPULSES}
-          selected={impulse}
-          onChange={setImpulse}
-          multi={false}
-        />
-        <ChipSelect
-          label="Absicht"
-          options={INTENTIONS}
-          selected={intention}
-          onChange={setIntention}
-        />
-
-        <div className="space-y-4 border-t border-[var(--border)] pt-5">
-          <FieldLabel label="Alltag heute" hint="optional" />
-          <ChipSelect
-            label="Schlaf"
-            options={SLEEP_OPTIONS}
-            selected={sleep}
-            onChange={setSleep}
-            multi={false}
-          />
-          <div className="grid gap-4 sm:grid-cols-3">
-            <BoolField
-              label="Bewegung"
-              value={movementToday}
-              onChange={setMovement}
+        <div className="space-y-5 border-t border-[var(--border)] pt-5">
+          <Eyebrow>Gefühl</Eyebrow>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <ChipSelect
+              label="Emotionen"
+              options={EMOTIONS}
+              selected={emotions}
+              onChange={setEmotions}
             />
-            <BoolField
-              label="Draußen"
-              value={outsideToday}
-              onChange={setOutside}
-            />
-            <BoolField
-              label="Kiffen"
-              value={cannabisToday}
-              onChange={setCannabis}
+            <ChipSelect
+              label="Körpergefühl"
+              options={BODY_SIGNALS}
+              selected={bodySignals}
+              onChange={setBodySignals}
             />
           </div>
         </div>
+
+        <div className="space-y-5 border-t border-[var(--border)] pt-5">
+          <Eyebrow>Worum es geht</Eyebrow>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <ChipSelect
+              label="Themen"
+              options={TOPICS}
+              selected={topics}
+              onChange={setTopics}
+            />
+            <ChipSelect
+              label="Bedürfnisse"
+              options={NEEDS}
+              selected={needs}
+              onChange={setNeeds}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-5 border-t border-[var(--border)] pt-5">
+          <Eyebrow>Impuls & Absicht</Eyebrow>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <ChipSelect
+              label="Impuls"
+              hint="einer reicht"
+              options={IMPULSES}
+              selected={impulse}
+              onChange={setImpulse}
+              multi={false}
+            />
+            <ChipSelect
+              label="Absicht"
+              options={INTENTIONS}
+              selected={intention}
+              onChange={setIntention}
+            />
+          </div>
+        </div>
+
+        <details className="group border-t border-[var(--border)] pt-5">
+          <summary className="flex cursor-pointer list-none items-center justify-between [&::-webkit-details-marker]:hidden">
+            <FieldLabel label="Alltag heute" hint="optional" />
+            <span className="text-[var(--muted)] transition group-open:rotate-180">
+              ⌄
+            </span>
+          </summary>
+          <div className="mt-4 space-y-4">
+            <ChipSelect
+              label="Schlaf"
+              options={SLEEP_OPTIONS}
+              selected={sleep}
+              onChange={setSleep}
+              multi={false}
+            />
+            <div className="grid gap-4 sm:grid-cols-3">
+              <BoolField
+                label="Bewegung"
+                value={movementToday}
+                onChange={setMovement}
+              />
+              <BoolField
+                label="Draußen"
+                value={outsideToday}
+                onChange={setOutside}
+              />
+              <BoolField
+                label="Kiffen"
+                value={cannabisToday}
+                onChange={setCannabis}
+              />
+            </div>
+          </div>
+        </details>
 
         <div className="flex justify-end gap-3">
           <Button variant="ghost" onClick={() => navigate("/")} disabled={saving}>

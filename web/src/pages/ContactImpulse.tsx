@@ -120,11 +120,7 @@ export function ContactImpulse() {
             className="w-full resize-y rounded-lg border border-[var(--border)] bg-transparent p-3 text-sm outline-none focus:border-[var(--accent)]"
           />
           <div className="mt-2">
-            <DictationButton
-              onText={(seg) =>
-                setSituation((p) => (p ? `${p} ${seg}` : seg))
-              }
-            />
+            <DictationButton value={situation} onChange={setSituation} />
           </div>
         </div>
 
