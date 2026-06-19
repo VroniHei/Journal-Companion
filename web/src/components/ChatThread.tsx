@@ -3,12 +3,21 @@ import type { JournalEntry } from "@journal/shared";
 import { Button } from "./ui";
 import { DictationButton } from "./DictationButton";
 import { FormattedText } from "./FormattedText";
+import { SpeakButton } from "./SpeakButton";
 import { useMessages, useSettings } from "../hooks/useData";
 import { addChatMessage, updateEntry } from "../db/queries";
 import { toPrefs } from "../lib/settings";
 import { streamChat } from "../lib/apiClient";
 
-function Bubble({ role, text }: { role: "user" | "assistant"; text: string }) {
+function Bubble({
+  role,
+  text,
+  speakable = false,
+}: {
+  role: "user" | "assistant";
+  text: string;
+  speakable?: boolean;
+}) {
   if (role === "user") {
     return (
       <div className="flex justify-end">
@@ -21,9 +30,12 @@ function Bubble({ role, text }: { role: "user" | "assistant"; text: string }) {
   return (
     <div className="flex justify-start">
       <div className="max-w-[88%] rounded-2xl rounded-tl-md border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-[15px] shadow-[var(--shadow-card)]">
-        <div className="mb-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--muted)]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
-          Begleiter
+        <div className="mb-1.5 flex items-center justify-between gap-3">
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--muted)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+            Begleiter
+          </span>
+          {speakable && text && <SpeakButton text={text} />}
         </div>
         {text ? (
           <FormattedText text={text} />
@@ -90,7 +102,12 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
       {(messages.length > 0 || streaming) && (
         <div className="space-y-2">
           {messages.map((m) => (
-            <Bubble key={m.id} role={m.role} text={m.content} />
+            <Bubble
+              key={m.id}
+              role={m.role}
+              text={m.content}
+              speakable={m.role === "assistant"}
+            />
           ))}
           {streaming && <Bubble role="assistant" text={streamText} />}
         </div>

@@ -1,4 +1,5 @@
 import { FormattedText } from "./FormattedText";
+import { SpeakButton } from "./SpeakButton";
 
 export function ReflectionView({
   text,
@@ -16,12 +17,15 @@ export function ReflectionView({
         background: `color-mix(in srgb, ${color} 7%, transparent)`,
       }}
     >
-      <p
-        className="mb-2 text-xs font-medium uppercase tracking-wide"
-        style={{ color }}
-      >
-        {crisis ? "Schutzhinweis" : "Reflexion des Begleiters"}
-      </p>
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <p
+          className="text-xs font-medium uppercase tracking-wide"
+          style={{ color }}
+        >
+          {crisis ? "Schutzhinweis" : "Reflexion des Begleiters"}
+        </p>
+        {text && <SpeakButton text={text} />}
+      </div>
       {text ? (
         <FormattedText text={text} className="text-[15px]" />
       ) : (
