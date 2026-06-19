@@ -31,7 +31,7 @@ function Row({
 }
 
 const selectClass =
-  "rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--accent)]";
+  "w-full max-w-md rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--accent)]";
 
 export function Settings() {
   const s = useSettings();

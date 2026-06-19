@@ -74,7 +74,10 @@ export function Layout() {
   const [profileOpen, setProfileOpen] = useState(false);
 
   const wide = pathname === "/" || pathname.startsWith("/muster");
-  const container = wide ? "max-w-7xl" : "max-w-3xl";
+  // Shell (Kopfzeile + Seitenrahmen) ist überall gleich breit. Nur der
+  // INHALT von Lese-/Formularseiten sitzt in einer schmaleren, zentrierten
+  // Spalte — so springt die Breite nicht zwischen den Seiten.
+  const contentClass = wide ? "" : "mx-auto w-full max-w-3xl";
   const initial = (settings.userName?.trim()?.[0] ?? "I").toUpperCase();
   const name = settings.userName?.trim() || "Dein Raum";
 
@@ -139,7 +142,7 @@ export function Layout() {
       {/* ===== Desktop-Topbar ===== */}
       <header className="sticky top-0 z-40 hidden border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--background)_86%,transparent)] backdrop-blur-md sm:block">
         <div
-          className={`mx-auto flex items-center justify-between gap-4 px-5 py-3 ${container}`}
+          className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3"
         >
           <div className="flex items-center gap-8">
             <NavLink to="/" aria-label={settings.appName}>
@@ -222,9 +225,11 @@ export function Layout() {
       </header>
 
       {/* ===== Inhalt ===== */}
-      <main className={`mx-auto px-5 pb-28 pt-6 sm:pb-12 ${container}`}>
+      <main className="mx-auto max-w-7xl px-5 pb-28 pt-6 sm:pb-12">
         <DisclaimerGate />
-        <Outlet />
+        <div className={contentClass}>
+          <Outlet />
+        </div>
         <footer className="mt-12 text-center text-xs text-[var(--muted)]">
           Kein Ersatz für Therapie · Deine Einträge bleiben lokal auf diesem Gerät.
         </footer>
