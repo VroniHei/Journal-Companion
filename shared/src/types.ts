@@ -257,3 +257,106 @@ export interface ApiError {
   error: string;
   code?: string;
 }
+
+// ---------------------------------------------------------------------------
+// Qualitative Verhaltens-/Reaktionsmuster (zweite Ebene über den Kennzahlen)
+// ---------------------------------------------------------------------------
+
+export type PatternType =
+  | "rumination"
+  | "avoidance"
+  | "action-pressure"
+  | "contact-impulse"
+  | "self-worth"
+  | "regulation"
+  | "relationship"
+  | "decision-making"
+  | "overload"
+  | "other";
+
+export type PatternConfidence = "niedrig" | "mittel" | "hoch";
+
+/** Rückmeldung der Nutzerin zu einem erkannten Muster. */
+export type PatternFeedback = "passt" | "teilweise" | "passt-nicht";
+
+export interface PatternInsight {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+
+  title: string;
+  shortName?: string;
+
+  description: string;
+  patternType: PatternType;
+  confidence: PatternConfidence;
+
+  triggerSignals: string[];
+  typicalSequence: string[];
+  emotionalSignals: string[];
+  bodySignals: string[];
+  needsBehindIt: string[];
+
+  helpfulSide: string;
+  difficultSide: string;
+
+  earlyWarningSigns: string[];
+  interruptionStrategies: string[];
+  dontDoNow: string[];
+
+  exampleEntryIds: string[];
+
+  suggestedExperiment?: string;
+  reflectionQuestion?: string;
+
+  /** 3-stufiges Feedback der Nutzerin. */
+  userFeedback?: PatternFeedback | null;
+  /** Abgeleitet aus userFeedback (passt = true, passt-nicht = false). */
+  userConfirmed?: boolean | null;
+  userNotes?: string;
+}
+
+/** Vom Modell geliefertes Muster (ohne client-seitige IDs/Zeitstempel/Feedback). */
+export type PatternInsightDraft = Omit<
+  PatternInsight,
+  | "id"
+  | "createdAt"
+  | "updatedAt"
+  | "userFeedback"
+  | "userConfirmed"
+  | "userNotes"
+>;
+
+/** Kompakter Eintrag, der für die Musteranalyse ans Backend geht. */
+export interface PatternEntryInput {
+  id: string;
+  createdAt: string;
+  mood: number;
+  intensity: number;
+  emotions: string[];
+  bodySignals: string[];
+  topics: string[];
+  needs: string[];
+  impulse: string;
+  text: string;
+}
+
+export type PatternTimeframe = "7tage" | "30tage" | "alle";
+export type PatternDepth = "kurz" | "mittel" | "tief";
+
+export interface PatternInsightsRequest {
+  entries: PatternEntryInput[];
+  patternSummary?: string;
+  existingPatterns?: {
+    title: string;
+    patternType: PatternType;
+    userFeedback?: PatternFeedback | null;
+  }[];
+  timeframe: PatternTimeframe;
+  depth: PatternDepth;
+  prefs: ResponsePrefs;
+}
+
+export interface PatternInsightsResponse {
+  patterns: PatternInsightDraft[];
+}

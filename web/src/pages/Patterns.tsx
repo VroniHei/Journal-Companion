@@ -1,9 +1,27 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Card } from "../components/ui";
-import { useEntries } from "../hooks/useData";
-import { listStabilityMoments } from "../db/queries";
+import type {
+  JournalEntry,
+  PatternDepth,
+  PatternEntryInput,
+  PatternInsight,
+  PatternTimeframe,
+  PatternType,
+} from "@journal/shared";
+import { Button, Card, Eyebrow } from "../components/ui";
+import { useEntries, useSettings } from "../hooks/useData";
+import {
+  deletePatternInsight,
+  listPatternInsights,
+  listStabilityMoments,
+  savePatternInsights,
+  setPatternFeedback,
+  setPatternNotes,
+} from "../db/queries";
 import { aggregate } from "../lib/patterns";
+import { toPrefs } from "../lib/settings";
+import { postPatternInsights } from "../lib/apiClient";
 import { formatDateTime } from "../lib/format";
 
 function Chips({ items }: { items: [string, number][] }) {
@@ -31,10 +49,245 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
+const TYPE_LABEL: Record<PatternType, string> = {
+  rumination: "Grübeln",
+  avoidance: "Vermeidung",
+  "action-pressure": "Handlungsdruck",
+  "contact-impulse": "Kontaktimpuls",
+  "self-worth": "Selbstwert",
+  regulation: "Regulation",
+  relationship: "Beziehung",
+  "decision-making": "Entscheidung",
+  overload: "Überlastung",
+  other: "Sonstiges",
+};
+
+function toInputs(
+  entries: JournalEntry[],
+  timeframe: PatternTimeframe,
+): PatternEntryInput[] {
+  const now = Date.now();
+  const cutoff =
+    timeframe === "7tage"
+      ? now - 7 * 86_400_000
+      : timeframe === "30tage"
+        ? now - 30 * 86_400_000
+        : 0;
+  return entries
+    .filter((e) => new Date(e.createdAt).getTime() >= cutoff)
+    .slice(0, 60)
+    .map((e) => ({
+      id: e.id,
+      createdAt: e.createdAt,
+      mood: e.mood,
+      intensity: e.intensity,
+      emotions: e.emotions,
+      bodySignals: e.bodySignals,
+      topics: e.topics,
+      needs: e.needs,
+      impulse: e.impulse,
+      text: e.text.slice(0, 600),
+    }))
+    .reverse();
+}
+
+function FieldList({ title, items }: { title: string; items: string[] }) {
+  if (!items.length) return null;
+  return (
+    <div>
+      <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+        {title}
+      </p>
+      <ul className="space-y-1 text-sm">
+        {items.map((it, i) => (
+          <li key={`${title}-${i}`} className="flex gap-2">
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" />
+            <span>{it}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+const FEEDBACKS: { key: "passt" | "teilweise" | "passt-nicht"; label: string }[] =
+  [
+    { key: "passt", label: "Passt" },
+    { key: "teilweise", label: "Teilweise" },
+    { key: "passt-nicht", label: "Passt nicht" },
+  ];
+
+function PatternCard({ p }: { p: PatternInsight }) {
+  const [notes, setNotes] = useState(p.userNotes ?? "");
+
+  return (
+    <Card className="space-y-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-base font-semibold">{p.title}</h3>
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
+            <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5">
+              {TYPE_LABEL[p.patternType]}
+            </span>
+            <span>Sicherheit: {p.confidence}</span>
+          </div>
+        </div>
+      </div>
+
+      {p.description && <p className="text-[15px] leading-relaxed">{p.description}</p>}
+
+      {p.typicalSequence.length > 0 && (
+        <div>
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+            Typischer Ablauf
+          </p>
+          <ol className="list-decimal space-y-1 pl-5 text-sm">
+            {p.typicalSequence.map((s, i) => (
+              <li key={i}>{s}</li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      <FieldList title="Frühe Warnzeichen" items={p.earlyWarningSigns} />
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        {p.helpfulSide && (
+          <div>
+            <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--accent-text)]">
+              Hilfreiche Seite
+            </p>
+            <p className="text-sm">{p.helpfulSide}</p>
+          </div>
+        )}
+        {p.difficultSide && (
+          <div>
+            <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+              Schwierige Seite
+            </p>
+            <p className="text-sm">{p.difficultSide}</p>
+          </div>
+        )}
+      </div>
+
+      <FieldList title="Was jetzt helfen könnte" items={p.interruptionStrategies} />
+
+      {p.dontDoNow.length > 0 && (
+        <div className="rounded-lg border-l-2 border-l-[var(--danger)] bg-[var(--surface-2)] p-3">
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--danger)]">
+            Was jetzt eher nicht hilft
+          </p>
+          <ul className="space-y-1 text-sm">
+            {p.dontDoNow.map((d, i) => (
+              <li key={i}>{d}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {p.suggestedExperiment && (
+        <div>
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+            Kleines Experiment
+          </p>
+          <p className="text-sm">{p.suggestedExperiment}</p>
+        </div>
+      )}
+
+      {p.reflectionQuestion && (
+        <p className="text-sm italic text-[var(--muted)]">
+          {p.reflectionQuestion}
+        </p>
+      )}
+
+      {/* Feedback + Notizen */}
+      <div className="space-y-3 border-t border-[var(--border)] pt-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-[var(--muted)]">Passt dieses Muster?</span>
+          {FEEDBACKS.map((f) => {
+            const active = p.userFeedback === f.key;
+            return (
+              <button
+                key={f.key}
+                type="button"
+                onClick={() => setPatternFeedback(p.id, f.key)}
+                className="rounded-full border px-3 py-1 text-sm transition"
+                style={{
+                  borderColor: active ? "var(--accent)" : "var(--border)",
+                  background: active ? "var(--accent-soft)" : "transparent",
+                }}
+              >
+                {f.label}
+              </button>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() => deletePatternInsight(p.id)}
+            className="ml-auto text-xs text-[var(--muted)] hover:text-[var(--danger)]"
+          >
+            Entfernen
+          </button>
+        </div>
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          onBlur={() => setPatternNotes(p.id, notes)}
+          rows={2}
+          placeholder="Eigene Notiz zu diesem Muster…"
+          className="w-full resize-y rounded-lg border border-[var(--border)] bg-transparent p-2 text-sm outline-none focus:border-[var(--accent)]"
+        />
+      </div>
+    </Card>
+  );
+}
+
 export function Patterns() {
   const entries = useEntries();
+  const settings = useSettings();
   const a = aggregate(entries);
   const moments = useLiveQuery(() => listStabilityMoments(), [], []);
+  const insights = useLiveQuery(() => listPatternInsights(), [], []);
+
+  const [timeframe, setTimeframe] = useState<PatternTimeframe>("30tage");
+  const [depth, setDepth] = useState<PatternDepth>("mittel");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function analyze() {
+    if (loading) return;
+    const inputs = toInputs(entries, timeframe);
+    if (!inputs.length) {
+      setError("Im gewählten Zeitraum gibt es keine Einträge.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await postPatternInsights({
+        entries: inputs,
+        existingPatterns: insights.map((p) => ({
+          title: p.title,
+          patternType: p.patternType,
+          userFeedback: p.userFeedback ?? null,
+        })),
+        timeframe,
+        depth,
+        prefs: toPrefs(settings),
+      });
+      if (res.patterns.length === 0) {
+        setError(
+          "Es haben sich noch keine klaren Muster gezeigt — schreib weiter, dann wird es mit der Zeit deutlicher.",
+        );
+      } else {
+        await savePatternInsights(res.patterns);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unbekannter Fehler.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   if (entries.length === 0) {
     return (
@@ -50,50 +303,128 @@ export function Patterns() {
     );
   }
 
+  const selectClass =
+    "rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--accent)]";
+
   return (
-    <section className="space-y-6">
+    <section className="space-y-8">
       <h1 className="serif text-3xl font-semibold">Muster</h1>
 
-      <Card>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <Stat label="Einträge" value={String(a.count)} />
-          <Stat label="Ø Stimmung" value={a.avgMood?.toString() ?? "—"} />
-          <Stat label="Ø Intensität" value={a.avgIntensity?.toString() ?? "—"} />
-          <Stat label="Kontaktimpulse" value={String(a.contactImpulses)} />
-        </div>
-      </Card>
+      {/* Quantitative Übersicht (bestehend) */}
+      <div className="space-y-6">
+        <Card>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <Stat label="Einträge" value={String(a.count)} />
+            <Stat label="Ø Stimmung" value={a.avgMood?.toString() ?? "—"} />
+            <Stat label="Ø Intensität" value={a.avgIntensity?.toString() ?? "—"} />
+            <Stat label="Kontaktimpulse" value={String(a.contactImpulses)} />
+          </div>
+        </Card>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Card>
+            <h2 className="mb-2 text-sm font-medium text-[var(--muted)]">
+              Häufigste Emotionen
+            </h2>
+            <Chips items={a.topEmotions} />
+          </Card>
+          <Card>
+            <h2 className="mb-2 text-sm font-medium text-[var(--muted)]">
+              Häufigste Themen
+            </h2>
+            <Chips items={a.topTopics} />
+          </Card>
+          <Card>
+            <h2 className="mb-2 text-sm font-medium text-[var(--muted)]">
+              Häufigste Bedürfnisse
+            </h2>
+            <Chips items={a.topNeeds} />
+          </Card>
+        </div>
+
         <Card>
-          <h2 className="mb-2 text-sm font-medium text-[var(--muted)]">
-            Häufigste Emotionen
+          <h2 className="mb-3 text-sm font-medium text-[var(--muted)]">
+            Stabilisierende Handlungen
           </h2>
-          <Chips items={a.topEmotions} />
+          <div className="grid grid-cols-3 gap-4">
+            <Stat label="Tage mit Bewegung" value={String(a.movementDays)} />
+            <Stat label="Tage draußen" value={String(a.outsideDays)} />
+            <Stat label="erkannte Schleifen" value={String(a.ruminations)} />
+          </div>
         </Card>
-        <Card>
-          <h2 className="mb-2 text-sm font-medium text-[var(--muted)]">
-            Häufigste Themen
-          </h2>
-          <Chips items={a.topTopics} />
-        </Card>
-        <Card>
-          <h2 className="mb-2 text-sm font-medium text-[var(--muted)]">
-            Häufigste Bedürfnisse
-          </h2>
-          <Chips items={a.topNeeds} />
-        </Card>
+
+        {moments.length > 0 && (
+          <Card>
+            <h2 className="mb-3 text-sm font-medium text-[var(--muted)]">
+              Stabile Momente
+            </h2>
+            <ul className="space-y-1.5 text-sm">
+              {moments.slice(0, 12).map((m) => (
+                <li key={m.id} className="flex items-baseline gap-2">
+                  <span style={{ color: "var(--accent-text)" }}>•</span>
+                  <span>{m.label}</span>
+                  <span className="text-xs text-[var(--muted)]">
+                    {formatDateTime(m.createdAt)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        )}
       </div>
 
-      <Card>
-        <h2 className="mb-3 text-sm font-medium text-[var(--muted)]">
-          Stabilisierende Handlungen
-        </h2>
-        <div className="grid grid-cols-3 gap-4">
-          <Stat label="Tage mit Bewegung" value={String(a.movementDays)} />
-          <Stat label="Tage draußen" value={String(a.outsideDays)} />
-          <Stat label="erkannte Schleifen" value={String(a.ruminations)} />
-        </div>
-      </Card>
+      {/* Qualitative Muster (zweite Ebene) */}
+      <div className="space-y-4">
+        <Eyebrow>Erkannte Muster</Eyebrow>
+        <Card className="space-y-4">
+          <p className="text-sm text-[var(--muted)]">
+            Diese Ebene sucht in mehreren Einträgen nach wiederkehrenden Abläufen
+            — wie sich Themen, Gefühle, Impulse und Handlungen verketten.
+          </p>
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="flex flex-col gap-1 text-xs text-[var(--muted)]">
+              Zeitraum
+              <select
+                className={selectClass}
+                value={timeframe}
+                onChange={(e) => setTimeframe(e.target.value as PatternTimeframe)}
+              >
+                <option value="7tage">letzte 7 Tage</option>
+                <option value="30tage">letzte 30 Tage</option>
+                <option value="alle">alle Einträge</option>
+              </select>
+            </label>
+            <label className="flex flex-col gap-1 text-xs text-[var(--muted)]">
+              Tiefe
+              <select
+                className={selectClass}
+                value={depth}
+                onChange={(e) => setDepth(e.target.value as PatternDepth)}
+              >
+                <option value="kurz">kurz</option>
+                <option value="mittel">mittel</option>
+                <option value="tief">tief</option>
+              </select>
+            </label>
+            <Button onClick={analyze} disabled={loading}>
+              {loading ? "Analysiere…" : "Muster tiefer analysieren"}
+            </Button>
+          </div>
+          {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
+        </Card>
+
+        {insights.length === 0 ? (
+          <p className="text-sm text-[var(--muted)]">
+            Noch keine tiefen Muster — starte oben eine Analyse.
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {insights.map((p) => (
+              <PatternCard key={p.id} p={p} />
+            ))}
+          </div>
+        )}
+      </div>
 
       {a.highIntensity.length > 0 && (
         <div>
@@ -113,25 +444,6 @@ export function Patterns() {
             ))}
           </div>
         </div>
-      )}
-
-      {moments.length > 0 && (
-        <Card>
-          <h2 className="mb-3 text-sm font-medium text-[var(--muted)]">
-            Stabile Momente
-          </h2>
-          <ul className="space-y-1.5 text-sm">
-            {moments.slice(0, 12).map((m) => (
-              <li key={m.id} className="flex items-baseline gap-2">
-                <span style={{ color: "var(--accent-text)" }}>•</span>
-                <span>{m.label}</span>
-                <span className="text-xs text-[var(--muted)]">
-                  {formatDateTime(m.createdAt)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </Card>
       )}
     </section>
   );

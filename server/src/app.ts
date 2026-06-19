@@ -6,6 +6,7 @@ import { contactImpulseRouter } from "./routes/contactImpulse";
 import { weeklyReviewRouter } from "./routes/weeklyReview";
 import { voiceReflectRouter } from "./routes/voiceReflect";
 import { ttsRouter } from "./routes/tts";
+import { patternInsightsRouter } from "./routes/patternInsights";
 
 // Die konfigurierte Express-App — ohne `listen`, damit sie sowohl lokal
 // (server/src/index.ts) als auch als Vercel-Serverless-Funktion (api/index.ts)
@@ -30,5 +31,6 @@ app.use("/api", contactImpulseRouter);
 app.use("/api", weeklyReviewRouter);
 app.use("/api", voiceReflectRouter);
 app.use("/api", ttsRouter);
+app.use("/api", patternInsightsRouter);
 
 export default app;

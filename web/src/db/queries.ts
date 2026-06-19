@@ -4,6 +4,9 @@ import type {
   ChatRole,
   EntryDigest,
   JournalEntry,
+  PatternFeedback,
+  PatternInsight,
+  PatternInsightDraft,
   PatternSummary,
   StabilityKind,
   StabilityMoment,
@@ -192,4 +195,47 @@ export async function sameTopicSameDayCount(entry: JournalEntry): Promise<number
       e.createdAt.slice(0, 10) === day &&
       e.topics.some((t) => entry.topics.includes(t)),
   ).length;
+}
+
+// --- Qualitative Muster (PatternInsight) ----------------------------------
+
+export function listPatternInsights(): Promise<PatternInsight[]> {
+  return db.patternInsights.orderBy("createdAt").reverse().toArray();
+}
+
+/** Speichert vom Modell gelieferte Muster als neue PatternInsights. */
+export async function savePatternInsights(
+  drafts: PatternInsightDraft[],
+): Promise<PatternInsight[]> {
+  const now = nowIso();
+  const records: PatternInsight[] = drafts.map((d) => ({
+    ...d,
+    id: createId(),
+    createdAt: now,
+    updatedAt: now,
+    userFeedback: null,
+    userConfirmed: null,
+  }));
+  await db.patternInsights.bulkPut(records);
+  return records;
+}
+
+export async function setPatternFeedback(
+  id: string,
+  feedback: PatternFeedback,
+): Promise<void> {
+  await db.patternInsights.update(id, {
+    userFeedback: feedback,
+    userConfirmed:
+      feedback === "passt" ? true : feedback === "passt-nicht" ? false : null,
+    updatedAt: nowIso(),
+  });
+}
+
+export async function setPatternNotes(id: string, notes: string): Promise<void> {
+  await db.patternInsights.update(id, { userNotes: notes, updatedAt: nowIso() });
+}
+
+export async function deletePatternInsight(id: string): Promise<void> {
+  await db.patternInsights.delete(id);
 }

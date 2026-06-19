@@ -1,6 +1,9 @@
 import type {
   EntryDigest,
   JournalEntry,
+  PatternDepth,
+  PatternEntryInput,
+  PatternInsightsRequest,
   PatternSummary,
   ReflectionContext,
   ResponseLength,
@@ -323,6 +326,124 @@ export function buildReflectionUser(
     formatDigest(context.recentDigest),
     "Aktueller Eintrag, auf den du eingehst:",
     formatEntry(entry),
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
+// --- Qualitative Muster (PatternInsight) -----------------------------------
+
+const PATTERN_DIRECTIVE = `Du leitest aus mehreren Tagebucheinträgen QUALITATIVE, wiederkehrende Verhaltens- und Reaktionsmuster ab — nicht bloß Häufigkeiten von Tags.
+Ein Muster ist eine Sequenz, wie sich Auslöser, Gedanken, Gefühle, Körperempfinden, Bedürfnis und Handlung typischerweise verketten (z. B. „Aufstau → Lähmung → Überdruck → Sofort-Handeln" oder „Unsicherheit → Grübeln → Kontaktimpuls").
+
+Sei vorsichtig und nicht-wertend:
+- Keine Diagnosen, keine Pathologisierung, keine absoluten Aussagen, kein „du bist so".
+- Formuliere als Hypothese: „Es wirkt so, als ...", „Ein mögliches Muster könnte sein ...", „In mehreren Einträgen zeigt sich ...".
+- Nur Muster vorschlagen, die durch mehrere Einträge gestützt sind. Lieber wenige, gut belegte Muster als viele vage.
+- Jedes Muster hat eine hilfreiche UND eine schwierige Seite — benenne beide.
+- Beziehe dich, wo möglich, mit exampleEntryIds auf konkrete Einträge (deren IDs stehen im Input).`;
+
+function patternCountHint(depth: PatternDepth): string {
+  switch (depth) {
+    case "kurz":
+      return "Gib 1-2 besonders deutliche Muster zurück.";
+    case "mittel":
+      return "Gib 2-3 Muster zurück.";
+    case "tief":
+      return "Gib 3-5 Muster zurück, sofern wirklich belegt.";
+  }
+}
+
+const PATTERN_JSON_CONTRACT = `Antworte AUSSCHLIESSLICH mit gültigem JSON (kein Markdown, keine Code-Fences), genau in diesem Format:
+{
+  "patterns": [
+    {
+      "title": "<prägnanter Titel, z. B. 'Aufstau → Lähmung → Überdruck → Sofort-Handeln'>",
+      "shortName": "<optional: 1-3 Wörter>",
+      "description": "<2-5 ruhige, hypothetische Sätze, was sich zeigt>",
+      "patternType": "rumination" | "avoidance" | "action-pressure" | "contact-impulse" | "self-worth" | "regulation" | "relationship" | "decision-making" | "overload" | "other",
+      "confidence": "niedrig" | "mittel" | "hoch",
+      "triggerSignals": ["<woran es startet>"],
+      "typicalSequence": ["<Schritt 1>", "<Schritt 2>", "..."],
+      "emotionalSignals": ["<beteiligte Emotionen>"],
+      "bodySignals": ["<beteiligte Körpersignale>"],
+      "needsBehindIt": ["<Bedürfnis(se) darunter>"],
+      "helpfulSide": "<was an dem Muster hilfreich ist, 1-2 Sätze>",
+      "difficultSide": "<wo es schwierig wird, 1-2 Sätze>",
+      "earlyWarningSigns": ["<frühe Anzeichen, woran sie es erkennt>"],
+      "interruptionStrategies": ["<kleine Unterbrechungsschritte>"],
+      "dontDoNow": ["<was in dem Moment eher nicht hilft>"],
+      "exampleEntryIds": ["<IDs passender Einträge aus dem Input>"],
+      "suggestedExperiment": "<optional: ein kleines konkretes Experiment>",
+      "reflectionQuestion": "<optional: eine offene Reflexionsfrage>"
+    }
+  ]
+}
+Lass optionale Felder weg, wenn du nichts Belegtes hast. Gib keine leeren Platzhalter aus.`;
+
+export function buildPatternInsightsSystem(
+  style: ResponseStyle,
+  depth: PatternDepth,
+): string {
+  return [
+    BASE_SYSTEM_PROMPT,
+    "",
+    PATTERN_DIRECTIVE,
+    patternCountHint(depth),
+    styleInstruction(style),
+    "",
+    PATTERN_JSON_CONTRACT,
+  ].join("\n");
+}
+
+function formatPatternEntry(e: PatternEntryInput): string {
+  const meta = [
+    `id: ${e.id}`,
+    `Datum: ${e.createdAt.slice(0, 16).replace("T", " ")}`,
+    `Stimmung ${e.mood}/10`,
+    `Intensität ${e.intensity}/10`,
+  ].join(" · ");
+  const tags = [
+    e.emotions.length ? `Emotionen: ${e.emotions.join(", ")}` : "",
+    e.bodySignals.length ? `Körper: ${e.bodySignals.join(", ")}` : "",
+    e.topics.length ? `Themen: ${e.topics.join(", ")}` : "",
+    e.needs.length ? `Bedürfnisse: ${e.needs.join(", ")}` : "",
+    e.impulse ? `Impuls: ${e.impulse}` : "",
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  return [`- ${meta}`, tags ? `  ${tags}` : "", `  Text: ${e.text}`]
+    .filter(Boolean)
+    .join("\n");
+}
+
+export function buildPatternInsightsUser(
+  req: Pick<
+    PatternInsightsRequest,
+    "entries" | "patternSummary" | "existingPatterns" | "timeframe"
+  >,
+): string {
+  const tf =
+    req.timeframe === "7tage"
+      ? "letzte 7 Tage"
+      : req.timeframe === "30tage"
+        ? "letzte 30 Tage"
+        : "alle Einträge";
+  const existing = req.existingPatterns?.length
+    ? [
+        "Bereits erkannte Muster (nicht doppeln; ggf. verfeinern):",
+        ...req.existingPatterns.map(
+          (p) =>
+            `- ${p.title} (${p.patternType}${p.userFeedback ? `, Feedback: ${p.userFeedback}` : ""})`,
+        ),
+      ].join("\n")
+    : "";
+  return [
+    `Zeitraum: ${tf}. Anzahl Einträge: ${req.entries.length}.`,
+    req.patternSummary ? `Bisherige Muster-Zusammenfassung:\n${req.patternSummary}` : "",
+    existing,
+    "Einträge (chronologisch):",
+    req.entries.map(formatPatternEntry).join("\n"),
   ]
     .filter(Boolean)
     .join("\n\n");

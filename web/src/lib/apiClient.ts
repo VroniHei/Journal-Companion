@@ -3,6 +3,8 @@ import type {
   ContactImpulseRequest,
   ContactImpulseResponse,
   CrisisResponse,
+  PatternInsightsRequest,
+  PatternInsightsResponse,
   ReflectRequest,
   WeeklyReviewRequest,
   WeeklyReviewResponse,
@@ -117,6 +119,23 @@ export async function postWeeklyReview(
     );
   }
   return data as WeeklyReviewResponse;
+}
+
+export async function postPatternInsights(
+  body: PatternInsightsRequest,
+): Promise<PatternInsightsResponse> {
+  const res = await fetch("/api/pattern-insights", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(
+      (data as { error?: string }).error ?? `Fehler ${res.status}`,
+    );
+  }
+  return data as PatternInsightsResponse;
 }
 
 export async function postVoiceReflect(

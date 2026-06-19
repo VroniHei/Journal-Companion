@@ -3,6 +3,7 @@ import type {
   AppSettings,
   ChatMessage,
   JournalEntry,
+  PatternInsight,
   PatternSummary,
   StabilityMoment,
 } from "@journal/shared";
@@ -14,6 +15,7 @@ export class JournalDB extends Dexie {
   patternSummaries!: Table<PatternSummary, string>;
   settings!: Table<AppSettings, string>;
   stabilityMoments!: Table<StabilityMoment, string>;
+  patternInsights!: Table<PatternInsight, string>;
 
   constructor() {
     super("journal-companion");
@@ -26,6 +28,9 @@ export class JournalDB extends Dexie {
     });
     this.version(2).stores({
       stabilityMoments: "id, createdAt, kind, entryId",
+    });
+    this.version(3).stores({
+      patternInsights: "id, createdAt, updatedAt, patternType",
     });
   }
 }
