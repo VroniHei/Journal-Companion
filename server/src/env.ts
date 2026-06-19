@@ -7,10 +7,12 @@ dotenv.config({ override: true });
 // Zentrale Konfiguration. Schlüssel werden nur hier (Backend) gelesen.
 export const env = {
   port: Number(process.env.PORT ?? 3001),
-  anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? "",
+  // .trim() schützt vor versehentlichen Leerzeichen/Zeilenumbrüchen beim
+  // Einfügen in Env-Variablen (sonst: 401 invalid x-api-key).
+  anthropicApiKey: (process.env.ANTHROPIC_API_KEY ?? "").trim(),
   // Sprachausgabe (ElevenLabs) — optional. Wenn gesetzt, nutzt das Frontend die
   // natürliche neuronale Stimme statt der Browser-Sprachausgabe.
-  elevenLabsApiKey: process.env.ELEVENLABS_API_KEY ?? "",
+  elevenLabsApiKey: (process.env.ELEVENLABS_API_KEY ?? "").trim(),
   // Standard: „Brian" — tiefe, warme, natürliche männliche Stimme
   // (per ELEVENLABS_VOICE_ID überschreibbar).
   elevenLabsVoiceId: process.env.ELEVENLABS_VOICE_ID ?? "nPczCjzI2devNBz1zQrb",
