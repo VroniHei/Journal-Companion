@@ -4,6 +4,7 @@ import type { VoiceReflectResponse } from "@journal/shared";
 import { Button, Card, FieldLabel } from "../components/ui";
 import { ScaleField } from "../components/fields/ScaleField";
 import { DictationButton } from "../components/DictationButton";
+import { SpeakButton } from "../components/SpeakButton";
 import { useSettings } from "../hooks/useData";
 import { toPrefs } from "../lib/settings";
 import { postVoiceReflect } from "../lib/apiClient";
@@ -157,6 +158,12 @@ export function VoiceCheckin() {
 
       {result && (
         <Card className="space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+              Auswertung
+            </p>
+            <SpeakButton text={resultToReflectionText(result)} />
+          </div>
           {result.entrySummary && (
             <p className="text-[15px] leading-relaxed">{result.entrySummary}</p>
           )}

@@ -37,7 +37,7 @@ function renderInline(text: string, keyBase: string): ReactNode[] {
 const HEADING = /^(#{1,6})\s+(.*)$/;
 const BOLD_LINE = /^\*\*(.+?)\*\*:?\s*$/;
 const BULLET = /^[-*•]\s+(.*)$/;
-const NUMBERED = /^\d+\.\s+(.*)$/;
+const NUMBERED = /^(\d+)\.\s+(.*)$/;
 
 export function FormattedText({
   text,
@@ -112,17 +112,21 @@ export function FormattedText({
 
     if (NUMBERED.test(raw)) {
       flushPara();
-      const items: string[] = [];
+      const items: { num: number; text: string }[] = [];
       while (idx < lines.length) {
         const match = NUMBERED.exec(lines[idx].trim());
         if (!match) break;
-        items.push(match[1]);
+        items.push({ num: Number(match[1]), text: match[2] });
         idx++;
       }
       blocks.push(
         <ol key={`ol${key}`} className="list-decimal space-y-1.5 pl-5">
           {items.map((it, n) => (
-            <li key={`ol${key}-${n}`}>{renderInline(it, `ol${key}-${n}`)}</li>
+            // value erhält die echte Nummer aus dem Text — sonst startet jede
+            // durch Leerzeilen getrennte Einzel-Liste wieder bei 1.
+            <li key={`ol${key}-${n}`} value={it.num}>
+              {renderInline(it.text, `ol${key}-${n}`)}
+            </li>
           ))}
         </ol>,
       );

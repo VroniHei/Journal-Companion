@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Button, Card } from "../components/ui";
 import { useSettings } from "../hooks/useData";
+import { useSpeech, useVoices } from "../hooks/useSpeech";
 import { updateSettings } from "../lib/settings";
 import { db } from "../db/dexie";
 import { exportAllJson } from "../lib/export";
@@ -34,6 +35,10 @@ const selectClass =
 
 export function Settings() {
   const s = useSettings();
+  const voices = useVoices();
+  const { supported: speechSupported, speak } = useSpeech({
+    voiceURI: s.speechVoiceURI,
+  });
 
   async function clearAll() {
     if (
@@ -141,6 +146,69 @@ export function Settings() {
             <option value="local">Lokal (später)</option>
           </select>
         </Row>
+      </Card>
+
+      <Card className="space-y-5">
+        <h2 className="text-sm font-medium text-[var(--muted)]">
+          Stimme &amp; Vorlesen
+        </h2>
+
+        {!speechSupported ? (
+          <p className="text-sm text-[var(--muted)]">
+            Dein Browser unterstützt keine Sprachausgabe (am besten Chrome oder
+            Edge).
+          </p>
+        ) : (
+          <>
+            <Row
+              label="Stimme"
+              hint="Die Auswahl hängt von deinem Betriebssystem ab. Lokale, männliche Stimmen klingen meist am ruhigsten."
+            >
+              <select
+                className={selectClass}
+                value={s.speechVoiceURI ?? ""}
+                onChange={(e) =>
+                  updateSettings({ speechVoiceURI: e.target.value || undefined })
+                }
+              >
+                <option value="">Automatisch (männlich, wenn vorhanden)</option>
+                {voices.map((v) => (
+                  <option key={v.voiceURI} value={v.voiceURI}>
+                    {v.name} ({v.lang})
+                    {v.localService ? " · lokal" : ""}
+                  </option>
+                ))}
+              </select>
+            </Row>
+
+            <Row
+              label="Automatisch vorlesen"
+              hint="Antworten des Begleiters (Reflexion & Chat) direkt vorlesen."
+            >
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={Boolean(s.autoSpeak)}
+                  onChange={(e) => updateSettings({ autoSpeak: e.target.checked })}
+                />
+                Antworten automatisch vorlesen
+              </label>
+            </Row>
+
+            <div>
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  speak(
+                    "Hallo. Ich bin dein Begleiter. So klingt meine Stimme, ruhig und in deinem Tempo.",
+                  )
+                }
+              >
+                Stimme testen
+              </Button>
+            </div>
+          </>
+        )}
       </Card>
 
       <Card className="space-y-3">

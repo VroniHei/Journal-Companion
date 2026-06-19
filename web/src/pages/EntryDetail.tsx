@@ -5,6 +5,7 @@ import { ReflectionView } from "../components/ReflectionView";
 import { SessionClose } from "../components/SessionClose";
 import { ChatThread } from "../components/ChatThread";
 import { useEntry, useSettings } from "../hooks/useData";
+import { useSpeech } from "../hooks/useSpeech";
 import {
   deleteEntry,
   recordStabilityMoment,
@@ -12,6 +13,7 @@ import {
 } from "../db/queries";
 import { formatDateTime } from "../lib/format";
 import { toPrefs } from "../lib/settings";
+import { stripMarkdown } from "../lib/text";
 import { streamReflect } from "../lib/apiClient";
 import { buildReflectionContext, clientRuminationHint } from "../lib/context";
 import { intentLabel } from "../lib/intents";
@@ -44,6 +46,7 @@ export function EntryDetail() {
   const [reflecting, setReflecting] = useState(false);
   const [streamText, setStreamText] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const { speak } = useSpeech({ voiceURI: settings.speechVoiceURI });
 
   if (entry === undefined) {
     return <p className="text-[var(--muted)]">Lädt…</p>;
@@ -81,6 +84,7 @@ export function EntryDetail() {
         crisisFlag: result.crisis,
         ruminationFlag: result.rumination,
       });
+      if (settings.autoSpeak && !result.crisis) speak(stripMarkdown(acc));
       // Gentle Gamification: stabilen Moment erfassen (kein Punkte-/Streak-System).
       if (!result.crisis) {
         if (result.rumination) {
@@ -89,7 +93,7 @@ export function EntryDetail() {
             "Schleife erkannt statt weiter gegrübelt",
             e.id,
           );
-        } else if (e.impulse === "ihm schreiben") {
+        } else if (e.impulse.includes("schreiben")) {
           recordStabilityMoment(
             "sortiert-vor-handeln",
             "Erst sortiert, bevor gehandelt",

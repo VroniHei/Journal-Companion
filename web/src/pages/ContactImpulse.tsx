@@ -5,6 +5,7 @@ import type {
 } from "@journal/shared";
 import { Button, Card, FieldLabel } from "../components/ui";
 import { DictationButton } from "../components/DictationButton";
+import { SpeakButton } from "../components/SpeakButton";
 import { ScaleField } from "../components/fields/ScaleField";
 import { ChipSelect } from "../components/fields/ChipSelect";
 import { useSettings } from "../hooks/useData";
@@ -177,7 +178,7 @@ export function ContactImpulse() {
 
       {result && (
         <Card className="space-y-4">
-          <div>
+          <div className="flex items-center justify-between gap-3">
             <span
               className="inline-block rounded-full px-3 py-1 text-sm font-medium"
               style={{
@@ -191,6 +192,20 @@ export function ContactImpulse() {
             >
               {REC_META[result.recommendation].label}
             </span>
+            <SpeakButton
+              text={[
+                result.reflection,
+                result.likelyNeed
+                  ? `Bedürfnis darunter: ${result.likelyNeed}`
+                  : "",
+                result.why ?? "",
+                result.nextStep
+                  ? `Kleiner nächster Schritt: ${result.nextStep}`
+                  : "",
+              ]
+                .filter(Boolean)
+                .join(". ")}
+            />
           </div>
 
           {result.reflection && (

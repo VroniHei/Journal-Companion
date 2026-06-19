@@ -5,8 +5,10 @@ import { DictationButton } from "./DictationButton";
 import { FormattedText } from "./FormattedText";
 import { SpeakButton } from "./SpeakButton";
 import { useMessages, useSettings } from "../hooks/useData";
+import { useSpeech } from "../hooks/useSpeech";
 import { addChatMessage, updateEntry } from "../db/queries";
 import { toPrefs } from "../lib/settings";
+import { stripMarkdown } from "../lib/text";
 import { streamChat } from "../lib/apiClient";
 
 function Bubble({
@@ -50,6 +52,7 @@ function Bubble({
 export function ChatThread({ entry }: { entry: JournalEntry }) {
   const messages = useMessages(entry.id);
   const settings = useSettings();
+  const { speak } = useSpeech({ voiceURI: settings.speechVoiceURI });
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [streamText, setStreamText] = useState("");
@@ -82,6 +85,7 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
         },
       );
       await addChatMessage(entry.id, "assistant", acc);
+      if (settings.autoSpeak) speak(stripMarkdown(acc));
       if (result.crisis && !entry.crisisFlag) {
         await updateEntry(entry.id, { crisisFlag: true });
       }

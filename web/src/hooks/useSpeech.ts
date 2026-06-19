@@ -1,32 +1,80 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 // Sprachausgabe per Browser (Web Speech API · SpeechSynthesis). Lokal, ohne
-// API-Key/Cloud. Wählt nach Möglichkeit eine deutsche Stimme und liest in
-// Satz-Häppchen vor (umgeht den Chrome-Abbruch bei langen Texten).
+// API-Key/Cloud. Wählt nach Möglichkeit eine deutsche (bevorzugt männliche)
+// Stimme, liest tief/ruhig und in Satz-Häppchen vor (umgeht den Chrome-Abbruch
+// bei langen Texten). Hinweis: Die Qualität hängt von den Stimmen des
+// Betriebssystems ab — für eine wirklich organische Stimme braucht es Cloud-TTS.
 
-function pickGermanVoice(): SpeechSynthesisVoice | null {
-  const voices = window.speechSynthesis.getVoices();
-  if (!voices.length) return null;
-  const de = voices.filter((v) => v.lang?.toLowerCase().startsWith("de"));
-  // Bevorzugt eine lokale/Standard-Stimme, sonst die erste deutsche.
-  return de.find((v) => v.localService) ?? de[0] ?? null;
+const MALE_HINTS = [
+  "stefan",
+  "conrad",
+  "markus",
+  "hans",
+  "viktor",
+  "klaus",
+  "bernd",
+  "fabian",
+  "jonas",
+  "male",
+  "männ",
+  "mann",
+];
+
+function germanVoices(): SpeechSynthesisVoice[] {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return [];
+  return window.speechSynthesis
+    .getVoices()
+    .filter((v) => v.lang?.toLowerCase().startsWith("de"));
 }
 
-export function useSpeech() {
+function pickVoice(preferredURI?: string): SpeechSynthesisVoice | null {
+  const de = germanVoices();
+  if (!de.length) return null;
+  if (preferredURI) {
+    const exact = de.find((v) => v.voiceURI === preferredURI);
+    if (exact) return exact;
+  }
+  const male = de.find((v) =>
+    MALE_HINTS.some((h) => v.name.toLowerCase().includes(h)),
+  );
+  if (male) return male;
+  return de.find((v) => v.localService) ?? de[0];
+}
+
+/** Reaktive Liste der verfügbaren deutschen Stimmen (für die Auswahl). */
+export function useVoices(): SpeechSynthesisVoice[] {
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const load = () => setVoices(germanVoices());
+    load();
+    window.speechSynthesis.addEventListener("voiceschanged", load);
+    return () =>
+      window.speechSynthesis.removeEventListener("voiceschanged", load);
+  }, []);
+  return voices;
+}
+
+export function useSpeech(opts?: {
+  voiceURI?: string;
+  rate?: number;
+  pitch?: number;
+}) {
   const supported =
     typeof window !== "undefined" && "speechSynthesis" in window;
   const [speaking, setSpeaking] = useState(false);
-  const voiceRef = useRef<SpeechSynthesisVoice | null>(null);
+  const optsRef = useRef(opts);
+  optsRef.current = opts;
 
   useEffect(() => {
     if (!supported) return;
-    const load = () => {
-      voiceRef.current = pickGermanVoice();
-    };
-    load();
-    window.speechSynthesis.addEventListener("voiceschanged", load);
+    // Stimmen vorab laden (manche Browser liefern sie erst nach diesem Event).
+    const warm = () => window.speechSynthesis.getVoices();
+    warm();
+    window.speechSynthesis.addEventListener("voiceschanged", warm);
     return () => {
-      window.speechSynthesis.removeEventListener("voiceschanged", load);
+      window.speechSynthesis.removeEventListener("voiceschanged", warm);
       window.speechSynthesis.cancel();
     };
   }, [supported]);
@@ -44,6 +92,11 @@ export function useSpeech() {
       if (!clean) return;
       window.speechSynthesis.cancel();
 
+      const voice = pickVoice(optsRef.current?.voiceURI);
+      // Tief & ruhig: etwas langsamer, tiefere Tonhöhe → weniger „Roboter".
+      const rate = optsRef.current?.rate ?? 0.9;
+      const pitch = optsRef.current?.pitch ?? 0.85;
+
       const chunks = clean.match(/[^.!?\n]+[.!?]*/g) ?? [clean];
       const parts = chunks.map((c) => c.trim()).filter(Boolean);
       if (!parts.length) return;
@@ -52,9 +105,9 @@ export function useSpeech() {
       parts.forEach((part, i) => {
         const u = new SpeechSynthesisUtterance(part);
         u.lang = "de-DE";
-        if (voiceRef.current) u.voice = voiceRef.current;
-        u.rate = 0.97;
-        u.pitch = 1;
+        if (voice) u.voice = voice;
+        u.rate = rate;
+        u.pitch = pitch;
         if (i === parts.length - 1) u.onend = () => setSpeaking(false);
         u.onerror = () => setSpeaking(false);
         window.speechSynthesis.speak(u);

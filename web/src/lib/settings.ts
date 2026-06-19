@@ -12,6 +12,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   maxResponseLength: "mittel",
   apiMode: "claude",
   highQualityMode: false,
+  autoSpeak: false,
 };
 
 export async function getSettings(): Promise<AppSettings> {

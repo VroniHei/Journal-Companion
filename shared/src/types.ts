@@ -131,6 +131,10 @@ export interface AppSettings {
   localModelEndpoint?: string;
   /** Bewusster High-Quality-Modus (nutzt Opus statt Sonnet). */
   highQualityMode?: boolean;
+  /** Antworten des Begleiters automatisch vorlesen (Sprachausgabe). */
+  autoSpeak?: boolean;
+  /** Bevorzugte Stimme für die Sprachausgabe (voiceURI der Web Speech API). */
+  speechVoiceURI?: string;
 }
 
 // ---------------------------------------------------------------------------

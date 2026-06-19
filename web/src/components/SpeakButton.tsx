@@ -1,9 +1,11 @@
 import { useSpeech } from "../hooks/useSpeech";
+import { useSettings } from "../hooks/useData";
 import { stripMarkdown } from "../lib/text";
 
 /**
  * „Vorlesen"-Button: liest den (Markdown-bereinigten) Text per Browser-
- * Sprachausgabe vor. Blendet sich aus, wenn der Browser das nicht unterstützt.
+ * Sprachausgabe vor — mit der in den Einstellungen gewählten Stimme.
+ * Blendet sich aus, wenn der Browser das nicht unterstützt.
  */
 export function SpeakButton({
   text,
@@ -12,7 +14,10 @@ export function SpeakButton({
   text: string;
   className?: string;
 }) {
-  const { supported, speaking, speak, stop } = useSpeech();
+  const settings = useSettings();
+  const { supported, speaking, speak, stop } = useSpeech({
+    voiceURI: settings.speechVoiceURI,
+  });
   if (!supported) return null;
 
   return (
