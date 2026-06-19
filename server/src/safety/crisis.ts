@@ -58,5 +58,6 @@ Bitte wende dich an jemanden, der jetzt für dich da sein kann.
 
 - Bei akuter Gefahr in Deutschland: 112
 - TelefonSeelsorge (kostenlos, rund um die Uhr): 0800 111 0 111 oder 0800 111 0 222
+- Nummer gegen Kummer (für junge Menschen): 116 111
 
 Wenn es geht, ruf eine Person an, der du vertraust, und bleib nicht allein damit. Du bist es wert, dass dir geholfen wird.`;

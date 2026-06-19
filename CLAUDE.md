@@ -46,6 +46,13 @@ docs/                     Protokoll, Learnings, Optimierungen (siehe unten)
    Skills passen, und sie einsetzen — ohne dass es extra angefordert wird.
    UI-Arbeit → `frontend-design`, `ui-ux-pro-max`, `web-design-guidelines`;
    Code-Struktur/Perf → `vercel-react-best-practices`, `vercel-composition-patterns`.
+   **Therapeutische/reflexive Inhalte** (Begleiter-Prompts, Übungen, Krisen-/
+   Reflexionslogik) → IMMER zuerst `therapist-safety` (Krisen-Check, nicht
+   umgehbar), dann je nach Anliegen `therapist` (Router) bzw. die Modalität
+   (`therapist-cbt/-dbt/-act/-sfbt/-mi/-assessments`); für ausführliche,
+   schrittweise CBT/DBT-Protokolle `cognitive-toolkit/references/` als kuratierte
+   Wissensbasis. Inhalte **kuratiert** übernehmen, nicht blind; keine Diagnosen,
+   keine Medikamenten-Tipps, klare Abgrenzung „kein Therapieersatz".
 2. **Qualitäts-Gate vor Commits.** `npm run build` (inkl. Typecheck) und
    `npm run lint` müssen grün sein, bevor committet wird.
 3. **Branch statt direkt `main`.** Feature-Arbeit auf einem Branch; `main`
