@@ -8,6 +8,7 @@ import { ContactImpulse } from "./pages/ContactImpulse";
 import { Patterns } from "./pages/Patterns";
 import { WeeklyReview } from "./pages/WeeklyReview";
 import { Settings } from "./pages/Settings";
+import { Search } from "./pages/Search";
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
       { path: "muster", element: <Patterns /> },
       { path: "wochenrueckblick", element: <WeeklyReview /> },
       { path: "einstellungen", element: <Settings /> },
+      { path: "suche", element: <Search /> },
     ],
   },
 ]);
