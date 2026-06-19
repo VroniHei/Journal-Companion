@@ -124,6 +124,8 @@ export type ApiMode = "claude" | "local";
 export interface AppSettings {
   id: string; // Singleton, z.B. "app"
   appName: string;
+  /** Vorname der Nutzerin für die persönliche Ansprache (z.B. „Vroni"). */
+  userName?: string;
   claudeModel: ClaudeModel;
   responseStyle: ResponseStyle;
   maxResponseLength: ResponseLength;

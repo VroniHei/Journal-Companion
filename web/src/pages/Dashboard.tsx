@@ -1,8 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
-import type { StartIntent } from "@journal/shared";
+import { useLiveQuery } from "dexie-react-hooks";
+import type { JournalEntry, StartIntent } from "@journal/shared";
 import { Card, Eyebrow } from "../components/ui";
 import { Sparkline } from "../components/Sparkline";
-import { useEntries } from "../hooks/useData";
+import { JournalCard } from "../components/JournalCard";
+import { useEntries, useSettings } from "../hooks/useData";
+import { listStabilityMoments } from "../db/queries";
 import { formatDateTime } from "../lib/format";
 import { INTENT_OPTIONS } from "../lib/intents";
 import {
@@ -26,6 +29,21 @@ function topTopics(topics: string[][]): [string, number][] {
   return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
 }
 
+function isToday(iso: string): boolean {
+  const d = new Date(iso);
+  const n = new Date();
+  return (
+    d.getFullYear() === n.getFullYear() &&
+    d.getMonth() === n.getMonth() &&
+    d.getDate() === n.getDate()
+  );
+}
+
+function avg(nums: number[]): number | null {
+  if (!nums.length) return null;
+  return Math.round((nums.reduce((a, b) => a + b, 0) / nums.length) * 10) / 10;
+}
+
 function StatTile({ value, label }: { value: string; label: string }) {
   return (
     <Card className="text-center">
@@ -35,9 +53,80 @@ function StatTile({ value, label }: { value: string; label: string }) {
   );
 }
 
+function TodayInFocus({
+  entries,
+  insight,
+}: {
+  entries: JournalEntry[];
+  insight?: string;
+}) {
+  const today = entries.filter((e) => isToday(e.createdAt));
+  const latest = today[0]; // entries sind absteigend sortiert
+
+  return (
+    <Card className="space-y-4">
+      <Eyebrow>Heute im Blick</Eyebrow>
+      {today.length === 0 ? (
+        <p className="text-sm text-[var(--muted)]">
+          Heute hast du noch nichts notiert. Wenn du magst, halt kurz fest, wie
+          es dir gerade geht.
+        </p>
+      ) : (
+        <>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <div className="text-xs text-[var(--muted)]">Hauptthema</div>
+              <div className="text-sm font-medium">
+                {topTopics(today.map((e) => e.topics))[0]?.[0] ?? "—"}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs text-[var(--muted)]">Ø Stimmung</div>
+              <div className="text-sm font-medium tabular-nums">
+                {avg(today.map((e) => e.mood)) ?? "—"}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs text-[var(--muted)]">Höchste Intensität</div>
+              <div className="text-sm font-medium tabular-nums">
+                {Math.max(...today.map((e) => e.intensity))}
+              </div>
+            </div>
+          </div>
+
+          {insight && (
+            <p className="text-sm">
+              <span className="font-medium">Mögliches Muster:</span> {insight}
+            </p>
+          )}
+
+          {latest?.supportiveImpulse && (
+            <p className="text-sm">
+              <span className="font-medium">Kleiner nächster Schritt:</span>{" "}
+              {latest.supportiveImpulse}
+            </p>
+          )}
+
+          {latest?.dontDoNow && latest.dontDoNow.length > 0 && (
+            <div className="rounded-lg border-l-2 border-l-[var(--clay)] bg-[var(--surface-2)] p-3">
+              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+                Was heute eher nicht hilft
+              </p>
+              <p className="text-sm">{latest.dontDoNow[0]}</p>
+            </div>
+          )}
+        </>
+      )}
+    </Card>
+  );
+}
+
 export function Dashboard() {
   const navigate = useNavigate();
   const entries = useEntries();
+  const settings = useSettings();
+  const name = settings.userName?.trim();
+  const moments = useLiveQuery(() => listStabilityMoments(), [], []);
   const last5 = entries.slice(0, 5);
   const topics = topTopics(entries.map((e) => e.topics));
   const hasData = entries.length > 0;
@@ -46,6 +135,11 @@ export function Dashboard() {
   const week = recentStats(entries, 7);
   const series = moodSeries(entries, 14);
   const insights = buildInsights(entries);
+
+  const closedIds = new Set<string>();
+  for (const m of moments) {
+    if (m.kind === "abschluss" && m.entryId) closedIds.add(m.entryId);
+  }
 
   function choose(intent: StartIntent) {
     if (intent === "ihm-schreiben") {
@@ -71,7 +165,8 @@ export function Dashboard() {
             Dein Raum
           </span>
           <h1 className="serif text-3xl font-semibold text-white">
-            {greeting()}.
+            {greeting()}
+            {name ? `, ${name}` : ""}.
           </h1>
           <p className="text-sm text-white/90">
             Was brauchst du <span className="g">gerade</span>?
@@ -91,6 +186,8 @@ export function Dashboard() {
           </button>
         ))}
       </div>
+
+      {hasData && <TodayInFocus entries={entries} insight={insights[0]} />}
 
       {hasData && (
         <div className="space-y-4">
@@ -174,6 +271,23 @@ export function Dashboard() {
         </div>
       )}
 
+      {moments.length > 0 && (
+        <Card className="space-y-3">
+          <Eyebrow>Stabile Schritte</Eyebrow>
+          <ul className="space-y-1.5 text-sm">
+            {moments.slice(0, 6).map((m) => (
+              <li key={m.id} className="flex items-baseline gap-2">
+                <span style={{ color: "var(--accent-text)" }}>•</span>
+                <span>{m.label}</span>
+                <span className="text-xs text-[var(--muted)]">
+                  {formatDateTime(m.createdAt)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+
       <div>
         <h2 className="mb-3 text-sm font-medium text-[var(--muted)]">
           Letzte Einträge
@@ -196,18 +310,7 @@ export function Dashboard() {
         ) : (
           <div className="space-y-3">
             {last5.map((e) => (
-              <Link key={e.id} to={`/eintrag/${e.id}`} className="block">
-                <Card className="lift hover:border-[var(--accent)]">
-                  <div className="mb-1 flex items-center gap-2 text-xs text-[var(--muted)]">
-                    <span>{formatDateTime(e.createdAt)}</span>
-                    <span>· Stimmung {e.mood}</span>
-                    {e.crisisFlag && (
-                      <span className="text-[var(--danger)]">· Schutzhinweis</span>
-                    )}
-                  </div>
-                  <p className="line-clamp-2 text-sm">{e.text}</p>
-                </Card>
-              </Link>
+              <JournalCard key={e.id} entry={e} closedIds={closedIds} />
             ))}
           </div>
         )}

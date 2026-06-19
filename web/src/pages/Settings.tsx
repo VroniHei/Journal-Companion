@@ -76,6 +76,18 @@ export function Settings() {
           />
         </Row>
 
+        <Row
+          label="Dein Name"
+          hint="Für die persönliche Ansprache (z.B. Vroni)."
+        >
+          <input
+            className={selectClass}
+            value={s.userName ?? ""}
+            placeholder="Vorname"
+            onChange={(e) => updateSettings({ userName: e.target.value })}
+          />
+        </Row>
+
         <Row label="Claude-Modell" hint="Sonnet ist Standard und kosteneffizient.">
           <select
             className={selectClass}

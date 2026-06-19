@@ -7,6 +7,7 @@ const SETTINGS_ID = "app";
 export const DEFAULT_SETTINGS: AppSettings = {
   id: SETTINGS_ID,
   appName: APP_NAME,
+  userName: "",
   claudeModel: "claude-sonnet-4-6", // Standard: kosteneffizient
   responseStyle: "klar",
   maxResponseLength: "mittel",
