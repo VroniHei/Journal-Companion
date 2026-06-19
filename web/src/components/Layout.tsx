@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { DisclaimerGate } from "./DisclaimerGate";
 import { useSettings } from "../hooks/useData";
 
@@ -14,8 +14,16 @@ const navItems = [
 
 export function Layout() {
   const settings = useSettings();
+  const { pathname } = useLocation();
+  // Dashboard & Muster nutzen die breite Web-Ansicht (Bento). Lese-/Formular-
+  // seiten bleiben schmal — bessere Lesbarkeit langer Zeilen.
+  const wide = pathname === "/" || pathname.startsWith("/muster");
   return (
-    <div className="mx-auto flex min-h-screen max-w-3xl flex-col px-5 py-6">
+    <div
+      className={`mx-auto flex min-h-screen flex-col px-5 py-6 ${
+        wide ? "max-w-7xl" : "max-w-3xl"
+      }`}
+    >
       <DisclaimerGate />
       <header className="glass sticky top-3 z-40 mb-8 rounded-[24px] border border-[var(--border)] px-5 py-4 shadow-[var(--shadow-card)]">
         <NavLink to="/" aria-label={settings.appName} className="inline-block">
