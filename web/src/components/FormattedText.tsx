@@ -69,6 +69,20 @@ export function FormattedText({
       continue;
     }
 
+    // Trennlinie (--- / *** / ___) → feine Hairline statt sichtbarer Striche.
+    if (/^(-{3,}|\*{3,}|_{3,})$/.test(raw)) {
+      flushPara();
+      blocks.push(
+        <hr
+          key={`hr${key}`}
+          className="border-0 border-t border-[var(--border)]"
+        />,
+      );
+      key++;
+      idx++;
+      continue;
+    }
+
     const heading = HEADING.exec(raw);
     const boldLine = BOLD_LINE.exec(raw);
     if (heading || boldLine) {
@@ -77,7 +91,7 @@ export function FormattedText({
       blocks.push(
         <p
           key={`h${key}`}
-          className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]"
+          className="text-[0.95em] font-semibold leading-snug text-[var(--foreground)] [&:not(:first-child)]:mt-4"
         >
           {label}
         </p>,
@@ -97,7 +111,7 @@ export function FormattedText({
         idx++;
       }
       blocks.push(
-        <ul key={`ul${key}`} className="space-y-1.5">
+        <ul key={`ul${key}`} className="space-y-2">
           {items.map((it, n) => (
             <li key={`ul${key}-${n}`} className="flex gap-2.5">
               <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" />
@@ -120,7 +134,7 @@ export function FormattedText({
         idx++;
       }
       blocks.push(
-        <ol key={`ol${key}`} className="list-decimal space-y-1.5 pl-5">
+        <ol key={`ol${key}`} className="list-decimal space-y-2 pl-5">
           {items.map((it, n) => (
             // value erhält die echte Nummer aus dem Text — sonst startet jede
             // durch Leerzeilen getrennte Einzel-Liste wieder bei 1.
@@ -139,5 +153,7 @@ export function FormattedText({
   }
   flushPara();
 
-  return <div className={`space-y-2.5 leading-relaxed ${className}`}>{blocks}</div>;
+  return (
+    <div className={`space-y-3.5 leading-7 ${className}`}>{blocks}</div>
+  );
 }
