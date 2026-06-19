@@ -4,9 +4,8 @@
 // Ist sie nicht gesetzt, bleibt die Seite offen (z. B. lokale Entwicklung).
 
 export const config = {
-  // Auf alles anwenden außer Vercel-Interna, Favicon und dem harmlosen
-  // Diagnose-Endpunkt /api/config (liefert nur true/false-Flags).
-  matcher: ["/((?!_vercel/|favicon|api/config).*)"],
+  // Auf alles anwenden außer Vercel-Interna und Favicon.
+  matcher: ["/((?!_vercel/|favicon).*)"],
 };
 
 export default function middleware(request: Request): Response | undefined {
