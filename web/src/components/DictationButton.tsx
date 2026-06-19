@@ -65,26 +65,33 @@ export function DictationButton({
     : active
       ? "Hört zu… (stopp)"
       : "Sprechen";
+  const err = useServer ? server.error : null;
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-pressed={active}
-      disabled={busy}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition disabled:opacity-60 ${className}`}
-      style={{
-        borderColor: active ? "var(--danger)" : "var(--border)",
-        background: active
-          ? "color-mix(in srgb, var(--danger) 12%, transparent)"
-          : "transparent",
-        color: active ? "var(--danger)" : "var(--foreground)",
-      }}
-    >
-      <span aria-hidden="true" className={active || busy ? "animate-pulse" : ""}>
-        {busy ? "⋯" : active ? "●" : "🎙"}
-      </span>
-      {label}
-    </button>
+    <span className="inline-flex flex-col items-start gap-1">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-pressed={active}
+        disabled={busy}
+        className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition disabled:opacity-60 ${className}`}
+        style={{
+          borderColor: active ? "var(--danger)" : "var(--border)",
+          background: active
+            ? "color-mix(in srgb, var(--danger) 12%, transparent)"
+            : "transparent",
+          color: active ? "var(--danger)" : "var(--foreground)",
+        }}
+      >
+        <span
+          aria-hidden="true"
+          className={active || busy ? "animate-pulse" : ""}
+        >
+          {busy ? "⋯" : active ? "●" : "🎙"}
+        </span>
+        {label}
+      </button>
+      {err && <span className="text-xs text-[var(--danger)]">{err}</span>}
+    </span>
   );
 }

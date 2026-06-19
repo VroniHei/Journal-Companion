@@ -27,8 +27,15 @@ sttRouter.post(
     try {
       const type =
         (req.headers["content-type"] as string | undefined) ?? "audio/webm";
+      const ext = type.includes("mp4")
+        ? "mp4"
+        : type.includes("ogg")
+          ? "ogg"
+          : type.includes("mpeg") || type.includes("mp3")
+            ? "mp3"
+            : "webm";
       const form = new FormData();
-      form.append("file", new Blob([buf], { type }), "aufnahme.webm");
+      form.append("file", new Blob([buf], { type }), `aufnahme.${ext}`);
       form.append("model_id", "scribe_v1");
       form.append("language_code", "de");
 
