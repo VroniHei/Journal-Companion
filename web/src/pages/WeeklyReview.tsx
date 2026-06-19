@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import type { PatternSummary } from "@journal/shared";
 import { Button, Card } from "../components/ui";
+import { FormattedText } from "../components/FormattedText";
 import { useEntries, useSettings } from "../hooks/useData";
 import { listPatternsDesc, savePattern, toDigest } from "../db/queries";
 import { toPrefs } from "../lib/settings";
@@ -141,9 +142,7 @@ export function WeeklyReview() {
 
       {summary && (
         <Card className="space-y-4">
-          <div className="whitespace-pre-wrap text-[15px] leading-relaxed">
-            {summary}
-          </div>
+          <FormattedText text={summary} className="text-[15px]" />
           <div className="flex flex-wrap items-center gap-3">
             <Button variant="ghost" onClick={save} disabled={savedHint}>
               {savedHint ? "Gespeichert ✓" : "Rückblick speichern"}
