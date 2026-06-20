@@ -431,3 +431,18 @@ Geräte-Sync (SYNC_TABLES + Server-Enum), inkl. Lösch-Sync.
 
 **Ergebnis/Status:** `npm run build` + `npm run lint` grün; esbuild-Bundle ok.
 Damit sind Open Loops UND Decision Review umgesetzt.
+
+## STT: freundlicher Guthaben-Fehler + Browser-Fallback
+
+**Was:** Bei aufgebrauchtem ElevenLabs-Guthaben (HTTP 401 quota_exceeded) gab es
+einen rohen JSON-Fehler. Jetzt: Server erkennt quota/credits → ruhige Meldung
+(„Das Sprach-Guthaben ist gerade aufgebraucht. Tippe deinen Text …", code
+"quota", Status 402). Im `DictationButton` erscheint nach jedem Server-STT-Fehler
+ein Knopf „Stattdessen Browser-Mikrofon nutzen" (wenn der Browser
+Spracherkennung unterstützt) → man hängt nicht fest.
+
+**Warken:** Lange Sprachaufnahmen kosten viele ElevenLabs-Credits; Free-Tier ist
+schnell aufgebraucht. Fallback hilft v.a. auf Desktop (Chrome/Edge); auf iOS
+ohne Browser-STT bleibt der Hinweis aufs Tippen.
+
+**Ergebnis/Status:** `npm run build` + `npm run lint` grün; esbuild-Bundle ok.

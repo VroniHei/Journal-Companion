@@ -22,6 +22,9 @@ export function DictationButton({
   const valueRef = useRef(value);
   valueRef.current = value;
   const [cloud, setCloud] = useState(false);
+  // Nach einem Server-STT-Fehler (z.B. Guthaben leer) kann auf das
+  // Browser-Mikrofon umgeschaltet werden, damit man nicht festhängt.
+  const [forceBrowser, setForceBrowser] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -43,7 +46,7 @@ export function DictationButton({
   const server = useServerDictation(common);
   const browser = useDictation(common);
 
-  const useServer = cloud && server.supported;
+  const useServer = cloud && server.supported && !forceBrowser;
 
   if (!useServer && !browser.supported && !server.supported) {
     return (
@@ -119,6 +122,18 @@ export function DictationButton({
         </span>
       )}
       {err && <span className="text-xs text-[var(--danger)]">{err}</span>}
+      {err && browser.supported && (
+        <button
+          type="button"
+          onClick={() => {
+            setForceBrowser(true);
+            browser.toggle();
+          }}
+          className="text-xs font-medium text-[var(--accent-text)] hover:underline"
+        >
+          Stattdessen Browser-Mikrofon nutzen
+        </button>
+      )}
     </span>
   );
 }
