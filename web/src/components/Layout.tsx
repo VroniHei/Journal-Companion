@@ -2,6 +2,7 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { DisclaimerGate } from "./DisclaimerGate";
 import { useSettings } from "../hooks/useData";
+import { useSyncStatus } from "../hooks/useSync";
 
 function Icon({ d, size = 22 }: { d: ReactNode; size?: number }) {
   return (
@@ -68,6 +69,7 @@ const PROFILE_LINKS = [
 
 export function Layout() {
   const settings = useSettings();
+  const sync = useSyncStatus();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [q, setQ] = useState("");
@@ -115,7 +117,9 @@ export function Layout() {
         </span>
         <div className="min-w-0">
           <div className="truncate text-sm font-semibold">{name}</div>
-          <div className="text-xs text-[var(--muted)]">Alles bleibt lokal</div>
+          <div className="text-xs text-[var(--muted)]">
+            {sync.state === "off" ? "Alles bleibt lokal" : "Geräte abgeglichen"}
+          </div>
         </div>
       </div>
       <div className="mx-3 h-px bg-[var(--border)]" />
@@ -231,7 +235,10 @@ export function Layout() {
           <Outlet />
         </div>
         <footer className="mt-12 text-center text-xs text-[var(--muted)]">
-          Kein Ersatz für Therapie · Deine Einträge bleiben lokal auf diesem Gerät.
+          Kein Ersatz für Therapie ·{" "}
+          {sync.state === "off"
+            ? "Deine Einträge bleiben lokal auf diesem Gerät."
+            : "Deine Einträge gleichen sich sicher zwischen deinen Geräten ab."}
         </footer>
       </main>
 

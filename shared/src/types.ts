@@ -362,3 +362,34 @@ export interface PatternInsightsRequest {
 export interface PatternInsightsResponse {
   patterns: PatternInsightDraft[];
 }
+
+// --- Geräte-Sync ----------------------------------------------------------
+// Generischer Sync über alle synchronisierten Tabellen. Pro Datensatz wird nur
+// ein „kind" (Tabellenname), eine id, ein Versions-Zeitstempel (ISO) und der
+// rohe Datensatz übertragen. Der Server speichert das als Union; gemerged wird
+// per Last-Write-Wins (neuerer updatedAt gewinnt). Geräte-spezifische Daten
+// (z.B. Einstellungen, Stimme) werden bewusst NICHT synchronisiert.
+
+export type SyncKind =
+  | "entries"
+  | "chatMessages"
+  | "patternSummaries"
+  | "stabilityMoments"
+  | "patternInsights";
+
+export interface SyncRecord {
+  kind: SyncKind;
+  id: string;
+  /** Versions-Zeitstempel (ISO). Bei änderbaren Daten updatedAt, sonst createdAt. */
+  updatedAt: string;
+  /** Der vollständige Datensatz (so wie er lokal in Dexie liegt). */
+  data: unknown;
+}
+
+export interface SyncPullResponse {
+  records: SyncRecord[];
+}
+
+export interface SyncPushRequest {
+  records: SyncRecord[];
+}

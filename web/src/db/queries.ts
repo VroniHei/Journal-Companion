@@ -12,6 +12,7 @@ import type {
   StabilityMoment,
 } from "@journal/shared";
 import { createId, nowIso } from "../lib/ids";
+import { notifyDataChanged } from "../lib/sync";
 
 // --- Einträge -------------------------------------------------------------
 
@@ -52,6 +53,7 @@ export async function createEntry(input: NewEntryInput): Promise<JournalEntry> {
     ...input,
   };
   await db.entries.put(entry);
+  notifyDataChanged();
   return entry;
 }
 
@@ -66,6 +68,7 @@ export async function updateEntry(
   const current = await db.entries.get(id);
   if (!current) return;
   await db.entries.put({ ...current, ...patch, id, updatedAt: nowIso() });
+  notifyDataChanged();
 }
 
 export async function deleteEntry(id: string): Promise<void> {
@@ -73,6 +76,7 @@ export async function deleteEntry(id: string): Promise<void> {
     await db.chatMessages.where("entryId").equals(id).delete();
     await db.entries.delete(id);
   });
+  notifyDataChanged();
 }
 
 export function listEntriesDesc(): Promise<JournalEntry[]> {
@@ -94,6 +98,7 @@ export async function addChatMessage(
     createdAt: nowIso(),
   };
   await db.chatMessages.put(msg);
+  notifyDataChanged();
   return msg;
 }
 
@@ -118,6 +123,7 @@ export async function getLatestPattern(): Promise<PatternSummary | null> {
 
 export async function savePattern(p: PatternSummary): Promise<void> {
   await db.patternSummaries.put(p);
+  notifyDataChanged();
 }
 
 // --- Gentle Gamification: stabile Momente -------------------------------
@@ -134,6 +140,7 @@ export async function recordStabilityMoment(
     label,
     entryId,
   });
+  notifyDataChanged();
 }
 
 export function listStabilityMoments(): Promise<StabilityMoment[]> {
@@ -217,6 +224,7 @@ export async function savePatternInsights(
     userConfirmed: null,
   }));
   await db.patternInsights.bulkPut(records);
+  notifyDataChanged();
   return records;
 }
 
@@ -230,12 +238,15 @@ export async function setPatternFeedback(
       feedback === "passt" ? true : feedback === "passt-nicht" ? false : null,
     updatedAt: nowIso(),
   });
+  notifyDataChanged();
 }
 
 export async function setPatternNotes(id: string, notes: string): Promise<void> {
   await db.patternInsights.update(id, { userNotes: notes, updatedAt: nowIso() });
+  notifyDataChanged();
 }
 
 export async function deletePatternInsight(id: string): Promise<void> {
   await db.patternInsights.delete(id);
+  notifyDataChanged();
 }

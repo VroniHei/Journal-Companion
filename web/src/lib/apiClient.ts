@@ -6,6 +6,8 @@ import type {
   PatternInsightsRequest,
   PatternInsightsResponse,
   ReflectRequest,
+  SyncPullResponse,
+  SyncRecord,
   WeeklyReviewRequest,
   WeeklyReviewResponse,
   VoiceReflectRequest,
@@ -16,6 +18,7 @@ export async function getConfig(): Promise<{
   hasApiKey: boolean;
   hasTts: boolean;
   hasStt: boolean;
+  hasSync: boolean;
 }> {
   try {
     const r = await fetch("/api/config");
@@ -24,9 +27,38 @@ export async function getConfig(): Promise<{
       hasApiKey: Boolean(data.hasApiKey),
       hasTts: Boolean(data.hasTts),
       hasStt: Boolean(data.hasStt),
+      hasSync: Boolean(data.hasSync),
     };
   } catch {
-    return { hasApiKey: false, hasTts: false, hasStt: false };
+    return { hasApiKey: false, hasTts: false, hasStt: false, hasSync: false };
+  }
+}
+
+/** Holt alle (oder ab `since` geänderten) Sync-Datensätze vom Server. */
+export async function pullSync(since?: string): Promise<SyncRecord[]> {
+  const url = since
+    ? `/api/sync/pull?since=${encodeURIComponent(since)}`
+    : "/api/sync/pull";
+  const res = await fetch(url);
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}) as { error?: string });
+    throw new Error(data.error ?? `Fehler ${res.status}`);
+  }
+  const data = (await res.json()) as SyncPullResponse;
+  return data.records ?? [];
+}
+
+/** Schickt neuere lokale Datensätze an den Server (Upsert). */
+export async function pushSync(records: SyncRecord[]): Promise<void> {
+  if (records.length === 0) return;
+  const res = await fetch("/api/sync/push", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ records }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}) as { error?: string });
+    throw new Error(data.error ?? `Fehler ${res.status}`);
   }
 }
 

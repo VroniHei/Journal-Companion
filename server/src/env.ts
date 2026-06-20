@@ -16,6 +16,11 @@ export const env = {
   // Standard: „Brian" — tiefe, warme, natürliche männliche Stimme
   // (per ELEVENLABS_VOICE_ID überschreibbar).
   elevenLabsVoiceId: process.env.ELEVENLABS_VOICE_ID ?? "nPczCjzI2devNBz1zQrb",
+  // Geräte-Sync (Supabase Postgres) — optional. Nur server-seitig. Wenn gesetzt,
+  // gleicht die App Einträge/Chats/Muster zwischen Geräten ab. Der Service-Key
+  // ist geheim und darf NIE ins Frontend.
+  supabaseUrl: (process.env.SUPABASE_URL ?? "").trim(),
+  supabaseServiceKey: (process.env.SUPABASE_SERVICE_ROLE_KEY ?? "").trim(),
 };
 
 export function hasApiKey(): boolean {
@@ -29,4 +34,9 @@ export function hasTts(): boolean {
 // Speech-to-Text nutzt denselben ElevenLabs-Key (Scribe).
 export function hasStt(): boolean {
   return env.elevenLabsApiKey.trim().length > 0;
+}
+
+// Geräte-Sync ist aktiv, sobald Supabase-URL und Service-Key gesetzt sind.
+export function hasSync(): boolean {
+  return env.supabaseUrl.length > 0 && env.supabaseServiceKey.length > 0;
 }

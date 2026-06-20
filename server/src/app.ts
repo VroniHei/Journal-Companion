@@ -1,5 +1,5 @@
 import express from "express";
-import { hasApiKey, hasStt, hasTts } from "./env";
+import { hasApiKey, hasStt, hasSync, hasTts } from "./env";
 import { reflectRouter } from "./routes/reflect";
 import { chatRouter } from "./routes/chat";
 import { contactImpulseRouter } from "./routes/contactImpulse";
@@ -8,6 +8,7 @@ import { voiceReflectRouter } from "./routes/voiceReflect";
 import { ttsRouter } from "./routes/tts";
 import { sttRouter } from "./routes/stt";
 import { patternInsightsRouter } from "./routes/patternInsights";
+import { syncRouter } from "./routes/sync";
 
 // Die konfigurierte Express-App — ohne `listen`, damit sie sowohl lokal
 // (server/src/index.ts) als auch als Vercel-Serverless-Funktion (api/index.ts)
@@ -22,7 +23,12 @@ app.get("/api/health", (_req, res) => {
 
 // Config: sagt dem Frontend u.a., ob der API-Key gesetzt ist (ohne den Key zu senden).
 app.get("/api/config", (_req, res) => {
-  res.json({ hasApiKey: hasApiKey(), hasTts: hasTts(), hasStt: hasStt() });
+  res.json({
+    hasApiKey: hasApiKey(),
+    hasTts: hasTts(),
+    hasStt: hasStt(),
+    hasSync: hasSync(),
+  });
 });
 
 // API-Routen
@@ -34,5 +40,6 @@ app.use("/api", voiceReflectRouter);
 app.use("/api", ttsRouter);
 app.use("/api", sttRouter);
 app.use("/api", patternInsightsRouter);
+app.use("/api", syncRouter);
 
 export default app;

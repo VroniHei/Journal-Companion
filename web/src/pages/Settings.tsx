@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 import { Button, Card } from "../components/ui";
 import { useSettings } from "../hooks/useData";
+import { useSyncStatus } from "../hooks/useSync";
 import { useSpeech, useVoices } from "../hooks/useSpeech";
 import { updateSettings } from "../lib/settings";
+import { syncNow } from "../lib/sync";
 import { db } from "../db/dexie";
 import { exportAllJson } from "../lib/export";
 import type {
@@ -35,6 +37,7 @@ const selectClass =
 
 export function Settings() {
   const s = useSettings();
+  const sync = useSyncStatus();
   const voices = useVoices();
   const {
     supported: speechSupported,
@@ -232,11 +235,55 @@ export function Settings() {
         )}
       </Card>
 
+      <Card className="space-y-4">
+        <h2 className="text-sm font-medium text-[var(--muted)]">Geräte-Sync</h2>
+        {sync.state === "off" ? (
+          <p className="text-sm text-[var(--muted)]">
+            Der Geräte-Abgleich ist aktuell nicht eingerichtet. Deine Einträge
+            bleiben lokal auf diesem Gerät. Sobald der Sync auf dem Server
+            konfiguriert ist, gleichen sich Handy und Desktop automatisch ab.
+          </p>
+        ) : (
+          <>
+            <p className="text-sm">
+              Deine Einträge, Gespräche und Muster gleichen sich automatisch
+              zwischen deinen Geräten ab. Stimme und andere Geräte-Einstellungen
+              bleiben lokal.
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button
+                variant="ghost"
+                onClick={() => void syncNow()}
+                disabled={sync.state === "syncing"}
+              >
+                {sync.state === "syncing"
+                  ? "Synchronisiere…"
+                  : "Jetzt synchronisieren"}
+              </Button>
+              <span className="text-xs text-[var(--muted)]">
+                {sync.state === "error"
+                  ? `Fehler: ${sync.error}`
+                  : sync.lastSync
+                    ? `Zuletzt abgeglichen: ${new Date(
+                        sync.lastSync,
+                      ).toLocaleString("de-DE", {
+                        dateStyle: "short",
+                        timeStyle: "short",
+                      })} Uhr`
+                    : "Noch nicht abgeglichen."}
+              </span>
+            </div>
+          </>
+        )}
+      </Card>
+
       <Card className="space-y-3">
         <h2 className="text-sm font-medium text-[var(--muted)]">Daten</h2>
         <p className="text-sm">
-          Deine Einträge liegen ausschließlich lokal in diesem Browser. Du kannst
-          sie jederzeit als Sicherung exportieren oder alles löschen.
+          {sync.state === "off"
+            ? "Deine Einträge liegen ausschließlich lokal in diesem Browser."
+            : "Deine Einträge liegen lokal und werden zusätzlich zwischen deinen Geräten abgeglichen."}{" "}
+          Du kannst sie jederzeit als Sicherung exportieren oder alles löschen.
         </p>
         <div className="flex flex-wrap gap-2">
           <Button variant="ghost" onClick={exportAllJson}>

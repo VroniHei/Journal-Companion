@@ -35,3 +35,17 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 - ✅ Export (Markdown je Eintrag/Wochenrückblick, JSON für alle Daten).
 - ✅ Unit-Tests für Krisen-/Grübel-Heuristik (Vitest, 10 grün).
 - ✅ Barrierefreiheit-Basis: sichtbarer Fokus, reduzierte Bewegung.
+
+## Geräte-Sync (Folgearbeiten)
+
+- 🟢 **Lösch-Propagation (Tombstones):** Sync v1 ist Union-only — auf Gerät A
+  gelöschte Einträge kommen von Gerät B zurück. `deleted`-Spalte existiert bereits
+  serverseitig; es fehlt der clientseitige Tombstone-Pfad (Soft-Delete statt
+  Dexie-`delete`, plus Anwenden eingehender Tombstones).
+- 🟢 **Konfliktfeste Push-Logik:** aktuell plain Upsert; bei seltenem Parallel-
+  Edit desselben Datensatzes greift Last-Write-Wins. Optional conditional Upsert
+  per Supabase-RPC (`excluded.updated_at >= updated_at`).
+- 🟢 **Echte Konten / E2E-Verschlüsselung:** falls später mehr als Single-User
+  oder höhere Vertraulichkeit gewünscht ist (Supabase Auth + RLS).
+- 🟢 **Inkrementeller Pull** per `since`-Cursor (Param ist serverseitig schon da)
+  statt Voll-Pull, sobald die Datenmenge wächst.

@@ -291,3 +291,30 @@ Reizüberflutung im Eintragsformular; ein Dashboard, das eigene Muster spiegelt.
 
 **Offen:** Bilder ggf. auf weitere Seiten (Muster/Wochenrückblick/Kontaktimpuls);
 Insights um KI-gestützte Beobachtungen erweitern; Monatsansicht des Verlaufs.
+
+## Geräte-Sync (Handy ↔ Desktop)
+
+**Was:** Optionaler Cloud-Sync, damit auf allen Geräten dieselben Einträge
+erscheinen. Server-seitiger Proxy `/api/sync` (pull/push) auf eine Supabase-
+Postgres-Tabelle (`sync_records`), generisch über alle Tabellen
+(entries, chatMessages, patternSummaries, stabilityMoments, patternInsights).
+Client-Engine (`web/src/lib/sync.ts`): pull → merge (Last-Write-Wins per ISO-
+Zeitstempel) → push. Lauf bei Start, alle 30 s, bei Tab-Fokus und entprellt nach
+jeder Änderung (`notifyDataChanged` in den Mutations-Queries). Status + manueller
+Button in den Einstellungen (`useSync`).
+
+**Warum:** Daten lagen pro Gerät in IndexedDB → Handy und Desktop zeigten
+verschiedene Einträge. Single-User hinter dem Passwort-Gate, daher ohne
+zusätzliche Konten; der Service-Role-Key bleibt server-seitig.
+
+**Datenschutz:** „alles lokal" gilt nur noch ohne konfigurierten Sync. Mit Sync
+liegen Einträge zusätzlich in Supabase (EU/Frankfurt). UI-Texte (Footer, Profil,
+Einstellungen) sind sync-bewusst. Einstellungen/Stimme bleiben geräte-lokal.
+
+**Setup:** `docs/SUPABASE_SYNC.md` (Tabelle + `SUPABASE_URL` /
+`SUPABASE_SERVICE_ROLE_KEY` in Vercel-Env). Ohne diese Werte bleibt alles lokal.
+
+**Ergebnis/Status:** `npm run build` + `npm run lint` grün; esbuild-Bundle (Vercel)
+ok. Aktiv, sobald die Env-Vars hinterlegt sind.
+
+**Offen:** Lösch-Propagation (Tombstones); evtl. echte Konten/Verschlüsselung.
