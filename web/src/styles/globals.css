@@ -113,6 +113,20 @@ body::before {
   }
 }
 
+/* Sanfter Glow-Puls für den zentralen FAB (App-Style). */
+.fab-glow {
+  animation: glowPulse 4s var(--ease-out) infinite;
+}
+@keyframes glowPulse {
+  0%,
+  100% {
+    box-shadow: 0 8px 20px rgba(110, 155, 44, 0.32);
+  }
+  50% {
+    box-shadow: 0 12px 30px rgba(110, 155, 44, 0.5);
+  }
+}
+
 /* Glasmorphismus: halbtransparente, geblurrte Flächen — nur noch für die
    Top-Leiste (ruhiger, wie im Claude-Design). Karten sind klar weiß. */
 .glass {

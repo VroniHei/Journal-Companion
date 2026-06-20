@@ -262,20 +262,42 @@ export function Layout() {
       </main>
 
       {/* ===== Mobile Tab-Leiste ===== */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-start justify-around border-t border-[var(--border)] bg-[color-mix(in_srgb,var(--background)_92%,transparent)] px-3 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur-md sm:hidden">
-        {[NAV[0], NAV[1]].map((item) => (
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-[var(--border)] bg-[rgba(248,245,238,0.86)] px-3 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur-[14px] sm:hidden">
+        {[NAV[0], NAV[1], NAV[3]].map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.end}
-            className={({ isActive }) =>
-              `flex w-14 flex-col items-center gap-1 pt-1 ${
-                isActive ? "text-[var(--foreground)]" : "text-[var(--muted)]"
-              }`
-            }
+            className="flex w-16 flex-col items-center gap-1 pt-0.5"
+            style={{ order: item.to === "/wochenrueckblick" ? 4 : 0 }}
           >
-            <Icon d={item.icon} size={22} />
-            <span className="text-[10.5px] font-medium">{item.label}</span>
+            {({ isActive }) => (
+              <>
+                <span
+                  className="flex h-9 w-12 items-center justify-center rounded-full transition"
+                  style={
+                    isActive
+                      ? {
+                          background: "linear-gradient(180deg,#F0F4E6,#E6EED3)",
+                          boxShadow: "inset 0 0 0 1.5px rgba(110,155,44,0.45)",
+                          color: "var(--foreground)",
+                        }
+                      : { color: "var(--muted)" }
+                  }
+                >
+                  <Icon d={item.icon} size={21} />
+                </span>
+                <span
+                  className={`text-[10.5px] ${
+                    isActive
+                      ? "font-semibold text-[var(--foreground)]"
+                      : "font-medium text-[var(--muted)]"
+                  }`}
+                >
+                  {item.label}
+                </span>
+              </>
+            )}
           </NavLink>
         ))}
 
@@ -283,30 +305,25 @@ export function Layout() {
           type="button"
           onClick={() => navigate("/neu")}
           aria-label="Neuer Eintrag"
-          className="-mt-5 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-contrast)] shadow-[0_8px_20px_rgba(110,155,44,0.35)]"
+          style={{
+            order: 3,
+            background: "linear-gradient(180deg,#bdf06a,#8ed03a)",
+          }}
+          className="fab-glow -mt-7 flex h-[58px] w-[58px] items-center justify-center rounded-full text-[var(--accent-contrast)]"
         >
           <Icon d={ICONS.plus} size={24} />
         </button>
 
-        <NavLink
-          to="/wochenrueckblick"
-          className={({ isActive }) =>
-            `flex w-14 flex-col items-center gap-1 pt-1 ${
-              isActive ? "text-[var(--foreground)]" : "text-[var(--muted)]"
-            }`
-          }
-        >
-          <Icon d={ICONS.calendar} size={22} />
-          <span className="text-[10.5px] font-medium">Rückblick</span>
-        </NavLink>
-
         <button
           type="button"
           onClick={() => setProfileOpen(true)}
-          className="flex w-14 flex-col items-center gap-1 pt-1 text-[var(--muted)]"
+          style={{ order: 5 }}
+          className="flex w-16 flex-col items-center gap-1 pt-0.5 text-[var(--muted)]"
         >
-          <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[var(--sage,#9BA383)] text-[11px] font-semibold text-white">
-            {initial}
+          <span className="flex h-9 w-12 items-center justify-center">
+            <span className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-[var(--sage,#9BA383)] text-[11px] font-semibold text-white">
+              {initial}
+            </span>
           </span>
           <span className="text-[10.5px] font-medium">Du</span>
         </button>
