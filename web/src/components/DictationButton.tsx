@@ -131,11 +131,15 @@ export function DictationButton({
         </span>
       )}
       {busy && (
-        <span className="text-xs text-[var(--muted)]">
+        <span aria-live="polite" className="text-xs text-[var(--muted)]">
           Transkribiere auf Deutsch…
         </span>
       )}
-      {err && <span className="text-xs text-[var(--danger)]">{err}</span>}
+      {err && (
+        <span role="alert" className="text-xs text-[var(--danger)]">
+          {err}
+        </span>
+      )}
       {err && browser.supported && (
         <button
           type="button"

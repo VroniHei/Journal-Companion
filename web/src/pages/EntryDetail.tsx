@@ -197,7 +197,9 @@ export function EntryDetail() {
 
       {error && (
         <Card className="border-l-2 border-l-[var(--danger)]">
-          <p className="text-sm text-[var(--danger)]">{error}</p>
+          <p role="alert" className="text-sm text-[var(--danger)]">
+            {error}
+          </p>
         </Card>
       )}
 

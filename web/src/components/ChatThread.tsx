@@ -113,7 +113,11 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
         </div>
       )}
 
-      {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
+      {error && (
+        <p role="alert" className="text-sm text-[var(--danger)]">
+          {error}
+        </p>
+      )}
 
       <div className="flex gap-2">
         <textarea

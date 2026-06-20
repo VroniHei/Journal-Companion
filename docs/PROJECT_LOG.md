@@ -475,3 +475,19 @@ Import einen Geräte-Sync aus (`notifyDataChanged`).
 Sicherheitsnetz.
 
 **Ergebnis/Status:** `npm run build` + `npm run lint` grün.
+
+## Barrierefreiheits-Feinschliff (Web Interface Guidelines)
+
+**Was:** Review mit `web-design-guidelines`; konkrete Fixes:
+- `touch-action: manipulation` + dezenter Tap-Highlight für Buttons/Links/Tabs/
+  Labels (kein 300ms-Delay, kein Doppeltipp-Zoom) in `globals.css`.
+- Desktop-Suche: echtes `type="search"`, `name`, `autoComplete="off"`,
+  `aria-label`.
+- Asynchrone Statusmeldungen werden für Screenreader angekündigt:
+  Diktat „Transkribiere…" als `aria-live="polite"`, Sync-Status `aria-live`,
+  Fehlermeldungen (Diktat, Chat, EntryDetail, VoiceCheckin, WeeklyReview) als
+  `role="alert"`.
+
+**Basis war schon da:** sichtbarer `:focus-visible`-Ring, `prefers-reduced-motion`.
+
+**Ergebnis/Status:** `npm run build` + `npm run lint` + Typecheck grün.

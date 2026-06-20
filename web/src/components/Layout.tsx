@@ -177,6 +177,10 @@ export function Layout() {
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
+                type="search"
+                name="q"
+                autoComplete="off"
+                aria-label="Einträge durchsuchen"
                 placeholder="Einträge durchsuchen"
                 className="w-44 bg-transparent text-sm outline-none"
               />

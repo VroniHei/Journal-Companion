@@ -138,6 +138,18 @@ button {
   cursor: pointer;
 }
 
+/* Schnellere, klarere Touch-Reaktion: kein 300ms-Delay, kein Doppeltipp-Zoom;
+   dezenter Tap-Highlight statt des grellen Browser-Defaults. */
+button,
+a,
+[role="button"],
+[role="tab"],
+label,
+summary {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(35, 34, 26, 0.08);
+}
+
 ::selection {
   background: var(--accent);
   color: var(--accent-contrast);

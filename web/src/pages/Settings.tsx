@@ -278,7 +278,7 @@ export function Settings() {
                   ? "Synchronisiere…"
                   : "Jetzt synchronisieren"}
               </Button>
-              <span className="text-xs text-[var(--muted)]">
+              <span aria-live="polite" className="text-xs text-[var(--muted)]">
                 {sync.state === "error"
                   ? `Fehler: ${sync.error}`
                   : sync.lastSync
