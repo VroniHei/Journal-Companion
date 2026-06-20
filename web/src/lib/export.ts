@@ -1,6 +1,8 @@
+import type { Table } from "dexie";
 import type { ChatMessage, JournalEntry, PatternSummary } from "@journal/shared";
 import { db } from "../db/dexie";
 import { formatDateTime } from "./format";
+import { notifyDataChanged } from "./sync";
 
 function download(filename: string, content: string, mime: string): void {
   const blob = new Blob([content], { type: `${mime};charset=utf-8` });
@@ -69,26 +71,113 @@ export function downloadPatternMarkdown(p: PatternSummary): void {
 }
 
 export async function exportAllJson(): Promise<void> {
-  const [entries, chatMessages, patternSummaries, settings, stabilityMoments] =
-    await Promise.all([
-      db.entries.toArray(),
-      db.chatMessages.toArray(),
-      db.patternSummaries.toArray(),
-      db.settings.toArray(),
-      db.stabilityMoments.toArray(),
-    ]);
-  const data = {
-    exportedAt: new Date().toISOString(),
-    version: 1,
+  const [
     entries,
     chatMessages,
     patternSummaries,
     settings,
     stabilityMoments,
+    patternInsights,
+    openLoops,
+    decisions,
+  ] = await Promise.all([
+    db.entries.toArray(),
+    db.chatMessages.toArray(),
+    db.patternSummaries.toArray(),
+    db.settings.toArray(),
+    db.stabilityMoments.toArray(),
+    db.patternInsights.toArray(),
+    db.openLoops.toArray(),
+    db.decisions.toArray(),
+  ]);
+  const data = {
+    exportedAt: new Date().toISOString(),
+    version: 2,
+    entries,
+    chatMessages,
+    patternSummaries,
+    settings,
+    stabilityMoments,
+    patternInsights,
+    openLoops,
+    decisions,
   };
   download(
     `journal-companion-export-${new Date().toISOString().slice(0, 10)}.json`,
     JSON.stringify(data, null, 2),
     "application/json",
   );
+}
+
+// --- Import (Sicherung zurückspielen) -------------------------------------
+
+export interface ImportResult {
+  added: number;
+  updated: number;
+  skipped: number;
+}
+
+interface Versioned {
+  id: string;
+  updatedAt?: string;
+  createdAt?: string;
+}
+
+const versionOf = (r: Versioned): string =>
+  String(r.updatedAt ?? r.createdAt ?? "");
+
+/**
+ * Spielt eine zuvor exportierte JSON-Sicherung zurück. Zusammenführend (merge):
+ * vorhandene Einträge bleiben erhalten; ein Datensatz wird nur überschrieben,
+ * wenn die Sicherung neueren oder gleichen Stand hat. Einstellungen werden
+ * bewusst NICHT importiert (geräte-spezifisch, z.B. Stimme).
+ */
+export async function importAllJson(file: File): Promise<ImportResult> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(await file.text());
+  } catch {
+    throw new Error("Die Datei ist keine gültige JSON-Sicherung.");
+  }
+  const data = parsed as Record<string, unknown>;
+
+  const t = (x: unknown) => x as unknown as Table<Versioned, string>;
+  const tables: { key: string; table: Table<Versioned, string> }[] = [
+    { key: "entries", table: t(db.entries) },
+    { key: "chatMessages", table: t(db.chatMessages) },
+    { key: "patternSummaries", table: t(db.patternSummaries) },
+    { key: "stabilityMoments", table: t(db.stabilityMoments) },
+    { key: "patternInsights", table: t(db.patternInsights) },
+    { key: "openLoops", table: t(db.openLoops) },
+    { key: "decisions", table: t(db.decisions) },
+  ];
+
+  const known = tables.some((t) => Array.isArray(data[t.key]));
+  if (!known) {
+    throw new Error("In dieser Datei sind keine Einträge zum Importieren.");
+  }
+
+  const result: ImportResult = { added: 0, updated: 0, skipped: 0 };
+  for (const { key, table } of tables) {
+    const rows = Array.isArray(data[key]) ? (data[key] as Versioned[]) : [];
+    for (const row of rows) {
+      if (!row || typeof row.id !== "string") {
+        result.skipped++;
+        continue;
+      }
+      const existing = (await table.get(row.id)) as Versioned | undefined;
+      if (!existing) {
+        await table.put(row);
+        result.added++;
+      } else if (versionOf(row) >= versionOf(existing)) {
+        await table.put(row);
+        result.updated++;
+      } else {
+        result.skipped++;
+      }
+    }
+  }
+
+  notifyDataChanged();
+  return result;
 }

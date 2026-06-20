@@ -47,3 +47,4 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
   statt Voll-Pull, sobald die Datenmenge wächst.
 - ✅ Lösch-Sync (Tombstones): Löschungen propagieren über Geräte (LWW inkl. Delete).
 - ✅ Selbstführung „Klärung": Open Loops + Decision Review (mit Geräte-/Lösch-Sync).
+- ✅ JSON-Import (Sicherung zurückspielen, zusammenführend; Export deckt nun alle Tabellen ab).

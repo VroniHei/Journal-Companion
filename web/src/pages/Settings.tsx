@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useRef, type ChangeEvent, type ReactNode } from "react";
 import { Button, Card } from "../components/ui";
 import { useSettings } from "../hooks/useData";
 import { useSyncStatus } from "../hooks/useSync";
@@ -6,7 +6,7 @@ import { useSpeech, useVoices } from "../hooks/useSpeech";
 import { updateSettings } from "../lib/settings";
 import { syncNow } from "../lib/sync";
 import { clearAllData } from "../db/queries";
-import { exportAllJson } from "../lib/export";
+import { exportAllJson, importAllJson } from "../lib/export";
 import type {
   ApiMode,
   ClaudeModel,
@@ -39,6 +39,21 @@ export function Settings() {
   const s = useSettings();
   const sync = useSyncStatus();
   const voices = useVoices();
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  async function onImportFile(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    try {
+      const r = await importAllJson(file);
+      alert(
+        `Import abgeschlossen: ${r.added} neu, ${r.updated} aktualisiert, ${r.skipped} übersprungen.`,
+      );
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Import fehlgeschlagen.");
+    }
+  }
   const {
     supported: speechSupported,
     cloud: naturalVoice,
@@ -292,10 +307,24 @@ export function Settings() {
           <Button variant="ghost" onClick={exportAllJson}>
             Alle Daten exportieren (JSON)
           </Button>
+          <Button variant="ghost" onClick={() => fileRef.current?.click()}>
+            Sicherung importieren (JSON)
+          </Button>
           <Button variant="danger" onClick={clearAll}>
             Alle Daten löschen
           </Button>
         </div>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="application/json,.json"
+          onChange={onImportFile}
+          className="hidden"
+        />
+        <p className="text-xs text-[var(--muted)]">
+          Import führt zusammen: Vorhandenes bleibt erhalten, nur Neueres aus der
+          Sicherung wird ergänzt. Einstellungen werden nicht überschrieben.
+        </p>
       </Card>
 
       <p className="text-xs text-[var(--muted)]">

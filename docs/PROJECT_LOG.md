@@ -460,3 +460,18 @@ ElevenLabs-Modus eine sanfte Warnung ab 60 s Aufnahme („verbraucht Guthaben").
 begrenzt und lange Aufnahmen teuer.
 
 **Ergebnis/Status:** `npm run build` + `npm run lint` grün.
+
+## JSON-Import (Sicherung zurückspielen)
+
+**Was:** Export deckt jetzt alle Tabellen ab (zusätzlich patternInsights,
+openLoops, decisions; version 2). Neuer **Import** (`importAllJson`) in den
+Einstellungen: zusammenführend (merge) — Vorhandenes bleibt, ein Datensatz wird
+nur überschrieben, wenn die Sicherung neueren/gleichen Stand hat (per
+updatedAt/createdAt). Einstellungen werden bewusst nicht importiert
+(geräte-spezifisch). Button „Sicherung importieren (JSON)" + Hinweis; löst nach
+Import einen Geräte-Sync aus (`notifyDataChanged`).
+
+**Warum:** Export war da, das Zurückspielen fehlte — schließt den Kreis als
+Sicherheitsnetz.
+
+**Ergebnis/Status:** `npm run build` + `npm run lint` grün.
