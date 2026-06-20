@@ -13,6 +13,7 @@ import {
 } from "../db/queries";
 import { formatDateTime, formatShort } from "../lib/format";
 import { nowIso } from "../lib/ids";
+import { stripMarkdown } from "../lib/text";
 import { toPrefs } from "../lib/settings";
 import { streamReflect } from "../lib/apiClient";
 import { buildReflectionContext, clientRuminationHint } from "../lib/context";
@@ -21,6 +22,12 @@ import { CLOSE_MICROCOPY, reflectionMicrocopy } from "../lib/microcopy";
 import { downloadEntryMarkdown } from "../lib/export";
 
 type Tab = "eintrag" | "reflexion" | "gespraech";
+
+/** Kurzer, einzeiliger Anriss einer Reflexion für die Verlaufs-Liste. */
+function reflectionSnippet(text: string): string {
+  const plain = stripMarkdown(text).replace(/\s+/g, " ").trim();
+  return plain.length > 72 ? `${plain.slice(0, 72)}…` : plain;
+}
 
 function MetaRow({ label, values }: { label: string; values: string[] }) {
   if (values.length === 0) return null;
@@ -291,22 +298,34 @@ export function EntryDetail() {
                     <summary className="cursor-pointer text-sm font-medium text-[var(--muted)]">
                       Frühere Reflexionen ({e.previousReflections.length})
                     </summary>
-                    <div className="mt-4 space-y-5">
+                    <ul className="mt-3 space-y-2">
                       {e.previousReflections.map((p, i) => (
-                        <div
-                          key={i}
-                          className="border-t border-[var(--border)] pt-4 first:border-0 first:pt-0"
-                        >
-                          <div className="mb-1.5 text-xs text-[var(--muted)]">
-                            {formatShort(p.at)}
-                          </div>
-                          <FormattedText
-                            text={p.text}
-                            className="text-[14px] text-[var(--muted)]"
-                          />
-                        </div>
+                        <li key={i}>
+                          <details className="group rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3.5 py-2.5">
+                            <summary className="flex cursor-pointer items-center gap-2.5 text-sm marker:content-['']">
+                              <span className="shrink-0 text-xs tabular-nums text-[var(--muted)]">
+                                {formatShort(p.at)}
+                              </span>
+                              <span className="min-w-0 flex-1 truncate text-[var(--foreground)]">
+                                {reflectionSnippet(p.text)}
+                              </span>
+                              <span
+                                aria-hidden="true"
+                                className="shrink-0 text-[var(--muted)] transition-transform group-open:rotate-180"
+                              >
+                                ⌄
+                              </span>
+                            </summary>
+                            <div className="mt-3 border-t border-[var(--border)] pt-3">
+                              <FormattedText
+                                text={p.text}
+                                className="text-[14px] text-[var(--muted)]"
+                              />
+                            </div>
+                          </details>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </details>
                 )}
               {!reflecting && e.aiReflection && (
