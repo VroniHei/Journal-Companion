@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Card, ToolCard } from "../components/ui";
+import { Card } from "../components/ui";
 import { JournalCard } from "../components/JournalCard";
 import { useDailyRitual, useEntries, useSettings } from "../hooks/useData";
 import { dayKey, listStabilityMoments } from "../db/queries";
@@ -160,9 +160,6 @@ export function Dashboard() {
   const ritualFilled = ritualMorning
     ? (ritual?.gratitude?.length ?? 0) > 0
     : (ritual?.goodMoments?.length ?? 0) > 0;
-  const ritualItems = ritualMorning
-    ? (ritual?.gratitude ?? [])
-    : (ritual?.goodMoments ?? []);
   const prompt = PROMPTS[promptIdx % PROMPTS.length];
 
   const closedIds = new Set<string>();
@@ -263,78 +260,194 @@ export function Dashboard() {
         </div>
       </Card>
 
-      {/* TAGESRITUAL · prominentes, warmes Tages-Tool */}
-      <ToolCard>
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
-            <div className="mb-2.5 inline-flex items-center gap-2.5">
+      {/* TAGESRITUAL · prominentes, warmes Tages-Tool (nach Prototyp) */}
+      <div
+        className="relative overflow-hidden"
+        style={{
+          borderRadius: 28,
+          border: "1px solid rgba(205,138,91,0.26)",
+          boxShadow: "0 20px 46px rgba(120,86,52,0.16)",
+          background: "linear-gradient(135deg,#F8EFDF 0%,#F4F0E6 100%)",
+        }}
+      >
+        <div
+          className="pointer-events-none absolute"
+          style={{
+            top: -60,
+            left: -30,
+            width: 240,
+            height: 240,
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(224,170,80,0.28), transparent 68%)",
+            filter: "blur(34px)",
+          }}
+        />
+        <div
+          className="pointer-events-none absolute"
+          style={{
+            right: -40,
+            bottom: -70,
+            width: 230,
+            height: 230,
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(168,232,79,0.20), transparent 68%)",
+            filter: "blur(38px)",
+          }}
+        />
+        <div className="relative flex items-stretch">
+          <div className="min-w-0 flex-1 p-7 sm:p-8">
+            {/* Badge */}
+            <div
+              className="mb-4 inline-flex items-center gap-2.5 rounded-full border py-1.5 pl-2 pr-3"
+              style={{
+                background: "rgba(255,255,255,0.7)",
+                borderColor: "rgba(205,138,91,0.3)",
+              }}
+            >
               <span
-                className="flex h-7 w-7 items-center justify-center rounded-[10px]"
-                style={{
-                  background: ritualMorning
-                    ? "rgba(221,177,75,0.22)"
-                    : "rgba(155,163,131,0.24)",
-                  color: ritualMorning ? "#a9791c" : "#566042",
-                }}
+                className="flex h-[22px] w-[22px] items-center justify-center rounded-full text-white"
+                style={{ background: "linear-gradient(145deg,#F0C36B,#CD8A5B)" }}
               >
                 <svg
                   viewBox="0 0 24 24"
-                  width="16"
-                  height="16"
+                  width="13"
+                  height="13"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2"
+                  strokeWidth="2.2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   aria-hidden="true"
                 >
-                  {ritualMorning ? (
-                    <>
-                      <circle cx="12" cy="12" r="4" />
-                      <path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19" />
-                    </>
-                  ) : (
-                    <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z" />
-                  )}
+                  <path d="M3 18h18M5.6 18a6.4 6.4 0 0 1 12.8 0" />
+                  <path d="M12 4.5v2.4M5 9l1.6 1.2M19 9l-1.6 1.2" />
                 </svg>
               </span>
-              <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-                Tagesritual
+              <span
+                className="text-[10.5px] font-semibold uppercase tracking-[0.2em]"
+                style={{ color: "#9c6b3f" }}
+              >
+                Tägliches Ritual
+              </span>
+              <span
+                className="border-l pl-2 text-[10.5px] font-semibold"
+                style={{ color: "#b08a64", borderColor: "rgba(205,138,91,0.3)" }}
+              >
+                6 Min · Dein Begleiter
               </span>
             </div>
-            <p className="serif text-[26px] font-semibold leading-tight">
+
+            {/* Status */}
+            <div
+              className="mb-3 flex items-center gap-2 text-[12.5px] font-semibold"
+              style={{ color: "#9c6b3f" }}
+            >
+              <span
+                className="h-[7px] w-[7px] rounded-full"
+                style={{ background: "#CD8A5B" }}
+              />
+              {ritualFilled ? (
+                "Heute schon ausgefüllt"
+              ) : (
+                <>
+                  Heute noch offen
+                  <span style={{ color: "#b08a64", fontWeight: 500 }}>
+                    {" "}
+                    · kein Muss
+                  </span>
+                </>
+              )}
+            </div>
+
+            <h2
+              className="serif mb-2 text-[26px] font-semibold leading-tight"
+              style={{ color: "#3a2e22" }}
+            >
+              Sechs Minuten, die den Tag{" "}
+              <em className="g">{ritualMorning ? "sortieren" : "abschließen"}</em>.
+            </h2>
+            <p
+              className="mb-5 max-w-[480px] text-[15px] leading-relaxed"
+              style={{ color: "#6a5a48" }}
+            >
               {ritualMorning
-                ? "Wofür bist du heute dankbar?"
-                : "Was war heute schön?"}
+                ? "Drei kleine Fragen, bevor es losgeht. Kein Pflichtprogramm. Nur ein ruhiger Anfang."
+                : "Drei kleine Fragen zum Abend. Kein Pflichtprogramm. Nur ein ruhiger Ausklang."}
             </p>
-            {ritualFilled ? (
-              <ul className="mt-3 space-y-1.5 text-[15px]">
-                {ritualItems.slice(0, 3).map((it, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="text-[var(--clay)]">•</span>
-                    <span>{it}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-2 max-w-[460px] text-[15px] text-[var(--muted)]">
-                {ritualMorning
-                  ? "Drei kurze Dinge reichen. Ein guter Start in den Tag."
-                  : "Ein wertschätzender Abschluss. Was ist dir heute begegnet?"}
-              </p>
-            )}
-          </div>
-          <div className="shrink-0">
+
+            {/* Themen-Chips */}
+            <div className="mb-6 flex flex-wrap gap-2">
+              {(ritualMorning
+                ? [
+                    { label: "Wofür dankbar?", dot: "#CD8A5B" },
+                    { label: "Was macht den Tag gut?", dot: "#DDB14B" },
+                    { label: "Ein guter Satz an dich", dot: "#9BA383" },
+                  ]
+                : [
+                    { label: "Was Gutes getan?", dot: "#CD8A5B" },
+                    { label: "Was wäre besser?", dot: "#DDB14B" },
+                    { label: "Schöne Momente", dot: "#9BA383" },
+                  ]
+              ).map((c) => (
+                <span
+                  key={c.label}
+                  className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[13px] font-medium"
+                  style={{
+                    background: "rgba(255,255,255,0.66)",
+                    borderColor: "rgba(35,34,26,0.07)",
+                    color: "#5d4f3f",
+                  }}
+                >
+                  <span
+                    className="h-[7px] w-[7px] rounded-full"
+                    style={{ background: c.dot }}
+                  />
+                  {c.label}
+                </span>
+              ))}
+            </div>
+
             <button
               type="button"
               onClick={() => navigate("/ritual")}
-              className="rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-[var(--accent-contrast)] shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:bg-[#bdf06a]"
+              className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
+              style={{
+                color: "#23221A",
+                background: "linear-gradient(180deg,#B4ED63,#A8E84F)",
+                boxShadow: "0 6px 18px rgba(110,155,44,0.32)",
+              }}
             >
-              {ritualFilled ? "Ritual ansehen" : "Ritual ausfüllen"}
+              {ritualFilled ? "Ritual ansehen" : "Ritual starten"} →
             </button>
           </div>
+
+          {/* Bild (ab Tablet) */}
+          <div className="relative hidden w-[38%] max-w-[420px] shrink-0 sm:block">
+            <div
+              className="absolute overflow-hidden"
+              style={{
+                top: 22,
+                right: 22,
+                bottom: 22,
+                left: 0,
+                borderRadius: 20,
+                boxShadow: "0 12px 30px rgba(120,86,52,0.2)",
+                border: "1px solid rgba(255,255,255,0.5)",
+                outline: "1px solid rgba(205,138,91,0.16)",
+                outlineOffset: -1,
+              }}
+            >
+              <img
+                src="/img/journaling-desk.webp"
+                alt=""
+                aria-hidden="true"
+                className="h-full w-full object-cover"
+                style={{ objectPosition: "center 46%" }}
+              />
+            </div>
+          </div>
         </div>
-      </ToolCard>
+      </div>
 
       {hasData && (
         <>
