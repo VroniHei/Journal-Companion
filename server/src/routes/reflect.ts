@@ -47,6 +47,15 @@ const reflectSchema = z.object({
   }),
   ruminationHint: z.boolean().optional(),
   intent: z.string().max(120).optional(),
+  conversation: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant"]),
+        content: z.string(),
+      }),
+    )
+    .max(50)
+    .optional(),
   prefs: prefsSchema,
 });
 
@@ -56,7 +65,8 @@ reflectRouter.post("/reflect", async (req, res) => {
     res.status(400).json({ error: "Ungültige Anfrage." });
     return;
   }
-  const { entry, context, ruminationHint, intent, prefs } = parsed.data;
+  const { entry, context, ruminationHint, intent, conversation, prefs } =
+    parsed.data;
 
   // 1. Krisen-Gate: deterministisch, ohne Claude-Call, auch ohne API-Key.
   const crisis = detectCrisis(entry.text);
@@ -88,6 +98,7 @@ reflectRouter.post("/reflect", async (req, res) => {
     rumination,
     intensity: entry.intensity,
     anliegen: intent,
+    hasConversation: Boolean(conversation?.length),
   });
   const userText = buildReflectionUser(
     // Felder, die der Prompt nutzt; restliche Entry-Felder sind für die Reflexion irrelevant.
@@ -101,6 +112,7 @@ reflectRouter.post("/reflect", async (req, res) => {
       ...entry,
     },
     { recentDigest: context.recentDigest, latestPattern: context.latestPattern },
+    conversation,
   );
 
   const tuning = tuningFor(prefs.model);

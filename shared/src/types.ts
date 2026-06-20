@@ -178,6 +178,11 @@ export interface ReflectRequest {
   ruminationHint?: boolean;
   /** Anliegen aus dem Startscreen (menschenlesbar), z.B. „Ich brauche Beruhigung". */
   intent?: string;
+  /**
+   * Bisheriges Gespräch zu diesem Eintrag (für „Neu reflektieren": die Reflexion
+   * bezieht die neuen Nachrichten mit ein).
+   */
+  conversation?: Pick<ChatMessage, "role" | "content">[];
   prefs: ResponsePrefs;
 }
 

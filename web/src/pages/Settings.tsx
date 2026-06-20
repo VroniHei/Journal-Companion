@@ -205,19 +205,11 @@ export function Settings() {
               </select>
             </Row>
 
-            <Row
-              label="Automatisch vorlesen"
-              hint="Antworten des Begleiters (Reflexion & Chat) direkt vorlesen."
-            >
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={Boolean(s.autoSpeak)}
-                  onChange={(e) => updateSettings({ autoSpeak: e.target.checked })}
-                />
-                Antworten automatisch vorlesen
-              </label>
-            </Row>
+            <p className="text-sm text-[var(--muted)]">
+              Vorgelesen wird nur, wenn du selbst auf „Vorlesen" tippst (bei der
+              Reflexion und bei den Antworten im Gespräch). Nichts startet
+              automatisch — so kannst du es jederzeit selbst steuern und stoppen.
+            </p>
 
             <div>
               <Button

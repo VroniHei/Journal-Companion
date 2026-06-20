@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Card } from "../components/ui";
 import { ReflectionView } from "../components/ReflectionView";
 import { SessionClose } from "../components/SessionClose";
 import { ChatThread } from "../components/ChatThread";
-import { useEntry, useSettings } from "../hooks/useData";
-import { useSpeech } from "../hooks/useSpeech";
+import { useEntry, useMessages, useSettings } from "../hooks/useData";
 import {
   deleteEntry,
   recordStabilityMoment,
@@ -13,7 +12,6 @@ import {
 } from "../db/queries";
 import { formatDateTime } from "../lib/format";
 import { toPrefs } from "../lib/settings";
-import { stripMarkdown } from "../lib/text";
 import { streamReflect } from "../lib/apiClient";
 import { buildReflectionContext, clientRuminationHint } from "../lib/context";
 import { intentLabel } from "../lib/intents";
@@ -41,12 +39,13 @@ export function EntryDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const entry = useEntry(id);
+  const messages = useMessages(id);
   const settings = useSettings();
 
   const [reflecting, setReflecting] = useState(false);
   const [streamText, setStreamText] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const { speak } = useSpeech({ voiceURI: settings.speechVoiceURI });
+  const reflectionRef = useRef<HTMLDivElement>(null);
 
   if (entry === undefined) {
     return <p className="text-[var(--muted)]">Lädt…</p>;
@@ -60,11 +59,27 @@ export function EntryDetail() {
     setError(null);
     setStreamText("");
     setReflecting(true);
+    // Auf Mobile sitzt der Button unten — zur Reflexion scrollen, damit man das
+    // Ergebnis (bzw. das Nachdenken) auch sieht.
+    setTimeout(
+      () =>
+        reflectionRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        }),
+      60,
+    );
     try {
       const [context, hint] = await Promise.all([
         buildReflectionContext(e),
         clientRuminationHint(e),
       ]);
+      // Bei „Neu reflektieren" das bisherige Gespräch mitgeben, damit die neue
+      // Reflexion die Chat-Nachrichten einbezieht.
+      const conversation = messages.map((m) => ({
+        role: m.role,
+        content: m.content,
+      }));
       let acc = "";
       const result = await streamReflect(
         {
@@ -72,6 +87,7 @@ export function EntryDetail() {
           context,
           ruminationHint: hint || e.startIntent === "schleife",
           intent: intentLabel(e.startIntent),
+          conversation: conversation.length ? conversation : undefined,
           prefs: toPrefs(settings),
         },
         (delta) => {
@@ -84,7 +100,6 @@ export function EntryDetail() {
         crisisFlag: result.crisis,
         ruminationFlag: result.rumination,
       });
-      if (settings.autoSpeak && !result.crisis) speak(stripMarkdown(acc));
       // Gentle Gamification: stabilen Moment erfassen (kein Punkte-/Streak-System).
       if (!result.crisis) {
         if (result.rumination) {
@@ -156,10 +171,19 @@ export function EntryDetail() {
       )}
 
       {showReflection && (
-        <ReflectionView
-          text={reflecting ? streamText : (e.aiReflection ?? "")}
-          crisis={!reflecting && e.crisisFlag}
-        />
+        <div ref={reflectionRef} className="scroll-mt-20 space-y-2">
+          {reflecting && (
+            <p className="text-sm italic text-[var(--muted)]">
+              {e.aiReflection
+                ? "Der Begleiter denkt neu nach…"
+                : "Der Begleiter denkt nach…"}
+            </p>
+          )}
+          <ReflectionView
+            text={reflecting ? streamText || (e.aiReflection ?? "") : (e.aiReflection ?? "")}
+            crisis={!reflecting && e.crisisFlag}
+          />
+        </div>
       )}
 
       {!reflecting && e.aiReflection && !e.crisisFlag && (

@@ -88,12 +88,15 @@ export const VOICE_REFLECTION_STRUCTURE = `Erzeuge aus dem (gesprochenen) Eintra
 7. Was jetzt eher nicht hilfreich wäre
 8. Ein kleiner nächster Schritt`;
 
+const CONVERSATION_REFLECTION_NOTE = `Zu diesem Eintrag gab es bereits ein Gespräch (unten angefügt). Dies ist eine ERNEUTE Reflexion: Beziehe Eintrag UND Gespräch zusammen ein und berücksichtige, was im Gespräch dazugekommen ist (neue Erkenntnisse, Korrekturen, Verschiebungen). Wiederhole nicht einfach die erste Reflexion, sondern denke den aktuellen Stand weiter.`;
+
 export function buildReflectionSystem(opts: {
   style: ResponseStyle;
   length: ResponseLength;
   rumination: boolean;
   intensity: number;
   anliegen?: string;
+  hasConversation?: boolean;
 }): string {
   const highActivation = opts.intensity >= 8;
   return [
@@ -101,6 +104,7 @@ export function buildReflectionSystem(opts: {
     "",
     ASSESSMENT_DIRECTIVE,
     opts.anliegen ? `Anliegen der Nutzerin gerade: ${opts.anliegen}.` : "",
+    opts.hasConversation ? CONVERSATION_REFLECTION_NOTE : "",
     styleInstruction(opts.style),
     opts.rumination ? "" : lengthInstruction(opts.length),
     highActivation && !opts.rumination ? HIGH_ACTIVATION_NOTE : "",
@@ -317,15 +321,27 @@ export function buildContactImpulseUser(opts: {
     .join("\n");
 }
 
+function formatConversation(
+  turns?: { role: "user" | "assistant"; content: string }[],
+): string {
+  if (!turns?.length) return "";
+  const lines = turns.map(
+    (t) => `${t.role === "user" ? "Du" : "Begleiter"}: ${t.content}`,
+  );
+  return `Bisheriges Gespräch zu diesem Eintrag:\n${lines.join("\n")}`;
+}
+
 export function buildReflectionUser(
   entry: JournalEntry,
   context: ReflectionContext,
+  conversation?: { role: "user" | "assistant"; content: string }[],
 ): string {
   return [
     formatPattern(context.latestPattern),
     formatDigest(context.recentDigest),
     "Aktueller Eintrag, auf den du eingehst:",
     formatEntry(entry),
+    formatConversation(conversation),
   ]
     .filter(Boolean)
     .join("\n\n");

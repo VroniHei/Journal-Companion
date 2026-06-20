@@ -318,3 +318,26 @@ Einstellungen) sind sync-bewusst. Einstellungen/Stimme bleiben geräte-lokal.
 ok. Aktiv, sobald die Env-Vars hinterlegt sind.
 
 **Offen:** Lösch-Propagation (Tombstones); evtl. echte Konten/Verschlüsselung.
+
+## Reflexion-mit-Gespräch + Sprachausgabe entschärft
+
+**Was:**
+- „Neu reflektieren" bezieht jetzt das **Gespräch** mit ein: `ReflectRequest.conversation`
+  wird mitgesendet; der Reflexions-Prompt (`buildReflectionSystem`/`buildReflectionUser`)
+  reflektiert über Eintrag UND Chat zusammen statt nur über den Ausgangstext.
+- Auf Mobile sichtbar gemacht: beim Reflektieren wird zur Reflexion gescrollt,
+  der alte Text bleibt während des Nachdenkens stehen (kein Leerblitzen), plus
+  „denkt nach…"-Hinweis.
+- **Automatisches Vorlesen entfernt** (auf Wunsch): kein autoSpeak mehr in
+  Reflexion und Chat. Vorgelesen wird nur noch per Tipp auf „Vorlesen" — ein
+  direkter Nutzer-Tap, der auf Mobile nicht von der Autoplay-Sperre blockiert
+  wird (deshalb bleibt die natürliche Stimme erhalten statt auf die Browser-
+  Stimme zurückzufallen) und der zugleich als sichtbarer „Stopp" dient.
+  autoSpeak-Schalter aus den Einstellungen genommen.
+
+**Warum:** „Neu reflektieren" wirkte wirkungslos (Gespräch wurde ignoriert, und
+auf Mobile lief die Aktualisierung außerhalb des Sichtbereichs); das
+Auto-Vorlesen fiel auf Mobile auf die Roboter-Stimme zurück und ließ sich nicht
+stoppen, weil es ohne sichtbaren Auslöser startete.
+
+**Ergebnis/Status:** `npm run build` + `npm run lint` grün; esbuild-Bundle ok.
