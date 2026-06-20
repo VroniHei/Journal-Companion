@@ -226,7 +226,7 @@ export function Dashboard() {
             {greetingWord(tod)}
             {name ? `, ${name}` : ""}
           </h1>
-          <p className="mb-7 max-w-[480px] text-lg leading-snug text-white/90 sm:text-2xl">
+          <p className="lead mb-7 max-w-[480px] text-lg leading-snug text-white/90 sm:text-2xl">
             {quote.pre}
             <em className="g text-[var(--accent)]">{quote.accent}</em>
           </p>
@@ -259,7 +259,7 @@ export function Dashboard() {
                 Heute im Blick
               </span>
             </div>
-            <p className="max-w-[520px] text-xl font-medium leading-snug">
+            <p className="lead max-w-[520px] text-xl leading-snug">
               {prompt.pre}
               <em className="g text-[var(--accent-text)]">{prompt.accent}</em>
               {prompt.post}
@@ -639,7 +639,7 @@ export function Dashboard() {
             </div>
             {insights.length > 0 ? (
               <>
-                <p className="max-w-[640px] text-xl leading-relaxed">
+                <p className="lead max-w-[640px] text-xl leading-relaxed">
                   {insights[0]}
                 </p>
                 <Link

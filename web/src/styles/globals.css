@@ -171,6 +171,14 @@ button {
   letter-spacing: -0.005em;
 }
 
+/* App-Style: Lead-/Insight-Texte tragen Gewicht 450 (ruhig, leicht). Die
+   Betonung trägt das .g-Kursivwort, nicht fetter Satz. Figtree ist variabel,
+   450 wird daher sauber gerendert. */
+.lead {
+  font-weight: 450;
+  letter-spacing: -0.01em;
+}
+
 /* Sichtbarer Fokus (Barrierefreiheit) — lesbares Grün statt Lime. */
 :focus-visible {
   outline: 2px solid var(--accent-text);

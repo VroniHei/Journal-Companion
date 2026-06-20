@@ -651,3 +651,16 @@ Moment, Serien-Meilenstein + Pausentag).
 Quelle: Claude Design Innerline App.dc.html (Ritual-Abschluss / Serie).
 
 **Ergebnis/Status:** Build + Lint + Typecheck grün.
+
+## App-Redesign: Onboarding/Fokus + Typografie nach App-Style
+
+- **Onboarding** (2 Schritte: Fokus + Erinnerungszeit) für neue Nutzer,
+  überspringbar; **„Dein Fokus"-Chip** auf dem Dashboard; Einstellungen-Karte
+  „Tagesritual & Fokus" (Fokus + Erinnerung, nur Anzeige). Neue AppSettings-
+  Felder focusArea/reminderTime/onboarded (geräte-lokal).
+- **Typografie-Fix:** Figtree wird jetzt als variable Achse geladen
+  (`wght@400..800`) statt fester Stufen — dadurch rendern die App-Style-Gewichte
+  echt: Headlines 650 (.serif), Lead/Insight **450** (neue `.lead`-Rolle,
+  angewандt auf Dashboard-Lead/Insight/Hero-Zitat), große Zahlen 800.
+
+**Ergebnis/Status:** Build + Lint + Typecheck grün.
