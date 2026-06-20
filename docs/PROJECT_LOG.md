@@ -491,3 +491,37 @@ Sicherheitsnetz.
 **Basis war schon da:** sichtbarer `:focus-visible`-Ring, `prefers-reduced-motion`.
 
 **Ergebnis/Status:** `npm run build` + `npm run lint` + Typecheck grün.
+
+## Session-Protokoll 2026-06-20 (Sync, Klärung, Sprache, A11y)
+
+Großer Arbeitstag. In dieser Sitzung umgesetzt (alle live auf Vercel, Build/Lint/
+Typecheck grün, einzelne Commits):
+
+1. **Geräte-Sync (Supabase) eingerichtet & live:** Server-Proxy `/api/sync`
+   (pull/merge/push, Last-Write-Wins) hinter dem Passwort-Gate; Supabase-Projekt
+   (EU/Ireland) + Tabelle `sync_records`; Env-Vars in Vercel. Handy & Desktop
+   zeigen denselben Stand.
+2. **Lösch-Sync (Tombstones):** Löschungen propagieren über Geräte; keine
+   Wiederauferstehung.
+3. **Reflexion bezieht Gespräch ein** („Neu reflektieren") + auf Mobile sichtbar
+   (Scroll, kein Leerblitzen).
+4. **Auto-Vorlesen entfernt:** Vorlesen nur per Tipp (natürliche Stimme bleibt,
+   sichtbarer Stopp). Behebt den Roboterstimmen-Fallback auf Mobile.
+5. **EntryDetail neu strukturiert:** Tabs Eintrag · Reflexion · Gespräch statt
+   endlosem Scroll (ui-ux-pro-max).
+6. **Dashboard:** Stimmungs-Umschalter **Punkte/Verlauf** wieder da (+ Legende),
+   abgeglichen mit Bento-Dashboard-Handoff.
+7. **Bereich „Klärung":** **Open Loops** (offene Schleifen) + **Decision Review**
+   (Entscheidungen + ehrlicher Rückblick), beide voll im Sync.
+8. **Sprache kostenlos zuerst:** Browser-STT bevorzugt, ElevenLabs nur wenn nötig
+   (iOS); freundlicher Guthaben-Fehler + Browser-Fallback + Lang-Aufnahme-Warnung.
+9. **JSON-Import:** Sicherung zusammenführend zurückspielen (Export deckt nun alle
+   Tabellen ab).
+10. **A11y-Feinschliff:** touch-action/Tap-Highlight, Such-Input-Semantik,
+    aria-live/role="alert" für Status & Fehler.
+
+**Geklärt:** Es gibt **ein** Designsystem (Innerline) + ein **App-Projekt**
+(Handoffs) — saubere Trennung, kein Duplikat.
+
+**Offen (klein, vertagt):** Sprach-Eingabe in die VS-Code-Chatleiste (morgen);
+optionale Tests + Sync-Mikro-Optimierungen.
