@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui";
 import { useDailyRitual } from "../hooks/useData";
 import { dayKey, upsertDailyRitual } from "../db/queries";
@@ -48,6 +49,7 @@ function Line({
 }
 
 export function Ritual() {
+  const navigate = useNavigate();
   const date = dayKey();
   const ritual = useDailyRitual(date);
 
@@ -64,6 +66,7 @@ export function Ritual() {
     isMorningNow() ? "morning" : "evening",
   );
   const [open, setOpen] = useState(0);
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
     if (ritual && !hydrated) {
@@ -243,10 +246,128 @@ export function Ritual() {
   });
   const hero = HERO[period];
   const step = open + 1;
+  const allAnswered = questions.every((q) => q.answered);
 
   function switchPeriod(p: Period) {
     setPeriod(p);
     setOpen(0);
+  }
+
+  function finish() {
+    commit();
+    setDone(true);
+  }
+
+  // Ruhiger „geschafft"-Moment, sobald alle drei Fragen beantwortet sind.
+  if (done) {
+    const recap =
+      period === "morning"
+        ? [
+            { label: "Dankbar", value: gratitude.find((s) => s.trim()) },
+            { label: "Fokus", value: makeGreat.trim() },
+            { label: "Dein Satz", value: affirmation.trim() },
+          ]
+        : [
+            { label: "Gutes getan", value: goodDeed.trim() },
+            { label: "Besser", value: better.trim() },
+            { label: "Momente", value: moments.find((s) => s.trim()) },
+          ];
+    return (
+      <section>
+        <div
+          className="relative overflow-hidden p-8 text-center"
+          style={{
+            borderRadius: 28,
+            border: "1px solid rgba(205,138,91,0.24)",
+            boxShadow: "0 20px 46px rgba(120,86,52,0.16)",
+            background:
+              "linear-gradient(180deg,#FBEFD9 0%,#F4F0E6 46%,#F8F5EE 100%)",
+          }}
+        >
+          <div
+            className="pointer-events-none absolute"
+            style={{
+              top: -40,
+              right: -30,
+              width: 220,
+              height: 220,
+              borderRadius: "50%",
+              background:
+                "radial-gradient(circle, rgba(240,195,107,0.32), transparent 68%)",
+              filter: "blur(34px)",
+            }}
+          />
+          <div className="relative mx-auto max-w-[460px]">
+            <span
+              className="mx-auto flex h-[74px] w-[74px] items-center justify-center rounded-full text-white"
+              style={{
+                background: "linear-gradient(150deg,#F0C36B,#CD8A5B)",
+                boxShadow: "0 12px 28px rgba(205,138,91,0.36)",
+              }}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="34"
+                height="34"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12.5l4.5 4.5L19 7" />
+              </svg>
+            </span>
+            <div
+              className="mt-5 text-[10px] font-semibold uppercase tracking-[0.2em]"
+              style={{ color: "#9c6b3f" }}
+            >
+              Tagesritual · {period === "morning" ? "Morgen" : "Abend"}
+            </div>
+            <h1
+              className="serif mt-2 text-[26px] font-semibold leading-tight"
+              style={{ color: "#3a2e22" }}
+            >
+              Geschafft.{" "}
+              <em className="g">
+                {period === "morning" ? "Schöner Anfang" : "Schöner Abend"}
+              </em>
+              .
+            </h1>
+            <p className="mt-2 text-[15px]" style={{ color: "#6a5a48" }}>
+              Sechs Minuten für dich. Das zählt.
+            </p>
+
+            <div className="mt-6 space-y-2 text-left">
+              {recap
+                .filter((r) => r.value)
+                .map((r) => (
+                  <div
+                    key={r.label}
+                    className="rounded-2xl border bg-white/70 px-4 py-3"
+                    style={{ borderColor: "rgba(35,34,26,0.07)" }}
+                  >
+                    <div
+                      className="text-[10.5px] font-semibold uppercase tracking-[0.16em]"
+                      style={{ color: "#9c6b3f" }}
+                    >
+                      {r.label}
+                    </div>
+                    <div className="mt-0.5 text-[15px] text-[var(--foreground)]">
+                      {r.value}
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+            <div className="mt-7">
+              <Button onClick={() => navigate("/")}>Fertig</Button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   return (
@@ -406,8 +527,10 @@ export function Ritual() {
 
       <div className="space-y-1.5 pt-1">
         <div className="flex flex-wrap items-center gap-3">
-          <Button onClick={commit}>Speichern</Button>
-          {saved && (
+          <Button onClick={allAnswered ? finish : commit}>
+            {allAnswered ? "Ritual abschließen" : "Speichern"}
+          </Button>
+          {saved && !allAnswered && (
             <span className="text-sm text-[var(--muted)]">Gespeichert ✓</span>
           )}
         </div>

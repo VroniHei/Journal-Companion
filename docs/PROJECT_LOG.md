@@ -638,3 +638,16 @@ Segmented/Chips/Toggles, per-Screen-Feinschliff; dann neue Funktionen
 Moment, Serien-Meilenstein + Pausentag).
 
 **Ergebnis/Status:** Build + Lint + Typecheck grün.
+
+## App-Redesign Phase 4 (Teil): Serie-Meilenstein + Ritual-Abschluss-Moment
+
+- **Serie/Meilenstein + Pausentag** auf dem Dashboard (Fortschrittsbalken zur
+  nächsten Marke, „Noch X Tage …", Pille „1 Pausentag in Reserve").
+- **Ritual-Abschluss-Moment:** sobald alle drei Fragen beantwortet sind, Button
+  „Ritual abschließen" → warmer „Geschafft."-Moment (Medaillon mit Haken,
+  Rückblick der Antworten, „Sechs Minuten für dich. Das zählt.", Fertig).
+- Tagesritual-Kachel + Ritual-Seite zuvor 1:1 nach Prototyp (Hero/Stepper, Bild).
+
+Quelle: Claude Design Innerline App.dc.html (Ritual-Abschluss / Serie).
+
+**Ergebnis/Status:** Build + Lint + Typecheck grün.
