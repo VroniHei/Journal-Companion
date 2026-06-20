@@ -5,7 +5,7 @@ import { useSyncStatus } from "../hooks/useSync";
 import { useSpeech, useVoices } from "../hooks/useSpeech";
 import { updateSettings } from "../lib/settings";
 import { syncNow } from "../lib/sync";
-import { db } from "../db/dexie";
+import { clearAllData } from "../db/queries";
 import { exportAllJson } from "../lib/export";
 import type {
   ApiMode,
@@ -52,17 +52,7 @@ export function Settings() {
       )
     )
       return;
-    await db.transaction(
-      "rw",
-      db.entries,
-      db.chatMessages,
-      db.patternSummaries,
-      async () => {
-        await db.entries.clear();
-        await db.chatMessages.clear();
-        await db.patternSummaries.clear();
-      },
-    );
+    await clearAllData();
     alert("Alle Daten wurden gelöscht.");
   }
 

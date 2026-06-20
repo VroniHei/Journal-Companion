@@ -1,6 +1,6 @@
 import type { Table } from "dexie";
 import type { SyncKind, SyncRecord } from "@journal/shared";
-import { db } from "../db/dexie";
+import { db, type Tombstone } from "../db/dexie";
 import { getConfig, pullSync, pushSync } from "./apiClient";
 
 // Geräte-Sync (Client-Seite).
@@ -113,20 +113,53 @@ export async function syncNow(): Promise<void> {
     const remoteMap = new Map<string, SyncRecord>();
     for (const r of remote) remoteMap.set(`${r.kind}:${r.id}`, r);
 
-    // 1) Server → lokal (wo Server neuer ist oder lokal fehlt)
-    for (const t of SYNC_TABLES) {
-      const incoming = remote.filter((r) => r.kind === t.kind);
-      for (const rec of incoming) {
-        const local = (await t.table.get(rec.id)) as
-          | Record<string, unknown>
-          | undefined;
-        if (!local || rec.updatedAt > t.version(local)) {
+    // Lokale Lösch-Marker laden.
+    const tombMap = new Map<string, Tombstone>();
+    for (const t of await db.tombstones.toArray()) tombMap.set(t.id, t);
+
+    const tableByKind = new Map(SYNC_TABLES.map((t) => [t.kind, t]));
+
+    // 1) Server → lokal (Last-Write-Wins, inkl. Löschungen)
+    for (const rec of remote) {
+      const t = tableByKind.get(rec.kind);
+      if (!t) continue;
+      const key = `${rec.kind}:${rec.id}`;
+      const localTomb = tombMap.get(key);
+      const local = (await t.table.get(rec.id)) as
+        | Record<string, unknown>
+        | undefined;
+      const localV = local ? t.version(local) : null;
+
+      if (rec.deleted) {
+        // Server kennt eine Löschung — anwenden, außer eine neuere lokale
+        // Bearbeitung steht dagegen.
+        if (localV !== null && localV > rec.updatedAt) continue;
+        if (local) await t.table.delete(rec.id);
+        if (!localTomb || rec.updatedAt > localTomb.updatedAt) {
+          const tomb: Tombstone = {
+            id: key,
+            kind: rec.kind,
+            recordId: rec.id,
+            updatedAt: rec.updatedAt,
+          };
+          await db.tombstones.put(tomb);
+          tombMap.set(key, tomb);
+        }
+      } else {
+        // Server hat einen lebenden Datensatz.
+        if (localTomb && localTomb.updatedAt >= rec.updatedAt) continue; // lokale Löschung gewinnt
+        if (localV === null || rec.updatedAt > localV) {
           await t.table.put(rec.data as { id: string });
+          if (localTomb) {
+            // Datensatz wurde wiederbelebt → Lösch-Marker aufheben.
+            await db.tombstones.delete(key);
+            tombMap.delete(key);
+          }
         }
       }
     }
 
-    // 2) lokal → Server (wo lokal neuer ist oder remote fehlt)
+    // 2) lokal → Server (lebende Datensätze)
     const toPush: SyncRecord[] = [];
     for (const t of SYNC_TABLES) {
       const all = (await t.table.toArray()) as Record<string, unknown>[];
@@ -134,9 +167,23 @@ export async function syncNow(): Promise<void> {
         const id = String(row.id);
         const v = t.version(row);
         const r = remoteMap.get(`${t.kind}:${id}`);
-        if (!r || v > r.updatedAt) {
-          toPush.push({ kind: t.kind, id, updatedAt: v, data: row });
+        if (!r || r.deleted || v > r.updatedAt) {
+          toPush.push({ kind: t.kind, id, updatedAt: v, deleted: false, data: row });
         }
+      }
+    }
+    // Lösch-Marker hochladen, wo der Server die Löschung noch nicht (aktuell) kennt.
+    for (const tomb of tombMap.values()) {
+      const r = remoteMap.get(tomb.id);
+      const serverKnows = r && r.deleted && r.updatedAt >= tomb.updatedAt;
+      if (!serverKnows) {
+        toPush.push({
+          kind: tomb.kind,
+          id: tomb.recordId,
+          updatedAt: tomb.updatedAt,
+          deleted: true,
+          data: {},
+        });
       }
     }
     await pushSync(toPush);

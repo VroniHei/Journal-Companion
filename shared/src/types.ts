@@ -387,7 +387,9 @@ export interface SyncRecord {
   id: string;
   /** Versions-Zeitstempel (ISO). Bei änderbaren Daten updatedAt, sonst createdAt. */
   updatedAt: string;
-  /** Der vollständige Datensatz (so wie er lokal in Dexie liegt). */
+  /** Tombstone-Marker: true = der Datensatz wurde gelöscht (Lösch-Sync). */
+  deleted?: boolean;
+  /** Der vollständige Datensatz (bei deleted = leeres Objekt). */
   data: unknown;
 }
 

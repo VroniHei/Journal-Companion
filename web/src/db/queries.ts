@@ -1,4 +1,4 @@
-import { db } from "./dexie";
+import { db, type Tombstone } from "./dexie";
 import type {
   ChatMessage,
   ChatRole,
@@ -10,9 +10,14 @@ import type {
   PatternSummary,
   StabilityKind,
   StabilityMoment,
+  SyncKind,
 } from "@journal/shared";
 import { createId, nowIso } from "../lib/ids";
 import { notifyDataChanged } from "../lib/sync";
+
+function tombstone(kind: SyncKind, recordId: string, at: string): Tombstone {
+  return { id: `${kind}:${recordId}`, kind, recordId, updatedAt: at };
+}
 
 // --- Einträge -------------------------------------------------------------
 
@@ -72,10 +77,24 @@ export async function updateEntry(
 }
 
 export async function deleteEntry(id: string): Promise<void> {
-  await db.transaction("rw", db.entries, db.chatMessages, async () => {
-    await db.chatMessages.where("entryId").equals(id).delete();
-    await db.entries.delete(id);
-  });
+  await db.transaction(
+    "rw",
+    db.entries,
+    db.chatMessages,
+    db.tombstones,
+    async () => {
+      const msgIds = (
+        await db.chatMessages.where("entryId").equals(id).toArray()
+      ).map((m) => m.id);
+      await db.chatMessages.where("entryId").equals(id).delete();
+      await db.entries.delete(id);
+      const now = nowIso();
+      await db.tombstones.bulkPut([
+        tombstone("entries", id, now),
+        ...msgIds.map((mid) => tombstone("chatMessages", mid, now)),
+      ]);
+    },
+  );
   notifyDataChanged();
 }
 
@@ -247,6 +266,44 @@ export async function setPatternNotes(id: string, notes: string): Promise<void> 
 }
 
 export async function deletePatternInsight(id: string): Promise<void> {
-  await db.patternInsights.delete(id);
+  await db.transaction("rw", db.patternInsights, db.tombstones, async () => {
+    await db.patternInsights.delete(id);
+    await db.tombstones.put(tombstone("patternInsights", id, nowIso()));
+  });
+  notifyDataChanged();
+}
+
+/** Löscht alle synchronisierten Inhalte und legt dafür Tombstones an. */
+export async function clearAllData(): Promise<void> {
+  await db.transaction(
+    "rw",
+    db.entries,
+    db.chatMessages,
+    db.patternSummaries,
+    db.tombstones,
+    async () => {
+      const now = nowIso();
+      const tombs: Tombstone[] = [];
+      const collect = async (kind: SyncKind, ids: string[]) => {
+        for (const rid of ids) tombs.push(tombstone(kind, rid, now));
+      };
+      await collect(
+        "entries",
+        (await db.entries.toCollection().primaryKeys()) as string[],
+      );
+      await collect(
+        "chatMessages",
+        (await db.chatMessages.toCollection().primaryKeys()) as string[],
+      );
+      await collect(
+        "patternSummaries",
+        (await db.patternSummaries.toCollection().primaryKeys()) as string[],
+      );
+      await db.entries.clear();
+      await db.chatMessages.clear();
+      await db.patternSummaries.clear();
+      await db.tombstones.bulkPut(tombs);
+    },
+  );
   notifyDataChanged();
 }

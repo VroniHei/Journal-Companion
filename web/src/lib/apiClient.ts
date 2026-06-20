@@ -45,7 +45,7 @@ export async function pullSync(since?: string): Promise<SyncRecord[]> {
     throw new Error(data.error ?? `Fehler ${res.status}`);
   }
   const data = (await res.json()) as SyncPullResponse;
-  return data.records ?? [];
+  return (data.records ?? []).map((r) => ({ ...r, deleted: Boolean(r.deleted) }));
 }
 
 /** Schickt neuere lokale Datensätze an den Server (Upsert). */

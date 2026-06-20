@@ -21,6 +21,7 @@ const recordSchema = z.object({
   ]),
   id: z.string().min(1),
   updatedAt: z.string().min(1),
+  deleted: z.boolean().optional(),
   data: z.unknown(),
 });
 
@@ -37,10 +38,9 @@ syncRouter.get("/sync/pull", async (req, res) => {
   try {
     const supabase = getSupabase();
     const since = typeof req.query.since === "string" ? req.query.since : null;
-    let query = supabase
-      .from(SYNC_TABLE)
-      .select("kind, id, updated_at, data")
-      .eq("deleted", false);
+    // Auch gelöschte Datensätze (Tombstones) zurückgeben, damit Löschungen über
+    // Geräte propagieren.
+    let query = supabase.from(SYNC_TABLE).select("kind, id, updated_at, deleted, data");
     if (since) query = query.gt("updated_at", since);
 
     const { data, error } = await query;
@@ -53,6 +53,7 @@ syncRouter.get("/sync/pull", async (req, res) => {
       kind: row.kind,
       id: row.id,
       updatedAt: row.updated_at,
+      deleted: Boolean(row.deleted),
       data: row.data,
     }));
     res.json({ records });
@@ -84,8 +85,8 @@ syncRouter.post("/sync/push", async (req, res) => {
       kind: r.kind,
       id: r.id,
       updated_at: r.updatedAt,
-      deleted: false,
-      data: r.data,
+      deleted: Boolean(r.deleted),
+      data: r.data ?? {},
     }));
     const { error } = await supabase
       .from(SYNC_TABLE)

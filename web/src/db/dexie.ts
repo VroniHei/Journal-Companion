@@ -6,9 +6,21 @@ import type {
   PatternInsight,
   PatternSummary,
   StabilityMoment,
+  SyncKind,
 } from "@journal/shared";
 
-// Lokale Datenbank (IndexedDB). Keine Cloud, kein Login.
+/**
+ * Grabstein für den Lösch-Sync: merkt sich, dass ein Datensatz gelöscht wurde,
+ * damit die Löschung über Geräte propagiert und nicht wieder zurückkommt.
+ */
+export interface Tombstone {
+  id: string; // `${kind}:${recordId}`
+  kind: SyncKind;
+  recordId: string;
+  updatedAt: string; // Zeitpunkt der Löschung (ISO)
+}
+
+// Lokale Datenbank (IndexedDB). Optionaler Geräte-Sync über das Backend.
 export class JournalDB extends Dexie {
   entries!: Table<JournalEntry, string>;
   chatMessages!: Table<ChatMessage, string>;
@@ -16,6 +28,7 @@ export class JournalDB extends Dexie {
   settings!: Table<AppSettings, string>;
   stabilityMoments!: Table<StabilityMoment, string>;
   patternInsights!: Table<PatternInsight, string>;
+  tombstones!: Table<Tombstone, string>;
 
   constructor() {
     super("journal-companion");
@@ -31,6 +44,9 @@ export class JournalDB extends Dexie {
     });
     this.version(3).stores({
       patternInsights: "id, createdAt, updatedAt, patternType",
+    });
+    this.version(4).stores({
+      tombstones: "id, updatedAt, kind",
     });
   }
 }

@@ -378,3 +378,22 @@ Nebeneffekt: der Chat lebt in seinem eigenen Tab und schiebt nichts mehr weg.
 ist er vorgesehen. UI-Skill `ui-ux-pro-max` herangezogen.
 
 **Ergebnis/Status:** `npm run build` + `npm run lint` grün.
+
+## Geräte-Sync: Lösch-Synchronisierung (Tombstones)
+
+**Was:** Löschungen propagieren jetzt über Geräte. Neue Dexie-Tabelle
+`tombstones` (Version 4); `deleteEntry` (inkl. zugehöriger Chat-Nachrichten),
+`deletePatternInsight` und „Alle Daten löschen" (`clearAllData`) legen Lösch-
+Marker an. Server: `/api/sync/pull` liefert auch gelöschte Datensätze (Flag
+`deleted`), `/api/sync/push` akzeptiert `deleted`. Client-Merge ist jetzt
+echtes Last-Write-Wins inkl. Löschungen: neuere Löschung gewinnt über ältere
+Bearbeitung und umgekehrt (Wiederbelebung hebt den Tombstone auf).
+
+**Warum:** Sync v1 war Union-only — auf einem Gerät gelöschte Einträge kamen vom
+anderen zurück.
+
+**Ergebnis/Status:** `npm run build` + `npm run lint` grün; esbuild-Bundle ok.
+Kein DB-Schema-Update nötig (die `deleted`-Spalte gab es bereits).
+
+**Offen:** konfliktfeste Push-Logik (conditional Upsert), inkrementeller Pull,
+gelegentliches Aufräumen alter Tombstones.
