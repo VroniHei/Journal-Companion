@@ -1,7 +1,7 @@
 // Persönliche Auswertungen fürs Dashboard. Rein lokal aus den Dexie-Einträgen
 // berechnet — ruhig, wertschätzend, ohne Bewertung. Inspiriert von Mustererkennung
 // in Mood-Trackern (Daylio u.a.), aber bewusst nicht-klinisch.
-import type { JournalEntry } from "@journal/shared";
+import type { Decision, JournalEntry, OpenLoop } from "@journal/shared";
 
 const DAY = 86_400_000;
 
@@ -111,7 +111,7 @@ const WEEKDAYS = [
  */
 export function buildInsights(entries: JournalEntry[]): string[] {
   const out: string[] = [];
-  if (entries.length < 3) return out;
+  if (entries.length < 2) return out;
 
   // 1) Bewegung & Stimmung
   const moveYes = moodOn(entries, (e) => e.movementToday === true);
@@ -207,7 +207,62 @@ export function buildInsights(entries: JournalEntry[]): string[] {
     }
   }
 
+  // 7) Sanfter Fallback, damit die Karte mit etwas Datenlage nie leer bleibt.
+  if (out.length === 0) {
+    const m = avg(entries.map((e) => e.mood));
+    if (m !== null) {
+      out.push(`Deine Stimmung lag in den letzten Einträgen im Schnitt bei ${m}/10.`);
+    }
+  }
+
   return out.slice(0, 3);
+}
+
+export interface Step {
+  id: string;
+  label: string;
+  at: string; // ISO
+}
+
+/**
+ * „Stabile Schritte" direkt aus vorhandenen Daten abgeleitet (nicht aus einem
+ * separaten Aktions-Log) — so ist die Karte sofort gefüllt: reflektierte
+ * Einträge, geklärte Schleifen, angeschaute Entscheidungen.
+ */
+export function recentSteps(
+  entries: JournalEntry[],
+  openLoops: OpenLoop[] = [],
+  decisions: Decision[] = [],
+): Step[] {
+  const steps: Step[] = [];
+  for (const e of entries) {
+    if (e.aiReflection) {
+      steps.push({
+        id: `r-${e.id}`,
+        label: "Eintrag reflektiert und sortiert",
+        at: e.updatedAt ?? e.createdAt,
+      });
+    }
+  }
+  for (const l of openLoops) {
+    if (l.status === "geklärt") {
+      steps.push({
+        id: `l-${l.id}`,
+        label: "Offene Schleife geklärt",
+        at: l.resolvedAt ?? l.updatedAt,
+      });
+    }
+  }
+  for (const d of decisions) {
+    if (d.status === "reflektiert") {
+      steps.push({
+        id: `d-${d.id}`,
+        label: "Entscheidung im Rückblick angeschaut",
+        at: d.reviewedAt ?? d.updatedAt,
+      });
+    }
+  }
+  return steps.sort((a, b) => b.at.localeCompare(a.at));
 }
 
 function capitalize(s: string): string {

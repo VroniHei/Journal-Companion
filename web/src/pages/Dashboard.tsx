@@ -3,7 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Card } from "../components/ui";
 import { JournalCard } from "../components/JournalCard";
-import { useEntries, useSettings } from "../hooks/useData";
+import {
+  useDecisions,
+  useEntries,
+  useOpenLoops,
+  useSettings,
+} from "../hooks/useData";
 import { listStabilityMoments } from "../db/queries";
 import { formatShort } from "../lib/format";
 import { entryMode } from "../lib/entryCard";
@@ -13,6 +18,7 @@ import {
   moodByDay,
   moodSeries,
   recentStats,
+  recentSteps,
   type MoodDay,
 } from "../lib/insights";
 
@@ -141,6 +147,8 @@ export function Dashboard() {
   const navigate = useNavigate();
   const entries = useEntries();
   const settings = useSettings();
+  const openLoops = useOpenLoops();
+  const decisions = useDecisions();
   const moments = useLiveQuery(() => listStabilityMoments(), [], []);
   const [filter, setFilter] = useState("alle");
   const [promptIdx, setPromptIdx] = useState(0);
@@ -156,6 +164,7 @@ export function Dashboard() {
   const series = moodSeries(entries, 14);
   const moodDays = moodByDay(entries, 7);
   const insights = buildInsights(entries);
+  const steps = recentSteps(entries, openLoops, decisions);
   const prompt = PROMPTS[promptIdx % PROMPTS.length];
 
   const closedIds = new Set<string>();
@@ -411,21 +420,21 @@ export function Dashboard() {
               <div className="mb-5 text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
                 Stabile Schritte
               </div>
-              {moments.length === 0 ? (
+              {steps.length === 0 ? (
                 <p className="text-[15px] text-[var(--muted)]">
-                  Kleine hilfreiche Schritte tauchen hier auf — z.B. Impuls
-                  gehalten oder Eintrag abgeschlossen.
+                  Kleine hilfreiche Schritte tauchen hier auf — z.B. einen Eintrag
+                  reflektiert oder eine offene Schleife geklärt.
                 </p>
               ) : (
                 <ul className="space-y-3.5">
-                  {moments.slice(0, 4).map((m) => (
+                  {steps.slice(0, 4).map((s) => (
                     <li
-                      key={m.id}
+                      key={s.id}
                       className="flex items-center justify-between gap-3"
                     >
-                      <span className="text-[15px] font-medium">{m.label}</span>
+                      <span className="text-[15px] font-medium">{s.label}</span>
                       <span className="shrink-0 text-xs text-[var(--muted)]">
-                        {formatShort(m.createdAt)}
+                        {formatShort(s.at)}
                       </span>
                     </li>
                   ))}
