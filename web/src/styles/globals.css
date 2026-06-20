@@ -38,6 +38,12 @@
   --shadow-card: 0 6px 22px rgba(35, 34, 26, 0.05);
   --shadow-lift: 0 18px 44px rgba(35, 34, 26, 0.1);
   --ease-out: cubic-bezier(0.2, 0.7, 0.15, 1);
+
+  /* Warme „Tool"-Oberfläche (App-Style): Tagesritual, Onboarding, Abschluss.
+     Weiche, nahe Töne + clay-getönter Rand + tiefer warmer Schatten. */
+  --tool-gradient: linear-gradient(135deg, #f8efdf 0%, #f4f0e6 100%);
+  --tool-border: rgba(205, 138, 91, 0.24);
+  --shadow-tool: 0 20px 46px rgba(120, 86, 52, 0.16);
 }
 
 @theme inline {
@@ -83,6 +89,30 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Weich treibende Lichtflächen für etwas Tiefe und ruhige Bewegung im
+   Hintergrund (App-Style). Bewusst sehr zart, damit es ruhig bleibt. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -12%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(340px 340px at 18% 28%, rgba(155, 163, 131, 0.1), transparent 70%),
+    radial-gradient(380px 380px at 86% 18%, rgba(205, 138, 91, 0.08), transparent 70%),
+    radial-gradient(300px 300px at 70% 88%, rgba(221, 177, 75, 0.06), transparent 70%);
+  filter: blur(24px);
+  animation: orbDrift 28s var(--ease-out) infinite alternate;
+}
+@keyframes orbDrift {
+  from {
+    transform: translate(0, 0);
+  }
+  to {
+    transform: translate(22px, -16px);
+  }
+}
+
 /* Glasmorphismus: halbtransparente, geblurrte Flächen — nur noch für die
    Top-Leiste (ruhiger, wie im Claude-Design). Karten sind klar weiß. */
 .glass {
@@ -99,7 +129,7 @@ body {
     border-color 0.2s ease;
 }
 .lift:hover {
-  transform: translateY(-3px);
+  transform: translateY(-5px);
   box-shadow: var(--shadow-lift);
 }
 
@@ -158,6 +188,7 @@ summary {
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
+    animation: none !important;
     scroll-behavior: auto !important;
   }
 }

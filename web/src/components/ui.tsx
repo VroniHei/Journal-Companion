@@ -17,6 +17,29 @@ export function Card({
   );
 }
 
+export function ToolCard({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  // Warme „Tool"-Karte (App-Style): hebt sich vom ruhigen Creme ab — für das
+  // Tagesritual und andere Hilfs-Werkzeuge. Sitzt optisch etwas höher.
+  return (
+    <div
+      className={`rounded-[26px] border p-6 sm:p-7 ${className}`}
+      style={{
+        background: "var(--tool-gradient)",
+        borderColor: "var(--tool-border)",
+        boxShadow: "var(--shadow-tool)",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 type ButtonVariant = "primary" | "ghost" | "danger";
 
 export function Button({

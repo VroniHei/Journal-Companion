@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Card } from "../components/ui";
+import { Button, ToolCard } from "../components/ui";
 import { useDailyRitual } from "../hooks/useData";
 import { dayKey, upsertDailyRitual } from "../db/queries";
 
@@ -10,32 +10,71 @@ function isMorning(): boolean {
   return new Date().getHours() < 14;
 }
 
+function Badge({ tone }: { tone: "morning" | "evening" }) {
+  const morning = tone === "morning";
+  return (
+    <span
+      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+      style={{
+        background: morning ? "rgba(221,177,75,0.22)" : "rgba(155,163,131,0.24)",
+        color: morning ? "#a9791c" : "#566042",
+      }}
+      aria-hidden="true"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        width="18"
+        height="18"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {morning ? (
+          <>
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19" />
+          </>
+        ) : (
+          <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z" />
+        )}
+      </svg>
+    </span>
+  );
+}
+
 function Section({
   title,
   hint,
   active,
+  tone,
   children,
 }: {
   title: string;
   hint: string;
   active: boolean;
+  tone: "morning" | "evening";
   children: React.ReactNode;
 }) {
   return (
-    <Card className="space-y-4">
-      <div>
-        <div className="flex items-center gap-2">
-          <h2 className="serif text-xl font-semibold">{title}</h2>
-          {active && (
-            <span className="rounded-full bg-[var(--accent-soft)] px-2.5 py-0.5 text-xs font-semibold text-[var(--accent-text)]">
-              Jetzt dran
-            </span>
-          )}
+    <ToolCard className="space-y-4">
+      <div className="flex items-start gap-3">
+        <Badge tone={tone} />
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="serif text-xl font-semibold">{title}</h2>
+            {active && (
+              <span className="rounded-full bg-[var(--accent-soft)] px-2.5 py-0.5 text-xs font-semibold text-[var(--accent-text)]">
+                Jetzt dran
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-sm text-[var(--muted)]">{hint}</p>
         </div>
-        <p className="mt-1 text-sm text-[var(--muted)]">{hint}</p>
       </div>
       {children}
-    </Card>
+    </ToolCard>
   );
 }
 
@@ -118,6 +157,7 @@ export function Ritual() {
       title="Guten Morgen"
       hint="Drei Minuten, um den Tag bewusst zu beginnen."
       active={morning}
+      tone="morning"
     >
       <Field label="Wofür bist du dankbar? (bis zu 3)">
         <div className="space-y-2">
@@ -159,6 +199,7 @@ export function Ritual() {
       title="Guten Abend"
       hint="Drei Minuten, um den Tag wertschätzend abzuschließen."
       active={!morning}
+      tone="evening"
     >
       <Field label="Was hast du heute Gutes getan?">
         <input

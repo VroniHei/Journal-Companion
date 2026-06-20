@@ -618,3 +618,23 @@ ohne die ruhige Markenlinie zu verlieren).
 **Morgen / offen:** Sprach-Eingabe in die VS-Code-Chatleiste; Design-Pass von
 Claude Design einarbeiten; optionale Wochenfrage fürs Ritual; Tests für
 Krisen-/Sync-Logik.
+
+## App-Redesign (Claude Design „Innerline App.dc.html") — Phase 1
+
+**Was:** Neuer App-Style-Leitfaden aus Claude Design importiert (`APP-STYLE.md`,
+`Innerline App.dc.html`). Phase 1 umgesetzt:
+- **Warme Tiefe & Bewegung:** Tool-Tokens (warmer Verlauf, clay-Rand, tiefer
+  warmer Schatten) in `globals.css`; weich treibende Hintergrund-Lichtflächen
+  (`body::before`, reduced-motion respektiert); Karten-Hover-Lift -5px.
+- **`ToolCard`-Primitive** (warme, abgesetzte „Hilfs-Tool"-Karte).
+- **Tagesritual prominent:** auf dem Dashboard als volle, warme ToolCard direkt
+  unter „Heute im Blick" (Sonne/Mond-Badge, tageszeit-abhängig, klarer CTA);
+  „Was sich zeigt" jetzt volle Breite. Ritual-Seite nutzt warme ToolCards mit
+  Badges.
+
+**Nächste Phasen (offen):** App-Shell/Tab-Leiste (Pill-Highlight, FAB),
+Segmented/Chips/Toggles, per-Screen-Feinschliff; dann neue Funktionen
+(Onboarding 2 Schritte, „Dein Fokus"-Chip, Erinnerungszeit, Ritual-Abschluss-
+Moment, Serien-Meilenstein + Pausentag).
+
+**Ergebnis/Status:** Build + Lint + Typecheck grün.

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Card } from "../components/ui";
+import { Card, ToolCard } from "../components/ui";
 import { JournalCard } from "../components/JournalCard";
 import { useDailyRitual, useEntries, useSettings } from "../hooks/useData";
 import { dayKey, listStabilityMoments } from "../db/queries";
@@ -263,6 +263,79 @@ export function Dashboard() {
         </div>
       </Card>
 
+      {/* TAGESRITUAL · prominentes, warmes Tages-Tool */}
+      <ToolCard>
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <div className="mb-2.5 inline-flex items-center gap-2.5">
+              <span
+                className="flex h-7 w-7 items-center justify-center rounded-[10px]"
+                style={{
+                  background: ritualMorning
+                    ? "rgba(221,177,75,0.22)"
+                    : "rgba(155,163,131,0.24)",
+                  color: ritualMorning ? "#a9791c" : "#566042",
+                }}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  {ritualMorning ? (
+                    <>
+                      <circle cx="12" cy="12" r="4" />
+                      <path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19" />
+                    </>
+                  ) : (
+                    <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z" />
+                  )}
+                </svg>
+              </span>
+              <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+                Tagesritual
+              </span>
+            </div>
+            <p className="serif text-[26px] font-semibold leading-tight">
+              {ritualMorning
+                ? "Wofür bist du heute dankbar?"
+                : "Was war heute schön?"}
+            </p>
+            {ritualFilled ? (
+              <ul className="mt-3 space-y-1.5 text-[15px]">
+                {ritualItems.slice(0, 3).map((it, i) => (
+                  <li key={i} className="flex gap-2">
+                    <span className="text-[var(--clay)]">•</span>
+                    <span>{it}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-2 max-w-[460px] text-[15px] text-[var(--muted)]">
+                {ritualMorning
+                  ? "Drei kurze Dinge reichen. Ein guter Start in den Tag."
+                  : "Ein wertschätzender Abschluss. Was ist dir heute begegnet?"}
+              </p>
+            )}
+          </div>
+          <div className="shrink-0">
+            <button
+              type="button"
+              onClick={() => navigate("/ritual")}
+              className="rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-[var(--accent-contrast)] shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:bg-[#bdf06a]"
+            >
+              {ritualFilled ? "Ritual ansehen" : "Ritual ausfüllen"}
+            </button>
+          </div>
+        </div>
+      </ToolCard>
+
       {hasData && (
         <>
           {/* AUSWERTUNG · 12-Spalten-Bento */}
@@ -385,71 +458,33 @@ export function Dashboard() {
             </Card>
           </div>
 
-          {/* INSIGHT + STABILE SCHRITTE */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-12">
-            <Card className="sm:col-span-7">
-              <div className="mb-4 inline-flex items-center gap-2.5">
-                <span className="h-2 w-2 rounded-full bg-[var(--clay)]" />
-                <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-                  Was sich zeigt
-                </span>
-              </div>
-              {insights.length > 0 ? (
-                <>
-                  <p className="max-w-[560px] text-xl leading-relaxed">
-                    {insights[0]}
-                  </p>
-                  <Link
-                    to="/muster"
-                    className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--accent-text)] hover:gap-2.5"
-                  >
-                    Im Muster ansehen →
-                  </Link>
-                </>
-              ) : (
-                <p className="text-[15px] text-[var(--muted)]">
-                  Sobald sich etwas wiederholt, spiegele ich es dir hier. Ganz
-                  vorsichtig.
+          {/* WAS SICH ZEIGT */}
+          <Card className="bg-[radial-gradient(420px_240px_at_100%_0%,rgba(205,138,91,0.10),transparent_62%)]">
+            <div className="mb-4 inline-flex items-center gap-2.5">
+              <span className="h-2 w-2 rounded-full bg-[var(--clay)]" />
+              <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+                Was sich zeigt
+              </span>
+            </div>
+            {insights.length > 0 ? (
+              <>
+                <p className="max-w-[640px] text-xl leading-relaxed">
+                  {insights[0]}
                 </p>
-              )}
-            </Card>
-
-            <Card className="flex flex-col sm:col-span-5">
-              <div className="mb-3 inline-flex items-center gap-2.5">
-                <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
-                <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-                  Tagesritual
-                </span>
-              </div>
-              <p className="serif text-[22px] font-semibold leading-snug">
-                {ritualMorning
-                  ? "Wofür bist du heute dankbar?"
-                  : "Was war heute schön?"}
+                <Link
+                  to="/muster"
+                  className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--accent-text)] hover:gap-2.5"
+                >
+                  Im Muster ansehen →
+                </Link>
+              </>
+            ) : (
+              <p className="text-[15px] text-[var(--muted)]">
+                Sobald sich etwas wiederholt, spiegele ich es dir hier. Ganz
+                vorsichtig.
               </p>
-              {ritualFilled ? (
-                <ul className="mt-3 space-y-1.5 text-[15px]">
-                  {ritualItems.slice(0, 3).map((it, i) => (
-                    <li key={i} className="flex gap-2">
-                      <span className="text-[var(--accent-text)]">•</span>
-                      <span>{it}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="mt-2 text-[15px] text-[var(--muted)]">
-                  {ritualMorning
-                    ? "Drei kurze Dinge reichen. Ein guter Start in den Tag."
-                    : "Ein wertschätzender Abschluss. Was ist dir heute begegnet?"}
-                </p>
-              )}
-              <Link
-                to="/ritual"
-                className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-[var(--accent-text)] hover:gap-2.5"
-              >
-                {ritualFilled ? "Ritual ansehen" : "Ritual ausfüllen"} →
-              </Link>
-            </Card>
-          </div>
+            )}
+          </Card>
         </>
       )}
 
