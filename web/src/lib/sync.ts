@@ -56,6 +56,11 @@ const SYNC_TABLES: SyncTable[] = [
     table: db.openLoops as unknown as Table<{ id: string }, string>,
     version: (r) => String(r.updatedAt ?? r.createdAt ?? ""),
   },
+  {
+    kind: "decisions",
+    table: db.decisions as unknown as Table<{ id: string }, string>,
+    version: (r) => String(r.updatedAt ?? r.createdAt ?? ""),
+  },
 ];
 
 // --- Status-Store (für UI) -----------------------------------------------

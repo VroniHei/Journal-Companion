@@ -2,6 +2,7 @@ import { db, type Tombstone } from "./dexie";
 import type {
   ChatMessage,
   ChatRole,
+  Decision,
   EntryDigest,
   JournalEntry,
   OpenLoop,
@@ -344,6 +345,75 @@ export async function deleteOpenLoop(id: string): Promise<void> {
   await db.transaction("rw", db.openLoops, db.tombstones, async () => {
     await db.openLoops.delete(id);
     await db.tombstones.put(tombstone("openLoops", id, nowIso()));
+  });
+  notifyDataChanged();
+}
+
+// --- Entscheidungs-Rückblick („Klärung") ----------------------------------
+
+export function listDecisions(): Promise<Decision[]> {
+  return db.decisions.orderBy("createdAt").reverse().toArray();
+}
+
+export async function createDecision(input: {
+  question: string;
+  leaning?: string;
+  expectation?: string;
+  feeling: number;
+}): Promise<Decision> {
+  const now = nowIso();
+  const decision: Decision = {
+    id: createId(),
+    createdAt: now,
+    updatedAt: now,
+    question: input.question.trim(),
+    leaning: input.leaning?.trim() || undefined,
+    expectation: input.expectation?.trim() || undefined,
+    feeling: input.feeling,
+    status: "offen",
+    feltRight: null,
+  };
+  await db.decisions.put(decision);
+  notifyDataChanged();
+  return decision;
+}
+
+export async function reviewDecision(
+  id: string,
+  review: { feltRight: boolean | null; reviewNote?: string },
+): Promise<void> {
+  const current = await db.decisions.get(id);
+  if (!current) return;
+  const now = nowIso();
+  await db.decisions.put({
+    ...current,
+    status: "reflektiert",
+    reviewedAt: now,
+    reviewNote: review.reviewNote?.trim() || undefined,
+    feltRight: review.feltRight,
+    updatedAt: now,
+  });
+  notifyDataChanged();
+}
+
+export async function reopenDecision(id: string): Promise<void> {
+  const current = await db.decisions.get(id);
+  if (!current) return;
+  await db.decisions.put({
+    ...current,
+    status: "offen",
+    reviewedAt: undefined,
+    reviewNote: undefined,
+    feltRight: null,
+    updatedAt: nowIso(),
+  });
+  notifyDataChanged();
+}
+
+export async function deleteDecision(id: string): Promise<void> {
+  await db.transaction("rw", db.decisions, db.tombstones, async () => {
+    await db.decisions.delete(id);
+    await db.tombstones.put(tombstone("decisions", id, nowIso()));
   });
   notifyDataChanged();
 }

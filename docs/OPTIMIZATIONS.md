@@ -46,3 +46,4 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 - 🟢 **Inkrementeller Pull** per `since`-Cursor (Param ist serverseitig schon da)
   statt Voll-Pull, sobald die Datenmenge wächst.
 - ✅ Lösch-Sync (Tombstones): Löschungen propagieren über Geräte (LWW inkl. Delete).
+- ✅ Selbstführung „Klärung": Open Loops + Decision Review (mit Geräte-/Lösch-Sync).

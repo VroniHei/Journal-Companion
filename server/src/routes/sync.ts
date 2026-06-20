@@ -19,6 +19,7 @@ const recordSchema = z.object({
     "stabilityMoments",
     "patternInsights",
     "openLoops",
+    "decisions",
   ]),
   id: z.string().min(1),
   updatedAt: z.string().min(1),

@@ -2,6 +2,7 @@ import Dexie, { type Table } from "dexie";
 import type {
   AppSettings,
   ChatMessage,
+  Decision,
   JournalEntry,
   OpenLoop,
   PatternInsight,
@@ -30,6 +31,7 @@ export class JournalDB extends Dexie {
   stabilityMoments!: Table<StabilityMoment, string>;
   patternInsights!: Table<PatternInsight, string>;
   openLoops!: Table<OpenLoop, string>;
+  decisions!: Table<Decision, string>;
   tombstones!: Table<Tombstone, string>;
 
   constructor() {
@@ -52,6 +54,9 @@ export class JournalDB extends Dexie {
     });
     this.version(5).stores({
       openLoops: "id, createdAt, updatedAt, status, entryId",
+    });
+    this.version(6).stores({
+      decisions: "id, createdAt, updatedAt, status",
     });
   }
 }

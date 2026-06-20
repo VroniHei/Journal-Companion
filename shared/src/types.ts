@@ -389,6 +389,32 @@ export interface OpenLoop {
   resolutionNote?: string;
 }
 
+// --- Entscheidungs-Rückblick (Selbstführung „Klärung") --------------------
+// Entscheidungen festhalten und später ehrlich draufschauen: War es stimmig?
+// Baut Selbstkenntnis auf (vgl. „Entscheidungen, die sich später gut anfühlten").
+
+export type DecisionStatus = "offen" | "reflektiert";
+
+export interface Decision {
+  id: string;
+  createdAt: string; // ISO
+  updatedAt: string; // ISO
+  /** Die Frage / Entscheidung. */
+  question: string;
+  /** Wozu neigst du gerade / was hast du entschieden? */
+  leaning?: string;
+  /** Was erwartest oder erhoffst du? */
+  expectation?: string;
+  /** Wie stimmig fühlt es sich JETZT an (1..10). */
+  feeling: number;
+  status: DecisionStatus;
+  /** Rückblick. */
+  reviewedAt?: string;
+  reviewNote?: string;
+  /** War es im Rückblick stimmig? */
+  feltRight?: boolean | null;
+}
+
 // --- Geräte-Sync ----------------------------------------------------------
 // Generischer Sync über alle synchronisierten Tabellen. Pro Datensatz wird nur
 // ein „kind" (Tabellenname), eine id, ein Versions-Zeitstempel (ISO) und der
@@ -402,7 +428,8 @@ export type SyncKind =
   | "patternSummaries"
   | "stabilityMoments"
   | "patternInsights"
-  | "openLoops";
+  | "openLoops"
+  | "decisions";
 
 export interface SyncRecord {
   kind: SyncKind;

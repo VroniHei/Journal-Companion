@@ -415,3 +415,19 @@ eingebunden (SYNC_TABLES + Server-Enum erweitert).
 („Open Loops zuerst", eigener Bereich). Decision Review folgt als nächster Schritt.
 
 **Ergebnis/Status:** `npm run build` + `npm run lint` grün; esbuild-Bundle ok.
+
+## Decision Review — „Klärung" zweiter Reiter
+
+**Was:** „Klärung" hat jetzt zwei Reiter (segmentierte Steuerung): **Offene
+Schleifen** und **Entscheidungen**. Decision Review: Entscheidung festhalten
+(Frage + optional Neigung/Erwartung + „Wie stimmig fühlt es sich gerade an?"
+1–10), später **Rückblick** („War stimmig" / „Eher nicht" + optionale Notiz) →
+Status reflektiert mit Badge. Wieder-öffnen, Löschen.
+
+**Technik:** Shared-Typ `Decision` + `SyncKind` „decisions"; Dexie v6 Tabelle
+`decisions`; CRUD in `queries.ts` (mit Tombstone); `useDecisions`-Hook;
+`pages/Clarity.tsx` um Tab-Steuerung + Decisions-Sektion erweitert. Voll im
+Geräte-Sync (SYNC_TABLES + Server-Enum), inkl. Lösch-Sync.
+
+**Ergebnis/Status:** `npm run build` + `npm run lint` grün; esbuild-Bundle ok.
+Damit sind Open Loops UND Decision Review umgesetzt.
