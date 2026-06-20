@@ -525,3 +525,22 @@ Typecheck grün, einzelne Commits):
 
 **Offen (klein, vertagt):** Sprach-Eingabe in die VS-Code-Chatleiste (morgen);
 optionale Tests + Sync-Mikro-Optimierungen.
+
+## Reflexion: lebende Reflexion bezieht Gespräch wirklich ein + Verlauf
+
+**Was:** „Neu reflektieren" bezog das Gespräch zwar technisch schon ein, aber das
+Modell gewichtete es zu schwach (Antwort wurde nur länger, neue Themen fehlten).
+Jetzt:
+- **Prompt deutlich verschärft:** klare „AKTUALISIERTE REFLEXION"-Direktive +
+  Gespräch prominent als „neuester Stand" gelabelt mit explizitem Auftrag, die
+  neuen Themen konkret aufzugreifen (nicht die erste Reflexion verlängern).
+- **Lebende Reflexion + Verlauf:** vorherige Reflexion wird bewahrt
+  (`JournalEntry.previousReflections`, neueste zuerst, max. 5) und ist unter
+  „Frühere Reflexionen" aufklappbar. Button heißt bei vorhandenem Gespräch
+  „Mit Gespräch neu reflektieren" + Hinweis „Bezieht Eintrag + Gespräch ein".
+
+**Recherche:** Rosebud/Reflection/Mindsera behandeln Reflexion+Gespräch als ein
+sich entwickelndes Ganzes (Synthese über den Verlauf), Quelle bleibt sichtbar →
+gewähltes Modell: eine lebende Reflexion mit erhaltenem Verlauf.
+
+**Ergebnis/Status:** Build + Lint + Typecheck grün; esbuild-Bundle ok.

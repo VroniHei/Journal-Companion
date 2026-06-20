@@ -88,7 +88,11 @@ export const VOICE_REFLECTION_STRUCTURE = `Erzeuge aus dem (gesprochenen) Eintra
 7. Was jetzt eher nicht hilfreich wäre
 8. Ein kleiner nächster Schritt`;
 
-const CONVERSATION_REFLECTION_NOTE = `Zu diesem Eintrag gab es bereits ein Gespräch (unten angefügt). Dies ist eine ERNEUTE Reflexion: Beziehe Eintrag UND Gespräch zusammen ein und berücksichtige, was im Gespräch dazugekommen ist (neue Erkenntnisse, Korrekturen, Verschiebungen). Wiederhole nicht einfach die erste Reflexion, sondern denke den aktuellen Stand weiter.`;
+const CONVERSATION_REFLECTION_NOTE = `WICHTIG — AKTUALISIERTE REFLEXION: Die erste Reflexion bezog sich nur auf den Tagebucheintrag. Seitdem gab es ein Gespräch dazu (unten, „Gespräch seit dem Eintrag"). Reflektiere jetzt über den GESAMTEN Stand — Eintrag UND Gespräch zusammen.
+- Greife die im Gespräch neu aufgekommenen Themen, Fragen und Einsichten ausdrücklich auf und benenne sie konkret (nicht nur den ursprünglichen Eintrag spiegeln).
+- Zeige, was sich seit dem ersten Eintrag verschoben, präzisiert oder verändert hat.
+- Formuliere die Reflexion erkennbar neu auf Basis des Gesprächs. Schreibe nicht einfach die erste Reflexion etwas länger.
+- Wenn im Gespräch wirklich nichts Neues kam, sag das ehrlich in einem Satz, statt künstlich zu variieren.`;
 
 export function buildReflectionSystem(opts: {
   style: ResponseStyle;
@@ -326,9 +330,9 @@ function formatConversation(
 ): string {
   if (!turns?.length) return "";
   const lines = turns.map(
-    (t) => `${t.role === "user" ? "Du" : "Begleiter"}: ${t.content}`,
+    (t) => `${t.role === "user" ? "Nutzerin" : "Begleiter"}: ${t.content}`,
   );
-  return `Bisheriges Gespräch zu diesem Eintrag:\n${lines.join("\n")}`;
+  return `Gespräch seit dem Eintrag (neuester Stand — bitte ausdrücklich einbeziehen):\n${lines.join("\n")}\n\nDeine aktualisierte Reflexion soll die hier aufgekommenen Themen konkret aufgreifen.`;
 }
 
 export function buildReflectionUser(

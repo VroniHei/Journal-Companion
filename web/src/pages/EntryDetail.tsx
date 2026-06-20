@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Card } from "../components/ui";
 import { ReflectionView } from "../components/ReflectionView";
+import { FormattedText } from "../components/FormattedText";
 import { SessionClose } from "../components/SessionClose";
 import { ChatThread } from "../components/ChatThread";
 import { useEntry, useMessages, useSettings } from "../hooks/useData";
@@ -10,7 +11,8 @@ import {
   recordStabilityMoment,
   updateEntry,
 } from "../db/queries";
-import { formatDateTime } from "../lib/format";
+import { formatDateTime, formatShort } from "../lib/format";
+import { nowIso } from "../lib/ids";
 import { toPrefs } from "../lib/settings";
 import { streamReflect } from "../lib/apiClient";
 import { buildReflectionContext, clientRuminationHint } from "../lib/context";
@@ -97,8 +99,16 @@ export function EntryDetail() {
           setStreamText(acc);
         },
       );
+      // Bisherige Reflexion als Verlauf bewahren (neueste zuerst, max. 5).
+      const history = e.aiReflection
+        ? [
+            { text: e.aiReflection, at: nowIso() },
+            ...(e.previousReflections ?? []),
+          ].slice(0, 5)
+        : e.previousReflections;
       await updateEntry(e.id, {
         aiReflection: acc,
+        previousReflections: history,
         crisisFlag: result.crisis,
         ruminationFlag: result.rumination,
       });
@@ -239,7 +249,9 @@ export function EntryDetail() {
               </p>
               {!reflecting && e.aiReflection && (
                 <Button variant="ghost" onClick={reflect}>
-                  Neu reflektieren
+                  {messages.length > 0
+                    ? "Mit Gespräch neu reflektieren"
+                    : "Neu reflektieren"}
                 </Button>
               )}
             </div>
@@ -255,16 +267,42 @@ export function EntryDetail() {
                 }
                 crisis={!reflecting && e.crisisFlag}
               />
+              {!reflecting && e.aiReflection && messages.length > 0 && (
+                <p className="text-xs text-[var(--muted)]">
+                  Bezieht Eintrag + Gespräch ein. „Mit Gespräch neu reflektieren"
+                  greift die neuen Themen auf.
+                </p>
+              )}
               {!reflecting && e.aiReflection && !e.crisisFlag && (
                 <p className="text-sm italic text-[var(--muted)]">
                   {reflectionMicrocopy(e)}
                 </p>
               )}
-              {!reflecting && e.aiReflection && messages.length > 0 && (
-                <p className="text-xs text-[var(--muted)]">
-                  Tipp: „Neu reflektieren" bezieht jetzt auch euer Gespräch mit ein.
-                </p>
-              )}
+              {!reflecting &&
+                e.previousReflections &&
+                e.previousReflections.length > 0 && (
+                  <details className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+                    <summary className="cursor-pointer text-sm font-medium text-[var(--muted)]">
+                      Frühere Reflexionen ({e.previousReflections.length})
+                    </summary>
+                    <div className="mt-4 space-y-5">
+                      {e.previousReflections.map((p, i) => (
+                        <div
+                          key={i}
+                          className="border-t border-[var(--border)] pt-4 first:border-0 first:pt-0"
+                        >
+                          <div className="mb-1.5 text-xs text-[var(--muted)]">
+                            {formatShort(p.at)}
+                          </div>
+                          <FormattedText
+                            text={p.text}
+                            className="text-[14px] text-[var(--muted)]"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                )}
               {!reflecting && e.aiReflection && (
                 <SessionClose onClose={closeSession} note={CLOSE_MICROCOPY} />
               )}

@@ -49,6 +49,8 @@ export interface JournalEntry {
   impulse: string;
   intention: string[];
   aiReflection: string | null;
+  /** Frühere Reflexionen (Verlauf), neueste zuerst — beim Neu-Reflektieren bewahrt. */
+  previousReflections?: { text: string; at: string }[];
   /** Auswahl aus dem Startscreen (optional). */
   startIntent?: StartIntent;
   // Minimales Alltagstracking (optional) — fließt später in Muster & Wochenrückblick.
