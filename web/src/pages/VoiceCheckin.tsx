@@ -9,6 +9,7 @@ import { useSettings } from "../hooks/useData";
 import { toPrefs } from "../lib/settings";
 import { postVoiceReflect } from "../lib/apiClient";
 import { createEntry, updateEntry } from "../db/queries";
+import { generateTitleFor } from "../lib/title";
 
 function resultToReflectionText(r: VoiceReflectResponse): string {
   return [
@@ -96,6 +97,7 @@ export function VoiceCheckin() {
       mainTrigger: result.mainTrigger,
       mainNeed: result.mainNeed,
     });
+    void generateTitleFor(entry.id, transcript.trim());
     navigate(`/eintrag/${entry.id}`);
   }
 

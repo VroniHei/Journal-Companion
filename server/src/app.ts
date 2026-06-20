@@ -9,6 +9,7 @@ import { ttsRouter } from "./routes/tts";
 import { sttRouter } from "./routes/stt";
 import { patternInsightsRouter } from "./routes/patternInsights";
 import { syncRouter } from "./routes/sync";
+import { titleRouter } from "./routes/title";
 
 // Die konfigurierte Express-App — ohne `listen`, damit sie sowohl lokal
 // (server/src/index.ts) als auch als Vercel-Serverless-Funktion (api/index.ts)
@@ -41,5 +42,6 @@ app.use("/api", ttsRouter);
 app.use("/api", sttRouter);
 app.use("/api", patternInsightsRouter);
 app.use("/api", syncRouter);
+app.use("/api", titleRouter);
 
 export default app;

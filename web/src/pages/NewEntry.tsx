@@ -15,6 +15,7 @@ import {
   TOPICS,
 } from "../lib/options";
 import { createEntry } from "../db/queries";
+import { generateTitleFor } from "../lib/title";
 import { intentLabel, isStartIntent } from "../lib/intents";
 
 const SLEEP_OPTIONS = ["gut", "mittel", "schlecht"] as const;
@@ -63,6 +64,8 @@ export function NewEntry() {
       outsideToday,
       cannabisToday,
     });
+    // KI-Titel im Hintergrund erzeugen (blockt die Navigation nicht).
+    void generateTitleFor(entry.id, entry.text);
     navigate(`/eintrag/${entry.id}`);
   }
 

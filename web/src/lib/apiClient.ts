@@ -34,6 +34,22 @@ export async function getConfig(): Promise<{
   }
 }
 
+/** Erzeugt einen kurzen Titel für einen Eintrag. Leerer String bei Fehler/ohne Key. */
+export async function postTitle(text: string, model?: string): Promise<string> {
+  try {
+    const res = await fetch("/api/title", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, model }),
+    });
+    if (!res.ok) return "";
+    const data = (await res.json()) as { title?: string };
+    return (data.title ?? "").trim();
+  } catch {
+    return "";
+  }
+}
+
 /** Holt alle (oder ab `since` geänderten) Sync-Datensätze vom Server. */
 export async function pullSync(since?: string): Promise<SyncRecord[]> {
   const url = since

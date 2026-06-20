@@ -49,6 +49,8 @@ export interface JournalEntry {
   impulse: string;
   intention: string[];
   aiReflection: string | null;
+  /** Kurzer, treffender Titel (KI-generiert; Fallback aus dem Text). */
+  title?: string;
   /** Frühere Reflexionen (Verlauf), neueste zuerst — beim Neu-Reflektieren bewahrt. */
   previousReflections?: { text: string; at: string }[];
   /** Auswahl aus dem Startscreen (optional). */

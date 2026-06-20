@@ -556,3 +556,21 @@ gewähltes Modell: eine lebende Reflexion mit erhaltenem Verlauf.
   neue, ehrliche Beobachtung „häufigste Emotion" (ab 2×).
 
 **Ergebnis/Status:** Build + Lint + Typecheck grün; esbuild ok.
+
+## KI-Titel pro Eintrag + bessere Karten-/Reflexions-Anrisse
+
+**Was:**
+- **KI-Titel:** Neue Route `/api/title` (winziger Claude-Aufruf, max 24 Tokens,
+  Sonnet) erzeugt 3–6-Wort-Titel aus dem Inhalt. Client (`lib/title.ts`) erzeugt
+  ihn im Hintergrund beim Speichern (NewEntry + Voice-Check-in) und legt
+  `JournalEntry.title` ab (synct mit). Karten zeigen ihn.
+- **Fallback** (ohne Key/offline): `entryTitle` bevorzugt `title`, sonst
+  Sprach-Zusammenfassung, sonst erster sinnvoller Satz mit übersprungenen
+  Füllwörtern („du, weißt du was…"), sonst Themen.
+- **Frühere Reflexionen:** Anriss überspringt die immer gleiche Überschrift und
+  zeigt den ersten echten Inhaltssatz → Versionen sind unterscheidbar.
+
+**Recherche:** KI-Titel sind in AI-Journaling-Apps Standard (Day One Title
+Suggestions, Rosebud, Super Diary, DayJot).
+
+**Ergebnis/Status:** Build + Lint + Typecheck grün; esbuild ok.

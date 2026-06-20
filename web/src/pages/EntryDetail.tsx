@@ -23,9 +23,19 @@ import { downloadEntryMarkdown } from "../lib/export";
 
 type Tab = "eintrag" | "reflexion" | "gespraech";
 
-/** Kurzer, einzeiliger Anriss einer Reflexion für die Verlaufs-Liste. */
+/**
+ * Kurzer, einzeiliger Anriss einer Reflexion für die Verlaufs-Liste.
+ * Überspringt die (immer gleiche) erste Überschrift und nimmt den ersten echten
+ * Inhaltssatz — so unterscheiden sich die Versionen sichtbar.
+ */
 function reflectionSnippet(text: string): string {
-  const plain = stripMarkdown(text).replace(/\s+/g, " ").trim();
+  const lines = stripMarkdown(text)
+    .split(/\n+/)
+    .map((l) => l.replace(/^\d+[.)]\s*/, "").trim())
+    .filter(Boolean);
+  const body = lines.slice(1); // erste Zeile ist meist die Abschnitts-Überschrift
+  const pick = body.find((l) => l.length > 24) ?? body[0] ?? lines[0] ?? "";
+  const plain = pick.replace(/\s+/g, " ").trim();
   return plain.length > 72 ? `${plain.slice(0, 72)}…` : plain;
 }
 

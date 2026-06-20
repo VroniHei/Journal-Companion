@@ -1,16 +1,43 @@
 import type { JournalEntry } from "@journal/shared";
 
-// Ableitungen für die Journal-Karten — alles aus vorhandenen Feldern, ohne
-// zusätzlichen KI-Aufruf.
+// Ableitungen für die Journal-Karten.
 
-/** Automatischer Titel: erster Satz/erste Zeile, sonst Themen. */
+// Typische Füllwort-Einstiege (v.a. bei Sprache), die als Titel nichtssagend sind.
+const FILLER_OPENING =
+  /^(ähm+|öhm+|also|ja|nun|hey|du|na ?ja|na|hm+|so|tja|halt|ok(ay)?|weißt du( was)?|sag mal|ich mein(e)?|ich wollt(e)? (nur )?sagen|ne|gell)[\s,.!?–-]+/i;
+
+function trimFillerOpening(s: string): string {
+  let prev = "";
+  let cur = s.trimStart();
+  while (cur && cur !== prev) {
+    prev = cur;
+    cur = cur.replace(FILLER_OPENING, "").trimStart();
+  }
+  return cur || s.trim();
+}
+
+function shorten(s: string): string {
+  return s.length > 60 ? `${s.slice(0, 57).trimEnd()}…` : s;
+}
+
+/**
+ * Titel der Karte. Bevorzugt den KI-Titel; sonst eine Zusammenfassung/den ersten
+ * sinnvollen Satz (Füllwörter übersprungen); sonst Themen.
+ */
 export function entryTitle(e: JournalEntry): string {
+  if (e.title?.trim()) return e.title.trim();
+
+  const summary = e.entrySummary?.trim();
+  if (summary) {
+    const s = summary.split(/(?<=[.!?])\s/)[0]?.trim() ?? summary;
+    if (s.length >= 8) return shorten(s);
+  }
+
   const firstLine = e.text.split("\n")[0]?.trim() ?? "";
   const sentence = firstLine.split(/(?<=[.!?])\s/)[0]?.trim() ?? firstLine;
-  const base = sentence || firstLine;
-  if (base.length >= 8) {
-    return base.length > 60 ? `${base.slice(0, 57).trimEnd()}…` : base;
-  }
+  const base = trimFillerOpening(sentence || firstLine);
+  if (base.length >= 8) return shorten(base);
+
   if (e.topics.length) return e.topics.slice(0, 2).join(" · ");
   return base || "Eintrag";
 }
