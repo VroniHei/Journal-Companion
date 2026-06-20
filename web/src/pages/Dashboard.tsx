@@ -88,7 +88,7 @@ function MoodSparkline({ days }: { days: MoodDay[] }) {
   if (pts.length < 2) {
     return (
       <p className="mt-6 text-sm text-[var(--muted)]">
-        Noch zu wenig Verlauf — ab zwei Tagen mit Eintrag zeichne ich hier die
+        Noch zu wenig Verlauf. Ab zwei Tagen mit Eintrag zeichne ich hier die
         Linie.
       </p>
     );
@@ -408,7 +408,7 @@ export function Dashboard() {
                 </>
               ) : (
                 <p className="text-[15px] text-[var(--muted)]">
-                  Sobald sich etwas wiederholt, spiegele ich es dir hier — ganz
+                  Sobald sich etwas wiederholt, spiegele ich es dir hier. Ganz
                   vorsichtig.
                 </p>
               )}
@@ -438,7 +438,7 @@ export function Dashboard() {
               ) : (
                 <p className="mt-2 text-[15px] text-[var(--muted)]">
                   {ritualMorning
-                    ? "Drei kurze Dinge reichen — ein guter Start in den Tag."
+                    ? "Drei kurze Dinge reichen. Ein guter Start in den Tag."
                     : "Ein wertschätzender Abschluss. Was ist dir heute begegnet?"}
                 </p>
               )}

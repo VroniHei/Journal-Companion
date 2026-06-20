@@ -402,7 +402,7 @@ export function Clarity() {
         <h1 className="serif text-3xl font-semibold">Klärung</h1>
         <p className="mt-1 text-[var(--muted)]">
           {tab === "schleifen"
-            ? "Offene Schleifen, die gerade Kopf-Raum belegen — festhalten, damit sie nicht im Kreis laufen. Kein To-do-Druck."
+            ? "Offene Schleifen, die gerade Kopf-Raum belegen. Halte sie hier fest, damit sie nicht im Kreis laufen. Kein To-do-Druck."
             : "Entscheidungen festhalten und später ehrlich draufschauen: War es stimmig? So lernst du dich besser kennen."}
         </p>
       </div>

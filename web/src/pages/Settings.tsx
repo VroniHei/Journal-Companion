@@ -111,7 +111,7 @@ export function Settings() {
 
         <Row
           label="Qualitätsmodus"
-          hint="Nutzt Opus für besonders tiefe Auswertungen — unabhängig vom gewählten Modell."
+          hint="Nutzt Opus für besonders tiefe Auswertungen, unabhängig vom gewählten Modell."
         >
           <label className="flex items-center gap-2 text-sm">
             <input
@@ -213,7 +213,7 @@ export function Settings() {
             <p className="text-sm text-[var(--muted)]">
               Vorgelesen wird nur, wenn du selbst auf „Vorlesen" tippst (bei der
               Reflexion und bei den Antworten im Gespräch). Nichts startet
-              automatisch — so kannst du es jederzeit selbst steuern und stoppen.
+              automatisch. So kannst du es jederzeit selbst steuern und stoppen.
             </p>
 
             <div>
@@ -249,7 +249,7 @@ export function Settings() {
           Empfohlen. Nutzt die gratis Spracherkennung deines Browsers, wo möglich
           (Desktop Chrome/Edge, Android). Die natürliche ElevenLabs-Erkennung
           (verbraucht Guthaben) springt nur ein, wenn der Browser keine
-          Spracheingabe kann — z.B. auf dem iPhone.
+          Spracheingabe kann, etwa auf dem iPhone.
         </p>
       </Card>
 

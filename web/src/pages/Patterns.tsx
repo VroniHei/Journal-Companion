@@ -277,7 +277,7 @@ export function Patterns() {
       });
       if (res.patterns.length === 0) {
         setError(
-          "Es haben sich noch keine klaren Muster gezeigt — schreib weiter, dann wird es mit der Zeit deutlicher.",
+          "Es haben sich noch keine klaren Muster gezeigt. Schreib weiter, dann wird es mit der Zeit deutlicher.",
         );
       } else {
         await savePatternInsights(res.patterns);
@@ -295,7 +295,7 @@ export function Patterns() {
         <h1 className="serif text-3xl font-semibold">Muster</h1>
         <Card>
           <p className="text-[var(--muted)]">
-            Noch keine Einträge — sobald du schreibst, zeigen sich hier
+            Noch keine Einträge. Sobald du schreibst, zeigen sich hier
             Stimmung, Themen, Bedürfnisse und stabilisierende Handlungen.
           </p>
         </Card>
@@ -378,8 +378,8 @@ export function Patterns() {
         <Eyebrow>Erkannte Muster</Eyebrow>
         <Card className="space-y-4">
           <p className="text-sm text-[var(--muted)]">
-            Diese Ebene sucht in mehreren Einträgen nach wiederkehrenden Abläufen
-            — wie sich Themen, Gefühle, Impulse und Handlungen verketten.
+            Diese Ebene sucht in mehreren Einträgen nach wiederkehrenden Abläufen:
+            wie sich Themen, Gefühle, Impulse und Handlungen verketten.
           </p>
           <div className="flex flex-wrap items-end gap-3">
             <label className="flex flex-col gap-1 text-xs text-[var(--muted)]">
@@ -415,7 +415,7 @@ export function Patterns() {
 
         {insights.length === 0 ? (
           <p className="text-sm text-[var(--muted)]">
-            Noch keine tiefen Muster — starte oben eine Analyse.
+            Noch keine tiefen Muster. Starte oben eine Analyse.
           </p>
         ) : (
           <div className="space-y-4">

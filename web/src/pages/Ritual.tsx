@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card } from "../components/ui";
+import { Button, Card } from "../components/ui";
 import { useDailyRitual } from "../hooks/useData";
 import { dayKey, upsertDailyRitual } from "../db/queries";
 
@@ -66,6 +66,7 @@ export function Ritual() {
   const [better, setBetter] = useState("");
   const [moments, setMoments] = useState(["", "", ""]);
   const [hydrated, setHydrated] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   // Einmalig aus dem gespeicherten Tag befüllen, sobald geladen.
   useEffect(() => {
@@ -91,6 +92,7 @@ export function Ritual() {
       better: better.trim() || undefined,
       goodMoments: moments.map((s) => s.trim()).filter(Boolean),
     });
+    setSaved(true);
   }
 
   function setAt(
@@ -102,6 +104,7 @@ export function Ritual() {
     const next = [...arr];
     next[i] = v;
     set(next);
+    setSaved(false);
   }
 
   const dateLabel = new Date().toLocaleDateString("de-DE", {
@@ -197,8 +200,8 @@ export function Ritual() {
       <div>
         <h1 className="serif text-3xl font-semibold">Tagesritual</h1>
         <p className="mt-1 text-[var(--muted)]">
-          {dateLabel} · Ein kleines Ritual für den Tag. Kein Muss — fülle, was dir
-          gerade leicht fällt. Es speichert sich von selbst.
+          {dateLabel} · Ein kleines Ritual für den Tag. Kein Muss. Fülle aus, was
+          dir gerade leicht fällt, und sichere es mit „Speichern".
         </p>
       </div>
 
@@ -214,6 +217,19 @@ export function Ritual() {
           {morningCard}
         </>
       )}
+
+      <div className="space-y-1.5">
+        <div className="flex flex-wrap items-center gap-3">
+          <Button onClick={commit}>Speichern</Button>
+          {saved && (
+            <span className="text-sm text-[var(--muted)]">Gespeichert ✓</span>
+          )}
+        </div>
+        <p className="text-xs text-[var(--muted)]">
+          Deine Eingaben werden auch automatisch gesichert, sobald du ein Feld
+          verlässt.
+        </p>
+      </div>
     </section>
   );
 }
