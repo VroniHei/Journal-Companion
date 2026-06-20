@@ -8,6 +8,7 @@ import { listPatternsDesc, savePattern, toDigest } from "../db/queries";
 import { toPrefs } from "../lib/settings";
 import { postWeeklyReview } from "../lib/apiClient";
 import { aggregate } from "../lib/patterns";
+import { wordsOfWeek } from "../lib/insights";
 import { createId, nowIso } from "../lib/ids";
 import { formatDate } from "../lib/format";
 import { downloadPatternMarkdown } from "../lib/export";
@@ -36,6 +37,8 @@ export function WeeklyReview() {
   const periodEnd = now.toISOString();
 
   const inRange = entries.filter((e) => e.createdAt >= periodStart);
+  const words = wordsOfWeek(inRange);
+  const maxWord = words[0]?.count ?? 1;
 
   async function generate() {
     if (loading || inRange.length === 0) return;
@@ -133,6 +136,25 @@ export function WeeklyReview() {
           )}
         </div>
       </Card>
+
+      {words.length > 0 && (
+        <Card className="space-y-3">
+          <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+            Worte der Woche
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {words.map((w) => (
+              <span
+                key={w.word}
+                className="rounded-full bg-[var(--surface-2)] px-3.5 py-1.5 font-medium text-[var(--foreground)]"
+                style={{ fontSize: `${12.5 + (w.count / maxWord) * 4}px` }}
+              >
+                {w.word}
+              </span>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {error && (
         <Card className="border-l-2 border-l-[var(--danger)]">

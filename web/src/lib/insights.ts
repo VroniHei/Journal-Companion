@@ -218,6 +218,26 @@ export function buildInsights(entries: JournalEntry[]): string[] {
   return out.slice(0, 3);
 }
 
+export interface WordCount {
+  word: string;
+  count: number;
+}
+
+/** „Worte der Woche": häufigste Themen/Gefühle/Bedürfnisse im Zeitraum. */
+export function wordsOfWeek(entries: JournalEntry[], max = 7): WordCount[] {
+  const counts = new Map<string, number>();
+  for (const e of entries) {
+    for (const w of [...e.topics, ...e.emotions, ...e.needs]) {
+      const t = w.trim();
+      if (t) counts.set(t, (counts.get(t) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, max)
+    .map(([word, count]) => ({ word, count }));
+}
+
 export interface Step {
   id: string;
   label: string;
