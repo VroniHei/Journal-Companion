@@ -14,6 +14,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   apiMode: "claude",
   highQualityMode: false,
   autoSpeak: false,
+  preferFreeSpeech: true,
 };
 
 export async function getSettings(): Promise<AppSettings> {

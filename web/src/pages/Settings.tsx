@@ -217,6 +217,27 @@ export function Settings() {
         )}
       </Card>
 
+      <Card className="space-y-3">
+        <h2 className="text-sm font-medium text-[var(--muted)]">Spracheingabe</h2>
+        <label className="flex items-start gap-2 text-sm">
+          <input
+            type="checkbox"
+            className="mt-0.5"
+            checked={s.preferFreeSpeech !== false}
+            onChange={(e) =>
+              updateSettings({ preferFreeSpeech: e.target.checked })
+            }
+          />
+          <span>Kostenlose Browser-Spracherkennung bevorzugen</span>
+        </label>
+        <p className="text-xs text-[var(--muted)]">
+          Empfohlen. Nutzt die gratis Spracherkennung deines Browsers, wo möglich
+          (Desktop Chrome/Edge, Android). Die natürliche ElevenLabs-Erkennung
+          (verbraucht Guthaben) springt nur ein, wenn der Browser keine
+          Spracheingabe kann — z.B. auf dem iPhone.
+        </p>
+      </Card>
+
       <Card className="space-y-4">
         <h2 className="text-sm font-medium text-[var(--muted)]">Geräte-Sync</h2>
         {sync.state === "off" ? (

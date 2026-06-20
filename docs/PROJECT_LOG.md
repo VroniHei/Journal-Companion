@@ -446,3 +446,17 @@ schnell aufgebraucht. Fallback hilft v.a. auf Desktop (Chrome/Edge); auf iOS
 ohne Browser-STT bleibt der Hinweis aufs Tippen.
 
 **Ergebnis/Status:** `npm run build` + `npm run lint` grün; esbuild-Bundle ok.
+
+## Spracheingabe: kostenlos zuerst (Browser) + Lang-Aufnahme-Warnung
+
+**Was:** Neue Einstellung `preferFreeSpeech` (Standard an). Spracheingabe nutzt
+nun **die kostenlose Browser-Spracherkennung, wo verfügbar** (Desktop Chrome/
+Edge, Android); die kostenpflichtige ElevenLabs-Erkennung springt nur ein, wenn
+der Browser keine Spracheingabe kann (z.B. iOS/Safari). Schalter in den
+Einstellungen („Kostenlose Browser-Spracherkennung bevorzugen"). Zusätzlich im
+ElevenLabs-Modus eine sanfte Warnung ab 60 s Aufnahme („verbraucht Guthaben").
+
+**Warum:** Nutzerin möchte möglichst kostenlos bleiben; ElevenLabs-Credits sind
+begrenzt und lange Aufnahmen teuer.
+
+**Ergebnis/Status:** `npm run build` + `npm run lint` grün.

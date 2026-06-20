@@ -137,6 +137,12 @@ export interface AppSettings {
   autoSpeak?: boolean;
   /** Bevorzugte Stimme für die Sprachausgabe (voiceURI der Web Speech API). */
   speechVoiceURI?: string;
+  /**
+   * Spracheingabe: kostenlose Browser-Erkennung bevorzugen (Standard). Dann wird
+   * ElevenLabs (kostet Guthaben) nur genutzt, wenn der Browser keine
+   * Spracherkennung kann (z.B. iOS/Safari).
+   */
+  preferFreeSpeech?: boolean;
 }
 
 // ---------------------------------------------------------------------------

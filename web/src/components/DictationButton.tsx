@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useDictation } from "../hooks/useDictation";
 import { useServerDictation } from "../hooks/useServerDictation";
+import { useSettings } from "../hooks/useData";
 import { getConfig } from "../lib/apiClient";
 
 /**
@@ -46,7 +47,15 @@ export function DictationButton({
   const server = useServerDictation(common);
   const browser = useDictation(common);
 
-  const useServer = cloud && server.supported && !forceBrowser;
+  const settings = useSettings();
+  // Kostenlos zuerst: ElevenLabs (kostet Guthaben) nur, wenn der Browser keine
+  // Spracherkennung kann — oder wenn die Nutzerin es ausdrücklich bevorzugt.
+  const preferFree = settings.preferFreeSpeech !== false;
+  const serverAvailable = cloud && server.supported;
+  const useServer =
+    !forceBrowser &&
+    serverAvailable &&
+    !(preferFree && browser.supported);
 
   if (!useServer && !browser.supported && !server.supported) {
     return (
@@ -114,6 +123,11 @@ export function DictationButton({
             />
           </span>
           Ich höre zu… Text kommt nach dem Stoppen
+        </span>
+      )}
+      {useServer && active && seconds >= 60 && (
+        <span className="text-xs text-[var(--clay,#8a4f2a)]">
+          Aufnahme wird lang – das verbraucht Sprach-Guthaben.
         </span>
       )}
       {busy && (
