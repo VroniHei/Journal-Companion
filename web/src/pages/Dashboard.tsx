@@ -60,6 +60,16 @@ function moodTrend(series: number[]): string {
   return "Recht stabil";
 }
 
+const MILESTONES = [3, 7, 14, 21, 30, 60, 100, 150, 200, 365];
+function nextMilestone(streak: number): number {
+  return MILESTONES.find((m) => m > streak) ?? Math.ceil((streak + 1) / 100) * 100;
+}
+function milestoneLabel(m: number): string {
+  if (m === 365) return "1-Jahres-Marke";
+  if (m % 7 === 0 && m <= 28) return `${m / 7}-Wochen-Marke`;
+  return `${m}-Tage-Marke`;
+}
+
 const FILTERS: { id: string; label: string }[] = [
   { id: "alle", label: "Alle" },
   { id: "bereit", label: "Reflexion bereit" },
@@ -152,6 +162,10 @@ export function Dashboard() {
   const hasData = entries.length > 0;
 
   const streak = computeStreak(entries);
+  const streakNext = nextMilestone(streak);
+  const streakLeft = streakNext - streak;
+  const streakPct = Math.min(100, Math.round((streak / streakNext) * 100));
+  const streakMilestoneLabel = milestoneLabel(streakNext);
   const week = recentStats(entries, 7);
   const series = moodSeries(entries, 14);
   const moodDays = moodByDay(entries, 7);
@@ -544,11 +558,45 @@ export function Dashboard() {
                 </span>
               </div>
               <div className="mt-6">
-                <div className="text-5xl font-extrabold leading-none tracking-tight tabular-nums">
+                <div className="text-5xl font-extrabold leading-none tracking-tight tabular-nums text-[var(--green-deep)]">
                   {streak}
                 </div>
                 <div className="mt-1 text-sm text-[var(--muted)]">
                   {streak === 1 ? "Tag am Stück" : "Tage am Stück"}
+                </div>
+                <div className="mt-4">
+                  <div className="h-[7px] overflow-hidden rounded-full bg-[var(--surface-2)]">
+                    <div
+                      className="h-full rounded-full transition-[width] duration-500"
+                      style={{
+                        width: `${streakPct}%`,
+                        background: "linear-gradient(90deg,#CD8A5B,#A8E84F)",
+                      }}
+                    />
+                  </div>
+                  <div className="mt-2 text-xs text-[var(--muted)]">
+                    Noch {streakLeft} {streakLeft === 1 ? "Tag" : "Tage"} bis zur{" "}
+                    {streakMilestoneLabel}
+                  </div>
+                  <div
+                    className="mt-2.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold"
+                    style={{ color: "#6E9B2C", background: "#F2F6E8" }}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="12"
+                      height="12"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M8 5v14M16 5v14" />
+                    </svg>
+                    1 Pausentag in Reserve
+                  </div>
                 </div>
               </div>
             </Card>
