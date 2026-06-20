@@ -358,3 +358,23 @@ eine Haupt-CTA pro View, content-priority mobile, destruktive Aktionen abgesetzt
 Nebeneffekt: der Chat lebt in seinem eigenen Tab und schiebt nichts mehr weg.
 
 **Ergebnis/Status:** `npm run build` + `npm run lint` grün.
+
+## Dashboard: Stimmungs-Umschalter Punkte/Verlauf wieder da + Claude-Design-Abgleich
+
+**Was:**
+- Stimmungskarte hat wieder den **Umschalter Punkte / Verlauf** (aus
+  Bento-Dashboard.dc.html): „Verlauf" rendert eine Flächen-Linie aus den echten
+  Tageswerten (`MoodDay.value` neu in `lib/insights.ts`), „Punkte" die 7
+  Tagespunkte; dazu Legende „Schwer → Leicht". Default: Punkte. Bei <2 Tagen mit
+  Eintrag zeigt der Verlauf einen ruhigen Hinweis statt einer leeren Linie.
+- **Claude-Design-Abgleich:** Handoff `Bento-Dashboard.dc.html` aus dem
+  App-Projekt gelesen (Quelle der Wahrheit für den Umschalter). Zusätzlich eine
+  rein additive Notiz `IMPLEMENTIERTER-STAND.md` ins App-Projekt geschrieben
+  (nichts überschrieben — Plan auf genau diesen einen neuen Pfad begrenzt), damit
+  Claude Design den aktuellen App-Stand kennt (Sync, Detailseiten-Tabs, kein
+  Auto-Vorlesen, Mood-Umschalter).
+
+**Warum:** Der Umschalter war im Dashboard verloren gegangen; im Design-System
+ist er vorgesehen. UI-Skill `ui-ux-pro-max` herangezogen.
+
+**Ergebnis/Status:** `npm run build` + `npm run lint` grün.

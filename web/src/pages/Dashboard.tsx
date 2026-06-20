@@ -13,6 +13,7 @@ import {
   moodByDay,
   moodSeries,
   recentStats,
+  type MoodDay,
 } from "../lib/insights";
 
 // Ruhige Mood-Skala (4 Stufen): clay → gold → sage → grün.
@@ -71,6 +72,71 @@ const SPAN: Record<number, string> = {
   5: "sm:col-span-5",
 };
 
+// Stimmungs-Verlauf als ruhige Flächen-Linie (aus den Tageswerten der letzten Woche).
+function MoodSparkline({ days }: { days: MoodDay[] }) {
+  const x0 = 16;
+  const x1 = 484;
+  const yTop = 18;
+  const yBot = 80;
+  const base = 90;
+  const n = days.length;
+  const xOf = (i: number) => (n <= 1 ? x0 : x0 + (i / (n - 1)) * (x1 - x0));
+  const yOf = (v: number) => yBot - ((v - 1) / 9) * (yBot - yTop);
+  const pts = days
+    .map((d, i) => (d.value == null ? null : { x: xOf(i), y: yOf(d.value) }))
+    .filter((p): p is { x: number; y: number } => p !== null);
+
+  if (pts.length < 2) {
+    return (
+      <p className="mt-6 text-sm text-[var(--muted)]">
+        Noch zu wenig Verlauf — ab zwei Tagen mit Eintrag zeichne ich hier die
+        Linie.
+      </p>
+    );
+  }
+
+  const line = pts
+    .map((p, i) => `${i === 0 ? "M" : "L"}${p.x},${p.y.toFixed(1)}`)
+    .join(" ");
+  const last = pts[pts.length - 1];
+  const area = `${line} L${last.x},${base} L${pts[0].x},${base} Z`;
+
+  return (
+    <div className="mt-6">
+      <svg viewBox="0 0 500 96" className="block w-full overflow-visible">
+        <defs>
+          <linearGradient id="moodfill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="var(--accent)" stopOpacity="0.26" />
+            <stop offset="1" stopColor="var(--accent)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path d={area} fill="url(#moodfill)" />
+        <path
+          d={line}
+          fill="none"
+          stroke="var(--green-deep)"
+          strokeWidth="2.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <circle
+          cx={last.x}
+          cy={last.y}
+          r="5"
+          fill="var(--surface)"
+          stroke="var(--green-deep)"
+          strokeWidth="2.6"
+        />
+      </svg>
+      <div className="mt-2 flex justify-between text-xs text-[var(--muted)]">
+        {days.map((d, i) => (
+          <span key={i}>{d.day}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function Dashboard() {
   const navigate = useNavigate();
   const entries = useEntries();
@@ -78,6 +144,7 @@ export function Dashboard() {
   const moments = useLiveQuery(() => listStabilityMoments(), [], []);
   const [filter, setFilter] = useState("alle");
   const [promptIdx, setPromptIdx] = useState(0);
+  const [moodViz, setMoodViz] = useState<"punkte" | "verlauf">("punkte");
 
   const name = settings.userName?.trim();
   const tod = timeOfDay();
@@ -194,28 +261,73 @@ export function Dashboard() {
           {/* AUSWERTUNG · 12-Spalten-Bento */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-12">
             <Card className="sm:col-span-6">
-              <div className="mb-2 text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-                Stimmung · 7 Tage
-              </div>
-              <div className="serif text-[26px] font-semibold leading-tight">
-                {moodTrend(series)}
-              </div>
-              <div className="mt-6 flex items-end justify-between">
-                {moodDays.map((d, i) => (
-                  <div key={i} className="flex flex-col items-center gap-2.5">
-                    <span
-                      className="h-5 w-5 rounded-full"
-                      style={{
-                        background:
-                          d.level === null
-                            ? "var(--surface-2)"
-                            : MOOD_COLORS[d.level],
-                      }}
-                      title={d.level === null ? "kein Eintrag" : undefined}
-                    />
-                    <span className="text-xs text-[var(--muted)]">{d.day}</span>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="mb-2 text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+                    Stimmung · 7 Tage
                   </div>
-                ))}
+                  <div className="serif text-[26px] font-semibold leading-tight">
+                    {moodTrend(series)}
+                  </div>
+                </div>
+                {/* Umschalter: Punkte / Verlauf */}
+                <div className="inline-flex shrink-0 rounded-full bg-[var(--surface-2)] p-1">
+                  {(["punkte", "verlauf"] as const).map((v) => {
+                    const active = moodViz === v;
+                    return (
+                      <button
+                        key={v}
+                        type="button"
+                        onClick={() => setMoodViz(v)}
+                        aria-pressed={active}
+                        className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+                          active
+                            ? "bg-[var(--surface)] text-[var(--foreground)] shadow-[var(--shadow-card)]"
+                            : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                        }`}
+                      >
+                        {v === "punkte" ? "Punkte" : "Verlauf"}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {moodViz === "verlauf" ? (
+                <MoodSparkline days={moodDays} />
+              ) : (
+                <div className="mt-6 flex items-end justify-between">
+                  {moodDays.map((d, i) => (
+                    <div key={i} className="flex flex-col items-center gap-2.5">
+                      <span
+                        className="h-5 w-5 rounded-full"
+                        style={{
+                          background:
+                            d.level === null
+                              ? "var(--surface-2)"
+                              : MOOD_COLORS[d.level],
+                        }}
+                        title={d.level === null ? "kein Eintrag" : undefined}
+                      />
+                      <span className="text-xs text-[var(--muted)]">{d.day}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Legende: Schwer → Leicht */}
+              <div className="mt-5 flex items-center gap-2.5 border-t border-[var(--border)] pt-4">
+                <span className="text-xs text-[var(--muted)]">Schwer</span>
+                <div className="flex gap-1.5">
+                  {MOOD_COLORS.map((c) => (
+                    <span
+                      key={c}
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ background: c }}
+                    />
+                  ))}
+                </div>
+                <span className="text-xs text-[var(--muted)]">Leicht</span>
               </div>
             </Card>
 

@@ -58,10 +58,11 @@ function moodLevel(m: number): number {
 
 export interface MoodDay {
   day: string; // Wochentags-Kürzel
-  level: number | null; // 0..3, null = kein Eintrag
+  level: number | null; // 0..3, null = kein Eintrag (für die Punkt-Visualisierung)
+  value: number | null; // Tages-Durchschnitt 1..10 (für die Verlaufslinie)
 }
 
-/** Stimmung der letzten `days` Tage als Tagespunkte (für die Punkt-Visualisierung). */
+/** Stimmung der letzten `days` Tage als Tageswerte (Punkte + Verlauf). */
 export function moodByDay(entries: JournalEntry[], days = 7): MoodDay[] {
   const out: MoodDay[] = [];
   const now = new Date();
@@ -76,6 +77,7 @@ export function moodByDay(entries: JournalEntry[], days = 7): MoodDay[] {
     out.push({
       day: d.toLocaleDateString("de-DE", { weekday: "short" }).replace(".", ""),
       level: m === null ? null : moodLevel(m),
+      value: m,
     });
   }
   return out;
