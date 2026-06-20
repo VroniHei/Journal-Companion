@@ -664,3 +664,30 @@ Quelle: Claude Design Innerline App.dc.html (Ritual-Abschluss / Serie).
   angewандt auf Dashboard-Lead/Insight/Hero-Zitat), große Zahlen 800.
 
 **Ergebnis/Status:** Build + Lint + Typecheck grün.
+
+## Session-Abschluss 2026-06-20 (Abend): App-Redesign aus Claude Design
+
+Großer Redesign-Tag auf Basis von Claude Design (`APP-STYLE.md` +
+`Innerline App.dc.html`, frisch nachgezogen, 172 KB). Umgesetzt & live:
+- Warme Tiefe (Tool-Tokens, treibende Lichtflächen), Hover-Lift, ToolCard.
+- Tab-Leiste im App-Style (Pill-Highlight, FAB-Glow).
+- Tagesritual: prominente Dashboard-Kachel (Badge, Status, Headline, Themen-
+  Chips, Bild, Orbs) + Ritual-Seite (Morgen/Abend-Hero, „Schritt X von 3",
+  Fragen als Stepper) + Abschluss-Moment („Geschafft", Medaillon, Rückblick).
+- Serie mit Meilenstein-Fortschritt + „1 Pausentag in Reserve".
+- Onboarding (Fokus + Erinnerungszeit, überspringbar), „Dein Fokus"-Chip,
+  Einstellungen-Karte „Tagesritual & Fokus" (neue AppSettings: focusArea,
+  reminderTime, onboarded — geräte-lokal).
+- „Worte der Woche" im Rückblick.
+- Typografie-Fix: Figtree als variable Achse (wght@400..800); .lead-Rolle (450);
+  Headlines 650, Zahlen 800.
+
+**Entscheidungen:** Erinnerung = nur Einstellung/Anzeige (keine Push-Mitteilung).
+Bilder: vorhandenes journaling-desk.webp wiederverwendet (kein Binär-Import).
+
+**Morgen / offen:**
+- Desktop-Modal-Overlay (Ritual/Eintrag als zentriertes Fenster über
+  abgedunkeltem Dashboard) — aufwendig, v. a. Desktop.
+- Detail-Politur einzelner Screens (Eintrag, Klärung, Empty-States).
+- Claude-Design `IMPLEMENTIERTER-STAND.md` auf den heutigen Stand nachziehen.
+- Voice-Eingabe in die VS-Code-Chatleiste (separat).

@@ -55,3 +55,16 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
   sonst scheitert erst der pre-commit-Hook.
 - **Feature-Wert vor Technik:** „Stabile Schritte" war technisch ok, aber
   unverständlich. Ersetzt durch ein konkretes, einladendes Tagesritual.
+
+## 2026-06-20 (Redesign)
+
+- **Variable Fonts ernst nehmen:** Google-Fonts mit fester Gewichtsliste
+  (`wght@400;500;…`) lässt Zwischengewichte (450/650) auf die nächste Stufe
+  „snappen". Für ein Designsystem mit feinen Gewichts-Rollen die variable Achse
+  laden (`wght@400..800`).
+- **Cascade Layers:** Eigene unlayered Klassen (`.serif`, `.lead`) schlagen
+  Tailwind-Utilities (in @layer) auch bei gleicher Spezifität — praktisch, um
+  Design-System-Rollen sauber durchzusetzen.
+- **Prototyp neu ziehen lohnt:** Die .dc.html war zwischenzeitlich von 149 → 172
+  KB gewachsen; ohne Re-Pull hätte ich gegen einen alten Stand gebaut.
+- **Generischer Sync skaliert weiter:** dailyRituals als weiterer Typ ohne Reibung.
