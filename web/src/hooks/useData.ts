@@ -1,8 +1,13 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "../db/dexie";
-import { listEntriesDesc, listMessages } from "../db/queries";
+import { listEntriesDesc, listMessages, listOpenLoops } from "../db/queries";
 import { DEFAULT_SETTINGS } from "../lib/settings";
-import type { AppSettings, ChatMessage, JournalEntry } from "@journal/shared";
+import type {
+  AppSettings,
+  ChatMessage,
+  JournalEntry,
+  OpenLoop,
+} from "@journal/shared";
 
 export function useSettings(): AppSettings {
   return useLiveQuery(() => db.settings.get("app")) ?? DEFAULT_SETTINGS;
@@ -22,4 +27,8 @@ export function useMessages(entryId: string | undefined): ChatMessage[] {
     [entryId],
     [],
   );
+}
+
+export function useOpenLoops(): OpenLoop[] {
+  return useLiveQuery(() => listOpenLoops(), [], []);
 }

@@ -4,6 +4,7 @@ import type {
   ChatRole,
   EntryDigest,
   JournalEntry,
+  OpenLoop,
   PatternFeedback,
   PatternInsight,
   PatternInsightDraft,
@@ -269,6 +270,80 @@ export async function deletePatternInsight(id: string): Promise<void> {
   await db.transaction("rw", db.patternInsights, db.tombstones, async () => {
     await db.patternInsights.delete(id);
     await db.tombstones.put(tombstone("patternInsights", id, nowIso()));
+  });
+  notifyDataChanged();
+}
+
+// --- Offene Schleifen („Klärung") -----------------------------------------
+
+export function listOpenLoops(): Promise<OpenLoop[]> {
+  return db.openLoops.orderBy("createdAt").reverse().toArray();
+}
+
+export async function createOpenLoop(input: {
+  title: string;
+  note?: string;
+  entryId?: string;
+}): Promise<OpenLoop> {
+  const now = nowIso();
+  const loop: OpenLoop = {
+    id: createId(),
+    createdAt: now,
+    updatedAt: now,
+    title: input.title.trim(),
+    note: input.note?.trim() || undefined,
+    status: "offen",
+    entryId: input.entryId,
+  };
+  await db.openLoops.put(loop);
+  notifyDataChanged();
+  return loop;
+}
+
+export async function updateOpenLoop(
+  id: string,
+  patch: Partial<Pick<OpenLoop, "title" | "note">>,
+): Promise<void> {
+  const current = await db.openLoops.get(id);
+  if (!current) return;
+  await db.openLoops.put({ ...current, ...patch, id, updatedAt: nowIso() });
+  notifyDataChanged();
+}
+
+export async function resolveOpenLoop(
+  id: string,
+  resolutionNote?: string,
+): Promise<void> {
+  const current = await db.openLoops.get(id);
+  if (!current) return;
+  const now = nowIso();
+  await db.openLoops.put({
+    ...current,
+    status: "geklärt",
+    resolvedAt: now,
+    resolutionNote: resolutionNote?.trim() || undefined,
+    updatedAt: now,
+  });
+  notifyDataChanged();
+}
+
+export async function reopenOpenLoop(id: string): Promise<void> {
+  const current = await db.openLoops.get(id);
+  if (!current) return;
+  await db.openLoops.put({
+    ...current,
+    status: "offen",
+    resolvedAt: undefined,
+    resolutionNote: undefined,
+    updatedAt: nowIso(),
+  });
+  notifyDataChanged();
+}
+
+export async function deleteOpenLoop(id: string): Promise<void> {
+  await db.transaction("rw", db.openLoops, db.tombstones, async () => {
+    await db.openLoops.delete(id);
+    await db.tombstones.put(tombstone("openLoops", id, nowIso()));
   });
   notifyDataChanged();
 }

@@ -397,3 +397,21 @@ Kein DB-Schema-Update nötig (die `deleted`-Spalte gab es bereits).
 
 **Offen:** konfliktfeste Push-Logik (conditional Upsert), inkrementeller Pull,
 gelegentliches Aufräumen alter Tombstones.
+
+## Open Loops — Bereich „Klärung"
+
+**Was:** Neuer, ruhiger Bereich **Klärung** (`/klaerung`) für „offene Schleifen"
+— innere offene Punkte festhalten, damit sie nicht im Kopf kreisen. Erfassen
+(Titel + optionale Notiz), Status **offen → geklärt** (mit kurzer „Wie hat es
+sich geklärt?"-Zeile), Wieder-öffnen, Löschen. Sektionen „Offen" / „Geklärt".
+
+**Technik:** Shared-Typ `OpenLoop` + `SyncKind` „openLoops"; Dexie-Tabelle
+`openLoops` (Version 5); CRUD in `queries.ts` (mit Tombstone beim Löschen);
+`useOpenLoops`-Hook; Seite `pages/Clarity.tsx`; Route + Navigation („Klärung"
+als Desktop-Pill und im Profil-Menü, Kompass-Icon). Voll in den Geräte-Sync
+eingebunden (SYNC_TABLES + Server-Enum erweitert).
+
+**Warum:** Erstes Stück der gewünschten Selbstführungs-Funktionen
+(„Open Loops zuerst", eigener Bereich). Decision Review folgt als nächster Schritt.
+
+**Ergebnis/Status:** `npm run build` + `npm run lint` grün; esbuild-Bundle ok.

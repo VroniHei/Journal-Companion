@@ -53,15 +53,23 @@ const ICONS = {
   mic: (
     <path d="M12 4v8m0 0a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v3a3 3 0 0 0 3 3zM7 11a5 5 0 0 0 10 0M12 16v3" />
   ),
+  compass: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m15 9-2 4-4 2 2-4z" />
+    </>
+  ),
 };
 
 const NAV = [
   { to: "/", label: "Heute", end: true, icon: ICONS.home },
   { to: "/muster", label: "Muster", end: false, icon: ICONS.wave },
+  { to: "/klaerung", label: "Klärung", end: false, icon: ICONS.compass },
   { to: "/wochenrueckblick", label: "Rückblick", end: false, icon: ICONS.calendar },
 ];
 
 const PROFILE_LINKS = [
+  { to: "/klaerung", label: "Klärung", icon: ICONS.compass },
   { to: "/einstellungen", label: "Einstellungen", icon: ICONS.gear },
   { to: "/kontaktimpuls", label: "Kontaktimpuls", icon: ICONS.heart },
   { to: "/sprechen", label: "Sprach-Check-in", icon: ICONS.mic },

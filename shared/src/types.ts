@@ -368,6 +368,27 @@ export interface PatternInsightsResponse {
   patterns: PatternInsightDraft[];
 }
 
+// --- Offene Schleifen (Selbstführung „Klärung") ---------------------------
+// Leichte Erfassung innerer „offener Punkte", die Kopf-Raum belegen. Kein
+// To-do-Druck — ruhig, wertschätzend. Wird mitsynchronisiert.
+
+export type OpenLoopStatus = "offen" | "geklärt";
+
+export interface OpenLoop {
+  id: string;
+  createdAt: string; // ISO
+  updatedAt: string; // ISO
+  title: string;
+  note?: string;
+  status: OpenLoopStatus;
+  /** Optional verknüpfter Tagebucheintrag. */
+  entryId?: string;
+  /** Wann es sich geklärt hat. */
+  resolvedAt?: string;
+  /** Kurze Zeile: Wie hat es sich geklärt? */
+  resolutionNote?: string;
+}
+
 // --- Geräte-Sync ----------------------------------------------------------
 // Generischer Sync über alle synchronisierten Tabellen. Pro Datensatz wird nur
 // ein „kind" (Tabellenname), eine id, ein Versions-Zeitstempel (ISO) und der
@@ -380,7 +401,8 @@ export type SyncKind =
   | "chatMessages"
   | "patternSummaries"
   | "stabilityMoments"
-  | "patternInsights";
+  | "patternInsights"
+  | "openLoops";
 
 export interface SyncRecord {
   kind: SyncKind;
