@@ -191,8 +191,19 @@ export function buildInsights(entries: JournalEntry[]): string[] {
     const counts = new Map<string, number>();
     for (const e of entries) for (const t of e.topics) counts.set(t, (counts.get(t) ?? 0) + 1);
     const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
-    if (top && top[1] >= 3) {
+    if (top && top[1] >= 2) {
       out.push(`„${top[0]}" beschäftigt dich zurzeit besonders (${top[1]} Einträge).`);
+    }
+  }
+
+  // 6) Häufigste Emotion als sanfter Spiegel
+  if (out.length < 3) {
+    const counts = new Map<string, number>();
+    for (const e of entries)
+      for (const em of e.emotions) counts.set(em, (counts.get(em) ?? 0) + 1);
+    const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
+    if (top && top[1] >= 2) {
+      out.push(`„${top[0]}" taucht zuletzt am häufigsten auf (${top[1]}-mal).`);
     }
   }
 

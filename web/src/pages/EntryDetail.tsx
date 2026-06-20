@@ -126,6 +126,12 @@ export function EntryDetail() {
             "Erst sortiert, bevor gehandelt",
             e.id,
           );
+        } else {
+          recordStabilityMoment(
+            "reflektiert",
+            "Eintrag in Ruhe reflektiert",
+            e.id,
+          );
         }
       }
     } catch (err) {

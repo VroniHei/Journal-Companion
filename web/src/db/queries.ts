@@ -325,6 +325,7 @@ export async function resolveOpenLoop(
     resolutionNote: resolutionNote?.trim() || undefined,
     updatedAt: now,
   });
+  await recordStabilityMoment("schleife-geklaert", "Offene Schleife geklärt");
   notifyDataChanged();
 }
 
@@ -393,6 +394,10 @@ export async function reviewDecision(
     feltRight: review.feltRight,
     updatedAt: now,
   });
+  await recordStabilityMoment(
+    "entscheidung-reflektiert",
+    "Entscheidung im Rückblick angeschaut",
+  );
   notifyDataChanged();
 }
 

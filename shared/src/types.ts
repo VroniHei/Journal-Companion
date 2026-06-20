@@ -108,6 +108,9 @@ export type StabilityKind =
   | "beduerfnis-benannt"
   | "entwurf-statt-senden"
   | "woche-reflektiert"
+  | "reflektiert"
+  | "schleife-geklaert"
+  | "entscheidung-reflektiert"
   | "abschluss";
 
 export interface StabilityMoment {

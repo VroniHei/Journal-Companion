@@ -544,3 +544,15 @@ sich entwickelndes Ganzes (Synthese über den Verlauf), Quelle bleibt sichtbar �
 gewähltes Modell: eine lebende Reflexion mit erhaltenem Verlauf.
 
 **Ergebnis/Status:** Build + Lint + Typecheck grün; esbuild-Bundle ok.
+
+## Dashboard: „Was sich zeigt" + „Stabile Schritte" füllen sich zuverlässig
+
+**Was:** Beide Karten blieben im Alltag leer, weil ihre Auslöser zu eng waren.
+- **Stabile Schritte:** Jetzt wird bei **jeder Reflexion** ein Schritt erfasst
+  (neuer Kind `reflektiert`), zusätzlich beim **Klären einer Schleife**
+  (`schleife-geklaert`) und beim **Entscheidungs-Rückblick**
+  (`entscheidung-reflektiert`).
+- **Was sich zeigt:** Schwellen gesenkt (Top-Thema ab 2 statt 3 Einträgen) +
+  neue, ehrliche Beobachtung „häufigste Emotion" (ab 2×).
+
+**Ergebnis/Status:** Build + Lint + Typecheck grün; esbuild ok.
