@@ -1,102 +1,55 @@
-import { useEffect, useState } from "react";
-import { Button, ToolCard } from "../components/ui";
+import { useEffect, useState, type ReactNode } from "react";
+import { Button } from "../components/ui";
 import { useDailyRitual } from "../hooks/useData";
 import { dayKey, upsertDailyRitual } from "../db/queries";
 
-const inputClass =
-  "w-full rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--accent)]";
+type Period = "morning" | "evening";
 
-function isMorning(): boolean {
+function isMorningNow(): boolean {
   return new Date().getHours() < 14;
 }
 
-function Badge({ tone }: { tone: "morning" | "evening" }) {
-  const morning = tone === "morning";
+const HERO: Record<Period, { pre: string; accent: string; post: string }> = {
+  morning: { pre: "Ein ruhiger ", accent: "Anfang", post: "." },
+  evening: { pre: "Ein ruhiger ", accent: "Ausklang", post: "." },
+};
+
+// Eine einzelne Eingabezeile im Ritual-Stil (gefüllt = warm, leer = gestrichelt).
+function Line({
+  value,
+  onChange,
+  onBlur,
+  placeholder,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onBlur: () => void;
+  placeholder: string;
+}) {
+  const filled = value.trim().length > 0;
   return (
-    <span
-      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+    <input
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur}
+      placeholder={placeholder}
+      className="w-full text-sm outline-none placeholder:text-[#9a917f] focus:border-[var(--accent-text)]"
       style={{
-        background: morning ? "rgba(221,177,75,0.22)" : "rgba(155,163,131,0.24)",
-        color: morning ? "#a9791c" : "#566042",
+        background: filled ? "#FAF7F0" : "#fff",
+        border: filled
+          ? "1px solid rgba(35,34,26,.08)"
+          : "1px dashed rgba(35,34,26,.18)",
+        borderRadius: 12,
+        padding: "11px 13px",
+        color: "#3a352b",
       }}
-      aria-hidden="true"
-    >
-      <svg
-        viewBox="0 0 24 24"
-        width="18"
-        height="18"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        {morning ? (
-          <>
-            <circle cx="12" cy="12" r="4" />
-            <path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19" />
-          </>
-        ) : (
-          <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z" />
-        )}
-      </svg>
-    </span>
-  );
-}
-
-function Section({
-  title,
-  hint,
-  active,
-  tone,
-  children,
-}: {
-  title: string;
-  hint: string;
-  active: boolean;
-  tone: "morning" | "evening";
-  children: React.ReactNode;
-}) {
-  return (
-    <ToolCard className="space-y-4">
-      <div className="flex items-start gap-3">
-        <Badge tone={tone} />
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="serif text-xl font-semibold">{title}</h2>
-            {active && (
-              <span className="rounded-full bg-[var(--accent-soft)] px-2.5 py-0.5 text-xs font-semibold text-[var(--accent-text)]">
-                Jetzt dran
-              </span>
-            )}
-          </div>
-          <p className="mt-1 text-sm text-[var(--muted)]">{hint}</p>
-        </div>
-      </div>
-      {children}
-    </ToolCard>
-  );
-}
-
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <span className="text-sm font-medium">{label}</span>
-      {children}
-    </div>
+    />
   );
 }
 
 export function Ritual() {
   const date = dayKey();
   const ritual = useDailyRitual(date);
-  const morning = isMorning();
 
   const [gratitude, setGratitude] = useState(["", "", ""]);
   const [makeGreat, setMakeGreat] = useState("");
@@ -107,7 +60,11 @@ export function Ritual() {
   const [hydrated, setHydrated] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // Einmalig aus dem gespeicherten Tag befüllen, sobald geladen.
+  const [period, setPeriod] = useState<Period>(
+    isMorningNow() ? "morning" : "evening",
+  );
+  const [open, setOpen] = useState(0);
+
   useEffect(() => {
     if (ritual && !hydrated) {
       const g = ritual.gratitude ?? [];
@@ -146,120 +103,308 @@ export function Ritual() {
     setSaved(false);
   }
 
+  function MultiLines({
+    values,
+    set,
+  }: {
+    values: string[];
+    set: (v: string[]) => void;
+  }) {
+    // Bis zu 3 Zeilen; die erste leere wird als „Noch etwas?" angeboten.
+    const firstEmpty = values.findIndex((v) => !v.trim());
+    return (
+      <div className="flex flex-col gap-2">
+        {values.map((v, i) => {
+          if (!v.trim() && i !== firstEmpty) return null;
+          return (
+            <Line
+              key={i}
+              value={v}
+              onChange={(val) => setAt(values, set, i, val)}
+              onBlur={commit}
+              placeholder={i === 0 ? "Etwas Schönes …" : "Noch etwas? (optional)"}
+            />
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Drei Fragen je Tageszeit, jeweils mit Inhalt + „beantwortet?"-Signal.
+  const questions: {
+    title: ReactNode;
+    answered: boolean;
+    body: ReactNode;
+  }[] =
+    period === "morning"
+      ? [
+          {
+            title: (
+              <>
+                Wofür bist du gerade <em className="g">dankbar</em>?
+              </>
+            ),
+            answered: gratitude.some((s) => s.trim()),
+            body: <MultiLines values={gratitude} set={setGratitude} />,
+          },
+          {
+            title: (
+              <>
+                Was würde den Tag <em className="g">gut</em> machen?
+              </>
+            ),
+            answered: makeGreat.trim().length > 0,
+            body: (
+              <Line
+                value={makeGreat}
+                onChange={(v) => {
+                  setMakeGreat(v);
+                  setSaved(false);
+                }}
+                onBlur={commit}
+                placeholder="Eine Sache, auf die du dich ausrichtest …"
+              />
+            ),
+          },
+          {
+            title: (
+              <>
+                Ein guter <em className="g">Satz</em> für dich
+              </>
+            ),
+            answered: affirmation.trim().length > 0,
+            body: (
+              <Line
+                value={affirmation}
+                onChange={(v) => {
+                  setAffirmation(v);
+                  setSaved(false);
+                }}
+                onBlur={commit}
+                placeholder="Ich bin …"
+              />
+            ),
+          },
+        ]
+      : [
+          {
+            title: (
+              <>
+                Was hast du heute <em className="g">Gutes</em> getan?
+              </>
+            ),
+            answered: goodDeed.trim().length > 0,
+            body: (
+              <Line
+                value={goodDeed}
+                onChange={(v) => {
+                  setGoodDeed(v);
+                  setSaved(false);
+                }}
+                onBlur={commit}
+                placeholder="Für jemanden, oder für dich selbst …"
+              />
+            ),
+          },
+          {
+            title: (
+              <>
+                Was wäre noch <em className="g">besser</em> gegangen?
+              </>
+            ),
+            answered: better.trim().length > 0,
+            body: (
+              <Line
+                value={better}
+                onChange={(v) => {
+                  setBetter(v);
+                  setSaved(false);
+                }}
+                onBlur={commit}
+                placeholder="Ohne Härte, einfach ein Lernen …"
+              />
+            ),
+          },
+          {
+            title: (
+              <>
+                Schöne <em className="g">Momente</em> heute
+              </>
+            ),
+            answered: moments.some((s) => s.trim()),
+            body: <MultiLines values={moments} set={setMoments} />,
+          },
+        ];
+
   const dateLabel = new Date().toLocaleDateString("de-DE", {
     weekday: "long",
     day: "numeric",
     month: "long",
   });
+  const hero = HERO[period];
+  const step = open + 1;
 
-  const morningCard = (
-    <Section
-      title="Guten Morgen"
-      hint="Drei Minuten, um den Tag bewusst zu beginnen."
-      active={morning}
-      tone="morning"
-    >
-      <Field label="Wofür bist du dankbar? (bis zu 3)">
-        <div className="space-y-2">
-          {gratitude.map((v, i) => (
-            <input
-              key={i}
-              value={v}
-              onChange={(e) => setAt(gratitude, setGratitude, i, e.target.value)}
-              onBlur={commit}
-              placeholder={`Dankbar für …`}
-              className={inputClass}
-            />
-          ))}
-        </div>
-      </Field>
-      <Field label="Was würde den heutigen Tag gut machen?">
-        <input
-          value={makeGreat}
-          onChange={(e) => setMakeGreat(e.target.value)}
-          onBlur={commit}
-          placeholder="Eine Sache, auf die du dich ausrichtest …"
-          className={inputClass}
-        />
-      </Field>
-      <Field label="Ein guter Satz für dich heute">
-        <input
-          value={affirmation}
-          onChange={(e) => setAffirmation(e.target.value)}
-          onBlur={commit}
-          placeholder="Ich bin …"
-          className={inputClass}
-        />
-      </Field>
-    </Section>
-  );
-
-  const eveningCard = (
-    <Section
-      title="Guten Abend"
-      hint="Drei Minuten, um den Tag wertschätzend abzuschließen."
-      active={!morning}
-      tone="evening"
-    >
-      <Field label="Was hast du heute Gutes getan?">
-        <input
-          value={goodDeed}
-          onChange={(e) => setGoodDeed(e.target.value)}
-          onBlur={commit}
-          placeholder="Für jemanden – oder für dich selbst …"
-          className={inputClass}
-        />
-      </Field>
-      <Field label="Was wäre heute noch besser gegangen?">
-        <input
-          value={better}
-          onChange={(e) => setBetter(e.target.value)}
-          onBlur={commit}
-          placeholder="Ohne Härte – einfach ein Lernen …"
-          className={inputClass}
-        />
-      </Field>
-      <Field label="Schöne Momente heute (bis zu 3)">
-        <div className="space-y-2">
-          {moments.map((v, i) => (
-            <input
-              key={i}
-              value={v}
-              onChange={(e) => setAt(moments, setMoments, i, e.target.value)}
-              onBlur={commit}
-              placeholder="Etwas Schönes, das du erlebt hast …"
-              className={inputClass}
-            />
-          ))}
-        </div>
-      </Field>
-    </Section>
-  );
+  function switchPeriod(p: Period) {
+    setPeriod(p);
+    setOpen(0);
+  }
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-4">
       <div>
         <h1 className="serif text-3xl font-semibold">Tagesritual</h1>
         <p className="mt-1 text-[var(--muted)]">
-          {dateLabel} · Ein kleines Ritual für den Tag. Kein Muss. Fülle aus, was
-          dir gerade leicht fällt, und sichere es mit „Speichern".
+          Ein kleines Ritual für den Tag. Kein Muss. Tippe eine Frage an und
+          fülle aus, was dir leichtfällt.
         </p>
       </div>
 
-      {/* Tageszeit-abhängige Reihenfolge: das Relevante zuerst. */}
-      {morning ? (
-        <>
-          {morningCard}
-          {eveningCard}
-        </>
-      ) : (
-        <>
-          {eveningCard}
-          {morningCard}
-        </>
-      )}
+      {/* Morgen/Abend-Umschalter */}
+      <div className="inline-flex rounded-full bg-[var(--surface-2)] p-1">
+        {(["morning", "evening"] as const).map((p) => {
+          const active = period === p;
+          return (
+            <button
+              key={p}
+              type="button"
+              onClick={() => switchPeriod(p)}
+              aria-pressed={active}
+              className={`rounded-full px-4 py-1.5 text-sm transition ${
+                active
+                  ? "bg-[var(--surface)] font-semibold text-[var(--foreground)] shadow-[var(--shadow-card)]"
+                  : "font-medium text-[var(--muted)]"
+              }`}
+            >
+              {p === "morning" ? "Morgen" : "Abend"}
+            </button>
+          );
+        })}
+      </div>
 
-      <div className="space-y-1.5">
+      {/* Hero mit Fortschritt */}
+      <div
+        className="relative overflow-hidden p-6"
+        style={{
+          borderRadius: 22,
+          border: "1px solid rgba(205,138,91,.24)",
+          boxShadow: "0 14px 32px rgba(120,86,52,.14)",
+          background:
+            period === "morning"
+              ? "linear-gradient(135deg, #FBEFD9 0%, #F6ECDB 55%, #EFF1E4 100%)"
+              : "linear-gradient(135deg, #ECEFE6 0%, #EDE7DC 55%, #F1ECE2 100%)",
+        }}
+      >
+        <div
+          className="pointer-events-none absolute"
+          style={{
+            top: -44,
+            right: -20,
+            width: 150,
+            height: 150,
+            borderRadius: "50%",
+            background:
+              period === "morning"
+                ? "radial-gradient(circle, rgba(240,195,107,.4), transparent 68%)"
+                : "radial-gradient(circle, rgba(155,163,131,.4), transparent 68%)",
+            filter: "blur(26px)",
+          }}
+        />
+        <div className="relative">
+          <div
+            className="text-[10px] font-semibold uppercase tracking-[0.2em]"
+            style={{ color: "#9c6b3f" }}
+          >
+            {period === "morning" ? "Morgen" : "Abend"} · {dateLabel}
+          </div>
+          <div
+            className="serif my-2 text-2xl font-semibold"
+            style={{ color: "#3a2e22" }}
+          >
+            {hero.pre}
+            <em className="g">{hero.accent}</em>
+            {hero.post}
+          </div>
+          <div className="flex items-center gap-2">
+            <div
+              className="h-1.5 flex-1 overflow-hidden rounded-full"
+              style={{ background: "rgba(205,138,91,.18)" }}
+            >
+              <div
+                className="h-full rounded-full transition-[width] duration-500"
+                style={{
+                  width: `${(step / 3) * 100}%`,
+                  background: "linear-gradient(90deg,#F0C36B,#CD8A5B)",
+                }}
+              />
+            </div>
+            <span
+              className="text-[11.5px] font-semibold"
+              style={{ color: "#9c6b3f" }}
+            >
+              Schritt {step} von 3
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Fragen — eine offen, die anderen eingeklappt */}
+      <div className="space-y-3">
+        {questions.map((q, i) => {
+          const isOpen = open === i;
+          return (
+            <div
+              key={i}
+              style={{
+                background: "#fff",
+                border: isOpen
+                  ? "1px solid rgba(205,138,91,.22)"
+                  : "1px solid rgba(35,34,26,.07)",
+                borderRadius: 20,
+                boxShadow: isOpen
+                  ? "0 8px 24px rgba(120,86,52,.08)"
+                  : "var(--shadow-card)",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setOpen(i)}
+                aria-expanded={isOpen}
+                className="flex w-full items-center gap-2.5 p-[18px] text-left"
+              >
+                <span
+                  className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg text-[13px] font-semibold"
+                  style={
+                    isOpen || q.answered
+                      ? { background: "#F6ECE2", color: "#CD8A5B" }
+                      : { background: "#F1ECE0", color: "#9a917f" }
+                  }
+                >
+                  {q.answered && !isOpen ? "✓" : i + 1}
+                </span>
+                <span
+                  className={`flex-1 text-[15.5px] ${
+                    isOpen
+                      ? "font-semibold text-[var(--foreground)]"
+                      : "font-medium text-[var(--foreground)]"
+                  }`}
+                >
+                  {q.title}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="text-[var(--muted)] transition-transform"
+                  style={{ transform: isOpen ? "rotate(180deg)" : "none" }}
+                >
+                  ⌄
+                </span>
+              </button>
+              {isOpen && <div className="px-[18px] pb-[18px]">{q.body}</div>}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="space-y-1.5 pt-1">
         <div className="flex flex-wrap items-center gap-3">
           <Button onClick={commit}>Speichern</Button>
           {saved && (
