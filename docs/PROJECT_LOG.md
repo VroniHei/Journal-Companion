@@ -341,3 +341,20 @@ Auto-Vorlesen fiel auf Mobile auf die Roboter-Stimme zurück und ließ sich nich
 stoppen, weil es ohne sichtbaren Auslöser startete.
 
 **Ergebnis/Status:** `npm run build` + `npm run lint` grün; esbuild-Bundle ok.
+
+## EntryDetail: segmentierte Ansicht statt endlosem Scroll
+
+**Was:** Die Eintrags-Detailseite stapelte alles untereinander (Eintrag + Meta,
+lange 8-teilige Reflexion, Session-Close, kompletter Chat, Aktionen ganz unten) —
+auf Mobile ein ewiger Scroll. Jetzt **segmentierte Steuerung** (Tabs) mit drei
+fokussierten Bereichen: **Eintrag · Reflexion · Gespräch** (mit Zähler-Badge).
+Pro Tab eine klare Hauptaktion (Reflexion-Tab: „Neu reflektieren" oben statt
+unten; leerer Zustand mit CTA). Sekundär/destruktiv (Markdown/Löschen) in einer
+ruhigen, abgesetzten Fußzeile. Standard-Tab: Reflexion.
+
+**Warum:** UX-Feedback „optisch unübersichtlich, mobile ewiger Scroll, Chat füllt
+den ganzen Screen". Muster aus `ui-ux-pro-max` (Segmented Control für Top-Level,
+eine Haupt-CTA pro View, content-priority mobile, destruktive Aktionen abgesetzt).
+Nebeneffekt: der Chat lebt in seinem eigenen Tab und schiebt nichts mehr weg.
+
+**Ergebnis/Status:** `npm run build` + `npm run lint` grün.
