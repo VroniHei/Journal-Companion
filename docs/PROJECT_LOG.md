@@ -593,3 +593,28 @@ recentSteps in `insights.ts` bleibt verfügbar, wird aber nicht mehr angezeigt.
 **Recherche:** Inhalte des 6-Minuten-Tagebuchs (Spenst) + Five Minute Journal.
 
 **Ergebnis/Status:** Build + Lint + Typecheck grün; esbuild ok.
+
+## Session-Protokoll 2026-06-20 (Abend): Reflexion, Titel, Ritual
+
+Fortsetzung des Tages. Zusätzlich umgesetzt (alle live, einzelne Commits, grün):
+- **Reflexion bezieht Gespräch wirklich ein:** Prompt verschärft (klare
+  „aktualisierte Reflexion"-Direktive, Gespräch prominent als neuester Stand) +
+  **lebende Reflexion mit Verlauf** (`previousReflections`, „Frühere Reflexionen"
+  als Progressive-Disclosure-Liste mit Datum/Anriss).
+- **Reflektieren-Button auch im Gespräch-Tab** (Auffindbarkeit).
+- **Dashboard-Karten** „Was sich zeigt" + „Stabile Schritte" zunächst aus
+  vorhandenen Daten abgeleitet; „Stabile Schritte" dann **ersetzt** durch die
+  **Tagesritual-Karte**.
+- **KI-Titel pro Eintrag** (`/api/title`) + heuristischer Fallback.
+- **Tagesritual** (6-Minuten-Ansatz, eigene Formulierung): Seite `/ritual`,
+  `DailyRitual`-Modell, voll im Sync.
+- **Sprache kostenlos zuerst** (Browser-STT bevorzugt) + Guthaben-Fehler-Handling.
+
+**An Claude Design übergeben:** aktualisierter `IMPLEMENTIERTER-STAND.md` +
+`DESIGN-AUFTRAG.md` (neue, noch ungestylte Bereiche hübsch machen; mehr Tiefe/
+Bewegung: Verläufe, Bilder, Icons, grafische Elemente — persönlicher & lockerer,
+ohne die ruhige Markenlinie zu verlieren).
+
+**Morgen / offen:** Sprach-Eingabe in die VS-Code-Chatleiste; Design-Pass von
+Claude Design einarbeiten; optionale Wochenfrage fürs Ritual; Tests für
+Krisen-/Sync-Logik.

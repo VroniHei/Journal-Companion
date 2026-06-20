@@ -49,3 +49,15 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 - ✅ Selbstführung „Klärung": Open Loops + Decision Review (mit Geräte-/Lösch-Sync).
 - ✅ JSON-Import (Sicherung zurückspielen, zusammenführend; Export deckt nun alle Tabellen ab).
 - ✅ A11y-Feinschliff: touch-action/Tap-Highlight, Such-Input-Semantik, aria-live/role="alert" für Status & Fehler.
+
+## Ideen / Erweiterungen (Stand 2026-06-20 Abend)
+
+- 🟡 **Design-Pass einarbeiten** (von Claude Design): neue Bereiche stylen, mehr
+  Tiefe/Bewegung (Verläufe, Bilder, Icons, grafische Elemente). Siehe Claude-
+  Design `DESIGN-AUFTRAG.md`.
+- 🟢 **Tagesritual ausbauen:** Wochenfrage (6-Min), sanfte Tageserinnerung,
+  Ritual-Historie ansehen, ins Wochenrückblick einfließen lassen, kleine
+  Streak/Visualisierung.
+- 🟢 **KI-Titel-Backfill** für bestehende alte Einträge (einmalig, on demand).
+- 🟢 **Voice-Eingabe in VS-Code-Chat** (separat vom App-Thema; morgen klären).
+- 🟢 **Tests** für Krisen-/Sync-/Titel-Logik.

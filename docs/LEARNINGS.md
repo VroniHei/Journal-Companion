@@ -39,3 +39,19 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
   `api.anthropic.com/v1/messages` (max_tokens 1).
 - **`pkill -f "<muster>"`** kann sich selbst treffen, wenn das Muster im eigenen
   Kommando vorkommt → lieber per PID killen.
+
+## 2026-06-20 (Abend)
+
+- **Prompt-Gewichtung:** Eine rigide Antwortstruktur + bloß angehängter Kontext
+  führt dazu, dass das Modell den Kontext unterschätzt (Antwort wird nur länger).
+  Lösung: explizite „AKTUALISIERTE"-Direktive + Kontext prominent/zuletzt labeln
+  mit klarem Auftrag, ihn aufzugreifen.
+- **Dashboard-Karten aus Daten ableiten,** nicht auf zukünftige Aktionen warten —
+  sonst bleiben sie im Alltag leer und wirken kaputt.
+- **Generischer Sync zahlt sich aus:** neue Datentypen (openLoops, decisions,
+  dailyRituals) = Tabelle + SYNC_TABLES + Server-Enum, fertig.
+- **Qualitäts-Gate:** `vite build` macht KEINEN echten Typecheck; immer auch
+  `npm -w web run typecheck` (fängt z.B. ungenutzte Imports / noUnusedLocals),
+  sonst scheitert erst der pre-commit-Hook.
+- **Feature-Wert vor Technik:** „Stabile Schritte" war technisch ok, aber
+  unverständlich. Ersetzt durch ein konkretes, einladendes Tagesritual.
