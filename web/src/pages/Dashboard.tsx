@@ -3,14 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Card } from "../components/ui";
 import { JournalCard } from "../components/JournalCard";
-import {
-  useDecisions,
-  useEntries,
-  useOpenLoops,
-  useSettings,
-} from "../hooks/useData";
-import { listStabilityMoments } from "../db/queries";
-import { formatShort } from "../lib/format";
+import { useDailyRitual, useEntries, useSettings } from "../hooks/useData";
+import { dayKey, listStabilityMoments } from "../db/queries";
 import { entryMode } from "../lib/entryCard";
 import {
   buildInsights,
@@ -18,7 +12,6 @@ import {
   moodByDay,
   moodSeries,
   recentStats,
-  recentSteps,
   type MoodDay,
 } from "../lib/insights";
 
@@ -147,8 +140,7 @@ export function Dashboard() {
   const navigate = useNavigate();
   const entries = useEntries();
   const settings = useSettings();
-  const openLoops = useOpenLoops();
-  const decisions = useDecisions();
+  const ritual = useDailyRitual(dayKey());
   const moments = useLiveQuery(() => listStabilityMoments(), [], []);
   const [filter, setFilter] = useState("alle");
   const [promptIdx, setPromptIdx] = useState(0);
@@ -164,7 +156,13 @@ export function Dashboard() {
   const series = moodSeries(entries, 14);
   const moodDays = moodByDay(entries, 7);
   const insights = buildInsights(entries);
-  const steps = recentSteps(entries, openLoops, decisions);
+  const ritualMorning = tod !== "abend";
+  const ritualFilled = ritualMorning
+    ? (ritual?.gratitude?.length ?? 0) > 0
+    : (ritual?.goodMoments?.length ?? 0) > 0;
+  const ritualItems = ritualMorning
+    ? (ritual?.gratitude ?? [])
+    : (ritual?.goodMoments ?? []);
   const prompt = PROMPTS[promptIdx % PROMPTS.length];
 
   const closedIds = new Set<string>();
@@ -416,30 +414,40 @@ export function Dashboard() {
               )}
             </Card>
 
-            <Card className="sm:col-span-5">
-              <div className="mb-5 text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-                Stabile Schritte
+            <Card className="flex flex-col sm:col-span-5">
+              <div className="mb-3 inline-flex items-center gap-2.5">
+                <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+                <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+                  Tagesritual
+                </span>
               </div>
-              {steps.length === 0 ? (
-                <p className="text-[15px] text-[var(--muted)]">
-                  Kleine hilfreiche Schritte tauchen hier auf — z.B. einen Eintrag
-                  reflektiert oder eine offene Schleife geklärt.
-                </p>
-              ) : (
-                <ul className="space-y-3.5">
-                  {steps.slice(0, 4).map((s) => (
-                    <li
-                      key={s.id}
-                      className="flex items-center justify-between gap-3"
-                    >
-                      <span className="text-[15px] font-medium">{s.label}</span>
-                      <span className="shrink-0 text-xs text-[var(--muted)]">
-                        {formatShort(s.at)}
-                      </span>
+              <p className="serif text-[22px] font-semibold leading-snug">
+                {ritualMorning
+                  ? "Wofür bist du heute dankbar?"
+                  : "Was war heute schön?"}
+              </p>
+              {ritualFilled ? (
+                <ul className="mt-3 space-y-1.5 text-[15px]">
+                  {ritualItems.slice(0, 3).map((it, i) => (
+                    <li key={i} className="flex gap-2">
+                      <span className="text-[var(--accent-text)]">•</span>
+                      <span>{it}</span>
                     </li>
                   ))}
                 </ul>
+              ) : (
+                <p className="mt-2 text-[15px] text-[var(--muted)]">
+                  {ritualMorning
+                    ? "Drei kurze Dinge reichen — ein guter Start in den Tag."
+                    : "Ein wertschätzender Abschluss. Was ist dir heute begegnet?"}
+                </p>
               )}
+              <Link
+                to="/ritual"
+                className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-[var(--accent-text)] hover:gap-2.5"
+              >
+                {ritualFilled ? "Ritual ansehen" : "Ritual ausfüllen"} →
+              </Link>
             </Card>
           </div>
         </>

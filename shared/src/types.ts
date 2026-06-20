@@ -428,6 +428,26 @@ export interface Decision {
   feltRight?: boolean | null;
 }
 
+// --- Tagesritual (6-Minuten-Ansatz, eigene Formulierung) ------------------
+// Kurzes tägliches Ritual aus der Positiven Psychologie: morgens Dankbarkeit/
+// Fokus/Selbstbekräftigung, abends Gutes/Lernen/schöne Momente. Eine Karte pro
+// Tag (id = Datum YYYY-MM-DD). Bewusst leicht, kein Leistungsdruck.
+
+export interface DailyRitual {
+  id: string; // = date (YYYY-MM-DD), genau ein Eintrag pro Tag
+  date: string; // YYYY-MM-DD (lokaler Tag)
+  createdAt: string; // ISO
+  updatedAt: string; // ISO
+  // Morgen
+  gratitude: string[]; // bis 3 Dinge, für die du dankbar bist
+  makeGreat?: string; // Was macht den Tag gut?
+  affirmation?: string; // „Ich bin …"
+  // Abend
+  goodDeed?: string; // Was hast du Gutes getan?
+  better?: string; // Was wäre besser gegangen?
+  goodMoments: string[]; // bis 3 schöne Momente
+}
+
 // --- Geräte-Sync ----------------------------------------------------------
 // Generischer Sync über alle synchronisierten Tabellen. Pro Datensatz wird nur
 // ein „kind" (Tabellenname), eine id, ein Versions-Zeitstempel (ISO) und der
@@ -442,7 +462,8 @@ export type SyncKind =
   | "stabilityMoments"
   | "patternInsights"
   | "openLoops"
-  | "decisions";
+  | "decisions"
+  | "dailyRituals";
 
 export interface SyncRecord {
   kind: SyncKind;

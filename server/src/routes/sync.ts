@@ -20,6 +20,7 @@ const recordSchema = z.object({
     "patternInsights",
     "openLoops",
     "decisions",
+    "dailyRituals",
   ]),
   id: z.string().min(1),
   updatedAt: z.string().min(1),

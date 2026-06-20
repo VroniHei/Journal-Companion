@@ -1,6 +1,7 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "../db/dexie";
 import {
+  getDailyRitual,
   listDecisions,
   listEntriesDesc,
   listMessages,
@@ -10,6 +11,7 @@ import { DEFAULT_SETTINGS } from "../lib/settings";
 import type {
   AppSettings,
   ChatMessage,
+  DailyRitual,
   Decision,
   JournalEntry,
   OpenLoop,
@@ -41,4 +43,8 @@ export function useOpenLoops(): OpenLoop[] {
 
 export function useDecisions(): Decision[] {
   return useLiveQuery(() => listDecisions(), [], []);
+}
+
+export function useDailyRitual(date: string): DailyRitual | undefined {
+  return useLiveQuery(() => getDailyRitual(date), [date]);
 }

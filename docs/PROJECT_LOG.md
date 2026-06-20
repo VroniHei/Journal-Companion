@@ -574,3 +574,22 @@ gewähltes Modell: eine lebende Reflexion mit erhaltenem Verlauf.
 Suggestions, Rosebud, Super Diary, DayJot).
 
 **Ergebnis/Status:** Build + Lint + Typecheck grün; esbuild ok.
+
+## Tagesritual (6-Minuten-Ansatz) + ersetzt „Stabile Schritte"
+
+**Was:** Neues tägliches Ritual aus der Positiven Psychologie (eigene
+Formulierung, nicht die Buchtexte). Morgens: Dankbarkeit (bis 3), „Was macht den
+Tag gut?", ein guter Ich-Satz. Abends: Gutes getan, Was wäre besser gegangen,
+schöne Momente (bis 3). Eigene Seite `/ritual` (tageszeit-abhängige Reihenfolge,
+Auto-Speichern onBlur). Datenmodell `DailyRitual` (eine Karte pro Tag, id=Datum),
+voll im Geräte-Sync inkl. Server-Enum; Hook `useDailyRitual`; Nav-Eintrag im
+Profil (Sonnen-Icon).
+
+**Dashboard:** Die verwirrende „Stabile Schritte"-Karte ist **ersetzt** durch
+eine tageszeit-abhängige **Tagesritual-Karte** (morgens „Wofür bist du dankbar?",
+abends „Was war heute schön?") mit Vorschau + Link „Ritual ausfüllen/ansehen".
+recentSteps in `insights.ts` bleibt verfügbar, wird aber nicht mehr angezeigt.
+
+**Recherche:** Inhalte des 6-Minuten-Tagebuchs (Spenst) + Five Minute Journal.
+
+**Ergebnis/Status:** Build + Lint + Typecheck grün; esbuild ok.

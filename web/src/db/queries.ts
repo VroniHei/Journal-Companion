@@ -2,6 +2,7 @@ import { db, type Tombstone } from "./dexie";
 import type {
   ChatMessage,
   ChatRole,
+  DailyRitual,
   Decision,
   EntryDigest,
   JournalEntry,
@@ -420,6 +421,39 @@ export async function deleteDecision(id: string): Promise<void> {
     await db.decisions.delete(id);
     await db.tombstones.put(tombstone("decisions", id, nowIso()));
   });
+  notifyDataChanged();
+}
+
+// --- Tagesritual (6-Minuten-Ansatz) ---------------------------------------
+
+/** Datums-Schlüssel des lokalen Tages (YYYY-MM-DD) = id des Tagesrituals. */
+export function dayKey(d = new Date()): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+export function getDailyRitual(date: string): Promise<DailyRitual | undefined> {
+  return db.dailyRituals.get(date);
+}
+
+/** Legt das Tagesritual an oder ergänzt es (ein Datensatz pro Tag). */
+export async function upsertDailyRitual(
+  date: string,
+  patch: Partial<DailyRitual>,
+): Promise<void> {
+  const now = nowIso();
+  const current = await db.dailyRituals.get(date);
+  const base: DailyRitual = current ?? {
+    id: date,
+    date,
+    createdAt: now,
+    updatedAt: now,
+    gratitude: [],
+    goodMoments: [],
+  };
+  await db.dailyRituals.put({ ...base, ...patch, id: date, date, updatedAt: now });
   notifyDataChanged();
 }
 

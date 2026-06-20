@@ -10,6 +10,7 @@ import { WeeklyReview } from "./pages/WeeklyReview";
 import { Settings } from "./pages/Settings";
 import { Search } from "./pages/Search";
 import { Clarity } from "./pages/Clarity";
+import { Ritual } from "./pages/Ritual";
 
 export const router = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ export const router = createBrowserRouter([
       { path: "kontaktimpuls", element: <ContactImpulse /> },
       { path: "muster", element: <Patterns /> },
       { path: "klaerung", element: <Clarity /> },
+      { path: "ritual", element: <Ritual /> },
       { path: "wochenrueckblick", element: <WeeklyReview /> },
       { path: "einstellungen", element: <Settings /> },
       { path: "suche", element: <Search /> },
