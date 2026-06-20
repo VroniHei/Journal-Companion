@@ -196,6 +196,16 @@ export function Dashboard() {
 
   return (
     <section className="space-y-5">
+      {settings.focusArea && (
+        <Link
+          to="/einstellungen"
+          className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--foreground)] transition hover:border-[var(--foreground)]"
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--clay)]" />
+          Dein Fokus: {settings.focusArea}
+        </Link>
+      )}
+
       {/* HERO · Zitat-Band */}
       <div className="relative overflow-hidden rounded-[28px] border border-[var(--border)] shadow-[var(--shadow-lift)]">
         <img

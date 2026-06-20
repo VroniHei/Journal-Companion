@@ -150,6 +150,12 @@ export interface AppSettings {
    * Spracherkennung kann (z.B. iOS/Safari).
    */
   preferFreeSpeech?: boolean;
+  /** Persönlicher Fokus (aus dem Onboarding, in Einstellungen änderbar). */
+  focusArea?: string;
+  /** Wunsch-Uhrzeit fürs Tagesritual (HH:MM) — nur Anzeige, keine Push-Mitteilung. */
+  reminderTime?: string;
+  /** Onboarding abgeschlossen/übersprungen. */
+  onboarded?: boolean;
 }
 
 // ---------------------------------------------------------------------------

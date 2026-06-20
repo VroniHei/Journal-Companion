@@ -4,6 +4,7 @@ import { useSettings } from "../hooks/useData";
 import { useSyncStatus } from "../hooks/useSync";
 import { useSpeech, useVoices } from "../hooks/useSpeech";
 import { updateSettings } from "../lib/settings";
+import { FOCUS_OPTIONS } from "../lib/focus";
 import { syncNow } from "../lib/sync";
 import { clearAllData } from "../db/queries";
 import { exportAllJson, importAllJson } from "../lib/export";
@@ -230,6 +231,44 @@ export function Settings() {
             </div>
           </>
         )}
+      </Card>
+
+      <Card className="space-y-5">
+        <h2 className="text-sm font-medium text-[var(--muted)]">
+          Tagesritual &amp; Fokus
+        </h2>
+        <Row
+          label="Dein Fokus"
+          hint="Worum es dir gerade geht. Jederzeit änderbar."
+        >
+          <select
+            className={selectClass}
+            value={s.focusArea ?? ""}
+            onChange={(e) =>
+              updateSettings({ focusArea: e.target.value || undefined })
+            }
+          >
+            <option value="">Kein Fokus</option>
+            {FOCUS_OPTIONS.map((f) => (
+              <option key={f} value={f}>
+                {f}
+              </option>
+            ))}
+          </select>
+        </Row>
+        <Row
+          label="Erinnerung"
+          hint="Ein sanfter Anhaltspunkt fürs Ritual (keine Benachrichtigung)."
+        >
+          <input
+            type="time"
+            className={selectClass}
+            value={s.reminderTime ?? ""}
+            onChange={(e) =>
+              updateSettings({ reminderTime: e.target.value || undefined })
+            }
+          />
+        </Row>
       </Card>
 
       <Card className="space-y-3">

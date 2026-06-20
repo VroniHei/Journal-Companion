@@ -1,6 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { DisclaimerGate } from "./DisclaimerGate";
+import { Onboarding } from "./Onboarding";
 import { useSettings } from "../hooks/useData";
 import { useSyncStatus } from "../hooks/useSync";
 
@@ -158,6 +159,7 @@ export function Layout() {
 
   return (
     <div className="min-h-screen">
+      <Onboarding />
       {/* ===== Desktop-Topbar ===== */}
       <header className="sticky top-0 z-40 hidden border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--background)_86%,transparent)] backdrop-blur-md sm:block">
         <div
