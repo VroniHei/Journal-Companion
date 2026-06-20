@@ -323,9 +323,30 @@ export function EntryDetail() {
 
       {/* --- Tab: Gespräch --- */}
       {tab === "gespraech" && (
-        <Card>
-          <ChatThread entry={e} />
-        </Card>
+        <div className="space-y-4">
+          <Card>
+            <ChatThread entry={e} />
+          </Card>
+          {messages.length > 0 && (
+            <div className="space-y-1.5">
+              <Button
+                onClick={reflect}
+                disabled={reflecting}
+                className="w-full sm:w-auto"
+              >
+                {reflecting
+                  ? "Der Begleiter denkt nach…"
+                  : e.aiReflection
+                    ? "Mit Gespräch neu reflektieren"
+                    : "Mit Gespräch reflektieren"}
+              </Button>
+              <p className="text-xs text-[var(--muted)]">
+                Fasst Eintrag + Gespräch zu einer aktualisierten Reflexion
+                zusammen (öffnet den Reflexion-Tab).
+              </p>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Stille Fußzeile: sekundäre / destruktive Aktionen, klar abgesetzt */}
