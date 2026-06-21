@@ -1,5 +1,5 @@
 import { useState, type FormEvent, type ReactNode } from "react";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { DisclaimerGate } from "./DisclaimerGate";
 import { Onboarding } from "./Onboarding";
 import { FabSheet } from "./FabSheet";
@@ -103,16 +103,14 @@ export function Layout() {
   const settings = useSettings();
   const sync = useSyncStatus();
   const navigate = useNavigate();
-  const { pathname } = useLocation();
   const [q, setQ] = useState("");
   const [profileOpen, setProfileOpen] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
 
-  const wide = pathname === "/" || pathname.startsWith("/muster");
-  // Shell (Kopfzeile + Seitenrahmen) ist überall gleich breit. Nur der
-  // INHALT von Lese-/Formularseiten sitzt in einer schmaleren, zentrierten
-  // Spalte — so springt die Breite nicht zwischen den Seiten.
-  const contentClass = wide ? "" : "mx-auto w-full max-w-3xl";
+  // Einheitliche Content-Breite auf JEDER Seite (wie die Desktop-Frames im
+  // Prototyp): kein Springen/„tablet-schmal" mehr zwischen Seiten. Der Inhalt
+  // füllt überall den gleichen Container (max-w-7xl der <main>).
+  const contentClass = "";
   const initial = (settings.userName?.trim()?.[0] ?? "I").toUpperCase();
   const name = settings.userName?.trim() || "Dein Raum";
 
