@@ -1,8 +1,6 @@
-import { useLiveQuery } from "dexie-react-hooks";
 import type { JournalEntry } from "@journal/shared";
 import { JournalCard } from "../components/JournalCard";
 import { useEntries } from "../hooks/useData";
-import { listStabilityMoments } from "../db/queries";
 
 function monthLabel(iso: string): string {
   return new Date(iso).toLocaleDateString("de-DE", {
@@ -15,12 +13,6 @@ function monthLabel(iso: string): string {
 // unter „Letzte Einträge").
 export function Archive() {
   const entries = useEntries();
-  const moments = useLiveQuery(() => listStabilityMoments(), [], []);
-
-  const closedIds = new Set<string>();
-  for (const m of moments) {
-    if (m.kind === "abschluss" && m.entryId) closedIds.add(m.entryId);
-  }
 
   const groups: { label: string; items: JournalEntry[] }[] = [];
   for (const e of entries) {
@@ -49,7 +41,7 @@ export function Archive() {
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {g.items.map((e) => (
-                <JournalCard key={e.id} entry={e} closedIds={closedIds} />
+                <JournalCard key={e.id} entry={e} />
               ))}
             </div>
           </div>

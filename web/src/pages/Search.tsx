@@ -1,21 +1,14 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useLiveQuery } from "dexie-react-hooks";
 import { JournalCard } from "../components/JournalCard";
 import { useEntries } from "../hooks/useData";
-import { listStabilityMoments } from "../db/queries";
 import { entryTitle } from "../lib/entryCard";
 
 export function Search() {
   const [params, setParams] = useSearchParams();
   const [query, setQuery] = useState(params.get("q") ?? "");
   const entries = useEntries();
-  const moments = useLiveQuery(() => listStabilityMoments(), [], []);
 
-  const closedIds = new Set<string>();
-  for (const m of moments) {
-    if (m.kind === "abschluss" && m.entryId) closedIds.add(m.entryId);
-  }
 
   const term = query.trim().toLowerCase();
   const results = term
@@ -72,7 +65,7 @@ export function Search() {
       {results.length > 0 && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {results.map((e) => (
-            <JournalCard key={e.id} entry={e} closedIds={closedIds} />
+            <JournalCard key={e.id} entry={e} />
           ))}
         </div>
       )}

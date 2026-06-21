@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useLiveQuery } from "dexie-react-hooks";
 import { Card } from "../components/ui";
 import { JournalCard } from "../components/JournalCard";
 import { useDailyRitual, useEntries, useSettings } from "../hooks/useData";
-import { dayKey, listStabilityMoments } from "../db/queries";
+import { dayKey } from "../db/queries";
 import { ritualTheme } from "../lib/daypart";
 import { entryMode } from "../lib/entryCard";
 import {
@@ -41,6 +40,12 @@ function greetingWord(t: TimeOfDay): string {
   if (t === "abend") return "Guten Abend";
   return "Guten Morgen";
 }
+
+const QUOTES: Record<TimeOfDay, { pre: string; accent: string }> = {
+  morgen: { pre: "Heute reicht ein ehrlicher Satz. ", accent: "So wie er kommt." },
+  tag: { pre: "Nicht alles auf einmal. ", accent: "Eins nach dem anderen." },
+  abend: { pre: "Der Tag darf jetzt leiser werden. ", accent: "Stück für Stück." },
+};
 
 
 function avg(nums: number[]): number {
@@ -147,13 +152,13 @@ export function Dashboard() {
   const entries = useEntries();
   const settings = useSettings();
   const ritual = useDailyRitual(dayKey());
-  const moments = useLiveQuery(() => listStabilityMoments(), [], []);
   const [filter, setFilter] = useState("alle");
   const [promptIdx, setPromptIdx] = useState(0);
   const [moodViz, setMoodViz] = useState<"punkte" | "verlauf">("punkte");
 
   const name = settings.userName?.trim();
   const tod = timeOfDay();
+  const quote = QUOTES[tod];
   const hasData = entries.length > 0;
 
   const streak = computeStreak(entries);
@@ -172,10 +177,6 @@ export function Dashboard() {
   const ritualT = ritualTheme(!ritualMorning);
   const prompt = PROMPTS[promptIdx % PROMPTS.length];
 
-  const closedIds = new Set<string>();
-  for (const m of moments) {
-    if (m.kind === "abschluss" && m.entryId) closedIds.add(m.entryId);
-  }
 
   function matchesFilter(e: (typeof entries)[number]): boolean {
     if (filter === "bereit") return Boolean(e.aiReflection);
@@ -192,8 +193,8 @@ export function Dashboard() {
 
   return (
     <section className="space-y-5">
-      {/* Begrüßung (hell auf Creme, nach Prototyp) */}
-      <div>
+      {/* Mobile: helle Begrüßung auf Creme (nach Prototyp) */}
+      <div className="sm:hidden">
         <div className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[#9a917f]">
           {dateLabel}
         </div>
@@ -246,6 +247,63 @@ export function Dashboard() {
           >
             Sprach-Check-in
           </button>
+        </div>
+      </div>
+
+      {/* Desktop: Foto-Hero mit Overlay (nach Prototyp) */}
+      <div className="relative hidden overflow-hidden rounded-[28px] shadow-[0_22px_48px_rgba(35,34,26,0.13)] sm:block">
+        <img
+          src="/img/hero-see.webp"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1400ms] ease-[cubic-bezier(.2,.7,.15,1)] hover:scale-105"
+          style={{ objectPosition: "center 82%" }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(100deg, rgba(28,33,22,.9) 0%, rgba(28,33,22,.62) 52%, rgba(28,33,22,.22) 100%)",
+          }}
+        />
+        <div className="relative max-w-[600px] p-10 lg:p-[46px]">
+          <div className="mb-3.5 inline-flex items-center gap-2.5">
+            <span
+              className="h-2 w-2 rounded-full bg-[var(--accent)]"
+              style={{ boxShadow: "0 0 12px rgba(168,232,79,.8)" }}
+            />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--accent)]">
+              {dateLabel}
+            </span>
+          </div>
+          <h1 className="serif mb-3 text-[39px] font-semibold leading-[1.08] text-[#F8F5EE]">
+            {greetingWord(tod)}
+            {name ? `, ${name}` : ""}
+          </h1>
+          <p className="lead mb-6 max-w-[470px] text-[22px] leading-snug text-[#F8F5EE]">
+            {quote.pre}
+            <em className="g text-[var(--accent)]">{quote.accent}</em>
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => navigate("/neu")}
+              className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-[var(--accent-contrast)] transition hover:-translate-y-0.5"
+              style={{
+                background: "linear-gradient(180deg,#B4ED63,#A8E84F)",
+                boxShadow: "0 5px 14px rgba(110,155,44,.28)",
+              }}
+            >
+              Eintrag schreiben
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/sprechen")}
+              className="rounded-full border border-white/45 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-[var(--foreground)]"
+            >
+              Sprach-Check-in
+            </button>
+          </div>
         </div>
       </div>
 
@@ -735,7 +793,7 @@ export function Dashboard() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-12">
           {shown.map((e, i) => (
             <div key={e.id} className={SPAN[[7, 5, 5, 7][i % 4]]}>
-              <JournalCard entry={e} closedIds={closedIds} />
+              <JournalCard entry={e} />
             </div>
           ))}
         </div>
