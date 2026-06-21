@@ -200,9 +200,11 @@ export function Dashboard() {
   });
 
   return (
-    <section className="space-y-5">
+    // flex-col + order: mobil kompakte Reihenfolge (Begrüßung → Ritual → Heute
+    // im Blick → Energie → Stimmung); ab sm volles Bento in Prototyp-Reihenfolge.
+    <section className="flex flex-col gap-5">
       {/* Mobile: helle Begrüßung auf Creme (nach Prototyp) */}
-      <div className="sm:hidden">
+      <div className="order-1 sm:hidden">
         <div className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[#9a917f]">
           {dateLabel}
         </div>
@@ -259,7 +261,7 @@ export function Dashboard() {
       </div>
 
       {/* Desktop: Foto-Hero mit Overlay (nach Prototyp) */}
-      <div className="relative hidden overflow-hidden rounded-[28px] shadow-[0_22px_48px_rgba(35,34,26,0.13)] sm:block">
+      <div className="relative hidden overflow-hidden rounded-[28px] shadow-[0_22px_48px_rgba(35,34,26,0.13)] sm:order-1 sm:block">
         <img
           src="/img/hero-see.webp"
           alt=""
@@ -316,7 +318,7 @@ export function Dashboard() {
       </div>
 
       {/* HEUTE IM BLICK · Schreib-Impuls */}
-      <Card className="bg-[radial-gradient(420px_240px_at_0%_0%,rgba(168,232,79,0.10),transparent_60%)]">
+      <Card className="order-3 bg-[radial-gradient(420px_240px_at_0%_0%,rgba(168,232,79,0.10),transparent_60%)] sm:order-2">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="mb-2 inline-flex items-center gap-2.5">
@@ -354,7 +356,7 @@ export function Dashboard() {
 
       {/* TAGESRITUAL · prominentes, warmes Tages-Tool (nach Prototyp) */}
       <div
-        className="relative overflow-hidden"
+        className="order-2 relative overflow-hidden sm:order-3"
         style={{
           borderRadius: 28,
           border: `1px solid ${ritualT.border}`,
@@ -558,8 +560,8 @@ export function Dashboard() {
 
       {hasData && (
         <>
-          {/* AUSWERTUNG · Bento. Mobil: Stimmung voll, Serie+Woche 2-spaltig. */}
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-12">
+          {/* AUSWERTUNG · Bento. Mobil nur Stimmung (Serie/Woche ab sm). */}
+          <div className="order-5 grid grid-cols-2 gap-4 sm:order-4 sm:grid-cols-12">
             <Card className="col-span-2 sm:col-span-6">
               {/* Mobil gestapelt (Titel volle Breite, Umschalter darunter),
                   ab sm nebeneinander — so bricht der Status nicht unnötig um. */}
@@ -633,7 +635,7 @@ export function Dashboard() {
               </div>
             </Card>
 
-            <Card className="col-span-1 flex flex-col justify-between sm:col-span-3">
+            <Card className="col-span-1 hidden flex-col justify-between sm:col-span-3 sm:flex">
               <div className="flex items-center gap-2 text-[var(--clay)]">
                 <svg
                   viewBox="0 0 24 24"
@@ -697,7 +699,7 @@ export function Dashboard() {
               </div>
             </Card>
 
-            <Card className="col-span-1 flex flex-col justify-between sm:col-span-3">
+            <Card className="col-span-1 hidden flex-col justify-between sm:col-span-3 sm:flex">
               <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
                 Diese Woche
               </span>
@@ -716,7 +718,7 @@ export function Dashboard() {
           </div>
 
           {/* ENERGIE HEUTE · kompakter Tagesimpuls (antippbarer Balken-Meter) */}
-          <div className="lift flex flex-col gap-5 rounded-[24px] border border-[var(--border)] bg-[radial-gradient(360px_180px_at_100%_0%,rgba(168,232,79,0.12),transparent_64%)] bg-[var(--surface)] p-[22px_28px] shadow-[var(--shadow-card)] sm:flex-row sm:items-center sm:justify-between">
+          <div className="order-4 lift flex flex-col gap-5 rounded-[24px] border border-[var(--border)] bg-[radial-gradient(360px_180px_at_100%_0%,rgba(168,232,79,0.12),transparent_64%)] bg-[var(--surface)] p-[22px_28px] shadow-[var(--shadow-card)] sm:order-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               {/* Mobil: kompakter Kopf (Label + Wert rechts); ab sm großer Satz. */}
               <div className="mb-2 flex items-center justify-between gap-2">
@@ -770,8 +772,8 @@ export function Dashboard() {
             </div>
           </div>
 
-          {/* WAS SICH ZEIGT */}
-          <Card className="bg-[radial-gradient(420px_240px_at_100%_0%,rgba(205,138,91,0.10),transparent_62%)]">
+          {/* WAS SICH ZEIGT — Desktop/Tablet (mobil kompakt ausgeblendet) */}
+          <Card className="order-6 hidden bg-[radial-gradient(420px_240px_at_100%_0%,rgba(205,138,91,0.10),transparent_62%)] sm:block">
             <div className="mb-4 inline-flex items-center gap-2.5">
               <span className="h-2 w-2 rounded-full bg-[var(--clay)]" />
               <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
@@ -808,7 +810,8 @@ export function Dashboard() {
         </>
       )}
 
-      {/* LETZTE EINTRÄGE (Prototyp: Eyebrow + Filter-Pills, aktiv = Sand) */}
+      {/* LETZTE EINTRÄGE — Desktop/Tablet (mobil kompakt ausgeblendet) */}
+      <div className="order-7 hidden w-full flex-col gap-5 sm:flex">
       <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
         <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
           Letzte Einträge
@@ -889,6 +892,7 @@ export function Dashboard() {
           </div>
         </>
       )}
+      </div>
     </section>
   );
 }
