@@ -907,9 +907,22 @@ export function Dashboard() {
               </span>
               <Link
                 to="/teilen"
-                className="inline-flex flex-none items-center gap-[7px] rounded-full border border-[var(--border)] bg-white px-3.5 py-2 text-[13px] font-semibold text-[var(--muted)] transition hover:-translate-y-0.5 hover:text-[var(--foreground)]"
+                className="inline-flex flex-none items-center gap-2 rounded-full border border-[var(--border)] bg-white py-1.5 pl-1.5 pr-3.5 text-[13px] font-semibold text-[var(--muted)] transition hover:-translate-y-0.5 hover:text-[var(--foreground)]"
               >
-                <Icon d={ICONS.share} size={15} />
+                {/* Mini-Vorschau: Foto-Karte (so wird verständlich, was entsteht) */}
+                <span className="relative h-7 w-7 overflow-hidden rounded-full">
+                  <img
+                    src="/img/zitat-weg.webp"
+                    alt=""
+                    aria-hidden="true"
+                    className="h-full w-full object-cover"
+                    style={{ objectPosition: "center 60%" }}
+                  />
+                  <span className="absolute inset-0 bg-[rgba(18,15,9,.28)]" />
+                  <span className="absolute inset-0 flex items-center justify-center text-[var(--accent)]">
+                    <Icon d={ICONS.share} size={12} />
+                  </span>
+                </span>
                 Als Karte teilen
               </Link>
             </div>

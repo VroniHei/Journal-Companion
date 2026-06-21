@@ -9,22 +9,49 @@ import { DesktopModal } from "../components/DesktopModal";
 // ruhig, nie marktschreierisch. Format + Farbwelt wählbar, PNG-Export per
 // Canvas (Web Share, sonst Download). Keine externen Abhängigkeiten.
 
-type ThemeId = "tag" | "abend" | "natur" | "klar";
+type ThemeId = string; // mehrere Foto-Welten + Farbverläufe
 type FormatId = "story" | "post" | "quer";
 
 interface Theme {
   id: ThemeId;
   label: string;
   swatch: string;
-  bg: [string, string]; // Verlauf (oben → unten)
+  bg: [string, string]; // Verlauf (oben → unten); Fallback hinter dem Foto
   quote: string;
   eyebrow: string;
   accent: string;
   meta: string;
   divider: string;
+  photo?: string; // Hintergrundbild (Claude Design: zitat-weg.webp)
+  overlay?: [string, string]; // dunkles Overlay über dem Foto (Lesbarkeit)
+}
+
+// Foto-Welten (Claude Design): wechselnde Bilder, passend zu wechselnden Sprüchen.
+const PHOTOS = [
+  { id: "foto-weg", label: "Weg", src: "/img/zitat-weg.webp" },
+  { id: "foto-pfad", label: "Pfad", src: "/img/faden-weg.webp" },
+  { id: "foto-see", label: "See", src: "/img/hero-see.webp" },
+  { id: "foto-notiz", label: "Notiz", src: "/img/journaling-desk.webp" },
+];
+
+function photoTheme(id: string, label: string, src: string): Theme {
+  return {
+    id,
+    label,
+    swatch: `url(${src}) center/cover`,
+    bg: ["#3a4a2c", "#23291a"],
+    photo: src,
+    overlay: ["rgba(18,15,9,.25)", "rgba(18,15,9,.62)"],
+    quote: "#F8F5EE",
+    eyebrow: "rgba(248,245,238,.88)",
+    accent: "#A8E84F",
+    meta: "rgba(248,245,238,.78)",
+    divider: "rgba(248,245,238,.6)",
+  };
 }
 
 const THEMES: Theme[] = [
+  ...PHOTOS.map((p) => photoTheme(p.id, p.label, p.src)),
   {
     id: "tag",
     label: "Tag",
@@ -81,11 +108,31 @@ function dateLabel(): string {
   return new Date().toLocaleDateString("de-DE", { day: "numeric", month: "long" });
 }
 
+// Bild-Cache fürs Canvas-Rendering (Hintergrundfotos der Karte).
+const imgCache: Record<string, HTMLImageElement> = {};
+function loadImage(src: string): Promise<HTMLImageElement> {
+  const cached = imgCache[src];
+  if (cached?.complete) return Promise.resolve(cached);
+  return new Promise((resolve, reject) => {
+    const im = new Image();
+    im.onload = () => {
+      imgCache[src] = im;
+      resolve(im);
+    };
+    im.onerror = reject;
+    im.src = src;
+  });
+}
+
 export function ShareCard() {
   const navigate = useNavigate();
   const entries = useEntries();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [themeId, setThemeId] = useState<ThemeId>("tag");
+  // Standard-Foto variiert je Eintrag (verschiedene Sprüche → verschiedene Bilder).
+  const [themeId, setThemeId] = useState<ThemeId>(() => {
+    const seed = (entries[0]?.id ?? "x").length + (entries[0]?.createdAt?.length ?? 0);
+    return PHOTOS[seed % PHOTOS.length].id;
+  });
   const [formatId, setFormatId] = useState<FormatId>("story");
   const [busy, setBusy] = useState(false);
 
@@ -100,12 +147,44 @@ export function ShareCard() {
   const theme = THEMES.find((t) => t.id === themeId) ?? THEMES[0];
   const format = FORMATS.find((f) => f.id === formatId) ?? FORMATS[0];
 
-  function drawCard(ctx: CanvasRenderingContext2D, w: number, h: number) {
-    const g = ctx.createLinearGradient(0, 0, w * 0.3, h);
-    g.addColorStop(0, theme.bg[0]);
-    g.addColorStop(1, theme.bg[1]);
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, w, h);
+  async function drawCard(ctx: CanvasRenderingContext2D, w: number, h: number) {
+    // Hintergrund: Foto (Claude Design) mit dunklem Overlay, sonst Verlauf.
+    let drewPhoto = false;
+    if (theme.photo) {
+      try {
+        const im = await loadImage(theme.photo);
+        const ir = im.width / im.height;
+        const cr = w / h;
+        let sw: number, sh: number, sx: number, sy: number;
+        if (ir > cr) {
+          sh = im.height;
+          sw = sh * cr;
+          sx = (im.width - sw) / 2;
+          sy = 0;
+        } else {
+          sw = im.width;
+          sh = sw / cr;
+          sx = 0;
+          sy = (im.height - sh) * 0.6; // object-position center 60%
+        }
+        ctx.drawImage(im, sx, sy, sw, sh, 0, 0, w, h);
+        const ov = ctx.createLinearGradient(0, 0, 0, h);
+        ov.addColorStop(0, theme.overlay?.[0] ?? "rgba(18,15,9,.25)");
+        ov.addColorStop(1, theme.overlay?.[1] ?? "rgba(18,15,9,.6)");
+        ctx.fillStyle = ov;
+        ctx.fillRect(0, 0, w, h);
+        drewPhoto = true;
+      } catch {
+        // Fällt unten auf den Verlauf zurück.
+      }
+    }
+    if (!drewPhoto) {
+      const g = ctx.createLinearGradient(0, 0, w * 0.3, h);
+      g.addColorStop(0, theme.bg[0]);
+      g.addColorStop(1, theme.bg[1]);
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, w, h);
+    }
 
     const pad = Math.round(w * 0.085);
     const font = (size: number, weight: number) =>
@@ -177,7 +256,7 @@ export function ShareCard() {
       canvas.height = format.h;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
-      drawCard(ctx, format.w, format.h);
+      await drawCard(ctx, format.w, format.h);
       const blob: Blob | null = await new Promise((res) =>
         canvas.toBlob((b) => res(b), "image/png", 0.95),
       );
@@ -230,10 +309,27 @@ export function ShareCard() {
 
       {/* Vorschau */}
       <div
-        className="mx-auto w-full max-w-[360px] overflow-hidden rounded-[22px] shadow-[0_18px_40px_rgba(35,34,26,.16)] [container-type:size]"
+        className="relative mx-auto w-full max-w-[360px] overflow-hidden rounded-[22px] shadow-[0_18px_40px_rgba(35,34,26,.16)] [container-type:size]"
         style={{ aspectRatio: aspect, background: `linear-gradient(140deg, ${theme.bg[0]}, ${theme.bg[1]})` }}
       >
-        <div className="flex h-full flex-col justify-between p-[7%]">
+        {theme.photo && (
+          <>
+            <img
+              src={theme.photo}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ objectPosition: "center 60%" }}
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(180deg, ${theme.overlay?.[0] ?? "rgba(18,15,9,.25)"}, ${theme.overlay?.[1] ?? "rgba(18,15,9,.6)"})`,
+              }}
+            />
+          </>
+        )}
+        <div className="relative flex h-full flex-col justify-between p-[7%]">
           <span className="text-[3cqw] font-bold" style={{ color: theme.quote }}>
             innerline
           </span>
