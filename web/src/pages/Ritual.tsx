@@ -3,12 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui";
 import { useDailyRitual } from "../hooks/useData";
 import { dayKey, upsertDailyRitual } from "../db/queries";
+import { isEveningNow, ritualTheme } from "../lib/daypart";
 
 type Period = "morning" | "evening";
-
-function isMorningNow(): boolean {
-  return new Date().getHours() < 14;
-}
 
 const HERO: Record<Period, { pre: string; accent: string; post: string }> = {
   morning: { pre: "Ein ruhiger ", accent: "Anfang", post: "." },
@@ -62,9 +59,9 @@ export function Ritual() {
   const [hydrated, setHydrated] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const [period, setPeriod] = useState<Period>(
-    isMorningNow() ? "morning" : "evening",
-  );
+  // Tageszeit bestimmt das Ritual automatisch (kein sichtbarer Umschalter).
+  const period: Period = isEveningNow() ? "evening" : "morning";
+  const theme = ritualTheme(period === "evening");
   const [open, setOpen] = useState(0);
   const [done, setDone] = useState(false);
 
@@ -248,11 +245,6 @@ export function Ritual() {
   const step = open + 1;
   const allAnswered = questions.every((q) => q.answered);
 
-  function switchPeriod(p: Period) {
-    setPeriod(p);
-    setOpen(0);
-  }
-
   function finish() {
     commit();
     setDone(true);
@@ -278,10 +270,11 @@ export function Ritual() {
           className="relative overflow-hidden p-8 text-center"
           style={{
             borderRadius: 28,
-            border: "1px solid rgba(205,138,91,0.24)",
+            border: `1px solid ${theme.border}`,
             boxShadow: "0 20px 46px rgba(120,86,52,0.16)",
-            background:
-              "linear-gradient(180deg,#FBEFD9 0%,#F4F0E6 46%,#F8F5EE 100%)",
+            background: theme.evening
+              ? "linear-gradient(180deg,#EFEAF8 0%,#F1ECEC 46%,#F8F5EE 100%)"
+              : "linear-gradient(180deg,#FBEFD9 0%,#F4F0E6 46%,#F8F5EE 100%)",
           }}
         >
           <div
@@ -292,8 +285,7 @@ export function Ritual() {
               width: 220,
               height: 220,
               borderRadius: "50%",
-              background:
-                "radial-gradient(circle, rgba(240,195,107,0.32), transparent 68%)",
+              background: theme.orbWarm,
               filter: "blur(34px)",
             }}
           />
@@ -301,8 +293,8 @@ export function Ritual() {
             <span
               className="mx-auto flex h-[74px] w-[74px] items-center justify-center rounded-full text-white"
               style={{
-                background: "linear-gradient(150deg,#F0C36B,#CD8A5B)",
-                boxShadow: "0 12px 28px rgba(205,138,91,0.36)",
+                background: theme.badge,
+                boxShadow: "0 12px 28px rgba(120,86,52,0.32)",
               }}
             >
               <svg
@@ -321,13 +313,13 @@ export function Ritual() {
             </span>
             <div
               className="mt-5 text-[10px] font-semibold uppercase tracking-[0.2em]"
-              style={{ color: "#9c6b3f" }}
+              style={{ color: theme.eyebrow }}
             >
               Tagesritual · {period === "morning" ? "Morgen" : "Abend"}
             </div>
             <h1
               className="serif mt-2 text-[26px] font-semibold leading-tight"
-              style={{ color: "#3a2e22" }}
+              style={{ color: theme.title }}
             >
               Geschafft.{" "}
               <em className="g">
@@ -350,7 +342,7 @@ export function Ritual() {
                   >
                     <div
                       className="text-[10.5px] font-semibold uppercase tracking-[0.16em]"
-                      style={{ color: "#9c6b3f" }}
+                      style={{ color: theme.eyebrow }}
                     >
                       {r.label}
                     </div>
@@ -380,39 +372,14 @@ export function Ritual() {
         </p>
       </div>
 
-      {/* Morgen/Abend-Umschalter */}
-      <div className="inline-flex rounded-full bg-[var(--surface-2)] p-1">
-        {(["morning", "evening"] as const).map((p) => {
-          const active = period === p;
-          return (
-            <button
-              key={p}
-              type="button"
-              onClick={() => switchPeriod(p)}
-              aria-pressed={active}
-              className={`rounded-full px-4 py-1.5 text-sm transition ${
-                active
-                  ? "bg-[var(--surface)] font-semibold text-[var(--foreground)] shadow-[var(--shadow-card)]"
-                  : "font-medium text-[var(--muted)]"
-              }`}
-            >
-              {p === "morning" ? "Morgen" : "Abend"}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Hero mit Fortschritt */}
+      {/* Hero mit Fortschritt (Tageszeit-Theming: morgens warm, abends Flieder) */}
       <div
         className="relative overflow-hidden p-6"
         style={{
           borderRadius: 22,
-          border: "1px solid rgba(205,138,91,.24)",
+          border: `1px solid ${theme.border}`,
           boxShadow: "0 14px 32px rgba(120,86,52,.14)",
-          background:
-            period === "morning"
-              ? "linear-gradient(135deg, #FBEFD9 0%, #F6ECDB 55%, #EFF1E4 100%)"
-              : "linear-gradient(135deg, #ECEFE6 0%, #EDE7DC 55%, #F1ECE2 100%)",
+          background: theme.hero,
         }}
       >
         <div
@@ -423,23 +390,20 @@ export function Ritual() {
             width: 150,
             height: 150,
             borderRadius: "50%",
-            background:
-              period === "morning"
-                ? "radial-gradient(circle, rgba(240,195,107,.4), transparent 68%)"
-                : "radial-gradient(circle, rgba(155,163,131,.4), transparent 68%)",
+            background: theme.orbWarm,
             filter: "blur(26px)",
           }}
         />
         <div className="relative">
           <div
             className="text-[10px] font-semibold uppercase tracking-[0.2em]"
-            style={{ color: "#9c6b3f" }}
+            style={{ color: theme.eyebrow }}
           >
             {period === "morning" ? "Morgen" : "Abend"} · {dateLabel}
           </div>
           <div
             className="serif my-2 text-2xl font-semibold"
-            style={{ color: "#3a2e22" }}
+            style={{ color: theme.title }}
           >
             {hero.pre}
             <em className="g">{hero.accent}</em>
@@ -448,19 +412,25 @@ export function Ritual() {
           <div className="flex items-center gap-2">
             <div
               className="h-1.5 flex-1 overflow-hidden rounded-full"
-              style={{ background: "rgba(205,138,91,.18)" }}
+              style={{
+                background: theme.evening
+                  ? "rgba(123,107,150,.18)"
+                  : "rgba(205,138,91,.18)",
+              }}
             >
               <div
                 className="h-full rounded-full transition-[width] duration-500"
                 style={{
                   width: `${(step / 3) * 100}%`,
-                  background: "linear-gradient(90deg,#F0C36B,#CD8A5B)",
+                  background: theme.evening
+                    ? "linear-gradient(90deg,#CBBEF4,#9d8fce)"
+                    : "linear-gradient(90deg,#F0C36B,#CD8A5B)",
                 }}
               />
             </div>
             <span
               className="text-[11.5px] font-semibold"
-              style={{ color: "#9c6b3f" }}
+              style={{ color: theme.eyebrow }}
             >
               Schritt {step} von 3
             </span>
@@ -478,7 +448,7 @@ export function Ritual() {
               style={{
                 background: "#fff",
                 border: isOpen
-                  ? "1px solid rgba(205,138,91,.22)"
+                  ? `1px solid ${theme.border}`
                   : "1px solid rgba(35,34,26,.07)",
                 borderRadius: 20,
                 boxShadow: isOpen
@@ -496,7 +466,9 @@ export function Ritual() {
                   className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg text-[13px] font-semibold"
                   style={
                     isOpen || q.answered
-                      ? { background: "#F6ECE2", color: "#CD8A5B" }
+                      ? theme.evening
+                        ? { background: "#EDE8F8", color: "#7a6b96" }
+                        : { background: "#F6ECE2", color: "#CD8A5B" }
                       : { background: "#F1ECE0", color: "#9a917f" }
                   }
                 >

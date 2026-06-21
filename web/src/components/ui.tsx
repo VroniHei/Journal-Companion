@@ -7,10 +7,11 @@ export function Card({
   children: ReactNode;
   className?: string;
 }) {
-  // Innerline: weiche, leicht frostige Glas-Karte mit geschichtetem Schatten.
+  // Weiße Datenkarte mit weichem, ink-getöntem Schatten + dezentem Hover-Lift
+  // (App-Style: Tiefe statt Flächen).
   return (
     <div
-      className={`rounded-[26px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] ${className}`}
+      className={`lift rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] ${className}`}
     >
       {children}
     </div>

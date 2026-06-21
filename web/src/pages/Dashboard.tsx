@@ -5,6 +5,7 @@ import { Card } from "../components/ui";
 import { JournalCard } from "../components/JournalCard";
 import { useDailyRitual, useEntries, useSettings } from "../hooks/useData";
 import { dayKey, listStabilityMoments } from "../db/queries";
+import { ritualTheme } from "../lib/daypart";
 import { entryMode } from "../lib/entryCard";
 import {
   buildInsights,
@@ -174,6 +175,7 @@ export function Dashboard() {
   const ritualFilled = ritualMorning
     ? (ritual?.gratitude?.length ?? 0) > 0
     : (ritual?.goodMoments?.length ?? 0) > 0;
+  const ritualT = ritualTheme(!ritualMorning);
   const prompt = PROMPTS[promptIdx % PROMPTS.length];
 
   const closedIds = new Set<string>();
@@ -289,9 +291,9 @@ export function Dashboard() {
         className="relative overflow-hidden"
         style={{
           borderRadius: 28,
-          border: "1px solid rgba(205,138,91,0.26)",
+          border: `1px solid ${ritualT.border}`,
           boxShadow: "0 20px 46px rgba(120,86,52,0.16)",
-          background: "linear-gradient(135deg,#F8EFDF 0%,#F4F0E6 100%)",
+          background: ritualT.surface,
         }}
       >
         <div
@@ -302,7 +304,7 @@ export function Dashboard() {
             width: 240,
             height: 240,
             borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(224,170,80,0.28), transparent 68%)",
+            background: ritualT.orbWarm,
             filter: "blur(34px)",
           }}
         />
@@ -314,7 +316,7 @@ export function Dashboard() {
             width: 230,
             height: 230,
             borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(168,232,79,0.20), transparent 68%)",
+            background: ritualT.orbCool,
             filter: "blur(38px)",
           }}
         />
@@ -330,7 +332,7 @@ export function Dashboard() {
             >
               <span
                 className="flex h-[22px] w-[22px] items-center justify-center rounded-full text-white"
-                style={{ background: "linear-gradient(145deg,#F0C36B,#CD8A5B)" }}
+                style={{ background: ritualT.badge }}
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -343,13 +345,19 @@ export function Dashboard() {
                   strokeLinejoin="round"
                   aria-hidden="true"
                 >
-                  <path d="M3 18h18M5.6 18a6.4 6.4 0 0 1 12.8 0" />
-                  <path d="M12 4.5v2.4M5 9l1.6 1.2M19 9l-1.6 1.2" />
+                  {ritualMorning ? (
+                    <>
+                      <path d="M3 18h18M5.6 18a6.4 6.4 0 0 1 12.8 0" />
+                      <path d="M12 4.5v2.4M5 9l1.6 1.2M19 9l-1.6 1.2" />
+                    </>
+                  ) : (
+                    <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z" />
+                  )}
                 </svg>
               </span>
               <span
                 className="text-[10.5px] font-semibold uppercase tracking-[0.2em]"
-                style={{ color: "#9c6b3f" }}
+                style={{ color: ritualT.eyebrow }}
               >
                 Tägliches Ritual
               </span>
@@ -364,11 +372,11 @@ export function Dashboard() {
             {/* Status */}
             <div
               className="mb-3 flex items-center gap-2 text-[12.5px] font-semibold"
-              style={{ color: "#9c6b3f" }}
+              style={{ color: ritualT.eyebrow }}
             >
               <span
                 className="h-[7px] w-[7px] rounded-full"
-                style={{ background: "#CD8A5B" }}
+                style={{ background: ritualMorning ? "#CD8A5B" : "#CBBEF4" }}
               />
               {ritualFilled ? (
                 "Heute schon ausgefüllt"
@@ -385,7 +393,7 @@ export function Dashboard() {
 
             <h2
               className="serif mb-2 text-[26px] font-semibold leading-tight"
-              style={{ color: "#3a2e22" }}
+              style={{ color: ritualT.title }}
             >
               Sechs Minuten, die den Tag{" "}
               <em className="g">{ritualMorning ? "sortieren" : "abschließen"}</em>.
