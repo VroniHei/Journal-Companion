@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { Decision, OpenLoop } from "@journal/shared";
-import { Button, Card } from "../components/ui";
+import { Button, Card, Eyebrow } from "../components/ui";
 import { DictationButton } from "../components/DictationButton";
 import { useDecisions, useOpenLoops } from "../hooks/useData";
 import {
@@ -402,21 +402,43 @@ export function Clarity() {
     { key: "entscheidungen", label: "Entscheidungen" },
   ];
 
+  const loosenLink = (
+    <Link
+      to="/schleife"
+      className="lift flex items-center justify-between gap-3 rounded-[18px] border px-5 py-4"
+      style={{
+        background: "linear-gradient(135deg,#F1ECF8,#F4F0EC)",
+        borderColor: "rgba(203,190,244,.5)",
+      }}
+    >
+      <div>
+        <div className="text-[15px] font-[650] tracking-[-0.01em] text-[var(--foreground)]">
+          Dreht sich ein Gedanke?
+        </div>
+        <p className="mt-0.5 text-[13px] leading-snug text-[var(--muted)]">
+          In drei ruhigen Schritten <em className="g">auseinandernehmen</em>.
+        </p>
+      </div>
+      <span aria-hidden="true" className="flex-none text-[#7a6b96]">
+        →
+      </span>
+    </Link>
+  );
+
   return (
     <section className="space-y-6">
       <div>
-        <h1 className="serif text-3xl font-semibold">Klärung</h1>
-        <p className="mt-1 text-[var(--muted)]">
-          {tab === "schleifen"
-            ? "Offene Schleifen, die gerade Kopf-Raum belegen. Halte sie hier fest, damit sie nicht im Kreis laufen. Kein To-do-Druck."
-            : "Entscheidungen festhalten und später ehrlich draufschauen: War es stimmig? So lernst du dich besser kennen."}
-        </p>
+        <Eyebrow>Klärung</Eyebrow>
+        <h1 className="serif mt-2 text-3xl font-semibold tracking-[-0.02em]">
+          Erst <em className="g">sortieren</em>, dann entscheiden
+        </h1>
       </div>
 
+      {/* Mobile: Tab-Umschalter; Desktop: beide Spalten als Bento. */}
       <div
         role="tablist"
         aria-label="Bereich wählen"
-        className="flex gap-1 rounded-full border border-[var(--border)] bg-[var(--surface-2)] p-1"
+        className="flex gap-1 rounded-full border border-[var(--border)] bg-[var(--surface-2)] p-1 lg:hidden"
       >
         {TABS.map((t) => {
           const active = tab === t.key;
@@ -439,31 +461,24 @@ export function Clarity() {
         })}
       </div>
 
-      {tab === "schleifen" && (
-        <Link
-          to="/schleife"
-          className="lift flex items-center justify-between gap-3 rounded-[18px] border px-5 py-4"
-          style={{
-            background:
-              "linear-gradient(135deg,#F1ECF8,#F4F0EC)",
-            borderColor: "rgba(203,190,244,.5)",
-          }}
-        >
-          <div>
-            <div className="text-[15px] font-[650] tracking-[-0.01em] text-[var(--foreground)]">
-              Dreht sich ein Gedanke?
-            </div>
-            <p className="mt-0.5 text-[13px] leading-snug text-[var(--muted)]">
-              In drei ruhigen Schritten <em className="g">auseinandernehmen</em>.
-            </p>
-          </div>
-          <span aria-hidden="true" className="flex-none text-[#7a6b96]">
-            →
-          </span>
-        </Link>
-      )}
+      {/* Mobile-Ansicht (aktiver Tab) */}
+      <div className="space-y-6 lg:hidden">
+        {tab === "schleifen" && loosenLink}
+        {tab === "schleifen" ? <LoopsSection /> : <DecisionsSection />}
+      </div>
 
-      {tab === "schleifen" ? <LoopsSection /> : <DecisionsSection />}
+      {/* Desktop-Bento: Offene Schleifen | Entscheidungen */}
+      <div className="hidden gap-[18px] lg:grid lg:grid-cols-2">
+        <div className="space-y-5">
+          <Eyebrow>Offene Schleifen</Eyebrow>
+          {loosenLink}
+          <LoopsSection />
+        </div>
+        <div className="space-y-5">
+          <Eyebrow>Entscheidungen</Eyebrow>
+          <DecisionsSection />
+        </div>
+      </div>
     </section>
   );
 }
