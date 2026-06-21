@@ -10,6 +10,7 @@ import {
 } from "../hooks/useData";
 import { dayKey, setEnergyLevel } from "../db/queries";
 import { ritualTheme } from "../lib/daypart";
+import { entryKind } from "../lib/entryCard";
 import {
   buildInsights,
   computeStreak,
@@ -187,10 +188,8 @@ export function Dashboard() {
 
 
   function matchesFilter(e: (typeof entries)[number]): boolean {
-    if (filter === "eintrag") return !e.aiReflection;
-    if (filter === "reflexion") return Boolean(e.aiReflection);
-    if (filter === "gespraech") return Boolean(e.conversationSummary);
-    return true;
+    if (filter === "alle") return true;
+    return entryKind(e) === filter;
   }
   const shown = entries.filter(matchesFilter).slice(0, 3);
 

@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
 import type { JournalEntry } from "@journal/shared";
-import { entrySummaryText, entryTitle } from "../lib/entryCard";
+import {
+  entryKind,
+  entrySummaryText,
+  entryTitle,
+  KIND_LABEL,
+  KIND_STYLE,
+} from "../lib/entryCard";
 
 // Mood-Skala (APP-STYLE §3): clay (schwer) → gold → sage → grün (leicht).
 function moodColor(m: number): string {
@@ -30,19 +36,29 @@ function dayLabel(iso: string): string {
 // Mood-Punkt + Tages-Label, KI-Titel, kurzer Anriss. Radius 24, weicher Lift.
 export function JournalCard({ entry }: { entry: JournalEntry }) {
   const e = entry;
+  const kind = entryKind(e);
+  const kindStyle = KIND_STYLE[kind];
   return (
     <Link to={`/eintrag/${e.id}`} className="block h-full">
       <div className="lift flex h-full flex-col rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-[22px] shadow-[var(--shadow-card)]">
-        <div className="mb-3 flex items-center gap-[9px]">
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <span className="flex items-center gap-[9px]">
+            <span
+              className="h-3 w-3 shrink-0 rounded-full"
+              style={{ background: moodColor(e.mood) }}
+            />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#9a917f]">
+              {dayLabel(e.createdAt)}
+              {e.crisisFlag && (
+                <span className="text-[var(--danger)]"> · Schutzhinweis</span>
+              )}
+            </span>
+          </span>
           <span
-            className="h-3 w-3 shrink-0 rounded-full"
-            style={{ background: moodColor(e.mood) }}
-          />
-          <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#9a917f]">
-            {dayLabel(e.createdAt)}
-            {e.crisisFlag && (
-              <span className="text-[var(--danger)]"> · Schutzhinweis</span>
-            )}
+            className="shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold"
+            style={{ background: kindStyle.bg, color: kindStyle.text }}
+          >
+            {KIND_LABEL[kind]}
           </span>
         </div>
         <div className="mb-2 text-[17px] font-[650] leading-snug tracking-[-0.01em] text-[var(--foreground)]">

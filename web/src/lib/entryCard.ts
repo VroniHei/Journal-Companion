@@ -42,6 +42,29 @@ export function entryTitle(e: JournalEntry): string {
   return base || "Eintrag";
 }
 
+// Art des Eintrags für Karten-Badge + Dashboard-Filter (eine gemeinsame Quelle,
+// damit Anzeige und Filter immer zusammenpassen).
+export type EntryKind = "eintrag" | "reflexion" | "gespraech";
+
+export function entryKind(e: JournalEntry): EntryKind {
+  if (e.conversationSummary?.trim()) return "gespraech";
+  if (e.aiReflection) return "reflexion";
+  return "eintrag";
+}
+
+export const KIND_LABEL: Record<EntryKind, string> = {
+  eintrag: "Eintrag",
+  reflexion: "Reflektiert",
+  gespraech: "Gespräch",
+};
+
+// Getönte Badge-Farben je Art (ruhig, lesbar).
+export const KIND_STYLE: Record<EntryKind, { bg: string; text: string }> = {
+  eintrag: { bg: "var(--sand)", text: "#5d564a" },
+  reflexion: { bg: "#edf7d9", text: "#447510" },
+  gespraech: { bg: "rgba(155,163,131,.18)", text: "#4d5340" },
+};
+
 export type EntryMode = "text" | "voice" | "contact" | "rumination";
 
 export const MODE_LABEL: Record<EntryMode, string> = {
