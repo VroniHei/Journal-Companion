@@ -61,11 +61,12 @@ export const ICONS = {
       <path d="M14.9 9.1 11 11l-1.9 3.9 3.9-1.9 1.9-3.9z" />
     </>
   ),
-  // Tagesritual = Sonnenaufgang (Claude Design).
+  // Tagesritual = Sonnenaufgang. Eine Variante überall (Profil, Karten, FAB,
+  // Dashboard-Ritual-Badge) für einen einheitlichen Wiedererkennungswert.
   sun: (
     <>
       <path d="M3 18h18M5.6 18a6.4 6.4 0 0 1 12.8 0" />
-      <path d="M12 3.5v3M4.4 8.4l2 1.4M19.6 8.4l-2 1.4" />
+      <path d="M12 4.5v2.4M5 9l1.6 1.2M19 9l-1.6 1.2" />
     </>
   ),
   pen: (
