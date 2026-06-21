@@ -2,6 +2,7 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { DisclaimerGate } from "./DisclaimerGate";
 import { Onboarding } from "./Onboarding";
+import { FabSheet } from "./FabSheet";
 import { useSettings } from "../hooks/useData";
 import { useSyncStatus } from "../hooks/useSync";
 
@@ -99,6 +100,7 @@ export function Layout() {
   const { pathname } = useLocation();
   const [q, setQ] = useState("");
   const [profileOpen, setProfileOpen] = useState(false);
+  const [fabOpen, setFabOpen] = useState(false);
 
   const wide = pathname === "/" || pathname.startsWith("/muster");
   // Shell (Kopfzeile + Seitenrahmen) ist überall gleich breit. Nur der
@@ -169,6 +171,7 @@ export function Layout() {
   return (
     <div className="min-h-screen">
       <Onboarding />
+      <FabSheet open={fabOpen} onClose={() => setFabOpen(false)} />
       {/* ===== Desktop-Topbar ===== */}
       <header className="sticky top-0 z-40 hidden border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--background)_86%,transparent)] backdrop-blur-md sm:block">
         <div
@@ -205,7 +208,7 @@ export function Layout() {
             </form>
             <button
               type="button"
-              onClick={() => navigate("/neu")}
+              onClick={() => setFabOpen(true)}
               className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:bg-[#bdf06a]"
             >
               Neuer Eintrag
@@ -324,8 +327,8 @@ export function Layout() {
 
         <button
           type="button"
-          onClick={() => navigate("/neu")}
-          aria-label="Neuer Eintrag"
+          onClick={() => setFabOpen(true)}
+          aria-label="Was möchtest du tun?"
           style={{
             order: 2,
             background: "linear-gradient(180deg,#bdf06a,#8ed03a)",

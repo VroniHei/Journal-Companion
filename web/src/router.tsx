@@ -19,6 +19,7 @@ import { Impulses } from "./pages/Impulses";
 import { ShareCard } from "./pages/ShareCard";
 import { WeeklyLetter } from "./pages/WeeklyLetter";
 import { Energy } from "./pages/Energy";
+import { Relief } from "./pages/Relief";
 
 export const router = createBrowserRouter([
   {
@@ -41,6 +42,7 @@ export const router = createBrowserRouter([
       { path: "teilen", element: <ShareCard /> },
       { path: "wochen-brief", element: <WeeklyLetter /> },
       { path: "energie", element: <Energy /> },
+      { path: "soforthilfe", element: <Relief /> },
       { path: "wochenrueckblick", element: <WeeklyReview /> },
       { path: "einstellungen", element: <Settings /> },
       { path: "suche", element: <Search /> },
