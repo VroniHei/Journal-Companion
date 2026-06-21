@@ -33,8 +33,11 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 Optik schauen wir am Ende an."
 
 **Ergebnis/Status:** Build + Typecheck + Lint grün, je Screen einzeln committet.
-Noch offen (Feinschliff/interaktiv): Eintrag-Detail-Tabs, Muster Punkte/Verlauf-
-Toggle, Desktop-Modal-Overlays, Archiv-Header. Optik-Gesamtpass am Ende.
+Danach Feinschliff: Eintrag-Detail-Tabs (Sand-Track + „· N"-Zähler), Muster
+„Stimmung · 7 Tage" mit Punkte/Verlauf-Umschalter + Legende (neue `MoodCard`),
+Archiv-Kopf (Zurück + „Alle Einträge" + Suche). **Noch offen:** Desktop-Modal-
+Overlays (Ritual-Abschluss & Eintrag-Detail zentriert über „Heute") — braucht
+Background-Location-Routing, bewusst für den Optik-Gesamtpass aufgehoben.
 
 ---
 
