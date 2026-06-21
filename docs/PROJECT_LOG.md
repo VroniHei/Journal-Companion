@@ -691,3 +691,31 @@ Bilder: vorhandenes journaling-desk.webp wiederverwendet (kein Binär-Import).
 - Detail-Politur einzelner Screens (Eintrag, Klärung, Empty-States).
 - Claude-Design `IMPLEMENTIERTER-STAND.md` auf den heutigen Stand nachziehen.
 - Voice-Eingabe in die VS-Code-Chatleiste (separat).
+
+## App-Redesign v2 (Claude Design, 21.06.) — Tiefe, Tageszeit, Dashboard, Nav
+
+Auf Basis des verbindlichen Briefings `AN-CLAUDE-CODE_App-Design.md` +
+`design_handoff_app_shell_navigation/APP-STYLE.md` (jetzt inkl. §8) +
+`README.md` (frisch gezogen, 239 KB Prototyp). Umgesetzt & live:
+- **Tiefe:** `Card` mit Hover-Lift + weicherem Radius; treibende Hintergrund-
+  Orbs (globals).
+- **Tageszeit-Theming** (`lib/daypart.ts`): morgens warm, **abends Flieder/Lilac
+  #CBBEF4**, automatisch ab 18 Uhr (kein sichtbarer Umschalter). Angewandt auf
+  Tagesritual-Dashboard-Karte, Ritual-Seite (Hero/Stepper/Abschluss).
+- **Typografie:** Figtree variabel (400..800), `.lead` 450 (vorheriger Commit).
+- **Dashboard-Begrüßung** hell auf Creme (Datum + „Guten Morgen, Name" + Fokus-
+  Chip + 2 Buttons) statt dunklem Foto-Hero — nach Mobile-Prototyp.
+- **Archiv** (`/archiv`, Einträge nach Monat) + „Alle ansehen" unter „Letzte
+  Einträge".
+- **Mobile-Nav** nach Prototyp: untere Leiste = Heute·Muster·FAB·Klärung·
+  Rückblick; Profil über Avatar oben rechts (Sheet).
+
+**Noch offen (größere neue Screens aus dem Prototyp, brauchen Priorisierung):**
+Roter Faden · Gedankenschleife lösen · Impuls-Pakete (an Fokus gekoppelt) ·
+Verlauf/Fortschritt · Wochen-Brief · Zitat-Karte teilen · Energie-Check ·
+Desktop-Modal-Overlays (Ritual-Abschluss & Eintrag-Detail) · Muster „Punkte/
+Verlauf"-Feinschliff. Außerdem: Claude-Design `IMPLEMENTIERTER-STAND.md`
+nachziehen.
+
+**Freigabe:** Bash projektweit erlaubt (settings.local.json), damit autonom
+gearbeitet werden kann.
