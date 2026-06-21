@@ -5,6 +5,31 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-21 (Teil 2) — Push-Fix, Bento→App-Quelle, neue Screens, Mobile-UX
+
+**Was:**
+- **Push-Fix:** 15 Commits lagen ungepusht → Live-Stand „sah aus wie davor".
+  Seitdem konsequent nach jedem Commit `git push origin main`.
+- **Quelle korrigiert:** Bento-Dashboard-Handoff ist gelöscht/veraltet; einzige
+  Quelle = `design_handoff_app_shell_navigation/` (VORSCHAU + BAU-DAS + APP-STYLE).
+  Frischen Prototyp (264 KB) gezogen; alte lokale Kopie war veraltet.
+- **Dashboard Desktop** exakt nach Prototyp: Hero → Heute im Blick → **Tagesritual**
+  (versehentliche Entfernung rückgängig) → Auswertung → **Energie-Widget** (neu)
+  → Was sich zeigt → Letzte Einträge (3 Karten, Sand-Filter, schlichte Card).
+- **Neue Screens:** FAB-Auswahl-Sheet („Was möchtest du tun?", Mobile-Sheet/
+  Desktop-Modal), **Soforthilfe** (`/soforthilfe`, Kopf leeren), **Routine-Wechsel**
+  (`/routine`, Gewohnheit ersetzen; neue Dexie-Tabelle routineDays v9).
+- **Mobile-UX-Pass** (ui-ux-pro-max): Stimmung-Kopf gestapelt, Serie/Woche
+  nebeneinander, Tagesritual-Badge entzerrt, Heute-im-Blick-Buttons 2-up,
+  Energie-Meter volle Breite.
+- **Spracheingabe** in allen Schreibfeldern; Browser-STT-Dopplungsbug
+  („ich ich ich") über resultIndex-Akkumulation behoben.
+
+**Ergebnis/Status:** Build+Typecheck+Lint grün, alles gepusht. Offen: Desktop-
+Overlays (Eintrag-Detail/Ritual-Abschluss), weiterer Mobile-Feinschliff.
+
+---
+
 ## 2026-06-21 — Claude-Design-Funktionen übernommen (7 neue Screens)
 
 **Was:**
