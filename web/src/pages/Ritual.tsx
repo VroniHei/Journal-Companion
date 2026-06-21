@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui";
+import { DesktopModal } from "../components/DesktopModal";
 import { DictationButton } from "../components/DictationButton";
 import { useDailyRitual } from "../hooks/useData";
 import { dayKey, upsertDailyRitual } from "../db/queries";
@@ -291,6 +292,7 @@ export function Ritual() {
             { label: "Momente", value: moments.find((s) => s.trim()) },
           ];
     return (
+      <DesktopModal onClose={() => navigate("/")}>
       <section>
         <div
           className="relative overflow-hidden p-8 text-center"
@@ -385,10 +387,12 @@ export function Ritual() {
           </div>
         </div>
       </section>
+      </DesktopModal>
     );
   }
 
   return (
+    <DesktopModal onClose={() => navigate("/")}>
     <section className="space-y-4">
       <div>
         <h1 className="serif text-3xl font-semibold">Tagesritual</h1>
@@ -538,5 +542,6 @@ export function Ritual() {
         </p>
       </div>
     </section>
+    </DesktopModal>
   );
 }
