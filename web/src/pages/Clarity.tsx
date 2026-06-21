@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import type { Decision, OpenLoop } from "@journal/shared";
 import { Button, Card } from "../components/ui";
 import { useDecisions, useOpenLoops } from "../hooks/useData";
@@ -432,6 +433,30 @@ export function Clarity() {
           );
         })}
       </div>
+
+      {tab === "schleifen" && (
+        <Link
+          to="/schleife"
+          className="lift flex items-center justify-between gap-3 rounded-[18px] border px-5 py-4"
+          style={{
+            background:
+              "linear-gradient(135deg,#F1ECF8,#F4F0EC)",
+            borderColor: "rgba(203,190,244,.5)",
+          }}
+        >
+          <div>
+            <div className="text-[15px] font-[650] tracking-[-0.01em] text-[var(--foreground)]">
+              Dreht sich ein Gedanke?
+            </div>
+            <p className="mt-0.5 text-[13px] leading-snug text-[var(--muted)]">
+              In drei ruhigen Schritten <em className="g">auseinandernehmen</em>.
+            </p>
+          </div>
+          <span aria-hidden="true" className="flex-none text-[#7a6b96]">
+            →
+          </span>
+        </Link>
+      )}
 
       {tab === "schleifen" ? <LoopsSection /> : <DecisionsSection />}
     </section>

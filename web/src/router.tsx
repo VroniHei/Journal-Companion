@@ -14,6 +14,7 @@ import { Ritual } from "./pages/Ritual";
 import { Archive } from "./pages/Archive";
 import { RedThread } from "./pages/RedThread";
 import { Progress } from "./pages/Progress";
+import { Loosen } from "./pages/Loosen";
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,7 @@ export const router = createBrowserRouter([
       { path: "archiv", element: <Archive /> },
       { path: "roter-faden", element: <RedThread /> },
       { path: "verlauf", element: <Progress /> },
+      { path: "schleife", element: <Loosen /> },
       { path: "wochenrueckblick", element: <WeeklyReview /> },
       { path: "einstellungen", element: <Settings /> },
       { path: "suche", element: <Search /> },
