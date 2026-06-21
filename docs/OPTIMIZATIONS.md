@@ -50,6 +50,23 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 - ✅ JSON-Import (Sicherung zurückspielen, zusammenführend; Export deckt nun alle Tabellen ab).
 - ✅ A11y-Feinschliff: touch-action/Tap-Highlight, Such-Input-Semantik, aria-live/role="alert" für Status & Fehler.
 
+## Ideen / Erweiterungen (Stand 2026-06-21, Vision-/Strategie-Session)
+
+- 🟡 **Therapeuten-Übergabeprotokoll:** strukturiertes PDF/ZIP (Digest +
+  Eintrag/Reflexion/Gespräch pro Zeitraum + therapie-fokussierte Zusammenfassung).
+  Baut auf `web/src/lib/export.ts` + `toDigest()`. Positionierung „ergänzt Therapie"
+  (entlastet regulatorisch, seltenes Differenzierungsmerkmal). Siehe ROADMAP.
+- 🟡 **Voice-Vollduplex:** freihändiger „reinsprechen → gesprochene Antwort"-Modus;
+  Kosten-Strategie ElevenLabs (STT+TTS) vs. kostenlose Browser-Pfade prüfen.
+- 🟡 **Distribution & Lokalität (PWA-first):** als installierbare PWA bleiben Daten
+  in IndexedDB lokal, ohne Nutzer-Einrichtung; Sync opt-in. Später optional
+  Capacitor/Tauri für App-Stores (Daten bleiben lokal). Offene Frage: Trust-
+  Kommunikation im Onboarding („deine Daten bleiben auf deinem Gerät").
+- 🟢 **Ikigai-Kompass** (Werte/Sinn, ACT) — siehe ROADMAP.
+- 🟢 **Kintsugi-Ansicht** (Wachstum aus Brüchen, Selbstmitgefühl) — siehe ROADMAP.
+- 🟢 **Markt-/Regulatorik nachziehen:** Preise & EU-AI-Act/MDR-Status periodisch
+  prüfen (Basis: `docs/MARKTANALYSE.md`); vor Launch anwaltlich gegenchecken.
+
 ## Ideen / Erweiterungen (Stand 2026-06-20 Abend)
 
 - 🟡 **Design-Pass einarbeiten** (von Claude Design): neue Bereiche stylen, mehr

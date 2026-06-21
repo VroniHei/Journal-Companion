@@ -5,6 +5,29 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-21 — Vision, Marktanalyse & neue Roadmap-Ideen
+
+**Was:**
+- Gesamtüberblick `docs/OVERVIEW.md` erstellt (aktueller Stand für Onboarding/
+  externe Tools; CLAUDE.md beschreibt noch den alten Next.js-Prototyp).
+- Markt- & Wettbewerbsanalyse `docs/MARKTANALYSE.md` erstellt (Rosebud, Reflection,
+  Mindsera, Day One, Honestly/Ever, Lightly, Finch, Daylio, How We Feel; Companions
+  Replika/Wysa/Woebot/Pi; Trends; EU/DACH-Regulatorik; Positionierung & Geschäfts-
+  modell). Quellen „best effort" (App-Store/Anbieter-Seiten teils nicht abrufbar).
+- Vision geschärft: weg von „nur Tagebuch" hin zu „Begleiter für Beziehungsklärung
+  & Selbstregulation, Privacy-first, kein Suchtdesign".
+- Neue Ideen in den Living Docs verankert: Therapeuten-Übergabeprotokoll,
+  Voice-Vollduplex, PWA-Lokalität (Distribution), Ikigai-Kompass, Kintsugi-Ansicht
+  (ROADMAP + OPTIMIZATIONS).
+
+**Warum:** Ergebnisse der Strategie-/Vision-Session sichern, damit sie in die
+Weiterentwicklung einfließen und nichts verloren geht.
+
+**Ergebnis/Status:** Doku-only (kein Code). Therapeutische Inhalte über die
+installierten Skills geerdet (therapist-safety → therapist → therapist-act).
+
+---
+
 ## 2026-06-18 — Innerline-Design importiert & angewendet
 
 **Was:**
