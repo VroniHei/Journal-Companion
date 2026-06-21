@@ -60,6 +60,10 @@ export function useDictation(opts: {
   const [listening, setListening] = useState(false);
   const recRef = useRef<SpeechRecognitionLike | null>(null);
   const baseRef = useRef("");
+  // Bereits final erkannter Text dieser Diktat-Sitzung. Wird nur durch NEUE
+  // finale Ergebnisse (ab event.resultIndex) ergänzt — so kann sich kein Wort
+  // mehrfach anhängen („ich ich ich …").
+  const finalRef = useRef("");
   const activatedRef = useRef(false);
 
   const optsRef = useRef(opts);
@@ -79,23 +83,36 @@ export function useDictation(opts: {
     rec.continuous = true;
     rec.interimResults = true; // Live-Zwischenergebnisse → sofort sichtbar
     baseRef.current = optsRef.current.getBase();
+    finalRef.current = "";
     activatedRef.current = false;
 
     rec.onresult = (event) => {
-      let finalText = "";
+      // Nur die seit dem letzten Event neu hinzugekommenen Ergebnisse ansehen.
+      // Finale Stücke werden EINMAL in finalRef gesammelt; Interim wird pro
+      // Event frisch aufgebaut (es ändert sich laufend).
       let interim = "";
-      for (let i = 0; i < event.results.length; i++) {
+      let newFinal = false;
+      for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
         const t = result[0]?.transcript ?? "";
-        if (result.isFinal) finalText += t;
-        else interim += t;
+        if (result.isFinal) {
+          const piece = t.trim();
+          if (piece) {
+            finalRef.current = finalRef.current
+              ? `${finalRef.current} ${piece}`
+              : piece;
+            newFinal = true;
+          }
+        } else {
+          interim += t;
+        }
       }
-      const spoken = `${finalText} ${interim}`.replace(/\s+/g, " ").trim();
+      const spoken = `${finalRef.current} ${interim}`.replace(/\s+/g, " ").trim();
       const base = baseRef.current;
       const full = base ? (spoken ? `${base} ${spoken}` : base) : spoken;
       optsRef.current.onChange(full);
 
-      if (finalText.trim() && !activatedRef.current) {
+      if (newFinal && !activatedRef.current) {
         activatedRef.current = true;
         optsRef.current.onActivate?.();
       }
