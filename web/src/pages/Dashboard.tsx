@@ -635,7 +635,7 @@ export function Dashboard() {
                 </span>
               </div>
               <div className="mt-6">
-                <div className="text-5xl font-extrabold leading-none tracking-tight tabular-nums text-[var(--green-deep)]">
+                <div className="text-[52px] font-extrabold leading-none tracking-[-0.03em] tabular-nums text-[var(--foreground)]">
                   {streak}
                 </div>
                 <div className="mt-1 text-sm text-[var(--muted)]">
@@ -683,9 +683,9 @@ export function Dashboard() {
                 Diese Woche
               </span>
               <div className="mt-6">
-                <div className="text-5xl font-extrabold leading-none tracking-tight tabular-nums">
+                <div className="text-[52px] font-extrabold leading-none tracking-[-0.03em] tabular-nums text-[var(--foreground)]">
                   {week.count}
-                  <span className="text-2xl font-semibold text-[var(--muted)]">
+                  <span className="text-[22px] font-semibold text-[#9a917f]">
                     /7
                   </span>
                 </div>
