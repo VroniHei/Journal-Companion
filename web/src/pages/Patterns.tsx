@@ -350,8 +350,9 @@ export function Patterns() {
       {/* Stimmung · 7 Tage (Punkte/Verlauf umschaltbar, mit Legende) */}
       <MoodCard entries={entries} />
 
-      {/* Quantitative Übersicht (bestehend) */}
-      <div className="space-y-6">
+      {/* Quantitative Übersicht — Desktop/Tablet. Mobil kompakt wie Prototyp:
+          Muster = Drill-ins + Stimmung; die Detailauswertung ab sm. */}
+      <div className="hidden space-y-6 sm:block">
         <Card>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <Stat label="Einträge" value={String(a.count)} />
