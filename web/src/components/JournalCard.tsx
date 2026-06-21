@@ -8,26 +8,7 @@ import {
   KIND_LABEL,
   KIND_STYLE,
 } from "../lib/entryCard";
-
-// Sonnenaufgang (wie das Tagesritual-Badge) — für den Wiedererkennungswert.
-function SunIcon({ size = 12, color }: { size?: number; color: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width={size}
-      height={size}
-      fill="none"
-      stroke={color}
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M3 18h18M5.6 18a6.4 6.4 0 0 1 12.8 0" />
-      <path d="M12 4.5v2.4M5 9l1.6 1.2M19 9l-1.6 1.2" />
-    </svg>
-  );
-}
+import { Icon, ICONS } from "./icons";
 
 // Mood-Skala (APP-STYLE §3): clay (schwer) → gold → sage → grün (leicht).
 function moodColor(m: number): string {
@@ -67,10 +48,10 @@ export function JournalCard({ entry }: { entry: JournalEntry }) {
           <span className="flex items-center gap-[9px]">
             {isRitual ? (
               <span
-                className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full"
+                className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full text-[#CD8A5B]"
                 style={{ background: "#F6ECE0" }}
               >
-                <SunIcon size={11} color="#CD8A5B" />
+                <Icon d={ICONS.sun} size={11} />
               </span>
             ) : (
               <span
@@ -89,9 +70,7 @@ export function JournalCard({ entry }: { entry: JournalEntry }) {
             className="inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold"
             style={{ background: kindStyle.bg, color: kindStyle.text }}
           >
-            {entryKindIcon(kind) === "sun" && (
-              <SunIcon size={11} color={kindStyle.text} />
-            )}
+            {entryKindIcon(kind) === "sun" && <Icon d={ICONS.sun} size={11} />}
             {KIND_LABEL[kind]}
           </span>
         </div>

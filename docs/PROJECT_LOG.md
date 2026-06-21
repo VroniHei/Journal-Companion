@@ -5,6 +5,22 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-21 (Teil 6) — Tagesritual als gekennzeichneter Tageseintrag
+
+**Was:** Abgeschlossene Tagesrituale erscheinen jetzt als verknüpfter Tageseintrag
+in „Letzte Einträge"/Archiv und zählen in die Serie (`syncRitualEntry`, ein
+Eintrag pro Tag, auf den Ritual-Tag datiert). Eigener Eintrags-Typ **„ritual"**
+mit Sonnenaufgang-Icon (statt Mood-Punkt) und warmem Clay-Badge „Tagesritual"
+für den Wiedererkennungswert; Archiv hat einen „Tagesritual"-Filter. Ritual-
+Einträge sind aus der Stimmungs-Statistik herausgefiltert (saubere Mood-Charts).
+
+**Warum:** Nutzerin-Wunsch: die täglichen Mini-Einträge sollen als solche
+sichtbar und wiedererkennbar sein.
+
+**Ergebnis/Status:** Build + Lint + 15 Tests grün, gepusht.
+
+---
+
 ## 2026-06-21 (Teil 5) — Mobile-Bugfixes + Tagesritual einseh-/änderbar
 
 **Was:**
