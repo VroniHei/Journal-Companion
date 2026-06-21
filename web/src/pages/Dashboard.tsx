@@ -720,8 +720,10 @@ export function Dashboard() {
               </div>
             </Card>
           </div>
+        </>
+      )}
 
-          {/* ENERGIE HEUTE · kompakter Tagesimpuls (antippbarer Balken-Meter) */}
+      {/* ENERGIE HEUTE · kompakter Tagesimpuls (immer sichtbar, auch ohne Einträge) */}
           <div className="order-4 lift flex flex-col gap-5 rounded-[24px] border border-[var(--border)] bg-[radial-gradient(360px_180px_at_100%_0%,rgba(168,232,79,0.12),transparent_64%)] bg-[var(--surface)] p-[22px_28px] shadow-[var(--shadow-card)] sm:order-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               {/* Mobil: kompakter Kopf (Label + Wert rechts); ab sm großer Satz. */}
@@ -776,7 +778,8 @@ export function Dashboard() {
             </div>
           </div>
 
-          {/* WAS SICH ZEIGT — Desktop/Tablet (mobil kompakt ausgeblendet) */}
+      {hasData && (
+          /* WAS SICH ZEIGT — Desktop/Tablet (mobil kompakt ausgeblendet) */
           <Card className="order-6 hidden bg-[radial-gradient(420px_240px_at_100%_0%,rgba(205,138,91,0.10),transparent_62%)] sm:block">
             <div className="mb-4 inline-flex items-center gap-2.5">
               <span className="h-2 w-2 rounded-full bg-[var(--clay)]" />
@@ -811,7 +814,6 @@ export function Dashboard() {
               </p>
             )}
           </Card>
-        </>
       )}
 
       {/* LETZTE EINTRÄGE — Desktop/Tablet (mobil kompakt ausgeblendet) */}
