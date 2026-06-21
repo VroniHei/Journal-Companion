@@ -386,3 +386,141 @@ export function themeClusters(
 
   return clusters.sort((a, b) => b.count - a.count).slice(0, max);
 }
+
+// ===== Verlauf („Wie habe ich mich verändert?") ==============================
+
+export type TrendRange = 1 | 6 | 12; // Monate
+
+export interface TrendBucket {
+  label: string;
+  value: number | null; // Ø Stimmung 1..10 im Bucket
+}
+
+const MONTHS_SHORT = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+
+/**
+ * Stimmungs-Verlauf über einen Zeitraum, in gleichmäßige Buckets gelegt:
+ * 1 Monat → Wochen-Buckets, 6/12 Monate → Monats-Buckets.
+ */
+export function moodTrend(entries: JournalEntry[], months: TrendRange): TrendBucket[] {
+  const now = new Date();
+  const buckets: { label: string; from: number; to: number }[] = [];
+
+  if (months === 1) {
+    // 6 Buckets à 5 Tage über die letzten 30 Tage.
+    for (let i = 5; i >= 0; i--) {
+      const to = now.getTime() - i * 5 * DAY;
+      const from = to - 5 * DAY;
+      const d = new Date(to);
+      buckets.push({ label: `${d.getDate()}.`, from, to });
+    }
+  } else {
+    for (let i = months - 1; i >= 0; i--) {
+      const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+      buckets.push({
+        label: MONTHS_SHORT[start.getMonth()],
+        from: start.getTime(),
+        to: end.getTime(),
+      });
+    }
+  }
+
+  return buckets.map((b) => {
+    const moods = entries
+      .filter((e) => {
+        const t = new Date(e.createdAt).getTime();
+        return t >= b.from && t < b.to;
+      })
+      .map((e) => e.mood);
+    return { label: b.label, value: avg(moods) };
+  });
+}
+
+export interface ThemeShift {
+  word: string;
+  direction: "up" | "down";
+  from: number; // Treffer pro Monat in der ersten Hälfte
+  to: number; // Treffer pro Monat in der zweiten Hälfte
+}
+
+/**
+ * Was sich verschoben hat: Themen/Gefühle, die in der zweiten Hälfte des
+ * Zeitraums deutlich häufiger oder seltener auftauchen (pro Monat normiert).
+ */
+export function themeShifts(
+  entries: JournalEntry[],
+  months: TrendRange,
+  max = 4,
+): ThemeShift[] {
+  const now = Date.now();
+  const spanMs = months * 30 * DAY;
+  const start = now - spanMs;
+  const mid = now - spanMs / 2;
+  const within = entries.filter((e) => new Date(e.createdAt).getTime() >= start);
+
+  const first = new Map<string, number>();
+  const second = new Map<string, number>();
+  for (const e of within) {
+    const t = new Date(e.createdAt).getTime();
+    const bag = t < mid ? first : second;
+    for (const w of [...e.topics, ...e.emotions, ...e.needs]) {
+      const k = w.trim();
+      if (k) bag.set(k, (bag.get(k) ?? 0) + 1);
+    }
+  }
+
+  const halfMonths = months / 2;
+  const words = new Set([...first.keys(), ...second.keys()]);
+  const shifts: ThemeShift[] = [];
+  for (const w of words) {
+    const from = Math.round(((first.get(w) ?? 0) / halfMonths) * 10) / 10;
+    const to = Math.round(((second.get(w) ?? 0) / halfMonths) * 10) / 10;
+    if (Math.abs(to - from) < 1) continue; // nur deutliche Verschiebungen
+    shifts.push({ word: capitalize(w), direction: to >= from ? "up" : "down", from, to });
+  }
+
+  return shifts
+    .sort((a, b) => Math.abs(b.to - b.from) - Math.abs(a.to - a.from))
+    .slice(0, max);
+}
+
+export interface TrendStory {
+  range: string; // z. B. „Januar – Juni"
+  lead: string; // Lead mit <em class="g">…</em>
+  conclusion: string;
+}
+
+/** Erzählende Zusammenfassung des Verlaufs (ruhig, ohne Bewertung). */
+export function trendStory(entries: JournalEntry[], months: TrendRange): TrendStory {
+  const buckets = moodTrend(entries, months).filter((b) => b.value != null);
+  const now = new Date();
+  const startD = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
+  const range =
+    months === 1
+      ? "Letzter Monat"
+      : `${startD.toLocaleDateString("de-DE", { month: "long" })} – ${now.toLocaleDateString("de-DE", { month: "long" })}`;
+
+  if (buckets.length < 2) {
+    return {
+      range,
+      lead: 'Noch zu wenig, um einen Verlauf zu zeichnen. Schreib weiter, dann zeigt sich, <em class="g">wohin</em> es geht.',
+      conclusion: "Auch das ist Fortschritt: Du fängst an, hinzuschauen.",
+    };
+  }
+
+  const first = buckets[0].value as number;
+  const last = buckets[buckets.length - 1].value as number;
+  const delta = last - first;
+  let lead: string;
+  if (delta >= 0.8) lead = 'Über den Zeitraum bist du spürbar <em class="g">ruhiger</em> geworden.';
+  else if (delta <= -0.8) lead = 'Zuletzt war wieder <em class="g">mehr los</em> als am Anfang. Das darf sein.';
+  else lead = 'Über den Zeitraum bist du ziemlich <em class="g">stabil</em> geblieben.';
+
+  return {
+    range,
+    lead,
+    conclusion:
+      "Kurz: Das Tagebuch bringt dir was. Du erkennst deine Muster früher und gehst milder mit dir um.",
+  };
+}
