@@ -77,6 +77,14 @@ const FILTERS: { id: string; label: string }[] = [
   { id: "gesprochen", label: "Gesprochen" },
 ];
 
+// Bento-Raster „Letzte Einträge": gemischte Spalten 7/5/5/7 (Bento-Handoff).
+const BENTO_SPAN = [
+  "sm:col-span-7",
+  "sm:col-span-5",
+  "sm:col-span-5",
+  "sm:col-span-7",
+];
+
 // Stimmungs-Verlauf als ruhige Flächen-Linie (aus den Tageswerten der letzten Woche).
 function MoodSparkline({ days }: { days: MoodDay[] }) {
   const x0 = 16;
@@ -726,9 +734,11 @@ export function Dashboard() {
         </>
       )}
 
-      {/* LETZTE EINTRÄGE */}
+      {/* LETZTE EINTRÄGE (Bento-Handoff: H2 + Filter-Pills, aktiv = dunkel) */}
       <div className="flex flex-wrap items-end justify-between gap-3 pt-2">
-        <h2 className="serif text-2xl font-semibold">Letzte Einträge</h2>
+        <h2 className="text-[24px] font-[650] tracking-[-0.02em] text-[var(--foreground)]">
+          Letzte Einträge
+        </h2>
         {hasData && (
           <div className="flex flex-wrap gap-2">
             {FILTERS.map((f) => {
@@ -738,12 +748,11 @@ export function Dashboard() {
                   key={f.id}
                   type="button"
                   onClick={() => setFilter(f.id)}
-                  className="rounded-full px-[14px] py-[7px] text-[12.5px] transition"
+                  className="rounded-full px-4 py-2 text-[13.5px] font-semibold transition"
                   style={{
-                    background: active ? "var(--sand)" : "transparent",
-                    color: active ? "var(--foreground)" : "var(--muted)",
-                    fontWeight: active ? 600 : 500,
-                    border: active ? "1px solid transparent" : "1px solid rgba(35,34,26,.1)",
+                    background: active ? "#23221A" : "var(--surface)",
+                    color: active ? "#F8F5EE" : "var(--muted)",
+                    border: active ? "1px solid #23221A" : "1px solid rgba(35,34,26,.12)",
                   }}
                 >
                   {f.label}
@@ -751,14 +760,6 @@ export function Dashboard() {
               );
             })}
           </div>
-        )}
-        {hasData && (
-          <Link
-            to="/archiv"
-            className="text-sm font-semibold text-[var(--accent-text)] hover:underline"
-          >
-            Alle ansehen →
-          </Link>
         )}
       </div>
 
@@ -794,11 +795,23 @@ export function Dashboard() {
           Keine Einträge in diesem Filter.
         </p>
       ) : (
-        <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
-          {shown.map((e) => (
-            <JournalCard key={e.id} entry={e} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-12">
+            {shown.map((e, i) => (
+              <div key={e.id} className={BENTO_SPAN[i % 4]}>
+                <JournalCard entry={e} />
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end pt-1">
+            <Link
+              to="/archiv"
+              className="text-sm font-semibold text-[var(--accent-text)] hover:underline"
+            >
+              Alle ansehen →
+            </Link>
+          </div>
+        </>
       )}
     </section>
   );

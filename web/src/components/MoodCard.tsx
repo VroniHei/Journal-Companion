@@ -2,17 +2,17 @@ import { useMemo, useState } from "react";
 import type { JournalEntry } from "@journal/shared";
 import { moodByDay } from "../lib/insights";
 
-// Mood-Skala (App-Style §3): clay (schwer) → gold → sage → grün (leicht).
+// Ruhige Mood-Skala (Bento-Handoff): clay (schwer) → gold → sage → grün (leicht).
 function moodColor(v: number): string {
   if (v <= 3.5) return "#CD8A5B";
-  if (v <= 5.5) return "#DDB14B";
+  if (v <= 5.5) return "#B79A66";
   if (v <= 7.5) return "#9BA383";
   return "#A8E84F";
 }
 
 const LEGEND = [
   { c: "#CD8A5B", label: "schwer" },
-  { c: "#DDB14B", label: "gemischt" },
+  { c: "#B79A66", label: "gemischt" },
   { c: "#9BA383", label: "okay" },
   { c: "#A8E84F", label: "leicht" },
 ];
