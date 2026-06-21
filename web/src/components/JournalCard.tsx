@@ -32,8 +32,8 @@ export function JournalCard({ entry }: { entry: JournalEntry }) {
   const e = entry;
   return (
     <Link to={`/eintrag/${e.id}`} className="block h-full">
-      <Card className="flex h-full flex-col gap-2 p-[22px]">
-        <div className="flex items-center gap-2.5">
+      <Card className="flex h-full flex-col p-[22px]">
+        <div className="mb-3 flex items-center gap-[9px]">
           <span
             className="h-3 w-3 shrink-0 rounded-full"
             style={{ background: moodColor(e.mood) }}
@@ -45,10 +45,10 @@ export function JournalCard({ entry }: { entry: JournalEntry }) {
             )}
           </span>
         </div>
-        <h3 className="text-[17px] font-[650] leading-snug tracking-[-0.01em] text-[var(--foreground)]">
+        <h3 className="mb-2 text-[17px] font-[650] leading-[1.25] tracking-[-0.01em] text-[var(--foreground)]">
           {entryTitle(e)}
         </h3>
-        <p className="line-clamp-2 text-[14px] leading-relaxed text-[var(--muted)]">
+        <p className="line-clamp-2 text-[14px] leading-[1.55] text-[var(--muted)]">
           {entrySummaryText(e)}
         </p>
       </Card>

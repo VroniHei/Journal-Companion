@@ -85,7 +85,9 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+  /* Bewusst KEIN -webkit-font-smoothing: antialiased — der Claude-Design-
+     Prototyp setzt es nicht. „antialiased" rendert Figtree auf Chrome/Safari
+     spürbar dünner; der Browser-Default trifft die Design-Optik (kräftiger). */
   text-rendering: optimizeLegibility;
 }
 

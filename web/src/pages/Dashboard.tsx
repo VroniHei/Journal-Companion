@@ -77,11 +77,6 @@ const FILTERS: { id: string; label: string }[] = [
   { id: "gesprochen", label: "Gesprochen" },
 ];
 
-const SPAN: Record<number, string> = {
-  7: "sm:col-span-7",
-  5: "sm:col-span-5",
-};
-
 // Stimmungs-Verlauf als ruhige Flächen-Linie (aus den Tageswerten der letzten Woche).
 function MoodSparkline({ days }: { days: MoodDay[] }) {
   const x0 = 16;
@@ -735,11 +730,12 @@ export function Dashboard() {
                   key={f.id}
                   type="button"
                   onClick={() => setFilter(f.id)}
-                  className="rounded-full border px-4 py-1.5 text-[13.5px] font-semibold transition"
+                  className="rounded-full px-[14px] py-[7px] text-[12.5px] transition"
                   style={{
-                    background: active ? "var(--foreground)" : "var(--surface)",
-                    color: active ? "var(--background)" : "var(--muted)",
-                    borderColor: active ? "var(--foreground)" : "var(--border)",
+                    background: active ? "var(--sand)" : "transparent",
+                    color: active ? "var(--foreground)" : "var(--muted)",
+                    fontWeight: active ? 600 : 500,
+                    border: active ? "1px solid transparent" : "1px solid rgba(35,34,26,.1)",
                   }}
                 >
                   {f.label}
@@ -790,11 +786,9 @@ export function Dashboard() {
           Keine Einträge in diesem Filter.
         </p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-12">
-          {shown.map((e, i) => (
-            <div key={e.id} className={SPAN[[7, 5, 5, 7][i % 4]]}>
-              <JournalCard entry={e} />
-            </div>
+        <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
+          {shown.map((e) => (
+            <JournalCard key={e.id} entry={e} />
           ))}
         </div>
       )}
