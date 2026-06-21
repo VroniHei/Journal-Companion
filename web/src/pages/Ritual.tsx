@@ -45,6 +45,37 @@ function Line({
   );
 }
 
+// Bis zu 3 Zeilen; die erste leere wird als „Noch etwas?" angeboten.
+// WICHTIG: top-level definiert (nicht in Ritual), sonst remountet React die
+// Inputs bei jedem Tastendruck und der Fokus geht nach einem Zeichen verloren.
+function MultiLines({
+  values,
+  onChangeAt,
+  onBlur,
+}: {
+  values: string[];
+  onChangeAt: (i: number, v: string) => void;
+  onBlur: () => void;
+}) {
+  const firstEmpty = values.findIndex((v) => !v.trim());
+  return (
+    <div className="flex flex-col gap-2">
+      {values.map((v, i) => {
+        if (!v.trim() && i !== firstEmpty) return null;
+        return (
+          <Line
+            key={i}
+            value={v}
+            onChange={(val) => onChangeAt(i, val)}
+            onBlur={onBlur}
+            placeholder={i === 0 ? "Etwas Schönes …" : "Noch etwas? (optional)"}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
 export function Ritual() {
   const navigate = useNavigate();
   const date = dayKey();
@@ -103,33 +134,6 @@ export function Ritual() {
     setSaved(false);
   }
 
-  function MultiLines({
-    values,
-    set,
-  }: {
-    values: string[];
-    set: (v: string[]) => void;
-  }) {
-    // Bis zu 3 Zeilen; die erste leere wird als „Noch etwas?" angeboten.
-    const firstEmpty = values.findIndex((v) => !v.trim());
-    return (
-      <div className="flex flex-col gap-2">
-        {values.map((v, i) => {
-          if (!v.trim() && i !== firstEmpty) return null;
-          return (
-            <Line
-              key={i}
-              value={v}
-              onChange={(val) => setAt(values, set, i, val)}
-              onBlur={commit}
-              placeholder={i === 0 ? "Etwas Schönes …" : "Noch etwas? (optional)"}
-            />
-          );
-        })}
-      </div>
-    );
-  }
-
   // Drei Fragen je Tageszeit, jeweils mit Inhalt + „beantwortet?"-Signal.
   const questions: {
     title: ReactNode;
@@ -145,7 +149,13 @@ export function Ritual() {
               </>
             ),
             answered: gratitude.some((s) => s.trim()),
-            body: <MultiLines values={gratitude} set={setGratitude} />,
+            body: (
+              <MultiLines
+                values={gratitude}
+                onChangeAt={(i, val) => setAt(gratitude, setGratitude, i, val)}
+                onBlur={commit}
+              />
+            ),
           },
           {
             title: (
@@ -232,7 +242,13 @@ export function Ritual() {
               </>
             ),
             answered: moments.some((s) => s.trim()),
-            body: <MultiLines values={moments} set={setMoments} />,
+            body: (
+              <MultiLines
+                values={moments}
+                onChangeAt={(i, val) => setAt(moments, setMoments, i, val)}
+                onBlur={commit}
+              />
+            ),
           },
         ];
 
