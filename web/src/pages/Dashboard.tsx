@@ -701,12 +701,20 @@ export function Dashboard() {
                 <p className="lead max-w-[640px] text-xl leading-relaxed">
                   {insights[0]}
                 </p>
-                <Link
-                  to="/muster"
-                  className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--accent-text)] hover:gap-2.5"
-                >
-                  Im Muster ansehen →
-                </Link>
+                <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
+                  <Link
+                    to="/muster"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--accent-text)] hover:gap-2.5"
+                  >
+                    Im Muster ansehen →
+                  </Link>
+                  <Link
+                    to="/teilen"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--muted)] hover:text-[var(--foreground)]"
+                  >
+                    Als Karte teilen
+                  </Link>
+                </div>
               </>
             ) : (
               <p className="text-[15px] text-[var(--muted)]">
