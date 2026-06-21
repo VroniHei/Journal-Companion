@@ -156,6 +156,10 @@ export interface AppSettings {
   reminderTime?: string;
   /** Onboarding abgeschlossen/übersprungen. */
   onboarded?: boolean;
+  /** Routine-Wechsel: alte Gewohnheit, die ersetzt werden soll (z.B. „Abends kiffen"). */
+  routineOld?: string;
+  /** Routine-Wechsel: die kleine Alternative (z.B. „Tee + 10 Min raus"). */
+  routineNew?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -259,6 +263,19 @@ export interface EnergyLevel {
   id: string; // = date (YYYY-MM-DD)
   date: string; // YYYY-MM-DD (lokaler Tag)
   level: number; // 1..5
+  createdAt: string; // ISO
+  updatedAt: string; // ISO
+}
+
+/**
+ * Routine-Wechsel: ein Tag im Gewohnheits-Ersatz. Ersetzt = alte Gewohnheit
+ * heute durch die Alternative ersetzt; trigger = was der Auslöser war.
+ */
+export interface RoutineDay {
+  id: string; // = date (YYYY-MM-DD)
+  date: string; // YYYY-MM-DD
+  replaced: boolean;
+  trigger?: string;
   createdAt: string; // ISO
   updatedAt: string; // ISO
 }
@@ -490,7 +507,8 @@ export type SyncKind =
   | "openLoops"
   | "decisions"
   | "dailyRituals"
-  | "energyLevels";
+  | "energyLevels"
+  | "routineDays";
 
 export interface SyncRecord {
   kind: SyncKind;

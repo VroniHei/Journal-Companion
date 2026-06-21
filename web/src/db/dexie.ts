@@ -6,6 +6,7 @@ import type {
   Decision,
   EnergyLevel,
   JournalEntry,
+  RoutineDay,
   OpenLoop,
   PatternInsight,
   PatternSummary,
@@ -36,6 +37,7 @@ export class JournalDB extends Dexie {
   decisions!: Table<Decision, string>;
   dailyRituals!: Table<DailyRitual, string>;
   energyLevels!: Table<EnergyLevel, string>;
+  routineDays!: Table<RoutineDay, string>;
   tombstones!: Table<Tombstone, string>;
 
   constructor() {
@@ -67,6 +69,9 @@ export class JournalDB extends Dexie {
     });
     this.version(8).stores({
       energyLevels: "id, date, updatedAt",
+    });
+    this.version(9).stores({
+      routineDays: "id, date, updatedAt",
     });
   }
 }

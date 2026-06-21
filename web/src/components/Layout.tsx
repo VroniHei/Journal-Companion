@@ -74,6 +74,11 @@ const ICONS = {
     </>
   ),
   bolt: <path d="M13 2 4 14h7l-1 8 9-12h-7z" />,
+  swap: (
+    <>
+      <path d="M4 8h13l-3-3M20 16H7l3 3" />
+    </>
+  ),
 };
 
 const NAV = [
@@ -87,6 +92,7 @@ const PROFILE_LINKS = [
   { to: "/ritual", label: "Tagesritual", icon: ICONS.sun },
   { to: "/impulse", label: "Impulse", icon: ICONS.pen },
   { to: "/energie", label: "Energie heute", icon: ICONS.bolt },
+  { to: "/routine", label: "Routine-Wechsel", icon: ICONS.swap },
   { to: "/klaerung", label: "Klärung", icon: ICONS.compass },
   { to: "/einstellungen", label: "Einstellungen", icon: ICONS.gear },
   { to: "/kontaktimpuls", label: "Kontaktimpuls", icon: ICONS.heart },

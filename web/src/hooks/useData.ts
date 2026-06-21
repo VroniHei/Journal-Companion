@@ -3,11 +3,13 @@ import { db } from "../db/dexie";
 import {
   getDailyRitual,
   getEnergyLevel,
+  getRoutineDay,
   listDecisions,
   listEnergyLevels,
   listEntriesDesc,
   listMessages,
   listOpenLoops,
+  listRoutineDays,
 } from "../db/queries";
 import { DEFAULT_SETTINGS } from "../lib/settings";
 import type {
@@ -18,6 +20,7 @@ import type {
   EnergyLevel,
   JournalEntry,
   OpenLoop,
+  RoutineDay,
 } from "@journal/shared";
 
 export function useSettings(): AppSettings {
@@ -58,4 +61,12 @@ export function useEnergyToday(date: string): EnergyLevel | undefined {
 
 export function useEnergyLevels(): EnergyLevel[] {
   return useLiveQuery(() => listEnergyLevels(), [], []);
+}
+
+export function useRoutineToday(date: string): RoutineDay | undefined {
+  return useLiveQuery(() => getRoutineDay(date), [date]);
+}
+
+export function useRoutineDays(): RoutineDay[] {
+  return useLiveQuery(() => listRoutineDays(), [], []);
 }

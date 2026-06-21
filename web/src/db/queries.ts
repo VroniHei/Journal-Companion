@@ -6,6 +6,7 @@ import type {
   Decision,
   EnergyLevel,
   EntryDigest,
+  RoutineDay,
   JournalEntry,
   OpenLoop,
   PatternFeedback,
@@ -476,6 +477,34 @@ export async function setEnergyLevel(date: string, level: number): Promise<void>
     id: date,
     date,
     level,
+    createdAt: current?.createdAt ?? now,
+    updatedAt: now,
+  });
+  notifyDataChanged();
+}
+
+// --- Routine-Wechsel -------------------------------------------------------
+
+export function getRoutineDay(date: string): Promise<RoutineDay | undefined> {
+  return db.routineDays.get(date);
+}
+
+export function listRoutineDays(): Promise<RoutineDay[]> {
+  return db.routineDays.orderBy("date").reverse().toArray();
+}
+
+/** Setzt/ergänzt den Routine-Tag (ersetzt? + Auslöser) für einen Tag. */
+export async function setRoutineDay(
+  date: string,
+  patch: Partial<Pick<RoutineDay, "replaced" | "trigger">>,
+): Promise<void> {
+  const now = nowIso();
+  const current = await db.routineDays.get(date);
+  await db.routineDays.put({
+    id: date,
+    date,
+    replaced: patch.replaced ?? current?.replaced ?? false,
+    trigger: patch.trigger ?? current?.trigger,
     createdAt: current?.createdAt ?? now,
     updatedAt: now,
   });
