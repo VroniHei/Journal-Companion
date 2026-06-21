@@ -39,8 +39,8 @@ export function MoodCard({ entries }: { entries: JournalEntry[] }) {
 
   return (
     <div className="rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)]">
-      <div className="mb-4 flex items-center justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
           Stimmung · 7 Tage
         </span>
         <div className="flex gap-[3px] rounded-full bg-[var(--sand)] p-[3px]">
