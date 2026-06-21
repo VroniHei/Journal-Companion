@@ -239,14 +239,24 @@ export function Layout() {
             className="h-5 w-auto"
           />
         </NavLink>
-        <button
-          type="button"
-          onClick={() => navigate("/suche")}
-          aria-label="Einträge durchsuchen"
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)]"
-        >
-          <Icon d={ICONS.search} size={17} />
-        </button>
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => navigate("/suche")}
+            aria-label="Einträge durchsuchen"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)]"
+          >
+            <Icon d={ICONS.search} size={17} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setProfileOpen(true)}
+            aria-label="Profil"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--sage,#9BA383)] text-sm font-semibold text-white"
+          >
+            {initial}
+          </button>
+        </div>
       </header>
 
       {/* ===== Inhalt ===== */}
@@ -265,13 +275,13 @@ export function Layout() {
 
       {/* ===== Mobile Tab-Leiste ===== */}
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-[var(--border)] bg-[rgba(248,245,238,0.86)] px-3 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur-[14px] sm:hidden">
-        {[NAV[0], NAV[1], NAV[3]].map((item) => (
+        {NAV.map((item, i) => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.end}
             className="flex w-16 flex-col items-center gap-1 pt-0.5"
-            style={{ order: item.to === "/wochenrueckblick" ? 4 : 0 }}
+            style={{ order: i < 2 ? i : i + 1 }}
           >
             {({ isActive }) => (
               <>
@@ -308,26 +318,12 @@ export function Layout() {
           onClick={() => navigate("/neu")}
           aria-label="Neuer Eintrag"
           style={{
-            order: 3,
+            order: 2,
             background: "linear-gradient(180deg,#bdf06a,#8ed03a)",
           }}
           className="fab-glow -mt-7 flex h-[58px] w-[58px] items-center justify-center rounded-full text-[var(--accent-contrast)]"
         >
           <Icon d={ICONS.plus} size={24} />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setProfileOpen(true)}
-          style={{ order: 5 }}
-          className="flex w-16 flex-col items-center gap-1 pt-0.5 text-[var(--muted)]"
-        >
-          <span className="flex h-9 w-12 items-center justify-center">
-            <span className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-[var(--sage,#9BA383)] text-[11px] font-semibold text-white">
-              {initial}
-            </span>
-          </span>
-          <span className="text-[10.5px] font-medium">Du</span>
         </button>
       </nav>
 
