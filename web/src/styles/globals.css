@@ -129,6 +129,21 @@ body::before {
   }
 }
 
+/* Langsamer Drift-Zoom fürs Hero-Bild (App-Style/Bento): ruhige Dauerbewegung,
+   sichtbar auch ohne Hover (z. B. auf Touch). Hinter prefers-reduced-motion aus. */
+.hero-zoom {
+  animation: heroZoom 26s var(--ease-out) infinite alternate;
+  will-change: transform;
+}
+@keyframes heroZoom {
+  from {
+    transform: scale(1.03);
+  }
+  to {
+    transform: scale(1.12);
+  }
+}
+
 /* Glasmorphismus: halbtransparente, geblurrte Flächen — nur noch für die
    Top-Leiste (ruhiger, wie im Claude-Design). Karten sind klar weiß. */
 .glass {

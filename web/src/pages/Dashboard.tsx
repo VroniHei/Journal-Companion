@@ -266,7 +266,7 @@ export function Dashboard() {
           src="/img/hero-see.webp"
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1400ms] ease-[cubic-bezier(.2,.7,.15,1)] hover:scale-105"
+          className="hero-zoom absolute inset-0 h-full w-full object-cover"
           style={{ objectPosition: "center 82%" }}
         />
         <div
