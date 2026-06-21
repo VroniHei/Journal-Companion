@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useEntries } from "../hooks/useData";
 import { entrySummaryText } from "../lib/entryCard";
+import { DictationButton } from "../components/DictationButton";
 
 // Zitat-Karte teilen: einen eigenen Satz als markenschöne Karte exportieren —
 // ruhig, nie marktschreierisch. Format + Farbwelt wählbar, PNG-Export per
@@ -255,6 +256,12 @@ export function ShareCard() {
           rows={2}
           className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3.5 py-3 text-[15px] leading-[1.5] outline-none focus:border-[var(--accent)]"
         />
+        <div className="mt-2 flex justify-end">
+          <DictationButton
+            value={quote}
+            onChange={(v) => setQuote(v.slice(0, 160))}
+          />
+        </div>
       </div>
 
       {/* Format */}

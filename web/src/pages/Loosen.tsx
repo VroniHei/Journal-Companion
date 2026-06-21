@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { recordStabilityMoment } from "../db/queries";
+import { DictationButton } from "../components/DictationButton";
 
 // Gedankenschleife lösen: benennen → auseinandernehmen → ein kleiner Schritt.
 // Ruhiger Fokus-Flow im Flieder-/Beruhigungs-Ton (App-Style §8). In Vronis
@@ -151,6 +152,12 @@ export function Loosen() {
                           rows={3}
                           className="w-full resize-none rounded-xl border border-[rgba(35,34,26,.08)] bg-[#FAF9F5] px-3.5 py-3 text-[15px] leading-[1.5] text-[#3a352b] outline-none focus:border-[var(--accent)]"
                         />
+                        <div className="mt-2 flex justify-end">
+                          <DictationButton
+                            value={answers[i]}
+                            onChange={(v) => setAnswer(i, v)}
+                          />
+                        </div>
                       </div>
                     )}
                   </div>

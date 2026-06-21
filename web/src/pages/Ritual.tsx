@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui";
+import { DictationButton } from "../components/DictationButton";
 import { useDailyRitual } from "../hooks/useData";
 import { dayKey, upsertDailyRitual } from "../db/queries";
 import { isEveningNow, ritualTheme } from "../lib/daypart";
@@ -26,22 +27,31 @@ function Line({
 }) {
   const filled = value.trim().length > 0;
   return (
-    <input
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      onBlur={onBlur}
-      placeholder={placeholder}
-      className="w-full text-sm outline-none placeholder:text-[#9a917f] focus:border-[var(--accent-text)]"
-      style={{
-        background: filled ? "#FAF7F0" : "#fff",
-        border: filled
-          ? "1px solid rgba(35,34,26,.08)"
-          : "1px dashed rgba(35,34,26,.18)",
-        borderRadius: 12,
-        padding: "11px 13px",
-        color: "#3a352b",
-      }}
-    />
+    <div>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
+        placeholder={placeholder}
+        className="w-full text-sm outline-none placeholder:text-[#9a917f] focus:border-[var(--accent-text)]"
+        style={{
+          background: filled ? "#FAF7F0" : "#fff",
+          border: filled
+            ? "1px solid rgba(35,34,26,.08)"
+            : "1px dashed rgba(35,34,26,.18)",
+          borderRadius: 12,
+          padding: "11px 13px",
+          color: "#3a352b",
+        }}
+      />
+      <div className="mt-1.5 flex justify-end">
+        <DictationButton
+          value={value}
+          onChange={onChange}
+          onActivate={onBlur}
+        />
+      </div>
+    </div>
   );
 }
 

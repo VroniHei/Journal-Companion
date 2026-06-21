@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createEntry } from "../db/queries";
+import { DictationButton } from "../components/DictationButton";
 
 // „Gerade ist viel" — Soforthilfe für den überfüllten Moment: Kopf leeren,
 // dann sortieren. Ruhig, nie therapeutisch. Flieder-/Beruhigungs-Ton.
@@ -71,6 +72,9 @@ export function Relief() {
           placeholder={"Steuer noch offen\nSchlafe schlecht\nMama anrufen\nzu viele Tabs offen …"}
           className="mt-[18px] min-h-[200px] flex-1 resize-none rounded-[18px] border border-[rgba(35,34,26,.08)] bg-[var(--surface)] p-4 text-[14px] leading-[1.7] text-[#3a352b] shadow-[0_8px_24px_rgba(90,78,120,.08)] outline-none placeholder:text-[#9a917f] focus:border-[var(--accent-text)]"
         />
+        <div className="mt-2 flex justify-end">
+          <DictationButton value={text} onChange={setText} />
+        </div>
 
         <div
           className="mt-[14px] flex items-center gap-2.5 rounded-2xl border p-[14px_16px]"

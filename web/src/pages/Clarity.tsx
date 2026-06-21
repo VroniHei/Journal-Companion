@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { Decision, OpenLoop } from "@journal/shared";
 import { Button, Card } from "../components/ui";
+import { DictationButton } from "../components/DictationButton";
 import { useDecisions, useOpenLoops } from "../hooks/useData";
 import {
   createDecision,
@@ -145,10 +146,11 @@ function LoopsSection() {
           placeholder="Notiz (optional)"
           className={areaClass}
         />
-        <div>
+        <div className="flex items-center justify-between gap-3">
           <Button onClick={add} disabled={!title.trim()}>
             Festhalten
           </Button>
+          <DictationButton value={note} onChange={setNote} />
         </div>
       </Card>
 
@@ -327,6 +329,9 @@ function DecisionsSection() {
           placeholder="Welche Entscheidung steht an? (z.B. Soll ich …)"
           className={inputClass}
         />
+        <div className="flex justify-end">
+          <DictationButton value={question} onChange={setQuestion} />
+        </div>
         <input
           value={leaning}
           onChange={(e) => setLeaning(e.target.value)}
