@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card } from "../components/ui";
+import { Icon, ICONS } from "../components/icons";
 import { JournalCard } from "../components/JournalCard";
 import {
   useDailyRitual,
@@ -15,8 +16,8 @@ import {
   buildInsights,
   computeStreak,
   moodByDay,
-  moodSeries,
   recentStats,
+  wordsOfWeek,
   type MoodDay,
 } from "../lib/insights";
 
@@ -52,19 +53,6 @@ const QUOTES: Record<TimeOfDay, { pre: string; accent: string }> = {
   abend: { pre: "Der Tag darf jetzt leiser werden. ", accent: "Stück für Stück." },
 };
 
-
-function avg(nums: number[]): number {
-  return nums.reduce((a, b) => a + b, 0) / nums.length;
-}
-
-function moodTrend(series: number[]): string {
-  if (series.length < 3) return "Noch wenig Verlauf";
-  const half = Math.floor(series.length / 2);
-  const d = avg(series.slice(half)) - avg(series.slice(0, half));
-  if (d >= 0.6) return "Ruhiger geworden";
-  if (d <= -0.6) return "Bewegter zuletzt";
-  return "Recht stabil";
-}
 
 const MILESTONES = [3, 7, 14, 21, 30, 60, 100, 150, 200, 365];
 function nextMilestone(streak: number): number {
@@ -176,9 +164,10 @@ export function Dashboard() {
   const streakPct = Math.min(100, Math.round((streak / streakNext) * 100));
   const streakMilestoneLabel = milestoneLabel(streakNext);
   const week = recentStats(entries, 7);
-  const series = moodSeries(entries, 14);
   const moodDays = moodByDay(entries, 7);
   const insights = buildInsights(entries);
+  // Worte der Woche für die „Was sich zeigt"-Karte (Claude Design).
+  const topWords = wordsOfWeek(entries, 4).map((w) => w.word);
   const ritualMorning = tod !== "abend";
   const ritualFilled = ritualMorning
     ? (ritual?.gratitude?.length ?? 0) > 0
@@ -333,36 +322,51 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* GERADE IST VIEL? · Kopf leeren — feste Lilac-Karte (Mobile + Desktop) */}
+      {/* GERADE IST VIEL? · Kopf leeren — feste Lilac-Karte (Mobile + Desktop,
+          nach Claude Design) */}
       <Link
         to="/soforthilfe"
-        className="lift order-2 flex items-center justify-between gap-3 overflow-hidden rounded-[20px] border px-5 py-4 sm:order-6"
+        className="lift order-2 flex items-center justify-between gap-4 rounded-[24px] border p-[18px] shadow-[0_6px_22px_rgba(90,70,130,.06)] sm:order-6 sm:px-7 sm:py-[22px]"
         style={{
-          background:
-            "radial-gradient(200px 160px at 100% 0%, rgba(203,190,244,.4), transparent 70%), linear-gradient(135deg,#F1ECF8,#F4F0EC)",
-          borderColor: "rgba(203,190,244,.55)",
+          background: "linear-gradient(135deg,#F3EEF8,#fff)",
+          borderColor: "rgba(157,139,201,.26)",
         }}
       >
-        <div className="flex items-center gap-3.5">
+        <div className="flex min-w-0 items-center gap-3.5 sm:gap-4">
           <span
-            className="inline-flex h-[38px] w-[38px] flex-none items-center justify-center rounded-[12px]"
-            style={{ background: "rgba(203,190,244,.32)", color: "#7a6b96" }}
+            className="inline-flex h-[46px] w-[46px] flex-none items-center justify-center rounded-[14px] text-[#7a6b96]"
+            style={{ background: "#EDE6F6" }}
             aria-hidden="true"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="19" height="19">
-              <path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2" />
-            </svg>
+            <Icon d={ICONS.pulse} size={23} />
           </span>
-          <div>
-            <div className="text-[15px] font-[650] tracking-[-0.01em] text-[#3a3247]">
-              Gerade ist viel?
+          <div className="min-w-0">
+            <div className="mb-1.5 inline-flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[#9d8bc9]" />
+              <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[#7a6b96]">
+                Gerade ist viel?
+              </span>
             </div>
-            <p className="mt-0.5 text-[13px] leading-snug text-[#6c6280]">
-              <em className="g">Kopf leeren</em> · in 2 Minuten sortieren.
+            {/* Mobile: kurz; Desktop: Headline nach Prototyp. */}
+            <p className="text-[15px] font-[450] leading-snug text-[#3a3247] sm:text-[20px] sm:leading-[1.4] sm:tracking-[-0.01em]">
+              <span className="sm:hidden">
+                <em className="g">Kopf leeren</em> · in 2 Minuten sortieren.
+              </span>
+              <span className="hidden sm:inline">
+                Kopf leeren und in <em className="g">zwei Minuten</em> sortieren.
+              </span>
             </p>
           </div>
         </div>
-        <span aria-hidden="true" className="flex-none text-[#7a6b96]">
+        {/* Desktop: Button; Mobile: Chevron. */}
+        <span
+          className="hidden flex-none items-center gap-2 rounded-full border bg-white px-5 py-3 text-[14.5px] font-semibold text-[#3a3247] shadow-[0_4px_14px_rgba(90,70,130,.1)] sm:inline-flex"
+          style={{ borderColor: "rgba(157,139,201,.4)" }}
+        >
+          Kopf leeren
+          <Icon d={ICONS.arrowRight} size={15} />
+        </span>
+        <span aria-hidden="true" className="flex-none text-[#7a6b96] sm:hidden">
           →
         </span>
       </Link>
@@ -700,22 +704,20 @@ export function Dashboard() {
 
       {hasData && (
         <>
-          {/* AUSWERTUNG · Bento. Mobil nur Stimmung (Serie/Woche ab sm). */}
-          <div className="order-5 grid grid-cols-2 gap-4 sm:order-4 sm:grid-cols-12">
-            <Card className="col-span-2 sm:col-span-6">
-              {/* Mobil gestapelt (Titel volle Breite, Umschalter darunter),
-                  ab sm nebeneinander — so bricht der Status nicht unnötig um. */}
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                <div className="min-w-0">
-                  <div className="mb-2 whitespace-nowrap text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+          {/* AUSWERTUNG · Bento (Claude Design: 1.3fr/1fr/1fr). Mobil nur
+              Stimmung; Serie/Woche ab sm. Eyebrows mit Icon, Zahlen einheitlich
+              46px und auf einer Linie. */}
+          <div className="order-5 grid grid-cols-1 gap-4 sm:order-4 sm:grid-cols-[1.3fr_1fr_1fr] sm:gap-[18px]">
+            <Card>
+              <div className="mb-3.5 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-[var(--green-deep,#6E9B2C)]">
+                  <Icon d={ICONS.wave} size={16} />
+                  <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
                     Stimmung · 7 Tage
-                  </div>
-                  <div className="serif text-[22px] font-semibold leading-tight sm:text-[26px]">
-                    {moodTrend(series)}
-                  </div>
+                  </span>
                 </div>
                 {/* Umschalter: Punkte / Verlauf */}
-                <div className="inline-flex shrink-0 self-start rounded-full bg-[var(--surface-2)] p-1">
+                <div className="inline-flex shrink-0 rounded-full bg-[var(--surface-2)] p-[3px]">
                   {(["punkte", "verlauf"] as const).map((v) => {
                     const active = moodViz === v;
                     return (
@@ -724,10 +726,10 @@ export function Dashboard() {
                         type="button"
                         onClick={() => setMoodViz(v)}
                         aria-pressed={active}
-                        className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
+                        className={`rounded-full px-[13px] py-1.5 text-[12px] transition ${
                           active
-                            ? "bg-[var(--surface)] text-[var(--foreground)] shadow-[var(--shadow-card)]"
-                            : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                            ? "bg-[var(--surface)] font-semibold text-[var(--foreground)] shadow-[0_2px_6px_rgba(35,34,26,.08)]"
+                            : "font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
                         }`}
                       >
                         {v === "punkte" ? "Punkte" : "Verlauf"}
@@ -740,7 +742,7 @@ export function Dashboard() {
               {moodViz === "verlauf" ? (
                 <MoodSparkline days={moodDays} />
               ) : (
-                <div className="mt-6 flex items-end justify-between">
+                <div className="mt-2 flex items-end justify-between">
                   {moodDays.map((d, i) => (
                     <div key={i} className="flex flex-col items-center gap-2.5">
                       <span
@@ -775,84 +777,62 @@ export function Dashboard() {
               </div>
             </Card>
 
-            <Card className="col-span-1 hidden flex-col justify-between sm:col-span-3 sm:flex">
-              <div className="flex items-center gap-2 text-[var(--clay)]">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  width="20"
-                  height="20"
-                  aria-hidden="true"
-                >
-                  <path d="M4 16 C8 16 9 7 12 7 C15 7 16 17 20 11" />
-                </svg>
-                <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+            {/* In Folge */}
+            <Card className="hidden sm:block">
+              <div className="mb-3.5 flex items-center gap-2 text-[var(--clay,#CD8A5B)]">
+                <Icon d={ICONS.flame} size={16} />
+                <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
                   In Folge
                 </span>
               </div>
-              <div className="mt-6">
-                <div className="text-[38px] font-extrabold leading-none tracking-[-0.03em] tabular-nums text-[var(--foreground)] sm:text-[52px]">
+              <div className="flex items-baseline gap-2">
+                <div className="text-[46px] font-extrabold leading-none tracking-[-0.03em] tabular-nums text-[var(--green-deep,#6E9B2C)]">
                   {streak}
                 </div>
-                <div className="mt-1 text-sm text-[var(--muted)]">
+                <div className="text-[13.5px] text-[var(--muted)]">
                   {streak === 1 ? "Tag am Stück" : "Tage am Stück"}
                 </div>
-                {/* Meilenstein-Details nur ab sm — mobil bleibt die Karte kompakt. */}
-                <div className="mt-4 hidden sm:block">
-                  <div className="h-[7px] overflow-hidden rounded-full bg-[var(--surface-2)]">
-                    <div
-                      className="h-full rounded-full transition-[width] duration-500"
-                      style={{
-                        width: `${streakPct}%`,
-                        background: "linear-gradient(90deg,#CD8A5B,#A8E84F)",
-                      }}
-                    />
-                  </div>
-                  <div className="mt-2 text-xs text-[var(--muted)]">
-                    Noch {streakLeft} {streakLeft === 1 ? "Tag" : "Tage"} bis zur{" "}
-                    {streakMilestoneLabel}
-                  </div>
+              </div>
+              <div className="mt-[18px]">
+                <div className="h-[7px] overflow-hidden rounded-full bg-[var(--surface-2)]">
                   <div
-                    className="mt-2.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold"
-                    style={{ color: "#6E9B2C", background: "#F2F6E8" }}
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="12"
-                      height="12"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 5v14M16 5v14" />
-                    </svg>
-                    1 Pausentag in Reserve
-                  </div>
+                    className="h-full rounded-full transition-[width] duration-500"
+                    style={{
+                      width: `${streakPct}%`,
+                      background: "linear-gradient(90deg,#CD8A5B,#A8E84F)",
+                    }}
+                  />
+                </div>
+                <div className="mt-[9px] text-[12px] text-[#9a917f]">
+                  Noch {streakLeft} {streakLeft === 1 ? "Tag" : "Tage"} bis zur{" "}
+                  {streakMilestoneLabel}
+                </div>
+                <div
+                  className="mt-[11px] inline-flex items-center gap-1.5 rounded-full px-[11px] py-[5px] text-[11.5px] font-semibold"
+                  style={{ color: "#6E9B2C", background: "#F2F6E8" }}
+                >
+                  <Icon d={ICONS.pause} size={12} />
+                  1 Pausentag in Reserve
                 </div>
               </div>
             </Card>
 
-            <Card className="col-span-1 hidden flex-col justify-between sm:col-span-3 sm:flex">
-              <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-                Diese Woche
-              </span>
-              <div className="mt-6">
-                <div className="text-[38px] font-extrabold leading-none tracking-[-0.03em] tabular-nums text-[var(--foreground)] sm:text-[52px]">
-                  {week.count}
-                  <span className="text-[18px] font-semibold text-[#9a917f] sm:text-[22px]">
-                    /7
-                  </span>
-                </div>
-                <div className="mt-1 text-sm text-[var(--muted)]">
-                  Tage mit Eintrag
-                </div>
+            {/* Diese Woche */}
+            <Card className="hidden sm:block">
+              <div className="mb-3.5 flex items-center gap-2 text-[#6E7449]">
+                <Icon d={ICONS.calendarCheck} size={16} />
+                <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+                  Diese Woche
+                </span>
+              </div>
+              <div className="text-[46px] font-extrabold leading-none tracking-[-0.03em] tabular-nums text-[var(--foreground)]">
+                {week.count}
+                <span className="ml-1.5 text-[20px] font-semibold text-[#9a917f]">
+                  / 7
+                </span>
+              </div>
+              <div className="mt-1 text-[13.5px] text-[var(--muted)]">
+                mit Eintrag
               </div>
             </Card>
           </div>
@@ -915,34 +895,42 @@ export function Dashboard() {
           </div>
 
       {hasData && (
-          /* WAS SICH ZEIGT — Desktop/Tablet (mobil kompakt ausgeblendet) */
-          <Card className="order-7 hidden bg-[radial-gradient(420px_240px_at_100%_0%,rgba(205,138,91,0.10),transparent_62%)] sm:block">
-            <div className="mb-4 inline-flex items-center gap-2.5">
-              <span className="h-2 w-2 rounded-full bg-[var(--clay)]" />
-              <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-                Was sich zeigt
+          /* WAS SICH ZEIGT — Desktop (Claude Design): Kopf mit „Als Karte
+             teilen", darunter Insight links + Worte rechts. Mobil ausgeblendet. */
+          <Card className="order-7 hidden bg-[radial-gradient(440px_240px_at_92%_0%,rgba(205,138,91,0.12),transparent_62%)] sm:block">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <span className="inline-flex items-center gap-2.5">
+                <span className="h-2 w-2 rounded-full bg-[var(--clay)]" />
+                <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+                  Was sich zeigt
+                </span>
               </span>
+              <Link
+                to="/teilen"
+                className="inline-flex flex-none items-center gap-[7px] rounded-full border border-[var(--border)] bg-white px-3.5 py-2 text-[13px] font-semibold text-[var(--muted)] transition hover:-translate-y-0.5 hover:text-[var(--foreground)]"
+              >
+                <Icon d={ICONS.share} size={15} />
+                Als Karte teilen
+              </Link>
             </div>
             {insights.length > 0 ? (
-              <>
-                <p className="lead max-w-[640px] text-xl leading-relaxed">
+              <div className="flex flex-wrap items-center justify-between gap-x-9 gap-y-4">
+                <p className="lead flex-1 basis-[420px] text-[20px] font-[450] leading-[1.5] tracking-[-0.01em] text-[var(--foreground)]">
                   {insights[0]}
                 </p>
-                <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
-                  <Link
-                    to="/muster"
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--accent-text)] hover:gap-2.5"
-                  >
-                    Im Muster ansehen →
-                  </Link>
-                  <Link
-                    to="/teilen"
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--muted)] hover:text-[var(--foreground)]"
-                  >
-                    Als Karte teilen
-                  </Link>
-                </div>
-              </>
+                {topWords.length > 0 && (
+                  <div className="flex max-w-[300px] flex-1 flex-wrap justify-end gap-2">
+                    {topWords.map((w) => (
+                      <span
+                        key={w}
+                        className="rounded-full bg-[#F1ECE0] px-3.5 py-[7px] text-[13px] font-medium text-[#5d4f3f]"
+                      >
+                        {w}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             ) : (
               <p className="text-[15px] text-[var(--muted)]">
                 Sobald sich etwas wiederholt, spiegele ich es dir hier. Ganz

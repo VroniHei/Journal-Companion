@@ -89,4 +89,29 @@ export const ICONS = {
       <path d="M16 16l4-4-4-4M20 12H9" />
     </>
   ),
+  // „Gerade ist viel?" = Puls/Aktivität (Claude Design).
+  pulse: <path d="M3 12h4l2-7 4 14 2-7h6" />,
+  // „Als Karte teilen" = Upload (Claude Design).
+  share: (
+    <>
+      <path d="M12 14V4M8.5 7.5 12 4l3.5 3.5" />
+      <path d="M5 12.5V18.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5V12.5" />
+    </>
+  ),
+  arrowRight: <path d="M4 9h10M9.5 4.5 14 9l-4.5 4.5" />,
+  // „In Folge" = Flamme (Streak), Claude Design.
+  flame: (
+    <>
+      <path d="M12 3c1 3-2 4-2 7a4.5 4.5 0 0 0 9 0c0-2-1-3-1.5-4 .2 2-1.5 3-1.5 1 0-2.5-2-4-3-4z" />
+      <path d="M9 14a3 3 0 0 0 6 0" />
+    </>
+  ),
+  // „Diese Woche" = Kalender mit Haken, Claude Design.
+  calendarCheck: (
+    <>
+      <rect x="4" y="5.5" width="16" height="15" rx="2.5" />
+      <path d="M4 10h16M9 3.5v4M15 3.5v4M8 14l2.4 2.4L16 11" />
+    </>
+  ),
+  pause: <path d="M8 5v14M16 5v14" />,
 } as const;

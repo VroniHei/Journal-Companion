@@ -63,9 +63,9 @@ export const KIND_LABEL: Record<EntryKind, string> = {
 // Getönte Badge-Farben je Art (ruhig, lesbar). Tagesritual = warmer Clay-Ton.
 export const KIND_STYLE: Record<EntryKind, { bg: string; text: string }> = {
   ritual: { bg: "#F6ECE0", text: "#a9692f" },
-  eintrag: { bg: "var(--sand)", text: "#5d564a" },
-  reflexion: { bg: "#edf7d9", text: "#447510" },
-  gespraech: { bg: "rgba(155,163,131,.18)", text: "#4d5340" },
+  eintrag: { bg: "#F2F6E8", text: "#6E9B2C" },
+  reflexion: { bg: "#F6ECE2", text: "#9c6b3f" },
+  gespraech: { bg: "#EAEEE0", text: "#5b6147" },
 };
 
 // Kleines Icon je Art für den Wiedererkennungswert auf der Karte.

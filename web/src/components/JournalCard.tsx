@@ -74,10 +74,10 @@ export function JournalCard({ entry }: { entry: JournalEntry }) {
             {KIND_LABEL[kind]}
           </span>
         </div>
-        <div className="mb-2 text-[17px] font-[650] leading-snug tracking-[-0.01em] text-[var(--foreground)]">
+        <div className="mb-2 line-clamp-1 text-[17px] font-[650] leading-snug tracking-[-0.01em] text-[var(--foreground)]">
           {entryTitle(e)}
         </div>
-        <p className="text-[14px] leading-[1.55] text-[var(--muted)]">
+        <p className="line-clamp-3 text-[14px] leading-[1.55] text-[var(--muted)]">
           {entrySummaryText(e)}
         </p>
       </div>
