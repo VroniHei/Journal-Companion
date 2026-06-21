@@ -169,10 +169,12 @@ export function EntryDetail() {
     navigate("/");
   }
 
-  const TABS: { key: Tab; label: string; badge?: number }[] = [
+  const reflexionCount =
+    (e.aiReflection ? 1 : 0) + (e.previousReflections?.length ?? 0);
+  const TABS: { key: Tab; label: string; count?: number }[] = [
     { key: "eintrag", label: "Eintrag" },
-    { key: "reflexion", label: "Reflexion" },
-    { key: "gespraech", label: "Gespräch", badge: messages.length || undefined },
+    { key: "reflexion", label: "Reflexion", count: reflexionCount || undefined },
+    { key: "gespraech", label: "Gespräch", count: messages.length || undefined },
   ];
 
   return (
@@ -190,11 +192,12 @@ export function EntryDetail() {
         </Button>
       </div>
 
-      {/* Segmentierte Steuerung: ein Bereich pro Tab statt endlosem Scrollen */}
+      {/* Segmentierte Steuerung (App-Style): Sand-Track, aktives Segment weiß +
+          Soft-Schatten, Zähler inline als „· N". */}
       <div
         role="tablist"
         aria-label="Ansicht wählen"
-        className="flex gap-1 rounded-full border border-[var(--border)] bg-[var(--surface-2)] p-1"
+        className="flex gap-[3px] rounded-full bg-[var(--sand)] p-1"
       >
         {TABS.map((t) => {
           const active = tab === t.key;
@@ -205,24 +208,16 @@ export function EntryDetail() {
               type="button"
               aria-selected={active}
               onClick={() => setTab(t.key)}
-              className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm transition ${
-                active
-                  ? "bg-[var(--surface)] font-semibold text-[var(--foreground)] shadow-[var(--shadow-card)]"
-                  : "font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
-              }`}
+              className="flex-1 rounded-full py-2 text-center text-[12.5px] transition"
+              style={{
+                background: active ? "var(--surface)" : "transparent",
+                color: active ? "var(--foreground)" : "var(--muted)",
+                fontWeight: active ? 600 : 500,
+                boxShadow: active ? "0 2px 8px rgba(35,34,26,.08)" : "none",
+              }}
             >
               {t.label}
-              {t.badge ? (
-                <span
-                  className={`rounded-full px-1.5 text-xs ${
-                    active
-                      ? "bg-[var(--accent-soft)] text-[var(--foreground)]"
-                      : "bg-[var(--surface)] text-[var(--muted)]"
-                  }`}
-                >
-                  {t.badge}
-                </span>
-              ) : null}
+              {t.count ? ` · ${t.count}` : ""}
             </button>
           );
         })}

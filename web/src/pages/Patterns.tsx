@@ -10,6 +10,7 @@ import type {
   PatternType,
 } from "@journal/shared";
 import { Button, Card, Eyebrow } from "../components/ui";
+import { MoodCard } from "../components/MoodCard";
 import { useEntries, useSettings } from "../hooks/useData";
 import {
   deletePatternInsight,
@@ -345,6 +346,9 @@ export function Patterns() {
           </span>
         </Link>
       </div>
+
+      {/* Stimmung · 7 Tage (Punkte/Verlauf umschaltbar, mit Legende) */}
+      <MoodCard entries={entries} />
 
       {/* Quantitative Übersicht (bestehend) */}
       <div className="space-y-6">
