@@ -5,6 +5,29 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-21 (Teil 5) — Mobile-Bugfixes + Tagesritual einseh-/änderbar
+
+**Was:**
+- **Spracheingabe-Doppler** behoben (`useDictation`): kurze Sitzungen
+  (`continuous=false`) mit Auto-Neustart, Finale je Sitzung genau einmal
+  festgeschrieben — kein „ich ich ich" mehr auf mobilem Chrome.
+- **Dashboard Mobile:** „Letzte Einträge" wieder sichtbar; feste Lilac-Karte
+  „Gerade ist viel? · Kopf leeren" ergänzt (Mobile + Desktop); Tagesritual-Karte
+  an Prototyp angeglichen (46px-Thumb, kurze Headline, Themen im Fließtext).
+- **Profil-Dropdown:** farbcodierte Icon-Kacheln nach README.
+- **Tagesritual einseh-/änderbar:** Ritual-Screen hat jetzt einen Morgen/Abend-
+  Umschalter (beide Hälften eines Tages ansehen & ändern) und akzeptiert
+  `?date=YYYY-MM-DD`. Neue Seite **Ritual-Verlauf** (`/ritual-verlauf`, im Profil-
+  Menü) listet alle bisherigen Tage; Tippen öffnet den Tag zum Nachlesen/Ergänzen.
+  Neue Query `listDailyRituals()`.
+
+**Warum:** Nutzerin-Feedback: abends war das Früh-Ausgefüllte nicht mehr
+einsehbar/änderbar.
+
+**Ergebnis/Status:** Build + Lint + 15 Tests grün, gepusht.
+
+---
+
 ## 2026-06-21 (Teil 4) — Claude-Design-Angleichung: Desktop-Bento + Erledigt-Zustand + Modals
 
 **Was:** Frisches Arbeitspaket von Claude Design über den Connector gezogen

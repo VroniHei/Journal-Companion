@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "../components/ui";
 import { DesktopModal } from "../components/DesktopModal";
 import { DictationButton } from "../components/DictationButton";
@@ -89,7 +89,10 @@ function MultiLines({
 
 export function Ritual() {
   const navigate = useNavigate();
-  const date = dayKey();
+  const [params] = useSearchParams();
+  // Optional ein bestimmter Tag (Ritual-Verlauf); sonst heute.
+  const date = params.get("date") ?? dayKey();
+  const isToday = date === dayKey();
   const ritual = useDailyRitual(date);
 
   const [gratitude, setGratitude] = useState(["", "", ""]);
@@ -101,11 +104,31 @@ export function Ritual() {
   const [hydrated, setHydrated] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // Tageszeit bestimmt das Ritual automatisch (kein sichtbarer Umschalter).
-  const period: Period = isEveningNow() ? "evening" : "morning";
+  // Tageszeit als Default; Morgen/Abend ist umschaltbar, damit man beide Hälften
+  // eines Tages ansehen und ändern kann (z. B. abends die Früh-Eingaben).
+  const initialPeriod: Period =
+    params.get("period") === "evening"
+      ? "evening"
+      : params.get("period") === "morning"
+        ? "morning"
+        : isToday && isEveningNow()
+          ? "evening"
+          : "morning";
+  const [period, setPeriod] = useState<Period>(initialPeriod);
   const theme = ritualTheme(period === "evening");
   const [open, setOpen] = useState(0);
   const [done, setDone] = useState(false);
+
+  // Beim Wechsel des angesehenen Tages Felder leeren und neu befüllen.
+  useEffect(() => {
+    setHydrated(false);
+    setGratitude(["", "", ""]);
+    setMakeGreat("");
+    setAffirmation("");
+    setGoodDeed("");
+    setBetter("");
+    setMoments(["", "", ""]);
+  }, [date]);
 
   useEffect(() => {
     if (ritual && !hydrated) {
@@ -263,11 +286,16 @@ export function Ritual() {
           },
         ];
 
-  const dateLabel = new Date().toLocaleDateString("de-DE", {
+  const dateLabel = new Date(`${date}T12:00:00`).toLocaleDateString("de-DE", {
     weekday: "long",
     day: "numeric",
     month: "long",
   });
+
+  function switchPeriod(p: Period) {
+    setPeriod(p);
+    setOpen(0);
+  }
   const hero = HERO[period];
   const step = open + 1;
   const allAnswered = questions.every((q) => q.answered);
@@ -396,10 +424,31 @@ export function Ritual() {
     <section className="space-y-4">
       <div>
         <h1 className="serif text-3xl font-semibold">Tagesritual</h1>
-        <p className="mt-1 text-[var(--muted)]">
-          Ein kleines Ritual für den Tag. Kein Muss. Tippe eine Frage an und
-          fülle aus, was dir leichtfällt.
-        </p>
+        {isToday ? (
+          <p className="mt-1 text-[var(--muted)]">
+            Ein kleines Ritual für den Tag. Kein Muss. Tippe eine Frage an und
+            fülle aus, was dir leichtfällt.
+          </p>
+        ) : (
+          <p className="mt-1 text-[var(--muted)]">
+            Du siehst den {dateLabel}. Du kannst hier nachsehen oder noch etwas
+            ergänzen.{" "}
+            <button
+              type="button"
+              onClick={() => navigate("/ritual")}
+              className="font-semibold text-[var(--green-text,#447510)] hover:underline"
+            >
+              Zu heute
+            </button>
+          </p>
+        )}
+        <button
+          type="button"
+          onClick={() => navigate("/ritual-verlauf")}
+          className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--muted)] hover:text-[var(--foreground)]"
+        >
+          Frühere Rituale ansehen →
+        </button>
       </div>
 
       {/* Hero mit Fortschritt (Tageszeit-Theming: morgens warm, abends Flieder) */}
@@ -425,11 +474,38 @@ export function Ritual() {
           }}
         />
         <div className="relative">
-          <div
-            className="text-[10px] font-semibold uppercase tracking-[0.2em]"
-            style={{ color: theme.eyebrow }}
-          >
-            {period === "morning" ? "Morgen" : "Abend"} · {dateLabel}
+          <div className="flex items-center justify-between gap-3">
+            <div
+              className="text-[10px] font-semibold uppercase tracking-[0.2em]"
+              style={{ color: theme.eyebrow }}
+            >
+              {dateLabel}
+            </div>
+            {/* Morgen/Abend umschaltbar: beide Hälften ansehen & ändern. */}
+            <div
+              className="flex gap-[3px] rounded-full p-[3px]"
+              style={{ background: "rgba(255,255,255,0.5)" }}
+            >
+              {(["morning", "evening"] as const).map((p) => {
+                const active = period === p;
+                return (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => switchPeriod(p)}
+                    className="rounded-full px-3 py-1 text-[12px] transition"
+                    style={{
+                      background: active ? "var(--surface)" : "transparent",
+                      color: active ? theme.title : theme.eyebrow,
+                      fontWeight: active ? 600 : 500,
+                      boxShadow: active ? "0 2px 6px rgba(120,86,52,.12)" : "none",
+                    }}
+                  >
+                    {p === "morning" ? "Morgen" : "Abend"}
+                  </button>
+                );
+              })}
+            </div>
           </div>
           <div
             className="serif my-2 text-2xl font-semibold"

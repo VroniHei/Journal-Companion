@@ -440,6 +440,20 @@ export function getDailyRitual(date: string): Promise<DailyRitual | undefined> {
   return db.dailyRituals.get(date);
 }
 
+/** Alle Tagesrituale, neueste zuerst (für den Ritual-Verlauf). */
+export async function listDailyRituals(): Promise<DailyRitual[]> {
+  const all = await db.dailyRituals.orderBy("date").reverse().toArray();
+  // Nur Tage mit tatsächlichem Inhalt zeigen.
+  return all.filter(
+    (r) =>
+      (r.gratitude?.length ?? 0) > 0 ||
+      (r.goodMoments?.length ?? 0) > 0 ||
+      [r.makeGreat, r.affirmation, r.goodDeed, r.better].some(
+        (s) => (s ?? "").trim().length > 0,
+      ),
+  );
+}
+
 /** Legt das Tagesritual an oder ergänzt es (ein Datensatz pro Tag). */
 export async function upsertDailyRitual(
   date: string,

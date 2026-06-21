@@ -99,6 +99,7 @@ const TILE = {
 
 const PROFILE_LINKS = [
   { to: "/ritual", label: "Tagesritual", icon: ICONS.sun, tile: TILE.green },
+  { to: "/ritual-verlauf", label: "Ritual-Verlauf", icon: ICONS.calendar, tile: TILE.sand },
   { to: "/klaerung", label: "Klärung", icon: ICONS.compass, tile: TILE.sand },
   { to: "/sprechen", label: "Sprach-Check-in", icon: ICONS.mic, tile: TILE.sand },
   { to: "/kontaktimpuls", label: "Kontaktimpuls", icon: ICONS.heart, tile: TILE.clay },
