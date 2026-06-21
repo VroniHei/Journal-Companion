@@ -31,7 +31,9 @@ const PHOTOS = [
   { id: "foto-weg", label: "Weg", src: "/img/zitat-weg.webp" },
   { id: "foto-pfad", label: "Pfad", src: "/img/faden-weg.webp" },
   { id: "foto-see", label: "See", src: "/img/hero-see.webp" },
-  { id: "foto-notiz", label: "Notiz", src: "/img/journaling-desk.webp" },
+  { id: "foto-notiz", label: "Notiz", src: "/img/notebook-still.webp" },
+  { id: "foto-tisch", label: "Tisch", src: "/img/journaling-desk.webp" },
+  { id: "foto-licht", label: "Licht", src: "/img/welcome-still.webp" },
 ];
 
 function photoTheme(id: string, label: string, src: string): Theme {
