@@ -144,6 +144,18 @@ body::before {
   }
 }
 
+/* Grundregel für Bilder (App-Style): leichter Hover-Zoom. Der Container muss
+   `overflow:hidden` haben. Greift auch über `group-hover` (Karten-Hover), damit
+   das Bild zoomt, wenn man die Karte/den Bereich überfährt. */
+.img-zoom {
+  transition: transform 1.5s var(--ease-out);
+  will-change: transform;
+}
+.img-zoom:hover,
+.group:hover .img-zoom {
+  transform: scale(1.05);
+}
+
 /* Glasmorphismus: halbtransparente, geblurrte Flächen — nur noch für die
    Top-Leiste (ruhiger, wie im Claude-Design). Karten sind klar weiß. */
 .glass {

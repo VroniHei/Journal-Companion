@@ -537,7 +537,7 @@ export function Dashboard() {
           {/* Bild (ab Tablet) */}
           <div className="relative hidden w-[38%] max-w-[420px] shrink-0 sm:block">
             <div
-              className="absolute overflow-hidden"
+              className="group absolute overflow-hidden"
               style={{
                 top: 22,
                 right: 22,
@@ -554,7 +554,7 @@ export function Dashboard() {
                 src="/img/journaling-desk.webp"
                 alt=""
                 aria-hidden="true"
-                className="h-full w-full object-cover"
+                className="img-zoom h-full w-full object-cover"
                 style={{ objectPosition: "center 46%" }}
               />
             </div>
@@ -848,7 +848,7 @@ export function Dashboard() {
       </div>
 
       {!hasData ? (
-        <div className="grid grid-cols-1 overflow-hidden rounded-[26px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)] sm:grid-cols-[1fr_300px]">
+        <div className="group grid grid-cols-1 overflow-hidden rounded-[26px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)] sm:grid-cols-[1fr_300px]">
           <div className="flex flex-col justify-center p-8 sm:p-11">
             <h3 className="serif mb-3 text-2xl font-semibold">
               Noch nichts notiert. <em className="g text-[var(--green-deep)]">Auch gut.</em>
@@ -871,7 +871,7 @@ export function Dashboard() {
             src="/img/journaling-desk.webp"
             alt=""
             aria-hidden="true"
-            className="hidden h-full w-full object-cover sm:block"
+            className="img-zoom hidden h-full w-full object-cover sm:block"
           />
         </div>
       ) : shown.length === 0 ? (
