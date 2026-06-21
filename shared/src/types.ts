@@ -21,7 +21,8 @@ export type StartIntent =
   | "beruhigung" // Ich brauche Beruhigung
   | "spiegel" // Ich brauche einen klaren Spiegel
   | "abend-abschliessen" // Ich will den Abend abschließen
-  | "tag-sortieren"; // Ich will meinen Tag sortieren
+  | "tag-sortieren" // Ich will meinen Tag sortieren
+  | "tagesritual"; // Aus dem Tagesritual erzeugter Tageseintrag
 
 export type SleepQuality = "gut" | "mittel" | "schlecht";
 
@@ -489,6 +490,8 @@ export interface DailyRitual {
   goodDeed?: string; // Was hast du Gutes getan?
   better?: string; // Was wäre besser gegangen?
   goodMoments: string[]; // bis 3 schöne Momente
+  /** Verknüpfter Tageseintrag (erscheint in „Letzte Einträge"/Archiv). */
+  entryId?: string;
 }
 
 // --- Geräte-Sync ----------------------------------------------------------

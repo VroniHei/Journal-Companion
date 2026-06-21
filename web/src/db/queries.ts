@@ -473,6 +473,78 @@ export async function upsertDailyRitual(
   notifyDataChanged();
 }
 
+/**
+ * Spiegelt das Tagesritual als normalen Tageseintrag in „Letzte Einträge"/Archiv
+ * und in die Serie. Genau ein Eintrag pro Ritual-Tag (per `entryId` verknüpft).
+ * Der Eintrag ist als `startIntent: "tagesritual"` markiert und wird aus der
+ * Stimmungs-Statistik herausgefiltert (kein echter Mood-Eintrag).
+ */
+export async function syncRitualEntry(date: string): Promise<void> {
+  const r = await db.dailyRituals.get(date);
+  if (!r) return;
+
+  const lines = [
+    r.gratitude?.length ? `Dankbar: ${r.gratitude.join(", ")}` : "",
+    r.makeGreat ? `Fokus: ${r.makeGreat}` : "",
+    r.affirmation ? `Mein Satz: ${r.affirmation}` : "",
+    r.goodDeed ? `Gutes getan: ${r.goodDeed}` : "",
+    r.better ? `Besser: ${r.better}` : "",
+    r.goodMoments?.length ? `Schöne Momente: ${r.goodMoments.join(", ")}` : "",
+  ].filter(Boolean);
+
+  const now = nowIso();
+
+  // Kein Inhalt → ggf. vorhandenen verknüpften Eintrag entfernen.
+  if (lines.length === 0) {
+    if (r.entryId) {
+      await deleteEntry(r.entryId);
+      await db.dailyRituals.put({ ...r, entryId: undefined, updatedAt: now });
+    }
+    return;
+  }
+
+  const text = lines.join("\n");
+
+  if (r.entryId) {
+    const existing = await db.entries.get(r.entryId);
+    if (existing) {
+      await db.entries.put({
+        ...existing,
+        text,
+        title: "Tagesritual",
+        updatedAt: now,
+      });
+      notifyDataChanged();
+      return;
+    }
+  }
+
+  const id = createId();
+  const entry: JournalEntry = {
+    id,
+    // Auf den Ritual-Tag datieren (sortiert in den richtigen Tag/Woche).
+    createdAt: new Date(`${date}T12:00:00`).toISOString(),
+    updatedAt: now,
+    text,
+    title: "Tagesritual",
+    mood: 6,
+    intensity: 3,
+    emotions: [],
+    bodySignals: [],
+    topics: [],
+    needs: [],
+    impulse: "",
+    intention: [],
+    aiReflection: null,
+    startIntent: "tagesritual",
+    crisisFlag: false,
+    ruminationFlag: false,
+  };
+  await db.entries.put(entry);
+  await db.dailyRituals.put({ ...r, entryId: id, updatedAt: now });
+  notifyDataChanged();
+}
+
 // --- Energie-Check ---------------------------------------------------------
 
 export function getEnergyLevel(date: string): Promise<EnergyLevel | undefined> {

@@ -14,6 +14,12 @@ function avg(nums: number[]): number | null {
   return Math.round((nums.reduce((a, b) => a + b, 0) / nums.length) * 10) / 10;
 }
 
+// Tagesritual-Einträge sind keine echten Stimmungs-Einträge und werden aus den
+// Mood-Auswertungen herausgefiltert (zählen aber in die Serie/Listen mit).
+function isMoodEntry(e: JournalEntry): boolean {
+  return e.startIntent !== "tagesritual";
+}
+
 /** Aufeinanderfolgende Tage mit mindestens einem Eintrag (heute oder gestern als Start). */
 export function computeStreak(entries: JournalEntry[]): number {
   if (!entries.length) return 0;
@@ -41,7 +47,9 @@ export interface RecentStats {
 /** Kennzahlen der letzten `days` Tage. */
 export function recentStats(entries: JournalEntry[], days = 7): RecentStats {
   const since = Date.now() - days * DAY;
-  const recent = entries.filter((e) => new Date(e.createdAt).getTime() >= since);
+  const recent = entries.filter(
+    (e) => isMoodEntry(e) && new Date(e.createdAt).getTime() >= since,
+  );
   return {
     count: recent.length,
     avgMood: avg(recent.map((e) => e.mood)),
@@ -71,7 +79,7 @@ export function moodByDay(entries: JournalEntry[], days = 7): MoodDay[] {
     d.setDate(now.getDate() - i);
     const key = dkey(d);
     const dayMoods = entries
-      .filter((e) => dkey(new Date(e.createdAt)) === key)
+      .filter((e) => isMoodEntry(e) && dkey(new Date(e.createdAt)) === key)
       .map((e) => e.mood);
     const m = avg(dayMoods);
     out.push({
@@ -86,6 +94,7 @@ export function moodByDay(entries: JournalEntry[], days = 7): MoodDay[] {
 /** Letzte `n` Stimmungswerte in chronologischer Reihenfolge (alt → neu). */
 export function moodSeries(entries: JournalEntry[], n = 14): number[] {
   return [...entries]
+    .filter(isMoodEntry)
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
     .slice(-n)
     .map((e) => e.mood);

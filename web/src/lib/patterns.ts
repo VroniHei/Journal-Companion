@@ -28,10 +28,12 @@ function avg(nums: number[]): number | null {
 }
 
 export function aggregate(entries: JournalEntry[]): Aggregates {
+  // Tagesritual-Einträge sind keine echten Stimmungs-Einträge.
+  const moodEntries = entries.filter((e) => e.startIntent !== "tagesritual");
   return {
     count: entries.length,
-    avgMood: avg(entries.map((e) => e.mood)),
-    avgIntensity: avg(entries.map((e) => e.intensity)),
+    avgMood: avg(moodEntries.map((e) => e.mood)),
+    avgIntensity: avg(moodEntries.map((e) => e.intensity)),
     topEmotions: tally(entries.map((e) => e.emotions)),
     topTopics: tally(entries.map((e) => e.topics)),
     topNeeds: tally(entries.map((e) => e.needs)),

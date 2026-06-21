@@ -4,7 +4,7 @@ import { Button } from "../components/ui";
 import { DesktopModal } from "../components/DesktopModal";
 import { DictationButton } from "../components/DictationButton";
 import { useDailyRitual } from "../hooks/useData";
-import { dayKey, upsertDailyRitual } from "../db/queries";
+import { dayKey, syncRitualEntry, upsertDailyRitual } from "../db/queries";
 import { isEveningNow, ritualTheme } from "../lib/daypart";
 
 type Period = "morning" | "evening";
@@ -144,8 +144,8 @@ export function Ritual() {
     }
   }, [ritual, hydrated]);
 
-  function commit() {
-    void upsertDailyRitual(date, {
+  async function commit() {
+    await upsertDailyRitual(date, {
       gratitude: gratitude.map((s) => s.trim()).filter(Boolean),
       makeGreat: makeGreat.trim() || undefined,
       affirmation: affirmation.trim() || undefined,
@@ -153,6 +153,8 @@ export function Ritual() {
       better: better.trim() || undefined,
       goodMoments: moments.map((s) => s.trim()).filter(Boolean),
     });
+    // Als Tageseintrag spiegeln (erscheint in „Letzte Einträge"/Archiv, Serie).
+    await syncRitualEntry(date);
     setSaved(true);
   }
 
