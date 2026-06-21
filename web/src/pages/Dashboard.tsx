@@ -2,13 +2,12 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card } from "../components/ui";
 import { JournalCard } from "../components/JournalCard";
-import { useDailyRitual, useEntries, useSettings } from "../hooks/useData";
-import { dayKey } from "../db/queries";
-import { ritualTheme } from "../lib/daypart";
+import { useEntries, useSettings } from "../hooks/useData";
 import { entryMode } from "../lib/entryCard";
 import {
   buildInsights,
   computeStreak,
+  habitWeek,
   moodByDay,
   moodSeries,
   recentStats,
@@ -154,7 +153,6 @@ export function Dashboard() {
   const navigate = useNavigate();
   const entries = useEntries();
   const settings = useSettings();
-  const ritual = useDailyRitual(dayKey());
   const [filter, setFilter] = useState("alle");
   const [promptIdx, setPromptIdx] = useState(0);
   const [moodViz, setMoodViz] = useState<"punkte" | "verlauf">("punkte");
@@ -173,11 +171,7 @@ export function Dashboard() {
   const series = moodSeries(entries, 14);
   const moodDays = moodByDay(entries, 7);
   const insights = buildInsights(entries);
-  const ritualMorning = tod !== "abend";
-  const ritualFilled = ritualMorning
-    ? (ritual?.gratitude?.length ?? 0) > 0
-    : (ritual?.goodMoments?.length ?? 0) > 0;
-  const ritualT = ritualTheme(!ritualMorning);
+  const habits = habitWeek(entries);
   const prompt = PROMPTS[promptIdx % PROMPTS.length];
 
 
@@ -279,7 +273,7 @@ export function Dashboard() {
               {dateLabel}
             </span>
           </div>
-          <h1 className="serif mb-3 text-[39px] font-semibold leading-[1.08] text-[#F8F5EE]">
+          <h1 className="serif mb-3 text-[40px] font-semibold leading-[1.1] text-[#F8F5EE]">
             {greetingWord(tod)}
             {name ? `, ${name}` : ""}
           </h1>
@@ -320,7 +314,7 @@ export function Dashboard() {
                 Heute im Blick
               </span>
             </div>
-            <p className="lead max-w-[520px] text-xl leading-snug">
+            <p className="max-w-[520px] text-[21px] font-medium leading-[1.4] tracking-[-0.01em] text-[var(--foreground)]">
               {prompt.pre}
               <em className="g text-[var(--accent-text)]">{prompt.accent}</em>
               {prompt.post}
@@ -344,201 +338,6 @@ export function Dashboard() {
           </div>
         </div>
       </Card>
-
-      {/* TAGESRITUAL · prominentes, warmes Tages-Tool (nach Prototyp) */}
-      <div
-        className="relative overflow-hidden"
-        style={{
-          borderRadius: 28,
-          border: `1px solid ${ritualT.border}`,
-          boxShadow: "0 20px 46px rgba(120,86,52,0.16)",
-          background: ritualT.surface,
-        }}
-      >
-        <div
-          className="pointer-events-none absolute"
-          style={{
-            top: -60,
-            left: -30,
-            width: 240,
-            height: 240,
-            borderRadius: "50%",
-            background: ritualT.orbWarm,
-            filter: "blur(34px)",
-          }}
-        />
-        <div
-          className="pointer-events-none absolute"
-          style={{
-            right: -40,
-            bottom: -70,
-            width: 230,
-            height: 230,
-            borderRadius: "50%",
-            background: ritualT.orbCool,
-            filter: "blur(38px)",
-          }}
-        />
-        <div className="relative flex items-stretch">
-          <div className="min-w-0 flex-1 p-7 sm:p-8">
-            {/* Badge */}
-            <div
-              className="mb-4 inline-flex items-center gap-2.5 rounded-full border py-1.5 pl-2 pr-3"
-              style={{
-                background: "rgba(255,255,255,0.7)",
-                borderColor: "rgba(205,138,91,0.3)",
-              }}
-            >
-              <span
-                className="flex h-[22px] w-[22px] items-center justify-center rounded-full text-white"
-                style={{ background: ritualT.badge }}
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  width="13"
-                  height="13"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  {ritualMorning ? (
-                    <>
-                      <path d="M3 18h18M5.6 18a6.4 6.4 0 0 1 12.8 0" />
-                      <path d="M12 4.5v2.4M5 9l1.6 1.2M19 9l-1.6 1.2" />
-                    </>
-                  ) : (
-                    <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z" />
-                  )}
-                </svg>
-              </span>
-              <span
-                className="text-[10.5px] font-semibold uppercase tracking-[0.2em]"
-                style={{ color: ritualT.eyebrow }}
-              >
-                Tägliches Ritual
-              </span>
-              <span
-                className="border-l pl-2 text-[10.5px] font-semibold"
-                style={{ color: "#b08a64", borderColor: "rgba(205,138,91,0.3)" }}
-              >
-                6 Min · Dein Begleiter
-              </span>
-            </div>
-
-            {/* Status */}
-            <div
-              className="mb-3 flex items-center gap-2 text-[12.5px] font-semibold"
-              style={{ color: ritualT.eyebrow }}
-            >
-              <span
-                className="h-[7px] w-[7px] rounded-full"
-                style={{ background: ritualMorning ? "#CD8A5B" : "#CBBEF4" }}
-              />
-              {ritualFilled ? (
-                "Heute schon ausgefüllt"
-              ) : (
-                <>
-                  Heute noch offen
-                  <span style={{ color: "#b08a64", fontWeight: 500 }}>
-                    {" "}
-                    · kein Muss
-                  </span>
-                </>
-              )}
-            </div>
-
-            <h2
-              className="serif mb-2 text-[26px] font-semibold leading-tight"
-              style={{ color: ritualT.title }}
-            >
-              Sechs Minuten, die den Tag{" "}
-              <em className="g">{ritualMorning ? "sortieren" : "abschließen"}</em>.
-            </h2>
-            <p
-              className="mb-5 max-w-[480px] text-[15px] leading-relaxed"
-              style={{ color: "#6a5a48" }}
-            >
-              {ritualMorning
-                ? "Drei kleine Fragen, bevor es losgeht. Kein Pflichtprogramm. Nur ein ruhiger Anfang."
-                : "Drei kleine Fragen zum Abend. Kein Pflichtprogramm. Nur ein ruhiger Ausklang."}
-            </p>
-
-            {/* Themen-Chips */}
-            <div className="mb-6 flex flex-wrap gap-2">
-              {(ritualMorning
-                ? [
-                    { label: "Wofür dankbar?", dot: "#CD8A5B" },
-                    { label: "Was macht den Tag gut?", dot: "#DDB14B" },
-                    { label: "Ein guter Satz an dich", dot: "#9BA383" },
-                  ]
-                : [
-                    { label: "Was Gutes getan?", dot: "#CD8A5B" },
-                    { label: "Was wäre besser?", dot: "#DDB14B" },
-                    { label: "Schöne Momente", dot: "#9BA383" },
-                  ]
-              ).map((c) => (
-                <span
-                  key={c.label}
-                  className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[13px] font-medium"
-                  style={{
-                    background: "rgba(255,255,255,0.66)",
-                    borderColor: "rgba(35,34,26,0.07)",
-                    color: "#5d4f3f",
-                  }}
-                >
-                  <span
-                    className="h-[7px] w-[7px] rounded-full"
-                    style={{ background: c.dot }}
-                  />
-                  {c.label}
-                </span>
-              ))}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => navigate("/ritual")}
-              className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
-              style={{
-                color: "#23221A",
-                background: "linear-gradient(180deg,#B4ED63,#A8E84F)",
-                boxShadow: "0 6px 18px rgba(110,155,44,0.32)",
-              }}
-            >
-              {ritualFilled ? "Ritual ansehen" : "Ritual starten"} →
-            </button>
-          </div>
-
-          {/* Bild (ab Tablet) */}
-          <div className="relative hidden w-[38%] max-w-[420px] shrink-0 sm:block">
-            <div
-              className="absolute overflow-hidden"
-              style={{
-                top: 22,
-                right: 22,
-                bottom: 22,
-                left: 0,
-                borderRadius: 20,
-                boxShadow: "0 12px 30px rgba(120,86,52,0.2)",
-                border: "1px solid rgba(255,255,255,0.5)",
-                outline: "1px solid rgba(205,138,91,0.16)",
-                outlineOffset: -1,
-              }}
-            >
-              <img
-                src="/img/journaling-desk.webp"
-                alt=""
-                aria-hidden="true"
-                className="h-full w-full object-cover"
-                style={{ objectPosition: "center 46%" }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {hasData && (
         <>
@@ -696,41 +495,69 @@ export function Dashboard() {
             </Card>
           </div>
 
-          {/* WAS SICH ZEIGT */}
-          <Card className="bg-[radial-gradient(420px_240px_at_100%_0%,rgba(205,138,91,0.10),transparent_62%)]">
-            <div className="mb-4 inline-flex items-center gap-2.5">
-              <span className="h-2 w-2 rounded-full bg-[var(--clay)]" />
-              <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-                Was sich zeigt
-              </span>
-            </div>
-            {insights.length > 0 ? (
-              <>
-                <p className="lead max-w-[640px] text-xl leading-relaxed">
-                  {insights[0]}
+          {/* INSIGHT + STABILE SCHRITTE (Bento: 7/5) */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-12">
+            {/* WAS SICH ZEIGT */}
+            <Card className="bg-[radial-gradient(420px_240px_at_88%_0%,rgba(205,138,91,0.12),transparent_62%)] sm:col-span-7">
+              <div className="mb-4 inline-flex items-center gap-2.5">
+                <span className="h-2 w-2 rounded-full bg-[var(--clay)]" />
+                <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+                  Was sich zeigt
+                </span>
+              </div>
+              {insights.length > 0 ? (
+                <>
+                  <p className="max-w-[560px] text-[20px] leading-[1.55] tracking-[-0.01em] text-[var(--foreground)]">
+                    {insights[0]}
+                  </p>
+                  <div className="mt-[22px] flex flex-wrap items-center gap-x-5 gap-y-2">
+                    <Link
+                      to="/muster"
+                      className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-[var(--accent-text)] hover:gap-2.5"
+                    >
+                      Im Muster ansehen →
+                    </Link>
+                    <Link
+                      to="/teilen"
+                      className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-[var(--muted)] hover:text-[var(--foreground)]"
+                    >
+                      Als Karte teilen
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <p className="text-[15px] text-[var(--muted)]">
+                  Sobald sich etwas wiederholt, spiegele ich es dir hier. Ganz
+                  vorsichtig.
                 </p>
-                <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
-                  <Link
-                    to="/muster"
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--accent-text)] hover:gap-2.5"
-                  >
-                    Im Muster ansehen →
-                  </Link>
-                  <Link
-                    to="/teilen"
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--muted)] hover:text-[var(--foreground)]"
-                  >
-                    Als Karte teilen
-                  </Link>
-                </div>
-              </>
-            ) : (
-              <p className="text-[15px] text-[var(--muted)]">
-                Sobald sich etwas wiederholt, spiegele ich es dir hier. Ganz
-                vorsichtig.
-              </p>
-            )}
-          </Card>
+              )}
+            </Card>
+
+            {/* STABILE SCHRITTE */}
+            <Card className="sm:col-span-5">
+              <div className="mb-[22px] text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+                Stabile Schritte
+              </div>
+              <div className="flex flex-col gap-5">
+                {habits.map((h) => (
+                  <div key={h.label} className="flex items-center justify-between gap-4">
+                    <span className="text-[15.5px] font-medium text-[var(--foreground)]">
+                      {h.label}
+                    </span>
+                    <div className="flex gap-1.5">
+                      {h.dots.map((on, i) => (
+                        <span
+                          key={i}
+                          className="h-[11px] w-[11px] rounded-full"
+                          style={{ background: on ? "#A8E84F" : "#EFEADD" }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
         </>
       )}
 
