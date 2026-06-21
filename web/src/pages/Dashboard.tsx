@@ -42,11 +42,6 @@ function greetingWord(t: TimeOfDay): string {
   return "Guten Morgen";
 }
 
-const QUOTES: Record<TimeOfDay, { pre: string; accent: string }> = {
-  morgen: { pre: "Heute reicht ein ehrlicher Satz. ", accent: "So wie er kommt." },
-  tag: { pre: "Nicht alles auf einmal. ", accent: "Eins nach dem anderen." },
-  abend: { pre: "Der Tag darf jetzt leiser werden. ", accent: "Stück für Stück." },
-};
 
 function avg(nums: number[]): number {
   return nums.reduce((a, b) => a + b, 0) / nums.length;
@@ -159,7 +154,6 @@ export function Dashboard() {
 
   const name = settings.userName?.trim();
   const tod = timeOfDay();
-  const quote = QUOTES[tod];
   const hasData = entries.length > 0;
 
   const streak = computeStreak(entries);
@@ -198,56 +192,60 @@ export function Dashboard() {
 
   return (
     <section className="space-y-5">
-      {settings.focusArea && (
-        <Link
-          to="/einstellungen"
-          className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--foreground)] transition hover:border-[var(--foreground)]"
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-[var(--clay)]" />
-          Dein Fokus: {settings.focusArea}
-        </Link>
-      )}
+      {/* Begrüßung (hell auf Creme, nach Prototyp) */}
+      <div>
+        <div className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[#9a917f]">
+          {dateLabel}
+        </div>
+        <h1 className="serif mt-1.5 text-[22px] font-semibold leading-tight sm:text-[28px]">
+          {greetingWord(tod)}
+          {name ? `, ${name}` : ""}
+        </h1>
 
-      {/* HERO · Zitat-Band */}
-      <div className="relative overflow-hidden rounded-[28px] border border-[var(--border)] shadow-[var(--shadow-lift)]">
-        <img
-          src="/img/hero-see.webp"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover object-[center_85%]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-[rgba(28,33,22,0.88)] via-[rgba(28,33,22,0.62)] to-[rgba(28,33,22,0.30)]" />
-        <div className="relative max-w-[620px] p-8 sm:p-11">
-          <div className="mb-4 inline-flex items-center gap-2.5">
-            <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--accent)]">
-              {dateLabel}
-            </span>
-          </div>
-          <h1 className="serif mb-3 text-3xl font-semibold text-white sm:text-[40px] sm:leading-[1.1]">
-            {greetingWord(tod)}
-            {name ? `, ${name}` : ""}
-          </h1>
-          <p className="lead mb-7 max-w-[480px] text-lg leading-snug text-white/90 sm:text-2xl">
-            {quote.pre}
-            <em className="g text-[var(--accent)]">{quote.accent}</em>
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={() => navigate("/neu")}
-              className="rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-[var(--accent-contrast)] shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:bg-[#bdf06a]"
+        {settings.focusArea && (
+          <Link
+            to="/einstellungen"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-medium text-[#5d4f3f] transition hover:opacity-80"
+            style={{ background: "#F1ECE0" }}
+          >
+            <span className="h-[7px] w-[7px] rounded-full bg-[var(--clay)]" />
+            Dein Fokus: {settings.focusArea}
+            <svg
+              viewBox="0 0 24 24"
+              width="12"
+              height="12"
+              fill="none"
+              stroke="#9a917f"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              className="ml-0.5"
             >
-              Eintrag schreiben
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/sprechen")}
-              className="rounded-full border border-white/45 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-[var(--foreground)]"
-            >
-              Sprach-Check-in
-            </button>
-          </div>
+              <path d="M14 5l5 5M4 20l1-4L15.5 4.5l3.5 3.5L7.5 19.5 4 20z" />
+            </svg>
+          </Link>
+        )}
+
+        <div className="mt-4 grid grid-cols-2 gap-2.5 sm:inline-grid sm:auto-cols-max sm:grid-flow-col">
+          <button
+            type="button"
+            onClick={() => navigate("/neu")}
+            className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-[var(--accent-contrast)] transition hover:-translate-y-0.5"
+            style={{
+              background: "linear-gradient(180deg,#B4ED63,#A8E84F)",
+              boxShadow: "0 5px 14px rgba(110,155,44,.28)",
+            }}
+          >
+            Eintrag schreiben
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate("/sprechen")}
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-6 py-3 text-sm font-semibold text-[var(--muted)] transition hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
+          >
+            Sprach-Check-in
+          </button>
         </div>
       </div>
 
