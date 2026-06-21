@@ -127,14 +127,29 @@ export function Layout() {
           to={item.to}
           end={item.end}
           className={({ isActive }) =>
-            `rounded-full px-4 py-2 text-sm transition ${
+            `inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm transition ${
               isActive
-                ? "bg-[var(--surface-2)] font-semibold text-[var(--foreground)]"
+                ? "font-semibold text-[var(--foreground)]"
                 : "font-medium text-[var(--muted)] hover:bg-[var(--surface-2)] hover:text-[var(--foreground)]"
             }`
           }
+          style={({ isActive }) =>
+            isActive
+              ? {
+                  background: "linear-gradient(180deg,#F0F4E6,#E8EFD7)",
+                  boxShadow: "inset 0 0 0 1px rgba(110,155,44,0.18)",
+                }
+              : undefined
+          }
         >
-          {item.label}
+          {({ isActive }) => (
+            <>
+              {isActive && (
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--green-deep,#6E9B2C)]" />
+              )}
+              {item.label}
+            </>
+          )}
         </NavLink>
       ))}
     </nav>
