@@ -4,12 +4,14 @@ import { useLiveQuery } from "dexie-react-hooks";
 import type { PatternSummary } from "@journal/shared";
 import { Button, Card } from "../components/ui";
 import { FormattedText } from "../components/FormattedText";
+import { MoodCard } from "../components/MoodCard";
 import { useEntries, useSettings } from "../hooks/useData";
-import { listPatternsDesc, savePattern, toDigest } from "../db/queries";
+import { db } from "../db/dexie";
+import { dayKey, listPatternsDesc, savePattern, toDigest } from "../db/queries";
 import { toPrefs } from "../lib/settings";
 import { postWeeklyReview } from "../lib/apiClient";
 import { aggregate } from "../lib/patterns";
-import { wordsOfWeek } from "../lib/insights";
+import { buildInsights, computeStreak, wordsOfWeek } from "../lib/insights";
 import { createId, nowIso } from "../lib/ids";
 import { formatDate } from "../lib/format";
 import { downloadPatternMarkdown } from "../lib/export";
@@ -40,6 +42,22 @@ export function WeeklyReview() {
   const inRange = entries.filter((e) => e.createdAt >= periodStart);
   const words = wordsOfWeek(inRange);
   const maxWord = words[0]?.count ?? 1;
+
+  // Ruhige Zusammenfassung (Prototyp): Kennzahlen + Insight + Worte der Woche.
+  const streak = computeStreak(entries);
+  const insights = buildInsights(inRange);
+  const ritualDays =
+    useLiveQuery(async () => {
+      const since = dayKey(start);
+      const rits = await db.dailyRituals.where("date").aboveOrEqual(since).toArray();
+      return rits.filter(
+        (r) => (r.gratitude?.length ?? 0) > 0 || (r.goodMoments?.length ?? 0) > 0,
+      ).length;
+    }, [days]) ?? 0;
+  const rangeLabel = `${start.toLocaleDateString("de-DE", { day: "numeric" })}. – ${now.toLocaleDateString(
+    "de-DE",
+    { day: "numeric", month: "long" },
+  )}`;
 
   async function generate() {
     if (loading || inRange.length === 0) return;
@@ -102,6 +120,69 @@ export function WeeklyReview() {
         </p>
       </div>
 
+      {/* Ruhige Zusammenfassung (Prototyp): Was sich gezeigt hat + Kennzahlen */}
+      <Card className="space-y-5">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+          Diese Woche · {rangeLabel}
+        </div>
+        <div>
+          <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
+            Was sich gezeigt hat
+          </div>
+          <p className="lead text-[17px] leading-[1.55] text-[var(--foreground)]">
+            {insights[0] ?? (
+              <>
+                Sobald sich über die Woche etwas wiederholt, fasse ich es hier{" "}
+                <em className="g">ruhig</em> zusammen.
+              </>
+            )}
+          </p>
+        </div>
+        <div className="grid grid-cols-3 gap-3 border-t border-[var(--border)] pt-4">
+          <div>
+            <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--foreground)]">
+              {inRange.length}
+            </div>
+            <div className="text-[12.5px] text-[var(--muted)]">Einträge</div>
+          </div>
+          <div>
+            <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--foreground)]">
+              {streak}
+            </div>
+            <div className="text-[12.5px] text-[var(--muted)]">Tage Serie</div>
+          </div>
+          <div>
+            <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--foreground)]">
+              {ritualDays}
+            </div>
+            <div className="text-[12.5px] text-[var(--muted)]">Ritual-Tage</div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Stimmung · Verlauf */}
+      <MoodCard entries={entries} />
+
+      {/* Worte der Woche */}
+      {words.length > 0 && (
+        <Card>
+          <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+            Worte der Woche
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {words.map((w) => (
+              <span
+                key={w.word}
+                className="rounded-full bg-[var(--sand)] px-3 py-1.5 text-[13px] font-medium text-[var(--foreground)]"
+                style={{ opacity: 0.55 + 0.45 * (w.count / maxWord) }}
+              >
+                {w.word}
+              </span>
+            ))}
+          </div>
+        </Card>
+      )}
+
       {/* Wochen-Brief: warmer KI-Brief statt Statistik. */}
       <Link
         to="/wochen-brief"
@@ -160,25 +241,6 @@ export function WeeklyReview() {
           )}
         </div>
       </Card>
-
-      {words.length > 0 && (
-        <Card className="space-y-3">
-          <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
-            Worte der Woche
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {words.map((w) => (
-              <span
-                key={w.word}
-                className="rounded-full bg-[var(--surface-2)] px-3.5 py-1.5 font-medium text-[var(--foreground)]"
-                style={{ fontSize: `${12.5 + (w.count / maxWord) * 4}px` }}
-              >
-                {w.word}
-              </span>
-            ))}
-          </div>
-        </Card>
-      )}
 
       {error && (
         <Card className="border-l-2 border-l-[var(--danger)]">
