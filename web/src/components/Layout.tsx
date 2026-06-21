@@ -28,7 +28,7 @@ const PROFILE_LINKS = [
   { to: "/ritual-verlauf", label: "Ritual-Verlauf", icon: ICONS.calendar, tile: TILE.sand },
   { to: "/klaerung", label: "Klärung", icon: ICONS.compass, tile: TILE.sand },
   { to: "/sprechen", label: "Sprach-Check-in", icon: ICONS.mic, tile: TILE.sand },
-  { to: "/kontaktimpuls", label: "Kontaktimpuls", icon: ICONS.heart, tile: TILE.clay },
+  { to: "/kontaktimpuls", label: "Kontaktimpuls", icon: ICONS.chat, tile: TILE.clay },
   { to: "/energie", label: "Energie heute", icon: ICONS.bolt, tile: TILE.gold },
   { to: "/impulse", label: "Impulse", icon: ICONS.pen, tile: TILE.sand },
   { to: "/routine", label: "Routine-Wechsel", icon: ICONS.swap, tile: TILE.sand },

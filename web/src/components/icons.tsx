@@ -27,7 +27,7 @@ export const ICONS = {
       <path d="M5.5 9.6V20h13V9.6" />
     </>
   ),
-  wave: <path d="M4 16 C8 16 9 7 12 7 C15 7 16 17 20 11" />,
+  wave: <path d="M4 15 C7.5 15 8.5 7 12 7 C15.5 7 16.5 16 20 11" />,
   calendar: (
     <>
       <rect x="4" y="5.5" width="16" height="15" rx="2.5" />
@@ -47,20 +47,25 @@ export const ICONS = {
       <path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1M18.4 18.4l-2.1-2.1M7.7 7.7 5.6 5.6" />
     </>
   ),
-  heart: <path d="M12 20s-7-4.3-7-9.5A3.5 3.5 0 0 1 12 7a3.5 3.5 0 0 1 7 3.5C19 15.7 12 20 12 20z" />,
+  // Kontaktimpuls = Sprechblase (Claude Design).
+  chat: <path d="M4 5.5h16v10H9l-4 3.4V15.5H4z" />,
   mic: (
-    <path d="M12 4v8m0 0a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v3a3 3 0 0 0 3 3zM7 11a5 5 0 0 0 10 0M12 16v3" />
+    <>
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" />
+    </>
   ),
   compass: (
     <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="m15 9-2 4-4 2 2-4z" />
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M14.9 9.1 11 11l-1.9 3.9 3.9-1.9 1.9-3.9z" />
     </>
   ),
+  // Tagesritual = Sonnenaufgang (Claude Design).
   sun: (
     <>
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19" />
+      <path d="M3 18h18M5.6 18a6.4 6.4 0 0 1 12.8 0" />
+      <path d="M12 3.5v3M4.4 8.4l2 1.4M19.6 8.4l-2 1.4" />
     </>
   ),
   pen: (
@@ -70,9 +75,17 @@ export const ICONS = {
     </>
   ),
   bolt: <path d="M13 2 4 14h7l-1 8 9-12h-7z" />,
+  // Routine-Wechsel (Claude Design).
   swap: (
     <>
-      <path d="M4 8h13l-3-3M20 16H7l3 3" />
+      <path d="M3.5 12a8.5 8.5 0 0 1 14.5-6M20.5 12a8.5 8.5 0 0 1-14.5 6" />
+      <path d="M18 3v3.5h-3.5M6 21v-3.5h3.5" />
+    </>
+  ),
+  logout: (
+    <>
+      <path d="M9 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3" />
+      <path d="M16 16l4-4-4-4M20 12H9" />
     </>
   ),
 } as const;
