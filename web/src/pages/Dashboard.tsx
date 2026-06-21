@@ -341,7 +341,11 @@ export function Dashboard() {
               onClick={() => setPromptIdx((i) => i + 1)}
               className="inline-flex items-center justify-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--foreground)] hover:bg-[var(--surface-2)]"
             >
-              ↻ Anderer Impuls
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
+                <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+                <path d="M21 3v5h-5" />
+              </svg>
+              Anderer Impuls
             </button>
             <button
               type="button"

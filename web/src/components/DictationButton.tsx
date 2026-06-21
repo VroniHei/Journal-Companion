@@ -60,10 +60,15 @@ export function DictationButton({
   if (!useServer && !browser.supported && !server.supported) {
     return (
       <span
-        className={`text-xs text-[var(--muted)] ${className}`}
+        className={`inline-flex items-center gap-1.5 text-xs text-[var(--muted)] ${className}`}
         title="Spracheingabe wird in diesem Browser nicht unterstützt (am besten Chrome oder Edge)."
       >
-        🎙 nicht verfügbar
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="13" height="13" aria-hidden="true">
+          <rect x="9" y="3" width="6" height="11" rx="3" />
+          <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" />
+          <path d="M4 4l16 16" />
+        </svg>
+        Sprache nicht verfügbar
       </span>
     );
   }
@@ -107,9 +112,25 @@ export function DictationButton({
       >
         <span
           aria-hidden="true"
-          className={active || busy ? "animate-pulse" : ""}
+          className={`inline-flex ${active || busy ? "animate-pulse" : ""}`}
         >
-          {busy ? "⋯" : active ? "●" : "🎙"}
+          {busy ? (
+            // Spinner (Punkte-Ersatz)
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width="15" height="15">
+              <path d="M12 3a9 9 0 1 0 9 9" />
+            </svg>
+          ) : active ? (
+            // Aufnahme läuft: Stopp-Quadrat
+            <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13">
+              <rect x="6" y="6" width="12" height="12" rx="2.5" />
+            </svg>
+          ) : (
+            // Mikrofon
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15">
+              <rect x="9" y="3" width="6" height="11" rx="3" />
+              <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" />
+            </svg>
+          )}
         </span>
         {label}
       </button>

@@ -60,10 +60,11 @@ export function useDictation(opts: {
   const [listening, setListening] = useState(false);
   const recRef = useRef<SpeechRecognitionLike | null>(null);
   const baseRef = useRef("");
-  // Bereits final erkannter Text dieser Diktat-Sitzung. Wird nur durch NEUE
-  // finale Ergebnisse (ab event.resultIndex) ergänzt — so kann sich kein Wort
-  // mehrfach anhängen („ich ich ich …").
-  const finalRef = useRef("");
+  // Finale Stücke der Sitzung, indiziert nach result-Index. Pro Index wird der
+  // Text ÜBERSCHRIEBEN (nicht angehängt) — egal wie oft ein Browser denselben
+  // finalen Treffer (auch mit resultIndex=0) erneut meldet, er zählt nur einmal.
+  // Verhindert „ich ich ich …" auf Mobile-Browsern zuverlässig.
+  const finalsRef = useRef<string[]>([]);
   const activatedRef = useRef(false);
 
   const optsRef = useRef(opts);
@@ -83,31 +84,29 @@ export function useDictation(opts: {
     rec.continuous = true;
     rec.interimResults = true; // Live-Zwischenergebnisse → sofort sichtbar
     baseRef.current = optsRef.current.getBase();
-    finalRef.current = "";
+    finalsRef.current = [];
     activatedRef.current = false;
 
     rec.onresult = (event) => {
-      // Nur die seit dem letzten Event neu hinzugekommenen Ergebnisse ansehen.
-      // Finale Stücke werden EINMAL in finalRef gesammelt; Interim wird pro
-      // Event frisch aufgebaut (es ändert sich laufend).
+      // Alle Ergebnisse durchgehen: finale werden pro Index GESPEICHERT
+      // (überschrieben, daher idempotent), Interim pro Event frisch gebaut.
       let interim = "";
       let newFinal = false;
-      for (let i = event.resultIndex; i < event.results.length; i++) {
+      for (let i = 0; i < event.results.length; i++) {
         const result = event.results[i];
         const t = result[0]?.transcript ?? "";
         if (result.isFinal) {
           const piece = t.trim();
-          if (piece) {
-            finalRef.current = finalRef.current
-              ? `${finalRef.current} ${piece}`
-              : piece;
+          if (piece && finalsRef.current[i] !== piece) {
+            finalsRef.current[i] = piece;
             newFinal = true;
           }
         } else {
           interim += t;
         }
       }
-      const spoken = `${finalRef.current} ${interim}`.replace(/\s+/g, " ").trim();
+      const finalText = finalsRef.current.filter(Boolean).join(" ");
+      const spoken = `${finalText} ${interim}`.replace(/\s+/g, " ").trim();
       const base = baseRef.current;
       const full = base ? (spoken ? `${base} ${spoken}` : base) : spoken;
       optsRef.current.onChange(full);
