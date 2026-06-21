@@ -186,6 +186,22 @@ export function Dashboard() {
   const ritualT = ritualTheme(!ritualMorning);
   const prompt = PROMPTS[promptIdx % PROMPTS.length];
 
+  // Gesicherte Antworten für den Erledigt-Zustand der Tagesritual-Karte.
+  const ritualAnswers: { label: string; value: string }[] = ritual
+    ? (ritualMorning
+        ? [
+            { label: "Dankbar für", value: (ritual.gratitude ?? []).join(", ") },
+            { label: "Macht den Tag gut", value: ritual.makeGreat ?? "" },
+            { label: "Ein guter Satz", value: ritual.affirmation ?? "" },
+          ]
+        : [
+            { label: "Gutes getan", value: ritual.goodDeed ?? "" },
+            { label: "Wäre besser", value: ritual.better ?? "" },
+            { label: "Schöne Momente", value: (ritual.goodMoments ?? []).join(", ") },
+          ]
+      ).filter((a) => a.value.trim().length > 0)
+    : [];
+
 
   function matchesFilter(e: (typeof entries)[number]): boolean {
     if (filter === "alle") return true;
@@ -450,88 +466,153 @@ export function Dashboard() {
             </div>
             </div>
 
-            {/* Status */}
-            <div
-              className="mb-3 flex items-center gap-2 text-[12.5px] font-semibold"
-              style={{ color: ritualT.eyebrow }}
-            >
-              <span
-                className="h-[7px] w-[7px] rounded-full"
-                style={{ background: ritualMorning ? "#CD8A5B" : "#CBBEF4" }}
-              />
-              {ritualFilled ? (
-                "Heute schon ausgefüllt"
-              ) : (
-                <>
+            {ritualFilled ? (
+              /* ===== Erledigt-Zustand (nicht wieder „offen" zeigen) ===== */
+              <>
+                <div className="mb-3 flex items-center gap-2 text-[12.5px] font-semibold text-[var(--green-text,#447510)]">
+                  <span
+                    className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-full"
+                    style={{ background: "linear-gradient(135deg,#B4ED63,#A8E84F)" }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#23221A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" width="11" height="11">
+                      <path d="M5 12l5 5L20 6" />
+                    </svg>
+                  </span>
+                  Heute erledigt
+                  <span style={{ color: "#b08a64", fontWeight: 500 }}>
+                    {" "}
+                    · 6 Min · automatisch gesichert
+                  </span>
+                </div>
+
+                <h2
+                  className="serif mb-3 text-[26px] font-semibold leading-tight"
+                  style={{ color: ritualT.title }}
+                >
+                  {ritualMorning ? "Gut sortiert" : "Gut abgeschlossen"} in den{" "}
+                  <em className="g">Tag</em>.
+                </h2>
+
+                {/* Blick auf das Gesicherte */}
+                <div className="mb-6 space-y-2.5">
+                  {ritualAnswers.length > 0 ? (
+                    ritualAnswers.map((a) => (
+                      <div
+                        key={a.label}
+                        className="rounded-[14px] border px-3.5 py-2.5"
+                        style={{
+                          background: "rgba(255,255,255,0.6)",
+                          borderColor: "rgba(35,34,26,0.07)",
+                        }}
+                      >
+                        <div className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[#9a8a73]">
+                          {a.label}
+                        </div>
+                        <div className="mt-0.5 text-[14.5px] leading-snug text-[#4f4434]">
+                          {a.value}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-[14.5px] text-[#6a5a48]">
+                      Heute schon festgehalten. Schön.
+                    </p>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => navigate("/ritual")}
+                  className="inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
+                  style={{
+                    color: "#23221A",
+                    background: "rgba(255,255,255,0.7)",
+                    borderColor: "rgba(35,34,26,0.12)",
+                  }}
+                >
+                  Eintrag ansehen →
+                </button>
+              </>
+            ) : (
+              /* ===== Offen-Zustand ===== */
+              <>
+                <div
+                  className="mb-3 flex items-center gap-2 text-[12.5px] font-semibold"
+                  style={{ color: ritualT.eyebrow }}
+                >
+                  <span
+                    className="h-[7px] w-[7px] rounded-full"
+                    style={{ background: ritualMorning ? "#CD8A5B" : "#CBBEF4" }}
+                  />
                   Heute noch offen
                   <span style={{ color: "#b08a64", fontWeight: 500 }}>
                     {" "}
                     · kein Muss
                   </span>
-                </>
-              )}
-            </div>
+                </div>
 
-            <h2
-              className="serif mb-2 text-[26px] font-semibold leading-tight"
-              style={{ color: ritualT.title }}
-            >
-              Sechs Minuten, die den Tag{" "}
-              <em className="g">{ritualMorning ? "sortieren" : "abschließen"}</em>.
-            </h2>
-            <p
-              className="mb-5 max-w-[480px] text-[15px] leading-relaxed"
-              style={{ color: "#6a5a48" }}
-            >
-              {ritualMorning
-                ? "Drei kleine Fragen, bevor es losgeht. Kein Pflichtprogramm. Nur ein ruhiger Anfang."
-                : "Drei kleine Fragen zum Abend. Kein Pflichtprogramm. Nur ein ruhiger Ausklang."}
-            </p>
+                <h2
+                  className="serif mb-2 text-[26px] font-semibold leading-tight"
+                  style={{ color: ritualT.title }}
+                >
+                  Sechs Minuten, die den Tag{" "}
+                  <em className="g">{ritualMorning ? "sortieren" : "abschließen"}</em>.
+                </h2>
+                <p
+                  className="mb-5 max-w-[480px] text-[15px] leading-relaxed"
+                  style={{ color: "#6a5a48" }}
+                >
+                  {ritualMorning
+                    ? "Drei kleine Fragen, bevor es losgeht. Kein Pflichtprogramm. Nur ein ruhiger Anfang."
+                    : "Drei kleine Fragen zum Abend. Kein Pflichtprogramm. Nur ein ruhiger Ausklang."}
+                </p>
 
-            {/* Themen-Chips */}
-            <div className="mb-6 flex flex-wrap gap-2">
-              {(ritualMorning
-                ? [
-                    { label: "Wofür dankbar?", dot: "#CD8A5B" },
-                    { label: "Was macht den Tag gut?", dot: "#DDB14B" },
-                    { label: "Ein guter Satz an dich", dot: "#9BA383" },
-                  ]
-                : [
-                    { label: "Was Gutes getan?", dot: "#CD8A5B" },
-                    { label: "Was wäre besser?", dot: "#DDB14B" },
-                    { label: "Schöne Momente", dot: "#9BA383" },
-                  ]
-              ).map((c) => (
-                <span
-                  key={c.label}
-                  className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[13px] font-medium"
+                {/* Themen-Chips */}
+                <div className="mb-6 flex flex-wrap gap-2">
+                  {(ritualMorning
+                    ? [
+                        { label: "Wofür dankbar?", dot: "#CD8A5B" },
+                        { label: "Was macht den Tag gut?", dot: "#DDB14B" },
+                        { label: "Ein guter Satz an dich", dot: "#9BA383" },
+                      ]
+                    : [
+                        { label: "Was Gutes getan?", dot: "#CD8A5B" },
+                        { label: "Was wäre besser?", dot: "#DDB14B" },
+                        { label: "Schöne Momente", dot: "#9BA383" },
+                      ]
+                  ).map((c) => (
+                    <span
+                      key={c.label}
+                      className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[13px] font-medium"
+                      style={{
+                        background: "rgba(255,255,255,0.66)",
+                        borderColor: "rgba(35,34,26,0.07)",
+                        color: "#5d4f3f",
+                      }}
+                    >
+                      <span
+                        className="h-[7px] w-[7px] rounded-full"
+                        style={{ background: c.dot }}
+                      />
+                      {c.label}
+                    </span>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => navigate("/ritual")}
+                  className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
                   style={{
-                    background: "rgba(255,255,255,0.66)",
-                    borderColor: "rgba(35,34,26,0.07)",
-                    color: "#5d4f3f",
+                    color: "#23221A",
+                    background: "linear-gradient(180deg,#B4ED63,#A8E84F)",
+                    boxShadow: "0 6px 18px rgba(110,155,44,0.32)",
                   }}
                 >
-                  <span
-                    className="h-[7px] w-[7px] rounded-full"
-                    style={{ background: c.dot }}
-                  />
-                  {c.label}
-                </span>
-              ))}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => navigate("/ritual")}
-              className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
-              style={{
-                color: "#23221A",
-                background: "linear-gradient(180deg,#B4ED63,#A8E84F)",
-                boxShadow: "0 6px 18px rgba(110,155,44,0.32)",
-              }}
-            >
-              {ritualFilled ? "Ritual ansehen" : "Ritual starten"} →
-            </button>
+                  Ritual starten →
+                </button>
+              </>
+            )}
           </div>
 
           {/* Bild (ab Tablet) */}
