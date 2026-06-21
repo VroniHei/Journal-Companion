@@ -12,6 +12,7 @@ import { Search } from "./pages/Search";
 import { Clarity } from "./pages/Clarity";
 import { Ritual } from "./pages/Ritual";
 import { Archive } from "./pages/Archive";
+import { RedThread } from "./pages/RedThread";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
       { path: "klaerung", element: <Clarity /> },
       { path: "ritual", element: <Ritual /> },
       { path: "archiv", element: <Archive /> },
+      { path: "roter-faden", element: <RedThread /> },
       { path: "wochenrueckblick", element: <WeeklyReview /> },
       { path: "einstellungen", element: <Settings /> },
       { path: "suche", element: <Search /> },

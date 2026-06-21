@@ -310,6 +310,25 @@ export function Patterns() {
     <section className="space-y-8">
       <h1 className="serif text-3xl font-semibold">Muster</h1>
 
+      {/* Drill-in: Roter Faden (Markenkern) — wiederkehrende Themen über Zeit. */}
+      <Link
+        to="/roter-faden"
+        className="lift flex items-center justify-between gap-3 rounded-[18px] border border-[var(--border)] bg-[var(--surface)] px-5 py-4 shadow-[var(--shadow-card)]"
+      >
+        <div>
+          <div className="text-[15px] font-[650] tracking-[-0.01em] text-[var(--foreground)]">
+            Roter Faden
+          </div>
+          <p className="mt-0.5 text-[13px] leading-snug text-[var(--muted)]">
+            Was sich über die Wochen <em className="g">durchzieht</em> — Themen statt
+            nur Wörter.
+          </p>
+        </div>
+        <span aria-hidden="true" className="flex-none text-[var(--accent-text)]">
+          →
+        </span>
+      </Link>
+
       {/* Quantitative Übersicht (bestehend) */}
       <div className="space-y-6">
         <Card>

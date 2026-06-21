@@ -288,3 +288,101 @@ export function recentSteps(
 function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
+
+export interface ThemeCluster {
+  id: string;
+  title: string;
+  count: number;
+  /** Mood-Farbe nach Durchschnittsstimmung (clay→gold→sage→grün). */
+  color: string;
+  /** Ruhiger Satz, was das Thema gerade macht (Trend). */
+  note: string;
+  /** Zeit-Chips: seit-wann + letztes Auftauchen. */
+  tags: string[];
+  firstAt: string;
+  lastAt: string;
+}
+
+// Mood-Skala (App-Style §3): clay (schwer) → gold → sage → grün (leicht).
+function moodHue(m: number): string {
+  if (m <= 3.5) return "#CD8A5B";
+  if (m <= 5.5) return "#DDB14B";
+  if (m <= 7.5) return "#9BA383";
+  return "#A8E84F";
+}
+
+function sinceLabel(firstAt: string): string {
+  const weeks = Math.floor((Date.now() - new Date(firstAt).getTime()) / (7 * DAY));
+  if (weeks <= 0) return "diese Woche";
+  if (weeks === 1) return "seit 1 Woche";
+  return `seit ${weeks} Wochen`;
+}
+
+function lastLabel(lastAt: string): string {
+  const d = new Date(lastAt);
+  const days = Math.floor((Date.now() - d.getTime()) / DAY);
+  if (days <= 0) return "heute";
+  if (days === 1) return "gestern";
+  return d.toLocaleDateString("de-DE", { day: "numeric", month: "long" });
+}
+
+/**
+ * „Roter Faden" (Markenkern): wiederkehrende Themen über die letzten Wochen —
+ * nicht nur Wörter, sondern was sich durchzieht. Aus den `topics` der Einträge
+ * geclustert: Häufigkeit, Stimmungs-Trend (wird es leichter?), Zeitraum.
+ */
+export function themeClusters(
+  entries: JournalEntry[],
+  opts: { weeks?: number; min?: number; max?: number } = {},
+): ThemeCluster[] {
+  const { weeks = 6, min = 2, max = 6 } = opts;
+  const cutoff = Date.now() - weeks * 7 * DAY;
+  const within = entries.filter((e) => new Date(e.createdAt).getTime() >= cutoff);
+
+  type Acc = { dates: string[]; moods: number[] };
+  const map = new Map<string, Acc>();
+  for (const e of within) {
+    for (const raw of e.topics) {
+      const topic = raw.trim();
+      if (!topic) continue;
+      const key = topic.toLowerCase();
+      const acc = map.get(key) ?? { dates: [], moods: [] };
+      acc.dates.push(e.createdAt);
+      acc.moods.push(e.mood);
+      if (!map.has(key)) map.set(key, acc);
+    }
+  }
+
+  const clusters: ThemeCluster[] = [];
+  for (const [key, acc] of map) {
+    if (acc.dates.length < min) continue;
+    const sorted = [...acc.dates].sort();
+    const firstAt = sorted[0];
+    const lastAt = sorted[sorted.length - 1];
+    const meanMood = avg(acc.moods) ?? 5;
+
+    // Trend: Stimmung in der ersten vs. zweiten Hälfte der Treffer.
+    const half = Math.floor(acc.moods.length / 2);
+    const early = avg(acc.moods.slice(0, half || 1));
+    const late = avg(acc.moods.slice(half));
+    let note = "Taucht immer wieder auf.";
+    if (early != null && late != null) {
+      if (late - early >= 0.8) note = "Zuletzt klingst du dabei <em class=\"g\">leichter</em>.";
+      else if (early - late >= 0.8) note = "Liegt dir gerade <em class=\"g\">schwerer</em> als zuvor.";
+      else note = "Zieht sich <em class=\"g\">ruhig</em> durch.";
+    }
+
+    clusters.push({
+      id: key,
+      title: capitalize(key),
+      count: acc.dates.length,
+      color: moodHue(meanMood),
+      note,
+      tags: [sinceLabel(firstAt), lastLabel(lastAt)],
+      firstAt,
+      lastAt,
+    });
+  }
+
+  return clusters.sort((a, b) => b.count - a.count).slice(0, max);
+}
