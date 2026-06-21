@@ -331,7 +331,9 @@ export function Dashboard() {
               {prompt.post}
             </p>
           </div>
-          <div className="grid shrink-0 grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+          {/* Aktionen nur ab sm — mobil ist die Kachel nur der Impuls (die
+              Schnell-Buttons oben decken Schreiben/Sprechen ab). */}
+          <div className="hidden shrink-0 gap-2 sm:flex sm:flex-wrap">
             <button
               type="button"
               onClick={() => setPromptIdx((i) => i + 1)}
@@ -716,23 +718,29 @@ export function Dashboard() {
           {/* ENERGIE HEUTE · kompakter Tagesimpuls (antippbarer Balken-Meter) */}
           <div className="lift flex flex-col gap-5 rounded-[24px] border border-[var(--border)] bg-[radial-gradient(360px_180px_at_100%_0%,rgba(168,232,79,0.12),transparent_64%)] bg-[var(--surface)] p-[22px_28px] shadow-[var(--shadow-card)] sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <div className="mb-2 inline-flex items-center gap-2.5">
-                <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
-                <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-                  Energie heute
+              {/* Mobil: kompakter Kopf (Label + Wert rechts); ab sm großer Satz. */}
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <span className="inline-flex items-center gap-2.5">
+                  <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+                  <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+                    Energie heute
+                  </span>
+                </span>
+                <span className="text-[13px] font-[650] text-[var(--accent-text)] sm:hidden">
+                  {energyLevel > 0 ? ENERGY_WORD[energyLevel] : "noch offen"}
                 </span>
               </div>
               {energyLevel > 0 ? (
-                <p className="mb-1 text-[20px] font-[450] leading-[1.4] tracking-[-0.01em] text-[var(--foreground)]">
+                <p className="mb-1 hidden text-[20px] font-[450] leading-[1.4] tracking-[-0.01em] text-[var(--foreground)] sm:block">
                   Heute: <em className="g">{ENERGY_WORD[energyLevel]} Energie</em>. Plan
                   ruhig danach.
                 </p>
               ) : (
-                <p className="mb-1 text-[20px] font-[450] leading-[1.4] tracking-[-0.01em] text-[var(--foreground)]">
+                <p className="mb-1 hidden text-[20px] font-[450] leading-[1.4] tracking-[-0.01em] text-[var(--foreground)] sm:block">
                   Wie viel Energie hast du <em className="g">heute</em>?
                 </p>
               )}
-              <p className="text-[13px] leading-[1.45] text-[#9a917f]">
+              <p className="text-[12.5px] leading-[1.45] text-[#9a917f] sm:text-[13px]">
                 Tipp an, wie viel du heute hast. Deine Impulse passen sich daran an.
               </p>
             </div>
