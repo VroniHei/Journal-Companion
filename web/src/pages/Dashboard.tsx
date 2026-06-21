@@ -690,6 +690,14 @@ export function Dashboard() {
             })}
           </div>
         )}
+        {hasData && (
+          <Link
+            to="/archiv"
+            className="text-sm font-semibold text-[var(--accent-text)] hover:underline"
+          >
+            Alle ansehen →
+          </Link>
+        )}
       </div>
 
       {!hasData ? (
