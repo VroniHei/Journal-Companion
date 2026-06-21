@@ -66,6 +66,11 @@ const SYNC_TABLES: SyncTable[] = [
     table: db.dailyRituals as unknown as Table<{ id: string }, string>,
     version: (r) => String(r.updatedAt ?? r.createdAt ?? ""),
   },
+  {
+    kind: "energyLevels",
+    table: db.energyLevels as unknown as Table<{ id: string }, string>,
+    version: (r) => String(r.updatedAt ?? r.createdAt ?? ""),
+  },
 ];
 
 // --- Status-Store (für UI) -----------------------------------------------

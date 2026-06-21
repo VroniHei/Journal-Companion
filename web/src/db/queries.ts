@@ -4,6 +4,7 @@ import type {
   ChatRole,
   DailyRitual,
   Decision,
+  EnergyLevel,
   EntryDigest,
   JournalEntry,
   OpenLoop,
@@ -454,6 +455,30 @@ export async function upsertDailyRitual(
     goodMoments: [],
   };
   await db.dailyRituals.put({ ...base, ...patch, id: date, date, updatedAt: now });
+  notifyDataChanged();
+}
+
+// --- Energie-Check ---------------------------------------------------------
+
+export function getEnergyLevel(date: string): Promise<EnergyLevel | undefined> {
+  return db.energyLevels.get(date);
+}
+
+export function listEnergyLevels(): Promise<EnergyLevel[]> {
+  return db.energyLevels.orderBy("date").reverse().toArray();
+}
+
+/** Setzt den Energie-Wert für einen Tag (genau ein Wert pro Tag). */
+export async function setEnergyLevel(date: string, level: number): Promise<void> {
+  const now = nowIso();
+  const current = await db.energyLevels.get(date);
+  await db.energyLevels.put({
+    id: date,
+    date,
+    level,
+    createdAt: current?.createdAt ?? now,
+    updatedAt: now,
+  });
   notifyDataChanged();
 }
 

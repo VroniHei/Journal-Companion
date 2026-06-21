@@ -2,7 +2,9 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "../db/dexie";
 import {
   getDailyRitual,
+  getEnergyLevel,
   listDecisions,
+  listEnergyLevels,
   listEntriesDesc,
   listMessages,
   listOpenLoops,
@@ -13,6 +15,7 @@ import type {
   ChatMessage,
   DailyRitual,
   Decision,
+  EnergyLevel,
   JournalEntry,
   OpenLoop,
 } from "@journal/shared";
@@ -47,4 +50,12 @@ export function useDecisions(): Decision[] {
 
 export function useDailyRitual(date: string): DailyRitual | undefined {
   return useLiveQuery(() => getDailyRitual(date), [date]);
+}
+
+export function useEnergyToday(date: string): EnergyLevel | undefined {
+  return useLiveQuery(() => getEnergyLevel(date), [date]);
+}
+
+export function useEnergyLevels(): EnergyLevel[] {
+  return useLiveQuery(() => listEnergyLevels(), [], []);
 }

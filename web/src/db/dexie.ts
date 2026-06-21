@@ -4,6 +4,7 @@ import type {
   ChatMessage,
   DailyRitual,
   Decision,
+  EnergyLevel,
   JournalEntry,
   OpenLoop,
   PatternInsight,
@@ -34,6 +35,7 @@ export class JournalDB extends Dexie {
   openLoops!: Table<OpenLoop, string>;
   decisions!: Table<Decision, string>;
   dailyRituals!: Table<DailyRitual, string>;
+  energyLevels!: Table<EnergyLevel, string>;
   tombstones!: Table<Tombstone, string>;
 
   constructor() {
@@ -62,6 +64,9 @@ export class JournalDB extends Dexie {
     });
     this.version(7).stores({
       dailyRituals: "id, date, updatedAt",
+    });
+    this.version(8).stores({
+      energyLevels: "id, date, updatedAt",
     });
   }
 }

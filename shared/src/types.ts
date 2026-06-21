@@ -251,6 +251,18 @@ export interface WeeklyReviewResponse {
   summary: string;
 }
 
+/**
+ * Energie-Check (leiser Holistic-Layer): nicht Stimmung, sondern Kapazität.
+ * Opt-in, genau ein Wert pro Tag (1..5: leer → niedrig → mittel → hoch → voll).
+ */
+export interface EnergyLevel {
+  id: string; // = date (YYYY-MM-DD)
+  date: string; // YYYY-MM-DD (lokaler Tag)
+  level: number; // 1..5
+  createdAt: string; // ISO
+  updatedAt: string; // ISO
+}
+
 /** Wochen-Brief: warmer KI-Brief in Vronis Stimme statt Statistik-Wand. */
 export interface WeeklyLetterResponse {
   /** Brieftext (mehrere Absätze, ohne Anrede und ohne die Schlussfrage). */
@@ -477,7 +489,8 @@ export type SyncKind =
   | "patternInsights"
   | "openLoops"
   | "decisions"
-  | "dailyRituals";
+  | "dailyRituals"
+  | "energyLevels";
 
 export interface SyncRecord {
   kind: SyncKind;
