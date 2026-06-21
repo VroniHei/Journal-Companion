@@ -2,10 +2,14 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card } from "../components/ui";
 import { JournalCard } from "../components/JournalCard";
-import { useDailyRitual, useEntries, useSettings } from "../hooks/useData";
-import { dayKey } from "../db/queries";
+import {
+  useDailyRitual,
+  useEnergyToday,
+  useEntries,
+  useSettings,
+} from "../hooks/useData";
+import { dayKey, setEnergyLevel } from "../db/queries";
 import { ritualTheme } from "../lib/daypart";
-import { entryMode } from "../lib/entryCard";
 import {
   buildInsights,
   computeStreak,
@@ -15,8 +19,8 @@ import {
   type MoodDay,
 } from "../lib/insights";
 
-// Ruhige Mood-Skala (4 Stufen): clay → gold → sage → grün.
-const MOOD_COLORS = ["#CD8A5B", "#B79A66", "#9BA383", "#A8E84F"];
+// Mood-Skala (APP-STYLE §3): clay → gold → sage → grün.
+const MOOD_COLORS = ["#CD8A5B", "#DDB14B", "#9BA383", "#A8E84F"];
 
 // Schreib-Impulse für „Heute im Blick" (sanft, konkret, nicht coachig).
 const PROMPTS: { pre: string; accent: string; post: string }[] = [
@@ -73,17 +77,15 @@ function milestoneLabel(m: number): string {
 
 const FILTERS: { id: string; label: string }[] = [
   { id: "alle", label: "Alle" },
-  { id: "bereit", label: "Reflexion bereit" },
-  { id: "gesprochen", label: "Gesprochen" },
+  { id: "eintrag", label: "Eintrag" },
+  { id: "reflexion", label: "Reflexion" },
+  { id: "gespraech", label: "Gespräch" },
 ];
 
-// Bento-Raster „Letzte Einträge": gemischte Spalten 7/5/5/7 (Bento-Handoff).
-const BENTO_SPAN = [
-  "sm:col-span-7",
-  "sm:col-span-5",
-  "sm:col-span-5",
-  "sm:col-span-7",
-];
+// Energie-Meter (Dashboard-Widget): 5 ansteigende Balken, Farbe je Stufe.
+const ENERGY_HEIGHTS = [36, 52, 68, 84, 100];
+const ENERGY_FILL = ["#E6D7C4", "#D8C291", "#B6CE72", "#9BD24E", "#A8E84F"];
+const ENERGY_WORD = ["", "sehr wenig", "wenig", "mittlere", "gute", "volle"];
 
 // Stimmungs-Verlauf als ruhige Flächen-Linie (aus den Tageswerten der letzten Woche).
 function MoodSparkline({ days }: { days: MoodDay[] }) {
@@ -155,6 +157,9 @@ export function Dashboard() {
   const entries = useEntries();
   const settings = useSettings();
   const ritual = useDailyRitual(dayKey());
+  const today = dayKey();
+  const energy = useEnergyToday(today);
+  const energyLevel = energy?.level ?? 0;
   const [filter, setFilter] = useState("alle");
   const [promptIdx, setPromptIdx] = useState(0);
   const [moodViz, setMoodViz] = useState<"punkte" | "verlauf">("punkte");
@@ -182,11 +187,12 @@ export function Dashboard() {
 
 
   function matchesFilter(e: (typeof entries)[number]): boolean {
-    if (filter === "bereit") return Boolean(e.aiReflection);
-    if (filter === "gesprochen") return entryMode(e) === "voice";
+    if (filter === "eintrag") return !e.aiReflection;
+    if (filter === "reflexion") return Boolean(e.aiReflection);
+    if (filter === "gespraech") return Boolean(e.conversationSummary);
     return true;
   }
-  const shown = entries.filter(matchesFilter).slice(0, 6);
+  const shown = entries.filter(matchesFilter).slice(0, 3);
 
   const dateLabel = new Date().toLocaleDateString("de-DE", {
     weekday: "long",
@@ -696,6 +702,55 @@ export function Dashboard() {
             </Card>
           </div>
 
+          {/* ENERGIE HEUTE · kompakter Tagesimpuls (antippbarer Balken-Meter) */}
+          <div className="lift flex flex-col gap-5 rounded-[24px] border border-[var(--border)] bg-[radial-gradient(360px_180px_at_100%_0%,rgba(168,232,79,0.12),transparent_64%)] bg-[var(--surface)] p-[22px_28px] shadow-[var(--shadow-card)] sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <div className="mb-2 inline-flex items-center gap-2.5">
+                <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+                <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+                  Energie heute
+                </span>
+              </div>
+              {energyLevel > 0 ? (
+                <p className="mb-1 text-[20px] font-[450] leading-[1.4] tracking-[-0.01em] text-[var(--foreground)]">
+                  Heute: <em className="g">{ENERGY_WORD[energyLevel]} Energie</em>. Plan
+                  ruhig danach.
+                </p>
+              ) : (
+                <p className="mb-1 text-[20px] font-[450] leading-[1.4] tracking-[-0.01em] text-[var(--foreground)]">
+                  Wie viel Energie hast du <em className="g">heute</em>?
+                </p>
+              )}
+              <p className="text-[13px] leading-[1.45] text-[#9a917f]">
+                Tipp an, wie viel du heute hast. Deine Impulse passen sich daran an.
+              </p>
+            </div>
+            <div className="flex h-[46px] w-[188px] flex-none items-end gap-2">
+              {ENERGY_HEIGHTS.map((h, i) => {
+                const lvl = i + 1;
+                const filled = lvl <= energyLevel;
+                return (
+                  <button
+                    key={lvl}
+                    type="button"
+                    aria-label={`Energie ${lvl} von 5`}
+                    aria-pressed={energyLevel === lvl}
+                    onClick={() => setEnergyLevel(today, lvl)}
+                    className="flex h-full flex-1 items-end p-0"
+                  >
+                    <span
+                      className="block w-full rounded-[7px] transition-[background]"
+                      style={{
+                        height: `${h}%`,
+                        background: filled ? ENERGY_FILL[i] : "#EFEADD",
+                      }}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* WAS SICH ZEIGT */}
           <Card className="bg-[radial-gradient(420px_240px_at_100%_0%,rgba(205,138,91,0.10),transparent_62%)]">
             <div className="mb-4 inline-flex items-center gap-2.5">
@@ -734,13 +789,13 @@ export function Dashboard() {
         </>
       )}
 
-      {/* LETZTE EINTRÄGE (Bento-Handoff: H2 + Filter-Pills, aktiv = dunkel) */}
-      <div className="flex flex-wrap items-end justify-between gap-3 pt-2">
-        <h2 className="text-[24px] font-[650] tracking-[-0.02em] text-[var(--foreground)]">
+      {/* LETZTE EINTRÄGE (Prototyp: Eyebrow + Filter-Pills, aktiv = Sand) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+        <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
           Letzte Einträge
-        </h2>
+        </span>
         {hasData && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {FILTERS.map((f) => {
               const active = f.id === filter;
               return (
@@ -748,11 +803,12 @@ export function Dashboard() {
                   key={f.id}
                   type="button"
                   onClick={() => setFilter(f.id)}
-                  className="rounded-full px-4 py-2 text-[13.5px] font-semibold transition"
+                  className="rounded-full px-[14px] py-[7px] text-[12.5px] transition"
                   style={{
-                    background: active ? "#23221A" : "var(--surface)",
-                    color: active ? "#F8F5EE" : "var(--muted)",
-                    border: active ? "1px solid #23221A" : "1px solid rgba(35,34,26,.12)",
+                    background: active ? "var(--sand)" : "transparent",
+                    color: active ? "var(--foreground)" : "var(--muted)",
+                    fontWeight: active ? 600 : 500,
+                    border: active ? "1px solid transparent" : "1px solid rgba(35,34,26,.1)",
                   }}
                 >
                   {f.label}
@@ -796,19 +852,20 @@ export function Dashboard() {
         </p>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-12">
-            {shown.map((e, i) => (
-              <div key={e.id} className={BENTO_SPAN[i % 4]}>
-                <JournalCard entry={e} />
-              </div>
+          <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-3">
+            {shown.map((e) => (
+              <JournalCard key={e.id} entry={e} />
             ))}
           </div>
           <div className="flex justify-end pt-1">
             <Link
               to="/archiv"
-              className="text-sm font-semibold text-[var(--accent-text)] hover:underline"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-[18px] py-[11px] text-[14px] font-semibold text-[var(--foreground)] shadow-[0_2px_10px_rgba(35,34,26,.04)] transition hover:-translate-y-0.5"
             >
-              Alle ansehen →
+              Alle Einträge ansehen
+              <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15">
+                <path d="M4 9h10M9.5 4.5 14 9l-4.5 4.5" />
+              </svg>
             </Link>
           </div>
         </>
