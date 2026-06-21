@@ -10,6 +10,7 @@ type Filter = "alle" | EntryKind;
 
 const FILTERS: { key: Filter; label: string }[] = [
   { key: "alle", label: "Alle" },
+  { key: "ritual", label: "Tagesritual" },
   { key: "eintrag", label: "Eintrag" },
   { key: "reflexion", label: "Reflexion" },
   { key: "gespraech", label: "Gespräch" },

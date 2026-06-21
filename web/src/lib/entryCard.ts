@@ -44,26 +44,36 @@ export function entryTitle(e: JournalEntry): string {
 
 // Art des Eintrags für Karten-Badge + Dashboard-Filter (eine gemeinsame Quelle,
 // damit Anzeige und Filter immer zusammenpassen).
-export type EntryKind = "eintrag" | "reflexion" | "gespraech";
+export type EntryKind = "ritual" | "eintrag" | "reflexion" | "gespraech";
 
 export function entryKind(e: JournalEntry): EntryKind {
+  if (e.startIntent === "tagesritual") return "ritual";
   if (e.conversationSummary?.trim()) return "gespraech";
   if (e.aiReflection) return "reflexion";
   return "eintrag";
 }
 
 export const KIND_LABEL: Record<EntryKind, string> = {
+  ritual: "Tagesritual",
   eintrag: "Eintrag",
   reflexion: "Reflektiert",
   gespraech: "Gespräch",
 };
 
-// Getönte Badge-Farben je Art (ruhig, lesbar).
+// Getönte Badge-Farben je Art (ruhig, lesbar). Tagesritual = warmer Clay-Ton.
 export const KIND_STYLE: Record<EntryKind, { bg: string; text: string }> = {
+  ritual: { bg: "#F6ECE0", text: "#a9692f" },
   eintrag: { bg: "var(--sand)", text: "#5d564a" },
   reflexion: { bg: "#edf7d9", text: "#447510" },
   gespraech: { bg: "rgba(155,163,131,.18)", text: "#4d5340" },
 };
+
+// Kleines Icon je Art für den Wiedererkennungswert auf der Karte.
+// "ritual" = Sonnenaufgang (wie das Tagesritual-Badge); sonst kein Icon.
+export type EntryKindIcon = "sun" | null;
+export function entryKindIcon(kind: EntryKind): EntryKindIcon {
+  return kind === "ritual" ? "sun" : null;
+}
 
 export type EntryMode = "text" | "voice" | "contact" | "rumination";
 
