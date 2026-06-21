@@ -77,3 +77,12 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
   selbst via `measureText`.
 - **Energie-Tabelle (v8):** neuer Dexie-Store + Sync-Eintrag + Tombstone-Pfad
   ist Routine geworden; die Registry-Architektur trägt.
+- **Zwei Design-Handoffs, nicht einer:** Fürs Dashboard ist
+  `design_handoff_bento_dashboard/Bento-Dashboard.dc.html` die verbindliche
+  hi-fi Quelle (Markup + Logik-Klasse), NICHT der App-Shell-Frame. Vorher nach
+  App-Shell gebaut → falsche Einträge-Optik (gleichmäßiges Grid statt Bento
+  7/5/5/7, helle statt dunkle Filter-Pille, schlanke statt voller JournalCard).
+  Regel: pro Screen prüfen, ob ein eigener Handoff existiert.
+- **Mood-Gold zweierlei:** Bento-Dashboard nutzt 4-Stufen #CD8A5B/#B79A66/
+  #9BA383/#A8E84F; APP-STYLE §3 nennt Gold #DDB14B. Für Dashboard/Muster gilt
+  Bento (#B79A66). Große Kennzahlen sind ink (#23221A), nicht grün.
