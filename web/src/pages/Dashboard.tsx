@@ -840,10 +840,10 @@ export function Dashboard() {
       )}
 
       {/* ENERGIE HEUTE · kompakter Tagesimpuls (immer sichtbar, auch ohne Einträge) */}
-          <div className="order-4 lift flex flex-col gap-5 rounded-[24px] border border-[var(--border)] bg-[radial-gradient(360px_180px_at_100%_0%,rgba(168,232,79,0.12),transparent_64%)] bg-[var(--surface)] p-[22px_28px] shadow-[var(--shadow-card)] sm:order-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="order-4 lift flex flex-col gap-5 rounded-[24px] border border-[var(--border)] bg-[radial-gradient(360px_180px_at_100%_0%,rgba(168,232,79,0.12),transparent_64%)] bg-[var(--surface)] p-[22px_28px] shadow-[var(--shadow-card)] sm:order-5 sm:flex-row sm:items-center sm:justify-between sm:gap-7">
             <div className="min-w-0">
               {/* Mobil: kompakter Kopf (Label + Wert rechts); ab sm großer Satz. */}
-              <div className="mb-2 flex items-center justify-between gap-2">
+              <div className="mb-[9px] flex items-center justify-between gap-2">
                 <span className="inline-flex items-center gap-2.5">
                   <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
                   <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
