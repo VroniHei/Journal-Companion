@@ -68,3 +68,12 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 - **Prototyp neu ziehen lohnt:** Die .dc.html war zwischenzeitlich von 149 → 172
   KB gewachsen; ohne Re-Pull hätte ich gegen einen alten Stand gebaut.
 - **Generischer Sync skaliert weiter:** dailyRituals als weiterer Typ ohne Reibung.
+- **Font-Smoothing ist der „dünn"-Verdächtige:** `-webkit-font-smoothing:
+  antialiased` lässt variable Schriften auf WebKit/Chrome spürbar zarter
+  rendern. Wenn ein HTML-Prototyp es nicht setzt, sieht die App mit antialiased
+  dünner aus, obwohl Font + Gewichte stimmen. Browser-Default trifft die Optik.
+- **Canvas-Export ohne Libs:** Zitat-Karte als PNG rein über `canvas.toBlob` +
+  Web-Share-API (mit Download-Fallback) — kein html-to-image nötig. Textumbruch
+  selbst via `measureText`.
+- **Energie-Tabelle (v8):** neuer Dexie-Store + Sync-Eintrag + Tombstone-Pfad
+  ist Routine geworden; die Registry-Architektur trägt.

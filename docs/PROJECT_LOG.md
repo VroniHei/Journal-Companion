@@ -5,6 +5,39 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-21 — Claude-Design-Funktionen übernommen (7 neue Screens)
+
+**Was:**
+- **Schrift kräftiger:** `-webkit-font-smoothing: antialiased` aus `body`
+  entfernt. Der Prototyp setzt es nicht; antialiased rendert Figtree auf
+  Chrome/Safari dünner. Behebt „Schrift wirkt dünner als bei Claude Design".
+- **Einträge exakt nach Prototyp:** JournalCard-Abstände (12/8px, lh 1.55),
+  Dashboard „Letzte Einträge" als gleichmäßiges 3-Spalten-Grid (gap 18) statt
+  asymmetrischem 7/5, Filter-Pillen mit Sand-Aktiv-Style.
+- **Roter Faden** (`/roter-faden`): wiederkehrende Themen-Cluster über Wochen
+  (`themeClusters` in insights.ts), Drill-in aus Muster.
+- **Verlauf** (`/verlauf`): Zeitraum-Analyse (Monat/6 Monate/Jahr), Stimmungs-
+  Sparkline + Themen-Verschiebungen (`moodTrend`/`themeShifts`/`trendStory`).
+- **Schleife lösen** (`/schleife`): 3-Schritt-Fokus-Flow im Flieder-Ton,
+  schließt mit Stability-Moment. Einstieg aus Klärung.
+- **Impuls-Pakete** (`/impulse`): kuratierte Schreib-Impulse, an Onboarding-
+  Fokus gekoppelt; Impuls startet Eintrag (`/neu?prompt=`).
+- **Zitat-Karte teilen** (`/teilen`): Insight als Karte, Format + Farbwelt,
+  PNG-Export per Canvas + Web-Share (dependency-frei).
+- **Wochen-Brief** (`/wochen-brief`): warmer KI-Brief + Frage; neue Server-Route
+  `/api/weekly-letter` (strukturiertes JSON), Vorlesen per SpeechSynthesis.
+- **Energie-Check** (`/energie`): Kapazität statt Stimmung, neue Dexie-Tabelle
+  `energyLevels` (v8) inkl. Sync.
+
+**Warum:** Vroni: „alles was in Claude Design ist, hier übernehmen und einbauen;
+Optik schauen wir am Ende an."
+
+**Ergebnis/Status:** Build + Typecheck + Lint grün, je Screen einzeln committet.
+Noch offen (Feinschliff/interaktiv): Eintrag-Detail-Tabs, Muster Punkte/Verlauf-
+Toggle, Desktop-Modal-Overlays, Archiv-Header. Optik-Gesamtpass am Ende.
+
+---
+
 ## 2026-06-18 — Innerline-Design importiert & angewendet
 
 **Was:**

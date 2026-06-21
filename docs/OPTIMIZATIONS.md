@@ -7,6 +7,12 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 ## Offen
 
+- 🟡 **Claude-Design-Feinschliff (interaktiv):** Eintrag-Detail-Tabs (Eintrag/
+  Reflexion/Gespräch), Muster „Punkte/Verlauf"-Umschalter mit Legende, Desktop-
+  Modal-Overlays (Ritual-Abschluss & Eintrag-Detail zentriert), Archiv-Header
+  nach Prototyp (Zurück + Titel + Suche). Danach Gesamt-Optik-Pass.
+- 🟢 **Roter Faden / Verlauf vertiefen:** echte KI-Cluster (statt nur `topics`-
+  Aggregation) und Themen-Verschiebungen sprachlich glätten, sobald genug Daten.
 - 🟡 **Automatische Gesprächs-Zusammenfassung** bei sehr langen Chats (>~12
   Nachrichten): ältere Turns serverseitig zu `conversationSummary` verdichten,
   statt nur die letzten 8 zu schicken.
@@ -35,6 +41,9 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 - ✅ Export (Markdown je Eintrag/Wochenrückblick, JSON für alle Daten).
 - ✅ Unit-Tests für Krisen-/Grübel-Heuristik (Vitest, 10 grün).
 - ✅ Barrierefreiheit-Basis: sichtbarer Fokus, reduzierte Bewegung.
+- ✅ Claude-Design-Screens übernommen: Roter Faden, Verlauf, Schleife lösen,
+  Impuls-Pakete, Zitat-Karte teilen, Wochen-Brief, Energie-Check (2026-06-21).
+- ✅ Schrift-Optik korrigiert (Font-Smoothing entfernt) + Einträge nach Prototyp.
 
 ## Geräte-Sync (Folgearbeiten)
 
