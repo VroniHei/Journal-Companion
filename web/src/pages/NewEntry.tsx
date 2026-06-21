@@ -26,8 +26,10 @@ export function NewEntry() {
   const rawIntent = params.get("intent");
   const intent = isStartIntent(rawIntent) ? rawIntent : undefined;
   const label = intentLabel(intent);
+  // Schreib-Impuls aus den Impuls-Paketen (optional vorbefüllt als Auftakt).
+  const promptParam = params.get("prompt")?.trim();
 
-  const [text, setText] = useState("");
+  const [text, setText] = useState(promptParam ? `${promptParam}\n\n` : "");
   const [mood, setMood] = useState(5);
   const [intensity, setIntensity] = useState(5);
   const [emotions, setEmotions] = useState<string[]>([]);

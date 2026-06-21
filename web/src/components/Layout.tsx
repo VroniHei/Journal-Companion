@@ -66,6 +66,12 @@ const ICONS = {
       <path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19" />
     </>
   ),
+  pen: (
+    <>
+      <path d="M12 19l7-7-3-3-7 7-1 4 4-1z" />
+      <path d="M15 6l3 3" />
+    </>
+  ),
 };
 
 const NAV = [
@@ -77,6 +83,7 @@ const NAV = [
 
 const PROFILE_LINKS = [
   { to: "/ritual", label: "Tagesritual", icon: ICONS.sun },
+  { to: "/impulse", label: "Impulse", icon: ICONS.pen },
   { to: "/klaerung", label: "Klärung", icon: ICONS.compass },
   { to: "/einstellungen", label: "Einstellungen", icon: ICONS.gear },
   { to: "/kontaktimpuls", label: "Kontaktimpuls", icon: ICONS.heart },

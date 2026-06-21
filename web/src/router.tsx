@@ -15,6 +15,7 @@ import { Archive } from "./pages/Archive";
 import { RedThread } from "./pages/RedThread";
 import { Progress } from "./pages/Progress";
 import { Loosen } from "./pages/Loosen";
+import { Impulses } from "./pages/Impulses";
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +34,7 @@ export const router = createBrowserRouter([
       { path: "roter-faden", element: <RedThread /> },
       { path: "verlauf", element: <Progress /> },
       { path: "schleife", element: <Loosen /> },
+      { path: "impulse", element: <Impulses /> },
       { path: "wochenrueckblick", element: <WeeklyReview /> },
       { path: "einstellungen", element: <Settings /> },
       { path: "suche", element: <Search /> },
