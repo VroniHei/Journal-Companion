@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createEntry } from "../db/queries";
 import { DictationButton } from "../components/DictationButton";
+import { DesktopModal } from "../components/DesktopModal";
 
 // „Gerade ist viel" — Soforthilfe für den überfüllten Moment: Kopf leeren,
 // dann sortieren. Ruhig, nie therapeutisch. Flieder-/Beruhigungs-Ton.
@@ -31,14 +32,15 @@ export function Relief() {
   }
 
   return (
+    <DesktopModal onClose={() => navigate("/")}>
     <section
-      className="-mx-4 -mt-6 min-h-[80vh] px-4 pb-6 pt-4 sm:-mx-6 sm:px-6"
+      className="-mx-4 -mt-6 min-h-[80vh] px-4 pb-6 pt-4 sm:-mx-6 sm:px-6 lg:-m-7 lg:min-h-0 lg:rounded-[26px] lg:p-7"
       style={{
         background:
           "radial-gradient(210px 210px at 100% 0%, rgba(203,190,244,.4), transparent 68%), radial-gradient(210px 210px at 0% 80%, rgba(168,232,79,.14), transparent 68%), linear-gradient(180deg,#EFEAF8 0%,#F1ECEC 44%,#F8F5EE 100%)",
       }}
     >
-      <div className="mx-auto flex min-h-[76vh] max-w-[560px] flex-col">
+      <div className="mx-auto flex min-h-[76vh] max-w-[560px] flex-col lg:min-h-0">
         <div className="flex justify-end">
           <button
             type="button"
@@ -120,5 +122,6 @@ export function Relief() {
         </div>
       </div>
     </section>
+    </DesktopModal>
   );
 }

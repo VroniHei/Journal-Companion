@@ -1,5 +1,7 @@
+import { useNavigate } from "react-router-dom";
 import { useEnergyLevels, useEnergyToday } from "../hooks/useData";
 import { dayKey, setEnergyLevel } from "../db/queries";
+import { DesktopModal } from "../components/DesktopModal";
 
 // Energie-Check (leiser Holistic-Layer): nicht Stimmung, sondern Kapazität.
 // Opt-in, ein Wert pro Tag, hilft den Tag realistisch zu planen.
@@ -36,6 +38,7 @@ function color(level: number): string {
 }
 
 export function Energy() {
+  const navigate = useNavigate();
   const today = dayKey();
   const todayEnergy = useEnergyToday(today);
   const all = useEnergyLevels();
@@ -61,14 +64,27 @@ export function Energy() {
   });
 
   return (
+    <DesktopModal onClose={() => navigate("/")}>
     <section className="space-y-5">
-      <div>
-        <div className="mb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[#9a917f]">
-          {dateLabel}
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="mb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[#9a917f]">
+            {dateLabel}
+          </div>
+          <h1 className="serif text-[26px] font-semibold leading-tight">
+            Wie viel Energie hast du <em className="g">heute</em>?
+          </h1>
         </div>
-        <h1 className="serif text-[26px] font-semibold leading-tight">
-          Wie viel Energie hast du <em className="g">heute</em>?
-        </h1>
+        <button
+          type="button"
+          aria-label="Schließen"
+          onClick={() => navigate("/")}
+          className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:text-[var(--foreground)]"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="17" height="17">
+            <path d="M6 6l12 12M18 6 6 18" />
+          </svg>
+        </button>
       </div>
 
       {/* Auswahl */}
@@ -167,5 +183,6 @@ export function Energy() {
         </div>
       </div>
     </section>
+    </DesktopModal>
   );
 }

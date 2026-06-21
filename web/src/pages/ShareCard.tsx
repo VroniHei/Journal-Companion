@@ -1,7 +1,9 @@
 import { useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useEntries } from "../hooks/useData";
 import { entrySummaryText } from "../lib/entryCard";
 import { DictationButton } from "../components/DictationButton";
+import { DesktopModal } from "../components/DesktopModal";
 
 // Zitat-Karte teilen: einen eigenen Satz als markenschöne Karte exportieren —
 // ruhig, nie marktschreierisch. Format + Farbwelt wählbar, PNG-Export per
@@ -80,6 +82,7 @@ function dateLabel(): string {
 }
 
 export function ShareCard() {
+  const navigate = useNavigate();
   const entries = useEntries();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [themeId, setThemeId] = useState<ThemeId>("tag");
@@ -204,12 +207,25 @@ export function ShareCard() {
   const quoteSizeCss = formatId === "quer" ? "5.5cqh" : "6.6cqw";
 
   return (
+    <DesktopModal onClose={() => navigate("/")} maxWidth={620}>
     <section className="space-y-5">
-      <div>
-        <h1 className="serif text-3xl font-semibold">Als Karte teilen</h1>
-        <p className="lead mt-2 text-[16px] text-[var(--foreground)]">
-          Ein Satz von dir, als <em className="g">schöne</em> Karte.
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="serif text-3xl font-semibold">Als Karte teilen</h1>
+          <p className="lead mt-2 text-[16px] text-[var(--foreground)]">
+            Ein Satz von dir, als <em className="g">schöne</em> Karte.
+          </p>
+        </div>
+        <button
+          type="button"
+          aria-label="Schließen"
+          onClick={() => navigate("/")}
+          className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:text-[var(--foreground)]"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="17" height="17">
+            <path d="M6 6l12 12M18 6 6 18" />
+          </svg>
+        </button>
       </div>
 
       {/* Vorschau */}
@@ -362,5 +378,6 @@ export function ShareCard() {
 
       <canvas ref={canvasRef} className="hidden" />
     </section>
+    </DesktopModal>
   );
 }
