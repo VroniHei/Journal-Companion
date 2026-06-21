@@ -1,7 +1,8 @@
 # Innerline — Strategie: ein Motor, zwei Schienen
 
 > Stand: 2026-06-21 · Projekt: Vroni / Innerline · Status: Arbeits-Strategie v1.0
-> (App × Marke). Liegt gespiegelt im Innerline-Drive (00_Marken Basics).
+> (App × Marke). **Hauptfassung (Quelle der Wahrheit).** Bei Bedarf als Kopie ins
+> Innerline-Drive (00_Marken Basics) übernehmen — Änderungen hier pflegen.
 
 ## Kern-These
 
