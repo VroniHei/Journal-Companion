@@ -1,5 +1,6 @@
 import express from "express";
-import { hasApiKey, hasStt, hasSync, hasTts } from "./env";
+import { env, hasApiKey, hasStt, hasSync, hasTts } from "./env";
+import { rateLimit } from "./lib/rateLimit";
 import { reflectRouter } from "./routes/reflect";
 import { chatRouter } from "./routes/chat";
 import { contactImpulseRouter } from "./routes/contactImpulse";
@@ -30,6 +31,17 @@ app.get("/api/config", (_req, res) => {
     hasStt: hasStt(),
     hasSync: hasSync(),
   });
+});
+
+// Missbrauchsschutz: nur die teuren KI-/Sprach-Routen begrenzen. Ein einziger
+// Gate-Filter (läuft genau einmal pro Anfrage) lässt Health, Config und den
+// Geräte-Sync (nicht-KI, häufig getaktet) bewusst aus.
+const aiLimiter = rateLimit({ max: env.rateLimitPerMin, windowMs: 60_000 });
+app.use((req, res, next) => {
+  if (!req.path.startsWith("/api/")) return next();
+  if (req.path === "/api/health" || req.path === "/api/config") return next();
+  if (req.path.startsWith("/api/sync")) return next();
+  return aiLimiter(req, res, next);
 });
 
 // API-Routen

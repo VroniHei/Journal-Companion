@@ -19,8 +19,6 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 - 🟡 **Adaptives Thinking reaktivieren**, sobald die SDK-Version `adaptive`
   typisiert — verbessert die Qualität der Reflexionen.
-- 🟡 **Rate-Limiting / Missbrauchsschutz** für `/api/reflect`, bevor öffentlich
-  deployt wird (sonst kann der API-Key teuer werden).
 - 🟡 **Fehler-/Leerzustände der UI** verfeinern (z.B. klarer Hinweis, wenn kein
   API-Key gesetzt ist; Retry-Button bei Streaming-Abbruch).
 - 🟢 **Tests** aufsetzen (Unit für `lib/journal.ts`, später E2E für den
@@ -44,6 +42,8 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 - ✅ Claude-Design-Screens übernommen: Roter Faden, Verlauf, Schleife lösen,
   Impuls-Pakete, Zitat-Karte teilen, Wochen-Brief, Energie-Check (2026-06-21).
 - ✅ Schrift-Optik korrigiert (Font-Smoothing entfernt) + Einträge nach Prototyp.
+- ✅ Rate-Limiting für die KI-/Sprach-Routen (Fixed-Window pro IP, dependency-frei,
+  `RATE_LIMIT_PER_MIN`, 429 + Retry-After; Sync/Health/Config ausgenommen; 5 Tests).
 
 ## Geräte-Sync (Folgearbeiten)
 

@@ -21,6 +21,9 @@ export const env = {
   // ist geheim und darf NIE ins Frontend.
   supabaseUrl: (process.env.SUPABASE_URL ?? "").trim(),
   supabaseServiceKey: (process.env.SUPABASE_SERVICE_ROLE_KEY ?? "").trim(),
+  // Rate-Limit für die teuren KI-Routen: max. Anfragen pro IP und Minute.
+  // 0 deaktiviert die Bremse (z.B. lokale Entwicklung). Standard: 30/min.
+  rateLimitPerMin: Number(process.env.RATE_LIMIT_PER_MIN ?? 30),
 };
 
 export function hasApiKey(): boolean {

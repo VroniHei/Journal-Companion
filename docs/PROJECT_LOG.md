@@ -5,6 +5,25 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-21 (Teil 3) — Rate-Limiting für die KI-Routen (Backend-Härtung)
+
+**Was:** Dependency-freies Fixed-Window-Rate-Limit pro IP (`server/src/lib/rateLimit.ts`)
+als einziger Gate-Filter in `app.ts`. Begrenzt nur die teuren KI-/Sprach-Routen
+(reflect, chat, contact-impulse, weekly-review, voice-reflect, tts, stt,
+pattern-insights, title); Health, Config und Geräte-Sync sind ausgenommen.
+Konfigurierbar über `RATE_LIMIT_PER_MIN` (Default 30, 0 = aus), ruhige deutsche
+429-Antwort mit `Retry-After`. 5 Vitest-Tests ergänzt.
+
+**Warum:** Vor öffentlicher Erreichbarkeit (Vercel) konnte ein offener Endpunkt
+den Anthropic-/ElevenLabs-Key teuer machen. Nicht-Design-Arbeit, parallel zum
+laufenden Design-Refresh — kollidiert nicht mit den UI-Seiten.
+
+**Ergebnis/Status:** `npm run build` + `npm run lint` grün, 15 Tests grün (vorher
+10). Hinweis: In-Memory-Zähler gilt auf Vercel pro Lambda-Instanz; ein verteiltes
+Limit wäre der nächste Schritt, falls nötig.
+
+---
+
 ## 2026-06-21 (Teil 2) — Push-Fix, Bento→App-Quelle, neue Screens, Mobile-UX
 
 **Was:**
