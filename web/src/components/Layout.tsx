@@ -88,15 +88,24 @@ const NAV = [
   { to: "/wochenrueckblick", label: "Rückblick", end: false, icon: ICONS.calendar },
 ];
 
+// Farbcodierte Icon-Kacheln (README): Tagesritual grün, Kontaktimpuls clay,
+// Energie gold, Klärung/Sprache/Routine/Einstellungen sand.
+const TILE = {
+  green: { bg: "#EEF1E6", fg: "#6E9B2C" },
+  clay: { bg: "#F6ECE3", fg: "#CD8A5B" },
+  gold: { bg: "#F6EFDC", fg: "#b08a2f" },
+  sand: { bg: "#F1ECE0", fg: "#7a6f5b" },
+} as const;
+
 const PROFILE_LINKS = [
-  { to: "/ritual", label: "Tagesritual", icon: ICONS.sun },
-  { to: "/impulse", label: "Impulse", icon: ICONS.pen },
-  { to: "/energie", label: "Energie heute", icon: ICONS.bolt },
-  { to: "/routine", label: "Routine-Wechsel", icon: ICONS.swap },
-  { to: "/klaerung", label: "Klärung", icon: ICONS.compass },
-  { to: "/einstellungen", label: "Einstellungen", icon: ICONS.gear },
-  { to: "/kontaktimpuls", label: "Kontaktimpuls", icon: ICONS.heart },
-  { to: "/sprechen", label: "Sprach-Check-in", icon: ICONS.mic },
+  { to: "/ritual", label: "Tagesritual", icon: ICONS.sun, tile: TILE.green },
+  { to: "/klaerung", label: "Klärung", icon: ICONS.compass, tile: TILE.sand },
+  { to: "/sprechen", label: "Sprach-Check-in", icon: ICONS.mic, tile: TILE.sand },
+  { to: "/kontaktimpuls", label: "Kontaktimpuls", icon: ICONS.heart, tile: TILE.clay },
+  { to: "/energie", label: "Energie heute", icon: ICONS.bolt, tile: TILE.gold },
+  { to: "/impulse", label: "Impulse", icon: ICONS.pen, tile: TILE.sand },
+  { to: "/routine", label: "Routine-Wechsel", icon: ICONS.swap, tile: TILE.sand },
+  { to: "/einstellungen", label: "Einstellungen", icon: ICONS.gear, tile: TILE.sand },
 ];
 
 export function Layout() {
@@ -175,10 +184,13 @@ export function Layout() {
             key={l.to}
             to={l.to}
             onClick={() => setProfileOpen(false)}
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--foreground)] transition hover:bg-[var(--surface-2)]"
+            className="flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm font-medium text-[var(--foreground)] transition hover:bg-[#F2F6E8]"
           >
-            <span className="text-[var(--muted)]">
-              <Icon d={l.icon} size={18} />
+            <span
+              className="inline-flex h-[30px] w-[30px] flex-none items-center justify-center rounded-[9px]"
+              style={{ background: l.tile.bg, color: l.tile.fg }}
+            >
+              <Icon d={l.icon} size={17} />
             </span>
             {l.label}
           </NavLink>

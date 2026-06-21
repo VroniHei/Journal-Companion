@@ -60,68 +60,104 @@ export function useDictation(opts: {
   const [listening, setListening] = useState(false);
   const recRef = useRef<SpeechRecognitionLike | null>(null);
   const baseRef = useRef("");
-  // Finale Stücke der Sitzung, indiziert nach result-Index. Pro Index wird der
-  // Text ÜBERSCHRIEBEN (nicht angehängt) — egal wie oft ein Browser denselben
-  // finalen Treffer (auch mit resultIndex=0) erneut meldet, er zählt nur einmal.
-  // Verhindert „ich ich ich …" auf Mobile-Browsern zuverlässig.
-  const finalsRef = useRef<string[]>([]);
+  // Bereits festgeschriebener Text über alle Mini-Sitzungen hinweg. Statt im
+  // `continuous`-Modus zu laufen (Mobile-Chrome re-segmentiert und doppelt dann
+  // „ich ich ich …"), nutzen wir kurze Sitzungen (continuous=false) und schreiben
+  // das Finale JEDER Sitzung GENAU EINMAL hier fest. Danach Auto-Neustart.
+  const committedRef = useRef("");
+  // Finale der aktuellen Mini-Sitzung (wird beim Sitzungsende committet).
+  const sessionFinalRef = useRef("");
   const activatedRef = useRef(false);
+  // true, sobald die Nutzerin selbst gestoppt hat → kein Auto-Neustart mehr.
+  const userStopRef = useRef(false);
 
   const optsRef = useRef(opts);
   optsRef.current = opts;
 
   const supported = Boolean(getCtor());
 
-  const stop = useCallback(() => {
-    recRef.current?.stop();
+  const emit = useCallback((interim: string) => {
+    const spoken = `${committedRef.current} ${sessionFinalRef.current} ${interim}`
+      .replace(/\s+/g, " ")
+      .trim();
+    const base = baseRef.current;
+    const full = base ? (spoken ? `${base} ${spoken}` : base) : spoken;
+    optsRef.current.onChange(full);
   }, []);
 
-  const start = useCallback(() => {
+  const stop = useCallback(() => {
+    userStopRef.current = true;
+    recRef.current?.stop();
+    setListening(false);
+  }, []);
+
+  // Eine kurze Erkennungs-Sitzung starten; bei normalem Ende automatisch erneut,
+  // solange die Nutzerin nicht selbst gestoppt hat.
+  const launch = useCallback(() => {
     const Ctor = getCtor();
     if (!Ctor) return;
     const rec = new Ctor();
     rec.lang = "de-DE";
-    rec.continuous = true;
-    rec.interimResults = true; // Live-Zwischenergebnisse → sofort sichtbar
-    baseRef.current = optsRef.current.getBase();
-    finalsRef.current = [];
-    activatedRef.current = false;
+    rec.continuous = false; // kurze Sitzung → keine Re-Segmentierungs-Doppler
+    rec.interimResults = true;
+    sessionFinalRef.current = "";
 
     rec.onresult = (event) => {
-      // Alle Ergebnisse durchgehen: finale werden pro Index GESPEICHERT
-      // (überschrieben, daher idempotent), Interim pro Event frisch gebaut.
+      let finalSeg = "";
       let interim = "";
-      let newFinal = false;
       for (let i = 0; i < event.results.length; i++) {
         const result = event.results[i];
         const t = result[0]?.transcript ?? "";
-        if (result.isFinal) {
-          const piece = t.trim();
-          if (piece && finalsRef.current[i] !== piece) {
-            finalsRef.current[i] = piece;
-            newFinal = true;
-          }
-        } else {
-          interim += t;
-        }
+        if (result.isFinal) finalSeg += `${t} `;
+        else interim += t;
       }
-      const finalText = finalsRef.current.filter(Boolean).join(" ");
-      const spoken = `${finalText} ${interim}`.replace(/\s+/g, " ").trim();
-      const base = baseRef.current;
-      const full = base ? (spoken ? `${base} ${spoken}` : base) : spoken;
-      optsRef.current.onChange(full);
-
-      if (newFinal && !activatedRef.current) {
+      sessionFinalRef.current = finalSeg.replace(/\s+/g, " ").trim();
+      emit(interim);
+      if (sessionFinalRef.current && !activatedRef.current) {
         activatedRef.current = true;
         optsRef.current.onActivate?.();
       }
     };
-    rec.onerror = () => setListening(false);
-    rec.onend = () => setListening(false);
+    rec.onerror = (e) => {
+      // „no-speech"/„aborted" sind harmlos; nur bei echten Fehlern abbrechen.
+      if (e.error !== "no-speech" && e.error !== "aborted") {
+        userStopRef.current = true;
+      }
+    };
+    rec.onend = () => {
+      // Finale dieser Sitzung GENAU EINMAL festschreiben.
+      if (sessionFinalRef.current) {
+        committedRef.current = `${committedRef.current} ${sessionFinalRef.current}`
+          .replace(/\s+/g, " ")
+          .trim();
+        sessionFinalRef.current = "";
+        emit("");
+      }
+      if (userStopRef.current) {
+        setListening(false);
+      } else {
+        // Weiterhören: nächste kurze Sitzung.
+        try {
+          launch();
+        } catch {
+          setListening(false);
+        }
+      }
+    };
     recRef.current = rec;
     rec.start();
+  }, [emit]);
+
+  const start = useCallback(() => {
+    if (!getCtor()) return;
+    baseRef.current = optsRef.current.getBase();
+    committedRef.current = "";
+    sessionFinalRef.current = "";
+    activatedRef.current = false;
+    userStopRef.current = false;
     setListening(true);
-  }, []);
+    launch();
+  }, [launch]);
 
   const toggle = useCallback(() => {
     if (listening) stop();
@@ -129,7 +165,10 @@ export function useDictation(opts: {
   }, [listening, start, stop]);
 
   useEffect(() => {
-    return () => recRef.current?.abort();
+    return () => {
+      userStopRef.current = true; // kein Auto-Neustart nach Unmount
+      recRef.current?.abort();
+    };
   }, []);
 
   return { supported, listening, toggle };

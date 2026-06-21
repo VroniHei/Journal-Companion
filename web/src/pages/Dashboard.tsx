@@ -333,6 +333,40 @@ export function Dashboard() {
         </div>
       </div>
 
+      {/* GERADE IST VIEL? · Kopf leeren — feste Lilac-Karte (Mobile + Desktop) */}
+      <Link
+        to="/soforthilfe"
+        className="lift order-2 flex items-center justify-between gap-3 overflow-hidden rounded-[20px] border px-5 py-4 sm:order-6"
+        style={{
+          background:
+            "radial-gradient(200px 160px at 100% 0%, rgba(203,190,244,.4), transparent 70%), linear-gradient(135deg,#F1ECF8,#F4F0EC)",
+          borderColor: "rgba(203,190,244,.55)",
+        }}
+      >
+        <div className="flex items-center gap-3.5">
+          <span
+            className="inline-flex h-[38px] w-[38px] flex-none items-center justify-center rounded-[12px]"
+            style={{ background: "rgba(203,190,244,.32)", color: "#7a6b96" }}
+            aria-hidden="true"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="19" height="19">
+              <path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2" />
+            </svg>
+          </span>
+          <div>
+            <div className="text-[15px] font-[650] tracking-[-0.01em] text-[#3a3247]">
+              Gerade ist viel?
+            </div>
+            <p className="mt-0.5 text-[13px] leading-snug text-[#6c6280]">
+              <em className="g">Kopf leeren</em> · in 2 Minuten sortieren.
+            </p>
+          </div>
+        </div>
+        <span aria-hidden="true" className="flex-none text-[#7a6b96]">
+          →
+        </span>
+      </Link>
+
       {/* HEUTE IM BLICK · Schreib-Impuls */}
       <Card className="order-3 bg-[radial-gradient(420px_240px_at_0%_0%,rgba(168,232,79,0.10),transparent_60%)] sm:order-2">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -412,7 +446,16 @@ export function Dashboard() {
           <div className="min-w-0 flex-1 p-7 sm:p-8">
             {/* Badge — mobil: Eyebrow oben, Meta kleiner darunter (kein Umbruch
                 in der Pille); ab sm: alles in einer Pille. */}
-            <div className="mb-4">
+            <div className="mb-4 flex items-center gap-3">
+            {/* Mobile-Thumbnail (Prototyp: 46px Notizbuch-Foto) */}
+            <div className="group h-[46px] w-[46px] flex-none overflow-hidden rounded-[14px] sm:hidden">
+              <img
+                src="/img/journaling-desk.webp"
+                alt=""
+                aria-hidden="true"
+                className="img-zoom h-full w-full object-cover"
+              />
+            </div>
             <div
               className="inline-flex items-center gap-2.5 rounded-full border py-1.5 pl-2 pr-3"
               style={{
@@ -452,17 +495,12 @@ export function Dashboard() {
                 Tägliches Ritual
               </span>
               <span
-                className="hidden border-l pl-2 text-[10.5px] font-semibold sm:inline"
+                className="border-l pl-2 text-[10.5px] font-semibold"
                 style={{ color: "#b08a64", borderColor: "rgba(205,138,91,0.3)" }}
               >
-                6 Min · Dein Begleiter
+                <span className="sm:hidden">6 Min</span>
+                <span className="hidden sm:inline">6 Min · Dein Begleiter</span>
               </span>
-            </div>
-            <div
-              className="mt-2 pl-1 text-[11px] font-medium sm:hidden"
-              style={{ color: "#b08a64" }}
-            >
-              6 Min · Dein Begleiter
             </div>
             </div>
 
@@ -552,23 +590,40 @@ export function Dashboard() {
                 </div>
 
                 <h2
-                  className="serif mb-2 text-[26px] font-semibold leading-tight"
+                  className="serif mb-2 text-[24px] font-semibold leading-tight sm:text-[26px]"
                   style={{ color: ritualT.title }}
                 >
-                  Sechs Minuten, die den Tag{" "}
-                  <em className="g">{ritualMorning ? "sortieren" : "abschließen"}</em>.
+                  {/* Mobile: kurze Headline; Desktop: volle Headline (Prototyp). */}
+                  <span className="sm:hidden">
+                    Den Tag{" "}
+                    <em className="g">{ritualMorning ? "sortieren" : "abschließen"}</em>.
+                  </span>
+                  <span className="hidden sm:inline">
+                    Sechs Minuten, die den Tag{" "}
+                    <em className="g">{ritualMorning ? "sortieren" : "abschließen"}</em>.
+                  </span>
                 </h2>
                 <p
                   className="mb-5 max-w-[480px] text-[15px] leading-relaxed"
                   style={{ color: "#6a5a48" }}
                 >
                   {ritualMorning
-                    ? "Drei kleine Fragen, bevor es losgeht. Kein Pflichtprogramm. Nur ein ruhiger Anfang."
-                    : "Drei kleine Fragen zum Abend. Kein Pflichtprogramm. Nur ein ruhiger Ausklang."}
+                    ? "Drei kleine Fragen, bevor es losgeht."
+                    : "Drei kleine Fragen zum Abend."}{" "}
+                  {/* Mobile: Themen im Fließtext (statt Chips). */}
+                  <span className="sm:hidden">
+                    {ritualMorning
+                      ? "Dankbarkeit, ein Fokus, ein guter Satz an dich."
+                      : "Was Gutes war, was besser ginge, schöne Momente."}
+                  </span>
+                  <span className="hidden sm:inline">
+                    Kein Pflichtprogramm. Nur ein ruhiger{" "}
+                    {ritualMorning ? "Anfang" : "Ausklang"}.
+                  </span>
                 </p>
 
-                {/* Themen-Chips */}
-                <div className="mb-6 flex flex-wrap gap-2">
+                {/* Themen-Chips — nur Desktop/Tablet */}
+                <div className="mb-6 hidden flex-wrap gap-2 sm:flex">
                   {(ritualMorning
                     ? [
                         { label: "Wofür dankbar?", dot: "#CD8A5B" },
@@ -861,7 +916,7 @@ export function Dashboard() {
 
       {hasData && (
           /* WAS SICH ZEIGT — Desktop/Tablet (mobil kompakt ausgeblendet) */
-          <Card className="order-6 hidden bg-[radial-gradient(420px_240px_at_100%_0%,rgba(205,138,91,0.10),transparent_62%)] sm:block">
+          <Card className="order-7 hidden bg-[radial-gradient(420px_240px_at_100%_0%,rgba(205,138,91,0.10),transparent_62%)] sm:block">
             <div className="mb-4 inline-flex items-center gap-2.5">
               <span className="h-2 w-2 rounded-full bg-[var(--clay)]" />
               <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
@@ -897,8 +952,8 @@ export function Dashboard() {
           </Card>
       )}
 
-      {/* LETZTE EINTRÄGE — Desktop/Tablet (mobil kompakt ausgeblendet) */}
-      <div className="order-7 hidden w-full flex-col gap-5 sm:flex">
+      {/* LETZTE EINTRÄGE — Mobile UND Desktop */}
+      <div className="order-8 flex w-full flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
         <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
           Letzte Einträge
