@@ -11,17 +11,12 @@ import { getSupabase, SYNC_TABLE } from "../services/supabase";
 // schickt nur Neueres zurück (push).
 export const syncRouter = Router();
 
+// `kind` ist client-kontrolliert (typisiert über SyncKind im Frontend) und der
+// Server ist nur ein generischer Speicher. Bewusst KEINE feste Enum-Liste hier:
+// eine neue Dexie-Tabelle hatte sonst (weil hier nicht eingetragen) den gesamten
+// Push-Batch mit 400 abgelehnt und damit den kompletten Sync blockiert.
 const recordSchema = z.object({
-  kind: z.enum([
-    "entries",
-    "chatMessages",
-    "patternSummaries",
-    "stabilityMoments",
-    "patternInsights",
-    "openLoops",
-    "decisions",
-    "dailyRituals",
-  ]),
+  kind: z.string().min(1).max(64),
   id: z.string().min(1),
   updatedAt: z.string().min(1),
   deleted: z.boolean().optional(),
