@@ -547,20 +547,22 @@ export function Dashboard() {
 
       {hasData && (
         <>
-          {/* AUSWERTUNG · 12-Spalten-Bento */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-12">
-            <Card className="sm:col-span-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="mb-2 text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+          {/* AUSWERTUNG · Bento. Mobil: Stimmung voll, Serie+Woche 2-spaltig. */}
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-12">
+            <Card className="col-span-2 sm:col-span-6">
+              {/* Mobil gestapelt (Titel volle Breite, Umschalter darunter),
+                  ab sm nebeneinander — so bricht der Status nicht unnötig um. */}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <div className="min-w-0">
+                  <div className="mb-2 whitespace-nowrap text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
                     Stimmung · 7 Tage
                   </div>
-                  <div className="serif text-[26px] font-semibold leading-tight">
+                  <div className="serif text-[22px] font-semibold leading-tight sm:text-[26px]">
                     {moodTrend(series)}
                   </div>
                 </div>
                 {/* Umschalter: Punkte / Verlauf */}
-                <div className="inline-flex shrink-0 rounded-full bg-[var(--surface-2)] p-1">
+                <div className="inline-flex shrink-0 self-start rounded-full bg-[var(--surface-2)] p-1">
                   {(["punkte", "verlauf"] as const).map((v) => {
                     const active = moodViz === v;
                     return (
@@ -569,7 +571,7 @@ export function Dashboard() {
                         type="button"
                         onClick={() => setMoodViz(v)}
                         aria-pressed={active}
-                        className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+                        className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
                           active
                             ? "bg-[var(--surface)] text-[var(--foreground)] shadow-[var(--shadow-card)]"
                             : "text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -620,7 +622,7 @@ export function Dashboard() {
               </div>
             </Card>
 
-            <Card className="flex flex-col justify-between sm:col-span-3">
+            <Card className="col-span-1 flex flex-col justify-between sm:col-span-3">
               <div className="flex items-center gap-2 text-[var(--clay)]">
                 <svg
                   viewBox="0 0 24 24"
@@ -640,13 +642,14 @@ export function Dashboard() {
                 </span>
               </div>
               <div className="mt-6">
-                <div className="text-[52px] font-extrabold leading-none tracking-[-0.03em] tabular-nums text-[var(--foreground)]">
+                <div className="text-[38px] font-extrabold leading-none tracking-[-0.03em] tabular-nums text-[var(--foreground)] sm:text-[52px]">
                   {streak}
                 </div>
                 <div className="mt-1 text-sm text-[var(--muted)]">
                   {streak === 1 ? "Tag am Stück" : "Tage am Stück"}
                 </div>
-                <div className="mt-4">
+                {/* Meilenstein-Details nur ab sm — mobil bleibt die Karte kompakt. */}
+                <div className="mt-4 hidden sm:block">
                   <div className="h-[7px] overflow-hidden rounded-full bg-[var(--surface-2)]">
                     <div
                       className="h-full rounded-full transition-[width] duration-500"
@@ -683,14 +686,14 @@ export function Dashboard() {
               </div>
             </Card>
 
-            <Card className="flex flex-col justify-between sm:col-span-3">
+            <Card className="col-span-1 flex flex-col justify-between sm:col-span-3">
               <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
                 Diese Woche
               </span>
               <div className="mt-6">
-                <div className="text-[52px] font-extrabold leading-none tracking-[-0.03em] tabular-nums text-[var(--foreground)]">
+                <div className="text-[38px] font-extrabold leading-none tracking-[-0.03em] tabular-nums text-[var(--foreground)] sm:text-[52px]">
                   {week.count}
-                  <span className="text-[22px] font-semibold text-[#9a917f]">
+                  <span className="text-[18px] font-semibold text-[#9a917f] sm:text-[22px]">
                     /7
                   </span>
                 </div>
