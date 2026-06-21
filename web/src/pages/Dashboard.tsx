@@ -325,17 +325,17 @@ export function Dashboard() {
                 Heute im Blick
               </span>
             </div>
-            <p className="lead max-w-[520px] text-xl leading-snug">
+            <p className="lead max-w-[520px] text-[16.5px] leading-snug sm:text-xl">
               {prompt.pre}
               <em className="g text-[var(--accent-text)]">{prompt.accent}</em>
               {prompt.post}
             </p>
           </div>
-          <div className="flex shrink-0 flex-wrap gap-2">
+          <div className="grid shrink-0 grid-cols-2 gap-2 sm:flex sm:flex-wrap">
             <button
               type="button"
               onClick={() => setPromptIdx((i) => i + 1)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--foreground)] hover:bg-[var(--surface-2)]"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--foreground)] hover:bg-[var(--surface-2)]"
             >
               ↻ Anderer Impuls
             </button>
@@ -386,9 +386,11 @@ export function Dashboard() {
         />
         <div className="relative flex items-stretch">
           <div className="min-w-0 flex-1 p-7 sm:p-8">
-            {/* Badge */}
+            {/* Badge — mobil: Eyebrow oben, Meta kleiner darunter (kein Umbruch
+                in der Pille); ab sm: alles in einer Pille. */}
+            <div className="mb-4">
             <div
-              className="mb-4 inline-flex items-center gap-2.5 rounded-full border py-1.5 pl-2 pr-3"
+              className="inline-flex items-center gap-2.5 rounded-full border py-1.5 pl-2 pr-3"
               style={{
                 background: "rgba(255,255,255,0.7)",
                 borderColor: "rgba(205,138,91,0.3)",
@@ -426,11 +428,18 @@ export function Dashboard() {
                 Tägliches Ritual
               </span>
               <span
-                className="border-l pl-2 text-[10.5px] font-semibold"
+                className="hidden border-l pl-2 text-[10.5px] font-semibold sm:inline"
                 style={{ color: "#b08a64", borderColor: "rgba(205,138,91,0.3)" }}
               >
                 6 Min · Dein Begleiter
               </span>
+            </div>
+            <div
+              className="mt-2 pl-1 text-[11px] font-medium sm:hidden"
+              style={{ color: "#b08a64" }}
+            >
+              6 Min · Dein Begleiter
+            </div>
             </div>
 
             {/* Status */}
@@ -727,7 +736,7 @@ export function Dashboard() {
                 Tipp an, wie viel du heute hast. Deine Impulse passen sich daran an.
               </p>
             </div>
-            <div className="flex h-[46px] w-[188px] flex-none items-end gap-2">
+            <div className="flex h-[46px] w-full flex-none items-end gap-2 sm:w-[188px]">
               {ENERGY_HEIGHTS.map((h, i) => {
                 const lvl = i + 1;
                 const filled = lvl <= energyLevel;
