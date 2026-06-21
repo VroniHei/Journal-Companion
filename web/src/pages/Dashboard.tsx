@@ -905,12 +905,17 @@ export function Dashboard() {
                   Was sich zeigt
                 </span>
               </span>
+              {/* Kleine echte Karten-Vorschau: Foto + Logo + Spruch-Andeutung,
+                  damit verständlich ist, was beim Teilen entsteht. */}
               <Link
                 to="/teilen"
-                className="inline-flex flex-none items-center gap-2 rounded-full border border-[var(--border)] bg-white py-1.5 pl-1.5 pr-3.5 text-[13px] font-semibold text-[var(--muted)] transition hover:-translate-y-0.5 hover:text-[var(--foreground)]"
+                aria-label="Als Karte teilen"
+                className="group flex flex-none items-center gap-2.5"
               >
-                {/* Mini-Vorschau: Foto-Karte (so wird verständlich, was entsteht) */}
-                <span className="relative h-7 w-7 overflow-hidden rounded-full">
+                <span className="text-[13px] font-semibold text-[var(--muted)] transition group-hover:text-[var(--foreground)]">
+                  Als Karte teilen
+                </span>
+                <span className="relative block h-[58px] w-[46px] flex-none overflow-hidden rounded-[9px] shadow-[0_6px_16px_rgba(35,34,26,.2)] transition group-hover:-translate-y-0.5">
                   <img
                     src="/img/zitat-weg.webp"
                     alt=""
@@ -918,12 +923,22 @@ export function Dashboard() {
                     className="h-full w-full object-cover"
                     style={{ objectPosition: "center 60%" }}
                   />
-                  <span className="absolute inset-0 bg-[rgba(18,15,9,.28)]" />
-                  <span className="absolute inset-0 flex items-center justify-center text-[var(--accent)]">
-                    <Icon d={ICONS.share} size={12} />
+                  <span
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        "linear-gradient(180deg, rgba(18,15,9,.2), rgba(18,15,9,.62))",
+                    }}
+                  />
+                  <span className="absolute inset-0 flex flex-col justify-between p-[5px]">
+                    <span className="text-[5.5px] font-bold tracking-wide text-white/90">
+                      innerline
+                    </span>
+                    <span className="line-clamp-2 text-[7px] font-semibold leading-[1.15] text-white">
+                      {insights[0] ?? "Dein Satz für heute."}
+                    </span>
                   </span>
                 </span>
-                Als Karte teilen
               </Link>
             </div>
             {insights.length > 0 ? (
