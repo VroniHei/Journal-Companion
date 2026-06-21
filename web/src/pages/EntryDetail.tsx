@@ -5,6 +5,7 @@ import { ReflectionView } from "../components/ReflectionView";
 import { FormattedText } from "../components/FormattedText";
 import { SessionClose } from "../components/SessionClose";
 import { ChatThread } from "../components/ChatThread";
+import { DesktopModal } from "../components/DesktopModal";
 import { useEntry, useMessages, useSettings } from "../hooks/useData";
 import {
   deleteEntry,
@@ -178,6 +179,7 @@ export function EntryDetail() {
   ];
 
   return (
+    <DesktopModal onClose={() => navigate("/")}>
     <section className="space-y-5">
       {/* Kopf: Datum + Kennzahlen, Zurück */}
       <div className="flex items-start justify-between gap-4">
@@ -389,5 +391,6 @@ export function EntryDetail() {
         </Button>
       </div>
     </section>
+    </DesktopModal>
   );
 }
