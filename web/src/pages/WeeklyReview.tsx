@@ -112,24 +112,28 @@ export function WeeklyReview() {
   }
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-8">
       <div>
-        <h1 className="serif text-3xl font-semibold">Wochenrückblick</h1>
-        <p className="mt-1 text-[var(--muted)]">
-          Ein ruhiger, ehrlicher Blick auf das, was sich gezeigt hat.
-        </p>
-      </div>
-
-      {/* Ruhige Zusammenfassung (Prototyp): Was sich gezeigt hat + Kennzahlen */}
-      <Card className="space-y-5">
         <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
           Diese Woche · {rangeLabel}
         </div>
-        <div>
-          <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
-            Was sich gezeigt hat
-          </div>
-          <p className="lead text-[17px] leading-[1.55] text-[var(--foreground)]">
+        <h1 className="serif mt-2 text-3xl font-semibold tracking-[-0.02em]">
+          Was sich <em className="g">gezeigt</em> hat
+        </h1>
+      </div>
+
+      {/* Bento: Desktop volle Breite (12-Spalten), Mobile gestapelt. */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-[18px]">
+        {/* Große, warme Zusammenfassung */}
+        <div
+          className="flex flex-col justify-center overflow-hidden rounded-[24px] border p-7 lg:col-span-7"
+          style={{
+            borderColor: "rgba(205,138,91,.22)",
+            background:
+              "radial-gradient(420px 220px at 88% -10%, rgba(221,177,75,.16), transparent 70%), linear-gradient(160deg,#FBF4E8,#F6F1E8)",
+          }}
+        >
+          <p className="lead text-[19px] leading-[1.5] text-[var(--foreground)]">
             {insights[0] ?? (
               <>
                 Sobald sich über die Woche etwas wiederholt, fasse ich es hier{" "}
@@ -138,73 +142,81 @@ export function WeeklyReview() {
             )}
           </p>
         </div>
-        <div className="grid grid-cols-3 gap-3 border-t border-[var(--border)] pt-4">
-          <div>
-            <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--foreground)]">
-              {inRange.length}
+
+        {/* Rechte Spalte: Kennzahlen + Stimmungsverlauf */}
+        <div className="flex flex-col gap-4 lg:col-span-5 lg:gap-[18px]">
+          <div className="grid grid-cols-3 gap-3 rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)]">
+            <div>
+              <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--green-deep,#6E9B2C)]">
+                {inRange.length}
+              </div>
+              <div className="text-[12.5px] text-[var(--muted)]">Einträge</div>
             </div>
-            <div className="text-[12.5px] text-[var(--muted)]">Einträge</div>
-          </div>
-          <div>
-            <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--foreground)]">
-              {streak}
+            <div>
+              <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--foreground)]">
+                {streak}
+              </div>
+              <div className="text-[12.5px] text-[var(--muted)]">Tage Serie</div>
             </div>
-            <div className="text-[12.5px] text-[var(--muted)]">Tage Serie</div>
-          </div>
-          <div>
-            <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--foreground)]">
-              {ritualDays}
+            <div>
+              <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--clay,#CD8A5B)]">
+                {ritualDays}
+              </div>
+              <div className="text-[12.5px] text-[var(--muted)]">Ritual-Tage</div>
             </div>
-            <div className="text-[12.5px] text-[var(--muted)]">Ritual-Tage</div>
           </div>
+          <MoodCard
+            entries={entries}
+            dayCount={30}
+            defaultView="verlauf"
+            title="Stimmung · Verlauf"
+          />
         </div>
-      </Card>
 
-      {/* Stimmung · Verlauf */}
-      <MoodCard entries={entries} />
-
-      {/* Worte der Woche */}
-      {words.length > 0 && (
-        <Card>
-          <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-            Worte der Woche
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {words.map((w) => (
-              <span
-                key={w.word}
-                className="rounded-full bg-[var(--sand)] px-3 py-1.5 text-[13px] font-medium text-[var(--foreground)]"
-                style={{ opacity: 0.55 + 0.45 * (w.count / maxWord) }}
-              >
-                {w.word}
-              </span>
-            ))}
-          </div>
-        </Card>
-      )}
-
-      {/* Wochen-Brief: warmer KI-Brief statt Statistik. */}
-      <Link
-        to="/wochen-brief"
-        className="lift flex items-center justify-between gap-3 overflow-hidden rounded-[18px] border px-5 py-4 shadow-[0_10px_28px_rgba(120,86,52,.1)]"
-        style={{
-          borderColor: "rgba(205,138,91,.22)",
-          background: "linear-gradient(160deg,#FBF4E8,#F8F3EA)",
-        }}
-      >
-        <div>
-          <div className="text-[15px] font-[650] tracking-[-0.01em] text-[#3a2e22]">
+        {/* Wochen-Brief */}
+        <Link
+          to="/wochen-brief"
+          className="lift flex flex-col overflow-hidden rounded-[20px] border p-[18px] shadow-[0_10px_28px_rgba(120,86,52,.1)] lg:col-span-7"
+          style={{
+            borderColor: "rgba(205,138,91,.22)",
+            background: "linear-gradient(160deg,#FBF4E8,#F8F3EA)",
+          }}
+        >
+          <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9c6b3f]">
+            <span className="h-2 w-2 rounded-full bg-[var(--clay,#CD8A5B)]" />
             Dein Wochen-Brief
           </div>
-          <p className="mt-0.5 text-[13px] leading-snug text-[#7a5f44]">
-            Ein paar <em className="g">ehrliche</em> Zeilen statt Statistik, mit einer
-            Frage.
+          <p className="text-[14px] leading-[1.5] text-[#6f5640]">
+            Ein paar <em className="g">ehrliche</em> Zeilen statt Statistik, mit
+            einer Frage.
           </p>
+          <span className="mt-auto pt-3 text-[14px] font-semibold text-[#9c6b3f]">
+            Ganzen Brief lesen →
+          </span>
+        </Link>
+
+        {/* Worte der Woche */}
+        <div className="rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] lg:col-span-5">
+          <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+            Worte der Woche
+          </div>
+          {words.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {words.map((w) => (
+                <span
+                  key={w.word}
+                  className="rounded-full bg-[var(--sand)] px-[11px] py-1 text-[12px] font-medium text-[var(--foreground)]"
+                  style={{ opacity: 0.6 + 0.4 * (w.count / maxWord) }}
+                >
+                  {w.word}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="text-[14px] text-[var(--muted)]">Noch keine Worte.</p>
+          )}
         </div>
-        <span aria-hidden="true" className="flex-none text-[#9c6b3f]">
-          →
-        </span>
-      </Link>
+      </div>
 
       <Card className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">

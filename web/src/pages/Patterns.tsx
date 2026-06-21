@@ -21,6 +21,7 @@ import {
   setPatternNotes,
 } from "../db/queries";
 import { aggregate } from "../lib/patterns";
+import { computeStreak, themeClusters, wordsOfWeek } from "../lib/insights";
 import { toPrefs } from "../lib/settings";
 import { postPatternInsights } from "../lib/apiClient";
 import { formatDateTime } from "../lib/format";
@@ -307,48 +308,113 @@ export function Patterns() {
   const selectClass =
     "rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--accent)]";
 
+  // Bento-Daten (Desktop nutzt die volle Breite als mehrspaltiges Raster).
+  const clusters = themeClusters(entries);
+  const topCluster = clusters[0];
+  const words = wordsOfWeek(entries);
+  const streak = computeStreak(entries);
+
   return (
     <section className="space-y-8">
-      <h1 className="serif text-3xl font-semibold">Muster</h1>
-
-      {/* Drill-ins: Roter Faden (Themen über Zeit) + Verlauf (Veränderung). */}
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Link
-          to="/roter-faden"
-          className="lift flex items-center justify-between gap-3 rounded-[18px] border border-[var(--border)] bg-[var(--surface)] px-5 py-4 shadow-[var(--shadow-card)]"
-        >
-          <div>
-            <div className="text-[15px] font-[650] tracking-[-0.01em] text-[var(--foreground)]">
-              Roter Faden
-            </div>
-            <p className="mt-0.5 text-[13px] leading-snug text-[var(--muted)]">
-              Was sich über die Wochen <em className="g">durchzieht</em>.
-            </p>
-          </div>
-          <span aria-hidden="true" className="flex-none text-[var(--accent-text)]">
-            →
-          </span>
-        </Link>
-        <Link
-          to="/verlauf"
-          className="lift flex items-center justify-between gap-3 rounded-[18px] border border-[var(--border)] bg-[var(--surface)] px-5 py-4 shadow-[var(--shadow-card)]"
-        >
-          <div>
-            <div className="text-[15px] font-[650] tracking-[-0.01em] text-[var(--foreground)]">
-              Verlauf
-            </div>
-            <p className="mt-0.5 text-[13px] leading-snug text-[var(--muted)]">
-              Wie du dich über Zeit <em className="g">verändert</em> hast.
-            </p>
-          </div>
-          <span aria-hidden="true" className="flex-none text-[var(--accent-text)]">
-            →
-          </span>
-        </Link>
+      <div>
+        <Eyebrow>Deine Muster</Eyebrow>
+        <h1 className="serif mt-2 text-3xl font-semibold tracking-[-0.02em]">
+          Was sich bei dir <em className="g">durchzieht</em>
+        </h1>
       </div>
 
-      {/* Stimmung · 7 Tage (Punkte/Verlauf umschaltbar, mit Legende) */}
-      <MoodCard entries={entries} />
+      {/* Bento: Desktop volle Breite (12-Spalten), Mobile gestapelt. */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-[18px]">
+        {/* Stimmung · 30 Tage (Verlauf-Default) */}
+        <div className="lg:col-span-7">
+          <MoodCard
+            entries={entries}
+            dayCount={30}
+            defaultView="verlauf"
+            title="Stimmung · 30 Tage"
+          />
+        </div>
+
+        {/* Roter Faden */}
+        <Link
+          to="/roter-faden"
+          className="lift flex flex-col rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] lg:col-span-5"
+        >
+          <div className="mb-2.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+            <span className="h-2 w-2 rounded-full bg-[var(--clay,#CD8A5B)]" />
+            Roter Faden
+          </div>
+          {topCluster ? (
+            <p
+              className="lead text-[16px] leading-[1.5] text-[var(--foreground)]"
+              dangerouslySetInnerHTML={{ __html: topCluster.note }}
+            />
+          ) : (
+            <p className="lead text-[16px] leading-[1.5] text-[var(--foreground)]">
+              Sobald sich Themen über mehrere Einträge wiederholen, zeigt sich
+              hier, was sich <em className="g">durchzieht</em>.
+            </p>
+          )}
+          <div className="mt-auto flex flex-wrap gap-1.5 pt-4">
+            {(topCluster?.tags ?? words.slice(0, 4).map((w) => w.word)).map((t) => (
+              <span
+                key={t}
+                className="rounded-full bg-[var(--sand)] px-[11px] py-1 text-[12px] font-medium text-[var(--foreground)]"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        </Link>
+
+        {/* Verlauf ansehen */}
+        <Link
+          to="/verlauf"
+          className="lift flex flex-col rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] lg:col-span-4"
+        >
+          <div className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+            Verlauf ansehen
+          </div>
+          <p className="text-[14px] leading-[1.5] text-[var(--muted)]">
+            Wie hat sich deine Stimmung über Monate <em className="g">verändert</em>?
+          </p>
+          <span className="mt-auto pt-4 text-[14px] font-semibold text-[var(--green-text,#447510)]">
+            6-Monats-Verlauf →
+          </span>
+        </Link>
+
+        {/* Häufige Worte */}
+        <div className="rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] lg:col-span-4">
+          <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+            Häufige Worte
+          </div>
+          {words.length ? (
+            <div className="flex flex-wrap gap-1.5">
+              {words.map((w) => (
+                <span
+                  key={w.word}
+                  className="rounded-full bg-[var(--sand)] px-[11px] py-1 text-[12px] font-medium text-[var(--foreground)]"
+                >
+                  {w.word}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="text-[14px] text-[var(--muted)]">Noch keine Worte.</p>
+          )}
+        </div>
+
+        {/* In Folge */}
+        <div className="flex flex-col rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] lg:col-span-4">
+          <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+            In Folge
+          </div>
+          <div className="text-[40px] font-extrabold leading-none tracking-[-0.02em] text-[var(--green-deep,#6E9B2C)]">
+            {streak}
+          </div>
+          <div className="mt-1 text-[13px] text-[var(--muted)]">Tage am Stück</div>
+        </div>
+      </div>
 
       {/* Quantitative Übersicht — Desktop/Tablet. Mobil kompakt wie Prototyp:
           Muster = Drill-ins + Stimmung; die Detailauswertung ab sm. */}

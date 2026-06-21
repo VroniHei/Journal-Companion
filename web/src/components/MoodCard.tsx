@@ -18,9 +18,24 @@ const LEGEND = [
 ];
 
 // „Stimmung · 7 Tage": Punkte oder Verlauf, umschaltbar, mit Legende (App-Style).
-export function MoodCard({ entries }: { entries: JournalEntry[] }) {
-  const [view, setView] = useState<"punkte" | "verlauf">("punkte");
-  const days = useMemo(() => moodByDay(entries, 7), [entries]);
+// Optional auf 30 Tage / Verlauf-Default umstellbar (Desktop-Muster-Bento).
+export function MoodCard({
+  entries,
+  dayCount = 7,
+  defaultView = "punkte",
+  title,
+  className = "",
+}: {
+  entries: JournalEntry[];
+  dayCount?: number;
+  defaultView?: "punkte" | "verlauf";
+  title?: string;
+  className?: string;
+}) {
+  const [view, setView] = useState<"punkte" | "verlauf">(defaultView);
+  const days = useMemo(() => moodByDay(entries, dayCount), [entries, dayCount]);
+  const showDayLabels = days.length <= 10;
+  const heading = title ?? `Stimmung · ${dayCount} Tage`;
 
   // Sparkline-Punkte aus den Tageswerten.
   const W = 320;
@@ -38,10 +53,10 @@ export function MoodCard({ entries }: { entries: JournalEntry[] }) {
   const last = line[line.length - 1];
 
   return (
-    <div className="rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)]">
+    <div className={`rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] ${className}`}>
       <div className="mb-4 flex items-center justify-between gap-3">
         <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
-          Stimmung · 7 Tage
+          {heading}
         </span>
         <div className="flex gap-[3px] rounded-full bg-[var(--sand)] p-[3px]">
           {(["punkte", "verlauf"] as const).map((v) => {
@@ -103,13 +118,15 @@ export function MoodCard({ entries }: { entries: JournalEntry[] }) {
             )}
             {last && <circle cx={last.x} cy={last.y} r="4.5" fill="#A8E84F" stroke="#fff" strokeWidth="2" />}
           </svg>
-          <div className="mt-1 flex justify-between">
-            {days.map((d, i) => (
-              <span key={i} className="text-[10.5px] text-[#9a917f]">
-                {d.day}
-              </span>
-            ))}
-          </div>
+          {showDayLabels && (
+            <div className="mt-1 flex justify-between">
+              {days.map((d, i) => (
+                <span key={i} className="text-[10.5px] text-[#9a917f]">
+                  {d.day}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
