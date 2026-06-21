@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
 import type { PatternSummary } from "@journal/shared";
 import { Button, Card } from "../components/ui";
@@ -100,6 +101,29 @@ export function WeeklyReview() {
           Ein ruhiger, ehrlicher Blick auf das, was sich gezeigt hat.
         </p>
       </div>
+
+      {/* Wochen-Brief: warmer KI-Brief statt Statistik. */}
+      <Link
+        to="/wochen-brief"
+        className="lift flex items-center justify-between gap-3 overflow-hidden rounded-[18px] border px-5 py-4 shadow-[0_10px_28px_rgba(120,86,52,.1)]"
+        style={{
+          borderColor: "rgba(205,138,91,.22)",
+          background: "linear-gradient(160deg,#FBF4E8,#F8F3EA)",
+        }}
+      >
+        <div>
+          <div className="text-[15px] font-[650] tracking-[-0.01em] text-[#3a2e22]">
+            Dein Wochen-Brief
+          </div>
+          <p className="mt-0.5 text-[13px] leading-snug text-[#7a5f44]">
+            Ein paar <em className="g">ehrliche</em> Zeilen statt Statistik, mit einer
+            Frage.
+          </p>
+        </div>
+        <span aria-hidden="true" className="flex-none text-[#9c6b3f]">
+          →
+        </span>
+      </Link>
 
       <Card className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">

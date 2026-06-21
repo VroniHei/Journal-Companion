@@ -1,12 +1,15 @@
 import { Router } from "express";
 import { z } from "zod";
-import type { WeeklyReviewResponse } from "@journal/shared";
+import type { WeeklyLetterResponse, WeeklyReviewResponse } from "@journal/shared";
 import { hasApiKey } from "../env";
 import {
+  buildWeeklyLetterSystem,
+  buildWeeklyLetterUser,
   buildWeeklyReviewSystem,
   buildWeeklyReviewUser,
 } from "../prompts/builders";
 import { generateText, singleUser, tuningFor } from "../services/claude";
+import { extractJson } from "../lib/extractJson";
 
 export const weeklyReviewRouter = Router();
 
@@ -66,6 +69,58 @@ weeklyReviewRouter.post("/weekly-review", async (req, res) => {
       think: tuning.think,
     });
     const response: WeeklyReviewResponse = { summary };
+    res.json(response);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unbekannter Fehler.";
+    res.status(502).json({ error: `Claude-Fehler: ${message}` });
+  }
+});
+
+// Wochen-Brief: gleiche Datengrundlage, aber warmer Brief + eine Frage (JSON).
+weeklyReviewRouter.post("/weekly-letter", async (req, res) => {
+  const parsed = schema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Ungültige Anfrage." });
+    return;
+  }
+  const { periodStart, periodEnd, digests, prefs } = parsed.data;
+
+  if (!digests.length) {
+    res.status(400).json({ error: "Für diesen Zeitraum gibt es keine Einträge." });
+    return;
+  }
+
+  if (!hasApiKey()) {
+    res.status(503).json({
+      error:
+        "Es ist kein API-Key gesetzt. Lege `ANTHROPIC_API_KEY` in server/.env an, dann starte das Backend neu.",
+    });
+    return;
+  }
+
+  try {
+    const tuning = tuningFor(prefs.model);
+    const raw = await generateText({
+      model: prefs.model,
+      system: buildWeeklyLetterSystem(prefs.style),
+      messages: singleUser(
+        buildWeeklyLetterUser(periodStart, periodEnd, digests),
+      ),
+      maxTokens: 1200,
+      effort: tuning.effort,
+      think: false, // strukturierte JSON-Antwort
+    });
+
+    let response: WeeklyLetterResponse;
+    try {
+      const obj = extractJson(raw) as Partial<WeeklyLetterResponse>;
+      response = {
+        body: typeof obj.body === "string" ? obj.body : raw,
+        question: typeof obj.question === "string" ? obj.question : "",
+      };
+    } catch {
+      response = { body: raw, question: "" };
+    }
     res.json(response);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unbekannter Fehler.";

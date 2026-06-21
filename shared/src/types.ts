@@ -251,6 +251,14 @@ export interface WeeklyReviewResponse {
   summary: string;
 }
 
+/** Wochen-Brief: warmer KI-Brief in Vronis Stimme statt Statistik-Wand. */
+export interface WeeklyLetterResponse {
+  /** Brieftext (mehrere Absätze, ohne Anrede und ohne die Schlussfrage). */
+  body: string;
+  /** Eine ehrliche, offene Frage für die kommende Woche. */
+  question: string;
+}
+
 export interface VoiceReflectRequest {
   transcript: string;
   prefs: ResponsePrefs;

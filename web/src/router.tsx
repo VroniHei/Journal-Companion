@@ -17,6 +17,7 @@ import { Progress } from "./pages/Progress";
 import { Loosen } from "./pages/Loosen";
 import { Impulses } from "./pages/Impulses";
 import { ShareCard } from "./pages/ShareCard";
+import { WeeklyLetter } from "./pages/WeeklyLetter";
 
 export const router = createBrowserRouter([
   {
@@ -37,6 +38,7 @@ export const router = createBrowserRouter([
       { path: "schleife", element: <Loosen /> },
       { path: "impulse", element: <Impulses /> },
       { path: "teilen", element: <ShareCard /> },
+      { path: "wochen-brief", element: <WeeklyLetter /> },
       { path: "wochenrueckblick", element: <WeeklyReview /> },
       { path: "einstellungen", element: <Settings /> },
       { path: "suche", element: <Search /> },

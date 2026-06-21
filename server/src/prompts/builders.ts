@@ -280,6 +280,37 @@ export function buildWeeklyReviewUser(
   ].join("\n");
 }
 
+// --- Wochen-Brief ----------------------------------------------------------
+
+const LETTER_DIRECTIVE = `Schreibe statt einer Statistik einen kurzen, warmen Brief an die Nutzerin — in ruhiger, wertschätzender Du-Stimme. Spiegele, was sich in der Woche gezeigt hat: ein, zwei ehrliche Beobachtungen (wiederkehrende Themen, Stimmungs-Tendenz, ein Wort das öfter vorkam), ohne Bewertung, ohne Ratschlag, ohne Coaching-Floskeln. Hebe höchstens ein, zwei einzelne Wörter behutsam hervor, indem du sie in *Sternchen* setzt (sie werden später kursiv dargestellt). Keine Em-Dashes, keine Emoji, keine Diagnosen. Halte dich kurz (2 bis 3 kleine Absätze).
+Schließe mit GENAU EINER offenen, ehrlichen Frage für die nächste Woche.`;
+
+const LETTER_JSON_CONTRACT = `Antworte AUSSCHLIESSLICH mit gültigem JSON (kein Markdown, keine Code-Fences), genau in diesem Format:
+{
+  "body": "<der Brieftext, 2-3 kurze Absätze, mit \\n\\n zwischen den Absätzen; OHNE Anrede und OHNE die Schlussfrage>",
+  "question": "<eine einzige offene Frage für die kommende Woche>"
+}`;
+
+export function buildWeeklyLetterSystem(style: ResponseStyle): string {
+  return [
+    BASE_SYSTEM_PROMPT,
+    "",
+    LETTER_DIRECTIVE,
+    styleInstruction(style),
+    "",
+    LETTER_JSON_CONTRACT,
+  ].join("\n");
+}
+
+export function buildWeeklyLetterUser(
+  periodStart: string,
+  periodEnd: string,
+  digests: EntryDigest[],
+): string {
+  // Gleiche Datengrundlage wie der Rückblick — nur die Form ist ein Brief.
+  return buildWeeklyReviewUser(periodStart, periodEnd, digests);
+}
+
 // --- Kontaktimpuls ---------------------------------------------------------
 
 const CONTACT_DIRECTIVE = `Die Nutzerin möchte jemandem schreiben, ist aber emotional aktiviert. Deine Aufgabe: zuerst regulieren, nicht zum Senden drängen.

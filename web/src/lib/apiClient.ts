@@ -8,6 +8,7 @@ import type {
   ReflectRequest,
   SyncPullResponse,
   SyncRecord,
+  WeeklyLetterResponse,
   WeeklyReviewRequest,
   WeeklyReviewResponse,
   VoiceReflectRequest,
@@ -187,6 +188,23 @@ export async function postWeeklyReview(
     );
   }
   return data as WeeklyReviewResponse;
+}
+
+export async function postWeeklyLetter(
+  body: WeeklyReviewRequest,
+): Promise<WeeklyLetterResponse> {
+  const res = await fetch("/api/weekly-letter", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(
+      (data as { error?: string }).error ?? `Fehler ${res.status}`,
+    );
+  }
+  return data as WeeklyLetterResponse;
 }
 
 export async function postPatternInsights(
