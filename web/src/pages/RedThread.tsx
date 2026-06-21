@@ -12,7 +12,7 @@ export function RedThread() {
       <div>
         <h1 className="serif text-3xl font-semibold">Roter Faden</h1>
         <p className="lead mt-2 text-[16px] text-[var(--foreground)]">
-          Was sich bei dir <em className="g">durchzieht</em> — über die letzten Wochen.
+          Was sich bei dir <em className="g">durchzieht</em>, über die letzten Wochen.
         </p>
       </div>
 

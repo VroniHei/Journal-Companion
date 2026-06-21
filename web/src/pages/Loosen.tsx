@@ -100,7 +100,7 @@ export function Loosen() {
 
             <p className="lead mb-4 px-0.5 text-[15.5px] leading-[1.5] text-[var(--foreground)]">
               Ein Gedanke dreht sich. Wir nehmen ihn einmal{" "}
-              <em className="g">auseinander</em> — ruhig, in drei kleinen Schritten.
+              <em className="g">auseinander</em>, ruhig, in drei kleinen Schritten.
             </p>
 
             <div className="space-y-3">
