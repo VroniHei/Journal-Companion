@@ -238,42 +238,6 @@ export function wordsOfWeek(entries: JournalEntry[], max = 7): WordCount[] {
     .map(([word, count]) => ({ word, count }));
 }
 
-export interface HabitWeek {
-  label: string;
-  dots: boolean[]; // 7 Tage, alt → neu (true = erfüllt)
-}
-
-/**
- * „Stabile Schritte" als 3 Gewohnheiten mit 7-Tage-Punkten (Bento-Handoff),
- * ehrlich aus den Einträgen abgeleitet: geschrieben, reflektiert, Gefühl benannt.
- */
-export function habitWeek(entries: JournalEntry[]): HabitWeek[] {
-  const now = new Date();
-  const days: Date[] = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(now.getDate() - i);
-    days.push(d);
-  }
-  const entriesOn = (d: Date) =>
-    entries.filter((e) => dkey(new Date(e.createdAt)) === dkey(d));
-
-  return [
-    {
-      label: "Eintrag geschrieben",
-      dots: days.map((d) => entriesOn(d).length > 0),
-    },
-    {
-      label: "Reflektiert",
-      dots: days.map((d) => entriesOn(d).some((e) => Boolean(e.aiReflection))),
-    },
-    {
-      label: "Gefühl benannt",
-      dots: days.map((d) => entriesOn(d).some((e) => e.emotions.length > 0)),
-    },
-  ];
-}
-
 export interface Step {
   id: string;
   label: string;

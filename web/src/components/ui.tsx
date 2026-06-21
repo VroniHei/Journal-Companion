@@ -11,7 +11,7 @@ export function Card({
   // (App-Style: Tiefe statt Flächen).
   return (
     <div
-      className={`lift rounded-[26px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] ${className}`}
+      className={`lift rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] ${className}`}
     >
       {children}
     </div>
