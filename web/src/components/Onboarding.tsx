@@ -25,6 +25,18 @@ export function Onboarding() {
   function skip() {
     void updateSettings({ onboarded: true });
   }
+  function finishWithoutReminder() {
+    void updateSettings({
+      focusArea: focus || undefined,
+      onboarded: true,
+    });
+  }
+
+  const DAYPARTS = [
+    { label: "Morgens", t: "08:00" },
+    { label: "Mittags", t: "13:00" },
+    { label: "Abends", t: "20:00" },
+  ];
 
   return (
     <div
@@ -123,9 +135,40 @@ export function Onboarding() {
               Anhaltspunkt für dich, keine Benachrichtigung.
             </p>
 
-            <div className="mt-6">
+            <div className="mt-6 flex flex-wrap gap-2.5">
+              {DAYPARTS.map((d) => {
+                const active = time === d.t;
+                return (
+                  <button
+                    key={d.label}
+                    type="button"
+                    onClick={() => setTime(d.t)}
+                    aria-pressed={active}
+                    className="rounded-full border px-4 py-2.5 text-sm font-medium transition"
+                    style={
+                      active
+                        ? {
+                            background: "var(--accent-soft)",
+                            borderColor: "var(--green-deep)",
+                            color: "var(--foreground)",
+                            boxShadow: "0 2px 10px rgba(110,155,44,0.18)",
+                          }
+                        : {
+                            background: "#fff",
+                            borderColor: "rgba(35,34,26,0.12)",
+                            color: "#5d564a",
+                          }
+                    }
+                  >
+                    {d.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-4">
               <label className="mb-1.5 block text-sm font-medium">
-                Erinnerung
+                Uhrzeit (frei wählbar)
               </label>
               <input
                 type="time"
@@ -135,16 +178,39 @@ export function Onboarding() {
               />
             </div>
 
-            <div className="mt-auto flex items-center gap-3 pt-8">
-              <Button onClick={finish} className="flex-1">
-                Los geht's
-              </Button>
-              <Button variant="ghost" onClick={() => setStep(0)}>
-                Zurück
-              </Button>
+            <div className="mt-auto pt-8">
+              <div className="flex items-center gap-3">
+                <Button onClick={finish} className="flex-1">
+                  Los geht's
+                </Button>
+                <Button variant="ghost" onClick={() => setStep(0)}>
+                  Zurück
+                </Button>
+              </div>
+              <button
+                type="button"
+                onClick={finishWithoutReminder}
+                className="mt-3 w-full text-center text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
+              >
+                Ohne Erinnerung fortfahren
+              </button>
             </div>
           </div>
         )}
+
+        {/* Schritt-Punkte */}
+        <div className="mt-8 flex justify-center gap-2">
+          {[0, 1].map((i) => (
+            <span
+              key={i}
+              className="h-1.5 rounded-full transition-all"
+              style={{
+                width: step === i ? 20 : 6,
+                background: step === i ? "var(--green-deep,#6E9B2C)" : "rgba(35,34,26,0.18)",
+              }}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

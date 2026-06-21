@@ -7,10 +7,13 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 ## Offen
 
-- 🟡 **Claude-Design-Feinschliff (interaktiv):** Eintrag-Detail-Tabs (Eintrag/
-  Reflexion/Gespräch), Muster „Punkte/Verlauf"-Umschalter mit Legende, Desktop-
-  Modal-Overlays (Ritual-Abschluss & Eintrag-Detail zentriert), Archiv-Header
-  nach Prototyp (Zurück + Titel + Suche). Danach Gesamt-Optik-Pass.
+- 🟢 **Ritual-Abschluss als Eintrag:** beim Abschluss zusätzlich einen
+  JournalEntry erzeugen, damit das Ritual in „Letzte Einträge"/Archiv erscheint
+  und die Serie (computeStreak) mitzählt (Spec START-HIER). Aktuell nur in der
+  eigenen `dailyRituals`-Tabelle gespeichert.
+- 🟢 **Routine-Wechsel Geräte-Muster klären:** START-HIER sagt „kanonisch in
+  Einstellungen, kein Overlay", APP-STYLE §9 listet es als Desktop-Overlay.
+  Aktuell als eigene Seite belassen; bei Bedarf vereinheitlichen.
 - 🟢 **Roter Faden / Verlauf vertiefen:** echte KI-Cluster (statt nur `topics`-
   Aggregation) und Themen-Verschiebungen sprachlich glätten, sobald genug Daten.
 - 🟡 **Automatische Gesprächs-Zusammenfassung** bei sehr langen Chats (>~12
@@ -44,6 +47,9 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 - ✅ Schrift-Optik korrigiert (Font-Smoothing entfernt) + Einträge nach Prototyp.
 - ✅ Rate-Limiting für die KI-/Sprach-Routen (Fixed-Window pro IP, dependency-frei,
   `RATE_LIMIT_PER_MIN`, 429 + Retry-After; Sync/Health/Config ausgenommen; 5 Tests).
+- ✅ Desktop-Bento (volle Breite) für Muster/Klärung/Rückblick/Archiv; Tagesritual
+  Erledigt-Zustand; Moment-Screens (Energie/Soforthilfe/Zitat) als Desktop-Modal;
+  Onboarding Schritt 2 (Tageszeit + ohne Erinnerung + Step-Dots). (2026-06-21)
 
 ## Geräte-Sync (Folgearbeiten)
 

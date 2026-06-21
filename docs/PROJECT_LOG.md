@@ -5,6 +5,36 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-21 (Teil 4) — Claude-Design-Angleichung: Desktop-Bento + Erledigt-Zustand + Modals
+
+**Was:** Frisches Arbeitspaket von Claude Design über den Connector gezogen
+(START-HIER, APP-STYLE, README, INDEX, Prototyp `Innerline App.dc.html`, alle
+Desktop-Screenshots gerendert). Danach Screen für Screen angeglichen:
+- **Desktop-Bento (volle Breite) statt schmaler Spalte** für die vier Hauptseiten:
+  Muster („Was sich bei dir durchzieht"), Rückblick („Was sich gezeigt hat"),
+  Klärung („Erst sortieren, dann entscheiden" — beide Spalten nebeneinander),
+  Archiv („Alle Einträge" — Zeitgruppen, je Gruppe max 3 + „Alle N ansehen",
+  Filter-Pills, frühere Monate kompakt). Mobile bleibt kompakt gestapelt.
+- **Tagesritual Erledigt-Zustand** auf dem Dashboard (war ein Bug): nach Abschluss
+  grüner Haken + „Heute erledigt · 6 Min · automatisch gesichert" + Blick auf die
+  gesicherten Antworten + „Eintrag ansehen" statt weiter „Heute noch offen".
+- **Moment-Screens als Desktop-Modal** (APP-STYLE §9): Energie, Soforthilfe
+  („Gerade ist viel"), Zitat-Karte — zentriertes Modal über gedimmtem Hintergrund,
+  Mobile weiterhin Vollbild.
+- **Onboarding Schritt 2** ergänzt: Tageszeit-Auswahl (Morgens/Mittags/Abends),
+  freie Uhrzeit, „Ohne Erinnerung fortfahren", Schritt-Punkte.
+- MoodCard um Props erweitert (Titel/Tage/Verlauf-Default) für die Bento-Nutzung.
+
+**Warum:** Verbindliche Vorgabe „Desktop ist kein verkleinertes Mobile" + „nichts
+weglassen, jeder Zustand". Eintrag-Detail-Tabs (Eintrag/Reflexion/Gespräch) und
+FAB-Modal waren bereits vorhanden und wurden verifiziert.
+
+**Ergebnis/Status:** Build + Lint + 15 Tests grün, in mehreren Commits gepusht
+(je Seite deploybar). Offen/Folge: Ritual-Abschluss könnte zusätzlich einen
+Eintrag erzeugen (erscheint dann in „Letzte Einträge"/Archiv, Serie+1).
+
+---
+
 ## 2026-06-21 (Teil 3) — Rate-Limiting für die KI-Routen (Backend-Härtung)
 
 **Was:** Dependency-freies Fixed-Window-Rate-Limit pro IP (`server/src/lib/rateLimit.ts`)
