@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { Fragment, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEntries } from "../hooks/useData";
 import { entrySummaryText } from "../lib/entryCard";
@@ -26,79 +26,83 @@ interface Theme {
   overlay?: [string, string]; // dunkles Overlay über dem Foto (Lesbarkeit)
 }
 
-// Foto-Welten (Claude Design): wechselnde Bilder, passend zu wechselnden Sprüchen.
-const PHOTOS = [
-  { id: "foto-weg", label: "Weg", src: "/img/zitat-weg.webp" },
-  { id: "foto-pfad", label: "Pfad", src: "/img/faden-weg.webp" },
-  { id: "foto-see", label: "See", src: "/img/hero-see.webp" },
-  { id: "foto-notiz", label: "Notiz", src: "/img/notebook-still.webp" },
-  { id: "foto-tisch", label: "Tisch", src: "/img/journaling-desk.webp" },
-  { id: "foto-licht", label: "Licht", src: "/img/welcome-still.webp" },
-];
+// Master-Modell: die Karte zeigt IMMER dasselbe Foto (zitat-weg.webp); die
+// Farbwelt wechselt nur das getönte Overlay + die Akzentfarbe. Quote/Meta bleiben
+// hell (Foto ist dunkel getönt). Vier Welten: Tag · Abend · Natur · Klar.
+const CARD_PHOTO = "/img/zitat-weg.webp";
 
-function photoTheme(id: string, label: string, src: string): Theme {
+function world(
+  id: ThemeId,
+  label: string,
+  swatch: string,
+  overlay: [string, string],
+  accent: string,
+  eyebrow: string,
+): Theme {
   return {
     id,
     label,
-    swatch: `url(${src}) center/cover`,
+    swatch,
     bg: ["#3a4a2c", "#23291a"],
-    photo: src,
-    overlay: ["rgba(18,15,9,.25)", "rgba(18,15,9,.62)"],
+    photo: CARD_PHOTO,
+    overlay,
     quote: "#F8F5EE",
-    eyebrow: "rgba(248,245,238,.88)",
-    accent: "#A8E84F",
+    eyebrow,
+    accent,
     meta: "rgba(248,245,238,.78)",
     divider: "rgba(248,245,238,.6)",
   };
 }
 
 const THEMES: Theme[] = [
-  ...PHOTOS.map((p) => photoTheme(p.id, p.label, p.src)),
-  {
-    id: "tag",
-    label: "Tag",
-    swatch: "linear-gradient(140deg,#F0C36B,#CD8A5B)",
-    bg: ["#F0C36B", "#CD8A5B"],
-    quote: "#3a2a18",
-    eyebrow: "#7a4f29",
-    accent: "#6E4A23",
-    meta: "rgba(58,42,24,.7)",
-    divider: "rgba(58,42,24,.4)",
-  },
-  {
-    id: "abend",
-    label: "Abend",
-    swatch: "linear-gradient(140deg,#CBBEF4,#9d8bc9)",
-    bg: ["#CBBEF4", "#9d8bc9"],
-    quote: "#2c2440",
-    eyebrow: "#5b4c80",
-    accent: "#4a3c70",
-    meta: "rgba(44,36,64,.7)",
-    divider: "rgba(44,36,64,.4)",
-  },
-  {
-    id: "natur",
-    label: "Natur",
-    swatch: "linear-gradient(140deg,#8FB84B,#5b7d2a)",
-    bg: ["#8FB84B", "#5b7d2a"],
-    quote: "#ffffff",
-    eyebrow: "rgba(255,255,255,.85)",
-    accent: "#EBFFC6",
-    meta: "rgba(255,255,255,.8)",
-    divider: "rgba(255,255,255,.6)",
-  },
-  {
-    id: "klar",
-    label: "Klar",
-    swatch: "linear-gradient(140deg,#3a4a2c,#23291a)",
-    bg: ["#3a4a2c", "#23291a"],
-    quote: "#F8F5EE",
-    eyebrow: "#A8E84F",
-    accent: "#A8E84F",
-    meta: "rgba(248,245,238,.72)",
-    divider: "rgba(248,245,238,.5)",
-  },
+  world(
+    "tag",
+    "Tag",
+    "linear-gradient(140deg,#F0C36B,#CD8A5B)",
+    ["rgba(54,38,18,.30)", "rgba(40,26,10,.68)"],
+    "#F0C36B",
+    "rgba(248,238,222,.92)",
+  ),
+  world(
+    "abend",
+    "Abend",
+    "linear-gradient(140deg,#CBBEF4,#9d8bc9)",
+    ["rgba(42,33,62,.34)", "rgba(28,22,46,.70)"],
+    "#CBBEF4",
+    "rgba(238,234,248,.92)",
+  ),
+  world(
+    "natur",
+    "Natur",
+    "linear-gradient(140deg,#8FB84B,#5b7d2a)",
+    ["rgba(28,42,18,.30)", "rgba(20,30,12,.68)"],
+    "#A8E84F",
+    "rgba(240,244,230,.92)",
+  ),
+  world(
+    "klar",
+    "Klar",
+    "linear-gradient(140deg,#3a4a2c,#23291a)",
+    ["rgba(24,30,18,.34)", "rgba(12,16,9,.72)"],
+    "#A8E84F",
+    "#A8E84F",
+  ),
 ];
+
+// Quote in Wörter zerlegen; ein *mit Sternchen* markiertes Wort ist der Akzent.
+interface QuoteWord {
+  text: string;
+  accent: boolean;
+}
+function quoteWords(quote: string): QuoteWord[] {
+  return quote
+    .trim()
+    .split(/\s+/)
+    .map((w) => {
+      const accent = w.startsWith("*") && w.endsWith("*") && w.length > 2;
+      return { text: w.replace(/^\*+|\*+$/g, ""), accent };
+    });
+}
 
 const FORMATS: { id: FormatId; label: string; w: number; h: number; box: string }[] = [
   { id: "story", label: "Story", w: 1080, h: 1350, box: "w-5 h-[25px]" },
@@ -130,19 +134,17 @@ export function ShareCard() {
   const navigate = useNavigate();
   const entries = useEntries();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  // Standard-Foto variiert je Eintrag (verschiedene Sprüche → verschiedene Bilder).
-  const [themeId, setThemeId] = useState<ThemeId>(() => {
-    const seed = (entries[0]?.id ?? "x").length + (entries[0]?.createdAt?.length ?? 0);
-    return PHOTOS[seed % PHOTOS.length].id;
-  });
+  const [themeId, setThemeId] = useState<ThemeId>("tag");
   const [formatId, setFormatId] = useState<FormatId>("story");
   const [busy, setBusy] = useState(false);
 
-  // Default-Satz: aus dem letzten Eintrag, sonst ruhiger Fallback.
+  // Default-Satz: aus dem letzten Eintrag, sonst ruhiger Fallback mit Akzentwort.
   const defaultQuote = useMemo(() => {
     const latest = entries[0];
     const s = latest ? entrySummaryText(latest) : "";
-    return s && s.length <= 140 ? s : "Es darf heute leicht sein. Nicht alles auf einmal.";
+    return s && s.length <= 140
+      ? s
+      : "Es darf heute *leicht* sein. Nicht alles auf einmal.";
   }, [entries]);
   const [quote, setQuote] = useState(defaultQuote);
 
@@ -203,19 +205,26 @@ export function ShareCard() {
     const lineHeight = Math.round(quoteSize * 1.26);
     const maxWidth = w - pad * 2;
 
-    // Zitat zeilenweise umbrechen (von unten her gesetzt).
+    // Zitat zeilenweise umbrechen (von unten her gesetzt); Akzentwort getrennt.
     ctx.font = font(quoteSize, 600);
-    const words = quote.trim().split(/\s+/);
-    const lines: string[] = [];
-    let cur = "";
-    for (const word of words) {
-      const test = cur ? `${cur} ${word}` : word;
-      if (ctx.measureText(test).width > maxWidth && cur) {
-        lines.push(cur);
-        cur = word;
-      } else cur = test;
+    const spaceW = ctx.measureText(" ").width;
+    const wordsArr = quoteWords(quote);
+    const lines: QuoteWord[][] = [];
+    let curLine: QuoteWord[] = [];
+    let curW = 0;
+    for (const wd of wordsArr) {
+      const ww = ctx.measureText(wd.text).width;
+      const add = curLine.length ? spaceW + ww : ww;
+      if (curW + add > maxWidth && curLine.length) {
+        lines.push(curLine);
+        curLine = [wd];
+        curW = ww;
+      } else {
+        curLine.push(wd);
+        curW += add;
+      }
     }
-    if (cur) lines.push(cur);
+    if (curLine.length) lines.push(curLine);
 
     const metaY = h - pad;
     const dividerY = metaY - Math.round(h * 0.045);
@@ -228,11 +237,17 @@ export function ShareCard() {
     const eyebrow = "MEIN IMPULS FÜR HEUTE";
     ctx.fillText(eyebrow.split("").join(" "), pad, y - Math.round(h * 0.05));
 
-    // Zitat.
-    ctx.fillStyle = theme.quote;
-    ctx.font = font(quoteSize, 600);
+    // Zitat, Wort für Wort (Akzentwort in Akzentfarbe + Newsreader-Italic).
     for (const ln of lines) {
-      ctx.fillText(ln, pad, y);
+      let x = pad;
+      for (const wd of ln) {
+        ctx.fillStyle = wd.accent ? theme.accent : theme.quote;
+        ctx.font = wd.accent
+          ? `italic 600 ${quoteSize}px Newsreader, Figtree, serif`
+          : font(quoteSize, 600);
+        ctx.fillText(wd.text, x, y);
+        x += ctx.measureText(wd.text).width + spaceW;
+      }
       y += lineHeight;
     }
 
@@ -347,7 +362,15 @@ export function ShareCard() {
               className="font-semibold leading-[1.26] tracking-[-0.015em]"
               style={{ color: theme.quote, fontSize: quoteSizeCss }}
             >
-              {quote}
+              {quote.split(/(\*[^*]+\*)/g).map((part, i) =>
+                part.startsWith("*") && part.endsWith("*") && part.length > 2 ? (
+                  <em key={i} className="g" style={{ color: theme.accent }}>
+                    {part.slice(1, -1)}
+                  </em>
+                ) : (
+                  <Fragment key={i}>{part}</Fragment>
+                ),
+              )}
             </p>
             <div className="mt-[3.5%] flex items-center gap-2.5">
               <span className="h-px w-[7%]" style={{ background: theme.divider }} />
@@ -370,7 +393,10 @@ export function ShareCard() {
           rows={2}
           className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3.5 py-3 text-[15px] leading-[1.5] outline-none focus:border-[var(--accent)]"
         />
-        <div className="mt-2 flex justify-end">
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <span className="text-[12px] text-[#9a917f]">
+            Ein Wort mit *Sternchen* wird hervorgehoben.
+          </span>
           <DictationButton
             value={quote}
             onChange={(v) => setQuote(v.slice(0, 160))}

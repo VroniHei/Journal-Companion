@@ -5,6 +5,8 @@ export const FOCUS_OPTIONS = [
   "Gedankenschleifen lösen",
   "Zur Ruhe kommen",
   "Wenn's gerade viel ist",
-  "Beziehung klären",
+  "Klarheit finden",
+  "Den Tag reflektieren",
+  "Dankbarkeit",
   "Einfach schreiben",
 ];

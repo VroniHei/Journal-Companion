@@ -124,23 +124,38 @@ export function WeeklyReview() {
 
       {/* Bento: Desktop volle Breite (12-Spalten), Mobile gestapelt. */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-[18px]">
-        {/* Große, warme Zusammenfassung */}
+        {/* Große, warme Zusammenfassung — Mobile mit Foto-Band oben (Master),
+            Desktop ohne Foto (großes Insight-Panel). */}
         <div
-          className="flex flex-col justify-center overflow-hidden rounded-[24px] border p-7 lg:col-span-7"
+          className="flex flex-col overflow-hidden rounded-[24px] border lg:col-span-7"
           style={{
             borderColor: "rgba(205,138,91,.22)",
             background:
               "radial-gradient(420px 220px at 88% -10%, rgba(221,177,75,.16), transparent 70%), linear-gradient(160deg,#FBF4E8,#F6F1E8)",
           }}
         >
-          <p className="lead text-[19px] leading-[1.5] text-[var(--foreground)]">
-            {insights[0] ?? (
-              <>
-                Sobald sich über die Woche etwas wiederholt, fasse ich es hier{" "}
-                <em className="g">ruhig</em> zusammen.
-              </>
-            )}
-          </p>
+          <div className="h-[118px] flex-none overflow-hidden lg:hidden">
+            <img
+              src="/img/hero-see.webp"
+              alt=""
+              aria-hidden="true"
+              className="img-zoom h-full w-full object-cover"
+              style={{ objectPosition: "center 82%" }}
+            />
+          </div>
+          <div className="flex flex-1 flex-col justify-center p-7">
+            <div className="mb-2 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[#9c6b3f]">
+              Im Kern
+            </div>
+            <p className="lead text-[19px] leading-[1.5] text-[var(--foreground)]">
+              {insights[0] ?? (
+                <>
+                  Sobald sich über die Woche etwas wiederholt, fasse ich es hier{" "}
+                  <em className="g">ruhig</em> zusammen.
+                </>
+              )}
+            </p>
+          </div>
         </div>
 
         {/* Rechte Spalte: Kennzahlen + Stimmungsverlauf */}

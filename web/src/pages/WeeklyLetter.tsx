@@ -53,11 +53,11 @@ export function WeeklyLetter() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entries.length]);
 
+  const noData = inRange.length === 0;
+
   async function generate() {
-    if (inRange.length === 0) {
-      setError("Für diese Woche gibt es noch keine Einträge.");
-      return;
-    }
+    // Ohne Einträge kein „Fehler", sondern der ruhige Leer-Hinweis (siehe unten).
+    if (inRange.length === 0) return;
     setLoading(true);
     setError(null);
     try {
@@ -98,6 +98,21 @@ export function WeeklyLetter() {
         <p className="text-[15px] text-[var(--muted)]">
           Ich lese deine Woche noch einmal in Ruhe durch …
         </p>
+      )}
+
+      {noData && !loading && !letter && (
+        <div
+          className="relative overflow-hidden rounded-[22px] border p-[22px] shadow-[0_16px_36px_rgba(120,86,52,.13)]"
+          style={{
+            borderColor: "rgba(205,138,91,.22)",
+            background: "linear-gradient(160deg,#FBF4E8 0%,#F8F3EA 100%)",
+          }}
+        >
+          <p className="text-[15.5px] leading-[1.6] text-[#4a4034]">
+            Sobald ein paar Tage da sind, schreibe ich dir hier deinen{" "}
+            <em className="g">Brief</em>.
+          </p>
+        </div>
       )}
 
       {error && !loading && (

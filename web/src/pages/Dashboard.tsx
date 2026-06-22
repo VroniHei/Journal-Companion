@@ -1000,31 +1000,93 @@ export function Dashboard() {
       </div>
 
       {!hasData ? (
-        <div className="group grid grid-cols-1 overflow-hidden rounded-[26px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)] sm:grid-cols-[1fr_300px]">
-          <div className="flex flex-col justify-center p-8 sm:p-11">
-            <h3 className="serif mb-3 text-2xl font-semibold">
-              Noch nichts notiert. <em className="g text-[var(--green-deep)]">Auch gut.</em>
-            </h3>
-            <p className="mb-6 max-w-[400px] text-[15px] leading-relaxed text-[var(--muted)]">
-              Ein Satz reicht für den Anfang. Was geht dir gerade durch den Kopf,
-              so wie es ist?
-            </p>
-            <div>
+        <div className="mx-auto flex max-w-[560px] flex-col gap-3">
+          {/* Clay-Gradient-Karte mit Stift-Icon (Master, kein Foto) */}
+          <div
+            className="relative overflow-hidden rounded-[24px] border p-6 sm:p-8"
+            style={{
+              borderColor: "rgba(205,138,91,0.24)",
+              boxShadow: "0 16px 36px rgba(120,86,52,0.14)",
+              background: "linear-gradient(135deg,#F8EFDF 0%,#F4F0E6 100%)",
+            }}
+          >
+            <div
+              className="pointer-events-none absolute -right-7 -top-11 h-40 w-40 rounded-full blur-[28px]"
+              style={{ background: "radial-gradient(circle, rgba(224,170,80,.26), transparent 68%)" }}
+            />
+            <div className="relative">
+              <span className="mb-3.5 inline-flex h-[46px] w-[46px] items-center justify-center rounded-[14px] bg-white text-[#CD8A5B] shadow-[0_6px_16px_rgba(120,86,52,0.14)]">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                </svg>
+              </span>
+              <h3 className="serif mb-2 text-[21px] font-[650] leading-[1.25] tracking-[-0.015em] text-[#3a2e22]">
+                Noch nichts notiert. <em className="g">Auch gut.</em>
+              </h3>
+              <p className="mb-[18px] max-w-[290px] text-[15px] font-[450] leading-[1.5] text-[#6a5a48]">
+                Ein Satz reicht für den Anfang. Was geht dir gerade durch den
+                Kopf, so wie es ist?
+              </p>
               <button
                 type="button"
                 onClick={() => navigate("/neu")}
-                className="rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-[var(--accent-contrast)] shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:bg-[#bdf06a]"
+                className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[14.5px] font-semibold text-[#23221A] shadow-[0_6px_16px_rgba(110,155,44,0.3)] transition hover:-translate-y-0.5"
+                style={{ background: "linear-gradient(180deg,#B4ED63,#A8E84F)" }}
               >
                 Ersten Eintrag schreiben
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
+                  <path d="M8 3v10M3 8h10" />
+                </svg>
               </button>
             </div>
           </div>
-          <img
-            src="/img/journaling-desk.webp"
-            alt=""
-            aria-hidden="true"
-            className="img-zoom hidden h-full w-full object-cover sm:block"
-          />
+
+          {/* Tagesritual-Zeile */}
+          <Link
+            to="/ritual"
+            className="flex items-center gap-[13px] rounded-[18px] border border-[var(--border)] bg-[var(--surface)] px-4 py-[15px] shadow-[var(--shadow-card)] transition hover:-translate-y-0.5"
+          >
+            <span
+              className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl text-[#CD8A5B]"
+              style={{ background: "linear-gradient(145deg,#F6ECE2,#EFEFE0)" }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+                <path d="M3 18h18M5.6 18a6.4 6.4 0 0 1 12.8 0" />
+                <path d="M12 4.5v2.4M5 9l1.6 1.2M19 9l-1.6 1.2" />
+              </svg>
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="text-[15px] font-[650] tracking-[-0.01em] text-[var(--foreground)]">
+                Tagesritual starten
+              </div>
+              <div className="mt-px text-[12.5px] text-[#9a917f]">
+                6 Minuten · ein ruhiger Anfang
+              </div>
+            </div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#9a917f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </Link>
+
+          {/* Muster & Stimmung — gestrichelter Platzhalter */}
+          <div
+            className="rounded-[18px] border border-dashed p-[18px]"
+            style={{ borderColor: "rgba(35,34,26,0.16)", background: "rgba(255,255,255,0.5)" }}
+          >
+            <div className="mb-3 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
+              Muster &amp; Stimmung
+            </div>
+            <div className="mb-3 flex items-center justify-between">
+              {Array.from({ length: 7 }).map((_, i) => (
+                <span key={i} className="h-[15px] w-[15px] rounded-full" style={{ background: "#E6DFCF" }} />
+              ))}
+            </div>
+            <p className="text-[13px] leading-[1.5] text-[#9a917f]">
+              Sobald du ein paar Einträge hast, zeigen sich hier deine Muster und
+              deine Stimmung.
+            </p>
+          </div>
         </div>
       ) : shown.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">

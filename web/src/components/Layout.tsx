@@ -230,7 +230,7 @@ export function Layout() {
       </header>
 
       {/* ===== Inhalt ===== */}
-      <main className="mx-auto max-w-7xl px-5 pb-28 pt-6 sm:pb-12">
+      <main className="mx-auto max-w-7xl px-5 pb-32 pt-6 sm:pb-12">
         <DisclaimerGate />
         <div className={contentClass}>
           <Outlet />
@@ -244,7 +244,9 @@ export function Layout() {
       </main>
 
       {/* ===== Mobile Tab-Leiste ===== */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-[var(--border)] bg-[rgba(248,245,238,0.86)] px-3 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur-[14px] sm:hidden">
+      {/* APP-STYLE §1: feste Höhe 82px, Items vertikal zentriert, Bodenabstand
+          max(safe-area, 10px) damit die Labels nicht am Rand kleben. */}
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex min-h-[82px] items-center justify-around border-t border-[var(--border)] bg-[rgba(248,245,238,0.86)] px-3 pb-[max(env(safe-area-inset-bottom),10px)] pt-2.5 backdrop-blur-[14px] sm:hidden">
         {NAV.map((item, i) => (
           <NavLink
             key={item.to}
