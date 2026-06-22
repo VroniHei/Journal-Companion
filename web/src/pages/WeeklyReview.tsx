@@ -134,7 +134,7 @@ export function WeeklyReview() {
               "radial-gradient(420px 220px at 88% -10%, rgba(221,177,75,.16), transparent 70%), linear-gradient(160deg,#FBF4E8,#F6F1E8)",
           }}
         >
-          <div className="h-[118px] flex-none overflow-hidden lg:hidden">
+          <div className="h-[118px] flex-none overflow-hidden lg:h-[248px]">
             <img
               src="/img/hero-see.webp"
               alt=""
@@ -160,20 +160,20 @@ export function WeeklyReview() {
 
         {/* Rechte Spalte: Kennzahlen + Stimmungsverlauf */}
         <div className="flex flex-col gap-4 lg:col-span-5 lg:gap-[18px]">
-          <div className="grid grid-cols-3 gap-3 rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)]">
-            <div>
+          <div className="grid grid-cols-3 divide-x divide-[rgba(35,34,26,0.08)] rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)]">
+            <div className="px-4 first:pl-0 last:pr-0">
               <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--green-deep,#6E9B2C)]">
                 {inRange.length}
               </div>
               <div className="text-[12.5px] text-[var(--muted)]">Einträge</div>
             </div>
-            <div>
+            <div className="px-4 first:pl-0 last:pr-0">
               <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--foreground)]">
                 {streak}
               </div>
               <div className="text-[12.5px] text-[var(--muted)]">Tage Serie</div>
             </div>
-            <div>
+            <div className="px-4 first:pl-0 last:pr-0">
               <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--clay,#CD8A5B)]">
                 {ritualDays}
               </div>
@@ -185,6 +185,8 @@ export function WeeklyReview() {
             dayCount={30}
             defaultView="verlauf"
             title="Stimmung · Verlauf"
+            hideToggle
+            hideLegend
           />
         </div>
 
@@ -217,11 +219,11 @@ export function WeeklyReview() {
             Worte der Woche
           </div>
           {words.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2">
               {words.map((w) => (
                 <span
                   key={w.word}
-                  className="rounded-full bg-[var(--sand)] px-[11px] py-1 text-[12px] font-medium text-[var(--foreground)]"
+                  className="rounded-full bg-[var(--sand)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--foreground)]"
                   style={{ opacity: 0.6 + 0.4 * (w.count / maxWord) }}
                 >
                   {w.word}

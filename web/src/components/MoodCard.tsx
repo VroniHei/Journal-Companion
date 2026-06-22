@@ -25,12 +25,16 @@ export function MoodCard({
   defaultView = "punkte",
   title,
   className = "",
+  hideToggle = false,
+  hideLegend = false,
 }: {
   entries: JournalEntry[];
   dayCount?: number;
   defaultView?: "punkte" | "verlauf";
   title?: string;
   className?: string;
+  hideToggle?: boolean;
+  hideLegend?: boolean;
 }) {
   const [view, setView] = useState<"punkte" | "verlauf">(defaultView);
   const days = useMemo(() => moodByDay(entries, dayCount), [entries, dayCount]);
@@ -58,7 +62,7 @@ export function MoodCard({
         <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
           {heading}
         </span>
-        <div className="flex gap-[3px] rounded-full bg-[var(--sand)] p-[3px]">
+        <div className={`flex gap-[3px] rounded-full bg-[var(--sand)] p-[3px] ${hideToggle ? "hidden" : ""}`}>
           {(["punkte", "verlauf"] as const).map((v) => {
             const active = view === v;
             return (
@@ -131,7 +135,7 @@ export function MoodCard({
       )}
 
       {/* Legende */}
-      <div className="mt-4 flex flex-wrap gap-x-3 gap-y-2 border-t border-[var(--border)] pt-3.5">
+      <div className={`mt-4 flex flex-wrap gap-x-3 gap-y-2 border-t border-[var(--border)] pt-3.5 ${hideLegend ? "hidden" : ""}`}>
         {LEGEND.map((l) => (
           <span key={l.label} className="inline-flex items-center gap-1.5 text-[11.5px] text-[var(--muted)]">
             <span className="h-2.5 w-2.5 rounded-full" style={{ background: l.c }} />
