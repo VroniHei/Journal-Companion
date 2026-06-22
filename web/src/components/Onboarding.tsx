@@ -110,13 +110,15 @@ export function Onboarding() {
   return (
     <div className="fixed inset-0 z-[60] overflow-y-auto sm:flex sm:items-center sm:justify-center sm:bg-[rgba(35,34,26,0.46)] sm:p-6 sm:backdrop-blur-sm">
       <div
-        className="relative mx-auto flex min-h-full w-full max-w-md flex-col overflow-hidden px-[22px] pb-[22px] pt-6 sm:min-h-0 sm:rounded-[28px] sm:border sm:border-[rgba(35,34,26,0.06)] sm:shadow-[0_40px_90px_rgba(35,34,26,0.3)]"
+        className="relative mx-auto flex min-h-full w-full max-w-md flex-col overflow-hidden sm:min-h-0 sm:rounded-[28px] sm:border sm:border-[rgba(35,34,26,0.06)] sm:shadow-[0_40px_90px_rgba(35,34,26,0.3)] lg:max-w-[660px] lg:flex-row lg:items-stretch"
         style={{ background: "linear-gradient(180deg,#FBF1E1 0%,#F4F0E6 42%,#F8F5EE 100%)" }}
       >
         {/* Tiefe: weich geblurrte Orbs */}
         <div className="pointer-events-none absolute -right-8 -top-12 h-[200px] w-[200px] rounded-full blur-[32px]" style={{ background: "radial-gradient(circle, rgba(224,170,80,.26), transparent 68%)" }} />
         <div className="pointer-events-none absolute -left-10 bottom-28 h-[220px] w-[220px] rounded-full blur-[40px]" style={{ background: "radial-gradient(circle, rgba(168,232,79,.15), transparent 68%)" }} />
 
+        {/* Linke Spalte: Inhalt (auf Desktop neben dem Foto) */}
+        <div className="relative flex min-h-full flex-1 flex-col px-[22px] pb-[22px] pt-6 lg:min-h-0">
         {/* Header (60px): Schritt 1 Wortmarke, Schritt 2 Zurück; rechts Schritt-Punkte */}
         <div className="relative -mx-[22px] mb-6 flex h-[60px] items-center justify-between border-b border-[rgba(35,34,26,0.09)] px-[22px]">
           {step === 0 ? (
@@ -149,8 +151,8 @@ export function Onboarding() {
               den Einstellungen jederzeit ändern.
             </p>
 
-            {/* Willkommens-Foto */}
-            <div className="mt-[18px] h-[158px] flex-none overflow-hidden rounded-[18px] border border-[rgba(35,34,26,0.06)] shadow-[0_10px_26px_rgba(35,34,26,0.1)]">
+            {/* Willkommens-Foto (Mobile inline; Desktop steht es in der rechten Spalte) */}
+            <div className="mt-[18px] h-[158px] flex-none overflow-hidden rounded-[18px] border border-[rgba(35,34,26,0.06)] shadow-[0_10px_26px_rgba(35,34,26,0.1)] lg:hidden">
               <img
                 src="/img/welcome-still.webp"
                 alt="Ruhiger Morgenplatz mit Journal und Tee"
@@ -308,6 +310,24 @@ export function Onboarding() {
             </div>
           </div>
         )}
+        </div>
+
+        {/* Rechte Spalte (nur Desktop): durchgehendes Willkommens-Foto */}
+        <aside className="relative hidden w-[248px] flex-none overflow-hidden lg:block">
+          <img
+            src="/img/welcome-still.webp"
+            alt="Ruhiger Morgenplatz mit Journal und Tee"
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{ objectPosition: "center 52%" }}
+          />
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(100deg,rgba(248,245,238,0.55),transparent 38%)",
+            }}
+          />
+        </aside>
       </div>
     </div>
   );
