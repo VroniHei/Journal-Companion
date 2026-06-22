@@ -332,6 +332,14 @@ function sinceLabel(firstAt: string): string {
   return `seit ${weeks} Wochen`;
 }
 
+// Stabiler Index aus dem Thema-Schlüssel — damit zwei gleich „aktive" Themen
+// nicht denselben Satz bekommen, sondern eine andere (gleichwertige) Formulierung.
+function phraseIndex(key: string, n: number): number {
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  return h % n;
+}
+
 function lastLabel(lastAt: string): string {
   const d = new Date(lastAt);
   const days = Math.floor((Date.now() - d.getTime()) / DAY);
@@ -379,11 +387,42 @@ export function themeClusters(
     const half = Math.floor(acc.moods.length / 2);
     const early = avg(acc.moods.slice(0, half || 1));
     const late = avg(acc.moods.slice(half));
-    let note = "Taucht immer wieder auf.";
-    if (early != null && late != null) {
-      if (late - early >= 0.8) note = "Zuletzt klingst du dabei <em class=\"g\">leichter</em>.";
-      else if (early - late >= 0.8) note = "Liegt dir gerade <em class=\"g\">schwerer</em> als zuvor.";
-      else note = "Zieht sich <em class=\"g\">ruhig</em> durch.";
+    const trend =
+      early != null && late != null
+        ? late - early >= 0.8
+          ? "up"
+          : early - late >= 0.8
+            ? "down"
+            : "flat"
+        : "flat";
+    const daysSinceLast = Math.floor(
+      (Date.now() - new Date(lastAt).getTime()) / DAY,
+    );
+
+    // Notiz aus mehreren Signalen, damit nicht überall dasselbe steht.
+    let note: string;
+    if (trend === "up") {
+      note = "Zuletzt klingst du dabei <em class=\"g\">leichter</em>.";
+    } else if (trend === "down") {
+      note = "Liegt dir gerade <em class=\"g\">schwerer</em> als zuvor.";
+    } else if (daysSinceLast >= 14) {
+      note = "Zuletzt <em class=\"g\">seltener</em> geworden.";
+    } else {
+      // flach & aktuell: gleichwertige Formulierungen, je nach Häufigkeit,
+      // pro Thema variiert (sonst klingen zwei Themen identisch).
+      const pool =
+        acc.dates.length >= 4
+          ? [
+              "Kommt <em class=\"g\">immer wieder</em>.",
+              "Zieht sich durch die <em class=\"g\">Wochen</em>.",
+              "Taucht <em class=\"g\">regelmäßig</em> auf.",
+            ]
+          : [
+              "Gerade wieder <em class=\"g\">präsent</em>.",
+              "Beschäftigt dich <em class=\"g\">aktuell</em>.",
+              "Zieht sich <em class=\"g\">ruhig</em> durch.",
+            ];
+      note = pool[phraseIndex(key, pool.length)];
     }
 
     clusters.push({

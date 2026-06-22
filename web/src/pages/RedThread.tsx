@@ -48,7 +48,7 @@ export function RedThread() {
             style={{ boxShadow: "0 16px 40px rgba(35,34,26,.18)" }}
           >
             <img
-              src="/img/faden-weg.webp"
+              src="/img/hero-see.webp"
               alt=""
               aria-hidden="true"
               className="absolute inset-0 h-full w-full object-cover"
