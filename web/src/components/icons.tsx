@@ -1,14 +1,15 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
-// Eine Quelle für alle Inline-SVG-Icons der App (24er-Viewbox, stroke, round).
-// Wird in Layout, Karten und Screens genutzt, damit überall dasselbe Set gilt.
+// Eine Quelle für alle Icons — 1:1 aus dem offiziellen Lucide-Set
+// (lucide-icons/lucide), Outline, 24×24, Strichstärke 1.6, runde Enden.
+// Niemals selbst zeichnen; jeder Screen nutzt nur Pfade aus dieser Map.
 export function Icon({ d, size = 22 }: { d: ReactNode; size?: number }) {
   return (
     <svg
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="1.6"
       strokeLinecap="round"
       strokeLinejoin="round"
       width={size}
@@ -20,98 +21,195 @@ export function Icon({ d, size = 22 }: { d: ReactNode; size?: number }) {
   );
 }
 
+/**
+ * Tile-Relief (APP-STYLE §13): einheitliche, dezente Tiefe für Icon-Kacheln.
+ * `hue` = die Bereichsfarbe der Kachel; das Icon (fg) wird separat gesetzt.
+ */
+export function tileRelief(hue: string): CSSProperties {
+  return {
+    background: `linear-gradient(155deg, color-mix(in srgb, ${hue}, #fff 22%), color-mix(in srgb, ${hue}, #000 9%))`,
+    boxShadow:
+      "0 2px 6px rgba(35,34,26,.07), inset 0 1px 0 rgba(255,255,255,.55)",
+  };
+}
+
 export const ICONS = {
+  // Heute = house
   home: (
     <>
-      <path d="M3 10.8 12 4l9 6.8" />
-      <path d="M5.5 9.6V20h13V9.6" />
+      <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+      <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
     </>
   ),
-  wave: <path d="M4 15 C7.5 15 8.5 7 12 7 C15.5 7 16.5 16 20 11" />,
-  calendar: (
-    <>
-      <rect x="4" y="5.5" width="16" height="15" rx="2.5" />
-      <path d="M4 10h16M9 3.5v4M15 3.5v4" />
-    </>
+  // Muster = activity
+  wave: (
+    <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" />
   ),
-  plus: <path d="M12 5.5v13M5.5 12h13" />,
-  search: (
-    <>
-      <circle cx="11" cy="11" r="7" />
-      <path d="m20 20-3.2-3.2" />
-    </>
-  ),
-  gear: (
-    <>
-      <circle cx="12" cy="12" r="3" />
-      <path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1M18.4 18.4l-2.1-2.1M7.7 7.7 5.6 5.6" />
-    </>
-  ),
-  // Kontaktimpuls = Sprechblase (Claude Design).
-  chat: <path d="M4 5.5h16v10H9l-4 3.4V15.5H4z" />,
-  mic: (
-    <>
-      <rect x="9" y="3" width="6" height="11" rx="3" />
-      <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" />
-    </>
-  ),
+  // Klärung = compass
   compass: (
     <>
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="M14.9 9.1 11 11l-1.9 3.9 3.9-1.9 1.9-3.9z" />
+      <circle cx="12" cy="12" r="10" />
+      <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" />
     </>
   ),
-  // Tagesritual = Sonnenaufgang. Eine Variante überall (Profil, Karten, FAB,
-  // Dashboard-Ritual-Badge) für einen einheitlichen Wiedererkennungswert.
+  // Rückblick = calendar
+  calendar: (
+    <>
+      <path d="M8 2v4" />
+      <path d="M16 2v4" />
+      <rect width="18" height="18" x="3" y="4" rx="2" />
+      <path d="M3 10h18" />
+    </>
+  ),
+  // Diese Woche = calendar-check
+  calendarCheck: (
+    <>
+      <path d="M8 2v4" />
+      <path d="M16 2v4" />
+      <rect width="18" height="18" x="3" y="4" rx="2" />
+      <path d="M3 10h18" />
+      <path d="m9 16 2 2 4-4" />
+    </>
+  ),
+  // Tagesritual / Morgen = sunrise
   sun: (
     <>
-      <path d="M3 18h18M5.6 18a6.4 6.4 0 0 1 12.8 0" />
-      <path d="M12 4.5v2.4M5 9l1.6 1.2M19 9l-1.6 1.2" />
+      <path d="M12 2v8" />
+      <path d="m4.93 10.93 1.41 1.41" />
+      <path d="M2 18h2" />
+      <path d="M20 18h2" />
+      <path d="m19.07 10.93-1.41 1.41" />
+      <path d="M22 22H2" />
+      <path d="m8 6 4-4 4 4" />
+      <path d="M16 18a4 4 0 0 0-8 0" />
     </>
   ),
+  // Abend / Ruhe = moon
+  moon: (
+    <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+  ),
+  // Energie = zap
+  bolt: (
+    <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" />
+  ),
+  // Eintrag = pencil
   pen: (
     <>
-      <path d="M12 19l7-7-3-3-7 7-1 4 4-1z" />
-      <path d="M15 6l3 3" />
+      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+      <path d="m15 5 4 4" />
     </>
   ),
-  bolt: <path d="M13 2 4 14h7l-1 8 9-12h-7z" />,
-  // Routine-Wechsel (Claude Design).
+  // Sprache = mic
+  mic: (
+    <>
+      <path d="M12 19v3" />
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+      <rect x="9" y="2" width="6" height="13" rx="3" />
+    </>
+  ),
+  // Kontakt = message-circle
+  chat: (
+    <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" />
+  ),
+  // Routine-Wechsel = refresh-cw
   swap: (
     <>
-      <path d="M3.5 12a8.5 8.5 0 0 1 14.5-6M20.5 12a8.5 8.5 0 0 1-14.5 6" />
-      <path d="M18 3v3.5h-3.5M6 21v-3.5h3.5" />
+      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+      <path d="M21 3v5h-5" />
+      <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+      <path d="M8 16H3v5" />
+    </>
+  ),
+  // Einstellungen = settings
+  gear: (
+    <>
+      <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  // Roter Faden = spline
+  thread: (
+    <>
+      <circle cx="19" cy="5" r="2" />
+      <circle cx="5" cy="19" r="2" />
+      <path d="M5 17A12 12 0 0 1 17 5" />
+    </>
+  ),
+  // Kopf leeren = brain
+  brain: (
+    <>
+      <path d="M12 18V5" />
+      <path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" />
+      <path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" />
+      <path d="M17.997 5.125a4 4 0 0 1 2.526 5.77" />
+      <path d="M18 18a4 4 0 0 0 2-7.464" />
+      <path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517" />
+      <path d="M6 18a4 4 0 0 1-2-7.464" />
+      <path d="M6.003 5.125a4 4 0 0 0-2.526 5.77" />
+    </>
+  ),
+  // Serie = flame
+  flame: (
+    <path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4" />
+  ),
+  // Suche = search
+  search: (
+    <>
+      <path d="m21 21-4.34-4.34" />
+      <circle cx="11" cy="11" r="8" />
+    </>
+  ),
+  // Teilen = share-2
+  share: (
+    <>
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" />
+      <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
+    </>
+  ),
+  // Schleife = shell
+  shell: (
+    <path d="M14 11a2 2 0 1 1-4 0 4 4 0 0 1 8 0 6 6 0 0 1-12 0 8 8 0 0 1 16 0 10 10 0 1 1-20 0 11.93 11.93 0 0 1 2.42-7.22 2 2 0 1 1 3.16 2.44" />
+  ),
+  // Soforthilfe-Karte (Kopf leeren) — Alias auf brain, Bestandsnutzung.
+  pulse: (
+    <>
+      <path d="M12 18V5" />
+      <path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" />
+      <path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" />
+      <path d="M17.997 5.125a4 4 0 0 1 2.526 5.77" />
+      <path d="M18 18a4 4 0 0 0 2-7.464" />
+      <path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517" />
+      <path d="M6 18a4 4 0 0 1-2-7.464" />
+      <path d="M6.003 5.125a4 4 0 0 0-2.526 5.77" />
+    </>
+  ),
+  // Utility-Icons (ebenfalls Lucide-Pfade)
+  plus: (
+    <>
+      <path d="M5 12h14" />
+      <path d="M12 5v14" />
+    </>
+  ),
+  pause: (
+    <>
+      <path d="M8 5v14" />
+      <path d="M16 5v14" />
+    </>
+  ),
+  arrowRight: (
+    <>
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
     </>
   ),
   logout: (
     <>
-      <path d="M9 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3" />
-      <path d="M16 16l4-4-4-4M20 12H9" />
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" x2="9" y1="12" y2="12" />
     </>
   ),
-  // „Gerade ist viel?" = Puls/Aktivität (Claude Design).
-  pulse: <path d="M3 12h4l2-7 4 14 2-7h6" />,
-  // „Als Karte teilen" = Upload (Claude Design).
-  share: (
-    <>
-      <path d="M12 14V4M8.5 7.5 12 4l3.5 3.5" />
-      <path d="M5 12.5V18.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5V12.5" />
-    </>
-  ),
-  arrowRight: <path d="M4 9h10M9.5 4.5 14 9l-4.5 4.5" />,
-  // „In Folge" = Flamme (Streak), Claude Design.
-  flame: (
-    <>
-      <path d="M12 3c1 3-2 4-2 7a4.5 4.5 0 0 0 9 0c0-2-1-3-1.5-4 .2 2-1.5 3-1.5 1 0-2.5-2-4-3-4z" />
-      <path d="M9 14a3 3 0 0 0 6 0" />
-    </>
-  ),
-  // „Diese Woche" = Kalender mit Haken, Claude Design.
-  calendarCheck: (
-    <>
-      <rect x="4" y="5.5" width="16" height="15" rx="2.5" />
-      <path d="M4 10h16M9 3.5v4M15 3.5v4M8 14l2.4 2.4L16 11" />
-    </>
-  ),
-  pause: <path d="M8 5v14M16 5v14" />,
 } as const;

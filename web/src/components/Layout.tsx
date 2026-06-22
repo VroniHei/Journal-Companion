@@ -3,7 +3,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { DisclaimerGate } from "./DisclaimerGate";
 import { Onboarding } from "./Onboarding";
 import { FabSheet } from "./FabSheet";
-import { Icon, ICONS } from "./icons";
+import { Icon, ICONS, tileRelief } from "./icons";
 import { useSettings } from "../hooks/useData";
 import { useSyncStatus } from "../hooks/useSync";
 
@@ -115,7 +115,7 @@ export function Layout() {
           >
             <span
               className="inline-flex h-[30px] w-[30px] flex-none items-center justify-center rounded-[9px]"
-              style={{ background: l.tile.bg, color: l.tile.fg }}
+              style={{ ...tileRelief(l.tile.bg), color: l.tile.fg }}
             >
               <Icon d={l.icon} size={17} />
             </span>
