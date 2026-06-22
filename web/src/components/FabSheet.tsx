@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
+import { tileRelief } from "./icons";
 
 // FAB-Auswahl „Was möchtest du tun?" — schließt die größte Navigations-Lücke
 // (kein unklares Direkt-Springen in einen Eintrag). Mobile = Bottom-Sheet,
@@ -140,11 +141,15 @@ export function FabSheet({ open, onClose }: { open: boolean; onClose: () => void
             >
               <span
                 className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl"
-                style={{
-                  background: o.iconBg,
-                  color: o.iconColor,
-                  boxShadow: o.highlight ? "0 3px 10px rgba(110,155,44,.18)" : "none",
-                }}
+                style={
+                  o.highlight
+                    ? {
+                        background: o.iconBg,
+                        color: o.iconColor,
+                        boxShadow: "0 3px 10px rgba(110,155,44,.18)",
+                      }
+                    : { ...tileRelief(o.iconBg), color: o.iconColor }
+                }
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
                   {o.icon}

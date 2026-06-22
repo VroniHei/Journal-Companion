@@ -8,7 +8,7 @@ import {
   KIND_LABEL,
   KIND_STYLE,
 } from "../lib/entryCard";
-import { Icon, ICONS } from "./icons";
+import { Icon, ICONS, tileRelief } from "./icons";
 
 // Mood-Skala (APP-STYLE §3): clay (schwer) → gold → sage → grün (leicht).
 function moodColor(m: number): string {
@@ -48,8 +48,8 @@ export function JournalCard({ entry }: { entry: JournalEntry }) {
           <span className="flex items-center gap-[9px]">
             {isRitual ? (
               <span
-                className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full text-[#CD8A5B]"
-                style={{ background: "#F6ECE0" }}
+                className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full"
+                style={{ ...tileRelief("#F6ECE0"), color: "#CD8A5B" }}
               >
                 <Icon d={ICONS.sun} size={11} />
               </span>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card } from "../components/ui";
-import { Icon, ICONS } from "../components/icons";
+import { Icon, ICONS, tileRelief } from "../components/icons";
 import { JournalCard } from "../components/JournalCard";
 import {
   useDailyRitual,
@@ -335,7 +335,7 @@ export function Dashboard() {
         <div className="flex min-w-0 items-center gap-3.5 sm:gap-4">
           <span
             className="inline-flex h-[46px] w-[46px] flex-none items-center justify-center rounded-[14px] text-[#7a6b96]"
-            style={{ background: "#EDE6F6" }}
+            style={tileRelief("#EDE6F6")}
             aria-hidden="true"
           >
             <Icon d={ICONS.pulse} size={23} />
@@ -1051,7 +1051,7 @@ export function Dashboard() {
           >
             <span
               className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl text-[#CD8A5B]"
-              style={{ background: "linear-gradient(145deg,#F6ECE2,#EFEFE0)" }}
+              style={tileRelief("#F6ECE2")}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
                 <path d="M3 18h18M5.6 18a6.4 6.4 0 0 1 12.8 0" />
