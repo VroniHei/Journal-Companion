@@ -479,8 +479,13 @@ export function Ritual() {
     );
   }
 
+  // B4: Auf Desktop eine echte 2-spaltige Seite (Inhalt links, Foto rechts),
+  // nicht als Modal. Foto nach Tageszeit (Morgen Notizbuch, Abend Journal-Matte).
+  const sidePhoto =
+    period === "evening" ? "/img/journal-mat.webp" : "/img/notebook-still.webp";
+
   return (
-    <DesktopModal onClose={() => navigate("/")}>
+    <div className="lg:grid lg:grid-cols-[1fr_432px] lg:items-start lg:gap-8">
     <section className="space-y-4">
       <div>
         <h1 className="serif text-3xl font-semibold">Tagesritual</h1>
@@ -678,6 +683,31 @@ export function Ritual() {
         </p>
       </div>
     </section>
-    </DesktopModal>
+
+    {/* Rechte Spalte (nur Desktop): ruhiges Tageszeit-Foto, mitscrollend. */}
+    <aside className="hidden lg:block lg:sticky lg:top-6">
+      <div
+        className="relative overflow-hidden rounded-[22px] border"
+        style={{
+          borderColor: theme.border,
+          boxShadow: "0 14px 32px rgba(120,86,52,.14)",
+        }}
+      >
+        <img
+          src={sidePhoto}
+          alt=""
+          className="h-[600px] w-full object-cover"
+        />
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: theme.evening
+              ? "linear-gradient(180deg,rgba(123,107,150,.10),rgba(35,34,26,.04) 40%,transparent)"
+              : "linear-gradient(180deg,rgba(205,138,91,.12),rgba(35,34,26,.04) 40%,transparent)",
+          }}
+        />
+      </div>
+    </aside>
+    </div>
   );
 }
