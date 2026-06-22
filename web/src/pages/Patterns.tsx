@@ -325,12 +325,12 @@ export function Patterns() {
 
       {/* Bento: Desktop volle Breite (12-Spalten), Mobile gestapelt. */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-[18px]">
-        {/* Stimmung · 30 Tage (Verlauf-Default) */}
+        {/* Stimmung · 30 Tage (Punkt-Ansicht als Default, Verlauf umschaltbar) */}
         <div className="lg:col-span-7">
           <MoodCard
             entries={entries}
             dayCount={30}
-            defaultView="verlauf"
+            defaultView="punkte"
             title="Stimmung · 30 Tage"
           />
         </div>

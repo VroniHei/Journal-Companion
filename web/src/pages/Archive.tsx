@@ -162,7 +162,7 @@ export function Archive() {
           <button
             type="button"
             onClick={() => toggle(id)}
-            className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--border)] py-2.5 text-[13px] font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)] sm:w-auto sm:justify-self-end sm:rounded-full sm:bg-[var(--surface)] sm:px-4 sm:py-2 sm:shadow-[var(--shadow-card)]"
+            className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--border)] py-2.5 text-[13px] font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)] sm:ml-auto sm:w-auto sm:rounded-full sm:bg-[var(--surface)] sm:px-4 sm:py-2 sm:shadow-[var(--shadow-card)]"
           >
             {isOpen ? "Weniger" : `Alle ${items.length} ansehen`}
             <span aria-hidden="true">→</span>

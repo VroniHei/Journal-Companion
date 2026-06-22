@@ -238,7 +238,12 @@ export function wordsOfWeek(entries: JournalEntry[], max = 7): WordCount[] {
   for (const e of entries) {
     for (const w of [...e.topics, ...e.emotions, ...e.needs]) {
       const t = w.trim();
-      if (t) counts.set(t, (counts.get(t) ?? 0) + 1);
+      // Nur echte Worte/kurze Begriffe zählen — keine ganzen Sätze. Freie
+      // Bedürfnis-/Themen-Eingaben können Sätze sein; die gehören nicht in
+      // eine „Worte"-Wolke (max. 2 Worte, höchstens 24 Zeichen).
+      if (t && t.split(/\s+/).length <= 2 && t.length <= 24) {
+        counts.set(t, (counts.get(t) ?? 0) + 1);
+      }
     }
   }
   return [...counts.entries()]

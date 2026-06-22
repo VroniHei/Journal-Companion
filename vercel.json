@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "npm install --include=dev",
-  "buildCommand": "node_modules/.bin/esbuild server/src/app.ts --bundle --platform=node --format=esm --packages=external --outfile=api/_server-app.mjs && cd web && npm run build",
+  "buildCommand": "npx esbuild server/src/app.ts --bundle --platform=node --format=esm --packages=external --outfile=api/_server-app.mjs && cd web && npm run build",
   "outputDirectory": "web/dist",
   "functions": {
     "api/index.ts": { "maxDuration": 60 }

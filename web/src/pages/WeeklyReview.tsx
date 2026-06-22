@@ -183,10 +183,8 @@ export function WeeklyReview() {
           <MoodCard
             entries={entries}
             dayCount={30}
-            defaultView="verlauf"
-            title="Stimmung · Verlauf"
-            hideToggle
-            hideLegend
+            defaultView="punkte"
+            title="Stimmung · 30 Tage"
           />
         </div>
 
