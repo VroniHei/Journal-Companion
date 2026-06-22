@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { recordStabilityMoment } from "../db/queries";
 import { DictationButton } from "../components/DictationButton";
+import { DesktopModal } from "../components/DesktopModal";
+import { Icon, ICONS } from "../components/icons";
 
 // Gedankenschleife lösen: benennen → auseinandernehmen → ein kleiner Schritt.
 // Ruhiger Fokus-Flow im Flieder-/Beruhigungs-Ton (App-Style §8). In Vronis
@@ -48,14 +50,37 @@ export function Loosen() {
   }
 
   return (
+    <DesktopModal onClose={() => navigate("/")} maxWidth={560}>
     <section
-      className="-mx-4 -mt-6 min-h-[70vh] px-4 pt-6 sm:-mx-6 sm:px-6"
+      className="-mx-4 -mt-6 min-h-[70vh] px-4 pt-6 sm:-mx-6 sm:px-6 lg:mx-0 lg:mt-0 lg:min-h-0 lg:px-0 lg:pt-0"
       style={{
         background:
           "radial-gradient(220px 220px at 8% 2%, rgba(203,190,244,.34), transparent 68%), radial-gradient(200px 200px at 100% 78%, rgba(168,232,79,.12), transparent 68%), linear-gradient(180deg,#F1ECF8 0%,#F4F0EC 44%,#F8F5EE 100%)",
       }}
     >
       <div className="mx-auto max-w-[560px]">
+        {/* Desktop-Modal-Kopf: Lilac-Emblem + Schließen-X (Mobile: Tab/Zurück) */}
+        <div className="mb-5 hidden items-start justify-between lg:flex">
+          <span
+            className="flex h-16 w-16 items-center justify-center rounded-[20px] text-white"
+            style={{
+              background: "linear-gradient(145deg,#CBBEF4,#9d8fce)",
+              boxShadow: "0 10px 26px rgba(123,107,150,.34)",
+            }}
+          >
+            <Icon d={ICONS.shell} size={30} />
+          </span>
+          <button
+            type="button"
+            aria-label="Schließen"
+            onClick={() => navigate("/")}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:text-[var(--foreground)]"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="17" height="17">
+              <path d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          </button>
+        </div>
         {done ? (
           <div className="flex flex-col items-center py-14 text-center">
             <div
@@ -180,5 +205,6 @@ export function Loosen() {
         )}
       </div>
     </section>
+    </DesktopModal>
   );
 }

@@ -64,7 +64,7 @@ export function Energy() {
   });
 
   return (
-    <DesktopModal onClose={() => navigate("/")}>
+    <DesktopModal onClose={() => navigate("/")} maxWidth={540}>
     <section className="space-y-5">
       <div className="flex items-start justify-between gap-3">
         <div>
