@@ -51,8 +51,10 @@ export function Loosen() {
 
   return (
     <DesktopModal onClose={() => navigate("/")} maxWidth={560}>
+    {/* Verlauf füllt das ganze Modal (lg:-m-7 + lg:rounded + lg:p-7), wie Relief,
+        statt als hartes Rechteck im weißen Modal zu liegen. */}
     <section
-      className="-mx-4 -mt-6 min-h-[70vh] px-4 pt-6 sm:-mx-6 sm:px-6 lg:mx-0 lg:mt-0 lg:min-h-0 lg:px-0 lg:pt-0"
+      className="-mx-4 -mt-6 min-h-[70vh] px-4 pt-6 sm:-mx-6 sm:px-6 lg:-m-7 lg:min-h-0 lg:rounded-[26px] lg:p-7"
       style={{
         background:
           "radial-gradient(220px 220px at 8% 2%, rgba(203,190,244,.34), transparent 68%), radial-gradient(200px 200px at 100% 78%, rgba(168,232,79,.12), transparent 68%), linear-gradient(180deg,#F1ECF8 0%,#F4F0EC 44%,#F8F5EE 100%)",
