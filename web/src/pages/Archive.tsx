@@ -3,10 +3,58 @@ import { Link, useNavigate } from "react-router-dom";
 import type { JournalEntry } from "@journal/shared";
 import { JournalCard } from "../components/JournalCard";
 import { Eyebrow } from "../components/ui";
-import { entryKind, type EntryKind } from "../lib/entryCard";
+import { entryKind, entryTitle, type EntryKind } from "../lib/entryCard";
 import { useEntries } from "../hooks/useData";
 
 type Filter = "alle" | EntryKind;
+
+// Punkt-Farbe je Eintragstyp (Master: farbiger Punkt = Eintragstyp).
+const KIND_DOT: Record<EntryKind, string> = {
+  ritual: "#CD8A5B",
+  eintrag: "#A8E84F",
+  reflexion: "#DDB14B",
+  gespraech: "#9BA383",
+};
+
+function previewLine(e: JournalEntry): string {
+  const base = e.entrySummary?.trim() || e.text.trim();
+  return base.split("\n")[0]?.trim() ?? "";
+}
+
+function rowDate(iso: string, mode: "weekday" | "date"): string {
+  const d = new Date(iso);
+  return mode === "weekday"
+    ? d.toLocaleDateString("de-DE", { weekday: "short" })
+    : d.toLocaleDateString("de-DE", { day: "numeric", month: "long" });
+}
+
+// Kompakte Zeilen-Liste (Mobile, Master): Punkt + Titel + eine Vorschauzeile +
+// Datum/Tag rechts. Desktop nutzt weiter die JournalCard-Kacheln.
+function CompactRow({ e, dateMode }: { e: JournalEntry; dateMode: "weekday" | "date" }) {
+  const prev = previewLine(e);
+  return (
+    <Link
+      to={`/eintrag/${e.id}`}
+      className="flex items-center gap-3 rounded-[16px] border border-[var(--border)] bg-[var(--surface)] px-4 py-3.5 shadow-[var(--shadow-card)]"
+    >
+      <span
+        className="h-[11px] w-[11px] flex-none rounded-full"
+        style={{ background: KIND_DOT[entryKind(e)] }}
+      />
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-[15px] font-[650] tracking-[-0.01em] text-[var(--foreground)]">
+          {entryTitle(e)}
+        </div>
+        {prev && (
+          <div className="mt-px truncate text-[12.5px] text-[#9a917f]">{prev}</div>
+        )}
+      </div>
+      <span className="flex-none text-[12px] text-[#9a917f]">
+        {rowDate(e.createdAt, dateMode)}
+      </span>
+    </Link>
+  );
+}
 
 const FILTERS: { key: Filter; label: string }[] = [
   { key: "alle", label: "Alle" },
@@ -74,7 +122,17 @@ export function Archive() {
     else months.push({ label, items: [e] });
   }
 
-  function Group({ id, label, items }: { id: string; label: string; items: JournalEntry[] }) {
+  function Group({
+    id,
+    label,
+    items,
+    dateMode,
+  }: {
+    id: string;
+    label: string;
+    items: JournalEntry[];
+    dateMode: "weekday" | "date";
+  }) {
     if (items.length === 0) return null;
     const isOpen = expanded.has(id);
     const visible = isOpen ? items : items.slice(0, 3);
@@ -88,22 +146,27 @@ export function Archive() {
             {items.length} {items.length === 1 ? "Eintrag" : "Einträge"}
           </span>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Mobile: kompakte Zeilen */}
+        <div className="flex flex-col gap-2.5 sm:hidden">
+          {visible.map((e) => (
+            <CompactRow key={e.id} e={e} dateMode={dateMode} />
+          ))}
+        </div>
+        {/* Desktop: Karten-Raster */}
+        <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
           {visible.map((e) => (
             <JournalCard key={e.id} entry={e} />
           ))}
         </div>
         {items.length > 3 && (
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={() => toggle(id)}
-              className="lift inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-[13px] font-semibold text-[var(--foreground)] shadow-[var(--shadow-card)]"
-            >
-              {isOpen ? "Weniger" : `Alle ${items.length} ansehen`}
-              <span aria-hidden="true">→</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => toggle(id)}
+            className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--border)] py-2.5 text-[13px] font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)] sm:w-auto sm:justify-self-end sm:rounded-full sm:bg-[var(--surface)] sm:px-4 sm:py-2 sm:shadow-[var(--shadow-card)]"
+          >
+            {isOpen ? "Weniger" : `Alle ${items.length} ansehen`}
+            <span aria-hidden="true">→</span>
+          </button>
         )}
       </div>
     );
@@ -175,8 +238,8 @@ export function Archive() {
         </p>
       ) : (
         <div className="space-y-8">
-          <Group id="diese-woche" label="Diese Woche" items={thisWeek} />
-          <Group id="letzte-woche" label="Letzte Woche" items={lastWeek} />
+          <Group id="diese-woche" label="Diese Woche" items={thisWeek} dateMode="weekday" />
+          <Group id="letzte-woche" label="Letzte Woche" items={lastWeek} dateMode="date" />
 
           {months.length > 0 && (
             <div className="space-y-3">
@@ -203,11 +266,18 @@ export function Archive() {
                         </span>
                       </button>
                       {isOpen && (
-                        <div className="space-y-4">
-                          {m.items.map((e) => (
-                            <JournalCard key={e.id} entry={e} />
-                          ))}
-                        </div>
+                        <>
+                          <div className="flex flex-col gap-2.5 sm:hidden">
+                            {m.items.map((e) => (
+                              <CompactRow key={e.id} e={e} dateMode="date" />
+                            ))}
+                          </div>
+                          <div className="hidden space-y-4 sm:block">
+                            {m.items.map((e) => (
+                              <JournalCard key={e.id} entry={e} />
+                            ))}
+                          </div>
+                        </>
                       )}
                     </div>
                   );
