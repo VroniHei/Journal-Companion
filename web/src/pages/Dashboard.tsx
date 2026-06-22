@@ -1000,7 +1000,9 @@ export function Dashboard() {
       </div>
 
       {!hasData ? (
-        <div className="mx-auto flex max-w-[560px] flex-col gap-3">
+        <div className="mx-auto flex max-w-[560px] flex-col gap-3 lg:grid lg:max-w-[940px] lg:grid-cols-2 lg:items-start lg:gap-5">
+          {/* Linke Spalte: Clay-Karte + Tagesritual-Zeile */}
+          <div className="flex flex-col gap-3">
           {/* Clay-Gradient-Karte mit Stift-Icon (Master, kein Foto) */}
           <div
             className="relative overflow-hidden rounded-[24px] border p-6 sm:p-8"
@@ -1068,10 +1070,11 @@ export function Dashboard() {
               <path d="M9 6l6 6-6 6" />
             </svg>
           </Link>
+          </div>
 
-          {/* Muster & Stimmung — gestrichelter Platzhalter */}
+          {/* Muster & Stimmung — gestrichelter Platzhalter (Desktop: rechte Spalte) */}
           <div
-            className="rounded-[18px] border border-dashed p-[18px]"
+            className="rounded-[18px] border border-dashed p-[18px] lg:p-6"
             style={{ borderColor: "rgba(35,34,26,0.16)", background: "rgba(255,255,255,0.5)" }}
           >
             <div className="mb-3 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
