@@ -7,10 +7,13 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 ## Offen
 
-- 🟡 **Korrektur-Briefing-Rest:** Eintrag-Detail-Tabs (Eintrag/Reflexion/Gespräch)
-  und Muster „Punkte/Verlauf"-Umschalter mit Legende noch offen; danach visueller
-  Gesamt-Abgleich gegen `Innerline-App-VORSCHAU.html`. Die 9 Haupt-Punkte des
-  Briefings sind auf `claude/charming-ride-rvi3rj` umgesetzt — nach Merge abhaken.
+- 🟡 **Visueller Gesamt-Abgleich gegen `Innerline-App-VORSCHAU.html`:** jeden
+  betroffenen Screen einmal komplett gegen den Master-Frame legen und Restabweichungen
+  mitnehmen. Die 9 Haupt-Punkte des Korrektur-Briefings sind auf
+  `claude/charming-ride-rvi3rj` (PR #1) umgesetzt — nach Merge abhaken. Die im
+  Briefing zusätzlich genannten Eintrag-Detail-Tabs und der Muster
+  „Punkte/Verlauf"-Umschalter mit Legende sind bereits im Code vorhanden
+  (`EntryDetail.tsx`, `MoodCard.tsx`).
 - 🟢 **clay-Wortmarke** (`innerline-wordmark-clay.svg`): Master nutzt sie an
   einigen Stellen; im Repo nur dunkel + light. Optional ergänzen.
 - 🟢 **Ritual-Abschluss als Eintrag:** beim Abschluss zusätzlich einen
