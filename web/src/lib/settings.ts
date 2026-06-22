@@ -15,6 +15,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   highQualityMode: false,
   autoSpeak: false,
   preferFreeSpeech: true,
+  onboarded: false, // Erststart-Flow für neue, leere Profile zeigen
 };
 
 export async function getSettings(): Promise<AppSettings> {
