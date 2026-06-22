@@ -182,9 +182,9 @@ export function WeeklyReview() {
           </div>
           <MoodCard
             entries={entries}
-            dayCount={30}
+            dayCount={14}
             defaultView="punkte"
-            title="Stimmung · 30 Tage"
+            title="Stimmung · 14 Tage"
           />
         </div>
 
