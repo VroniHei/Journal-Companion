@@ -5,6 +5,42 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-22 — Korrektur-Briefing abgearbeitet (9 Punkte gegen `Innerline App.dc.html`)
+
+**Was:** Den Handoff `design_handoff_app_shell_navigation/` (inkl. `Innerline
+App.dc.html`, 34 Screens, `APP-STYLE.md`, `KORREKTUR-BRIEFING`) als ZIP erhalten
+(claude_design-MCP-Connector ist in der Web-Session nicht verfügbar) und alle
+9 Korrektur-Punkte umgesetzt — je Desktop und Mobile, gegen Master/Screens:
+
+1. **Onboarding** (`Onboarding.tsx`, `focus.ts`, `settings.ts`): Willkommens-Foto,
+   Schritt-Punkte im 60px-Header, 8 Fokus-Chips, Schritt 2 als drei Auswahl-Karten
+   (Morgen/Mittag/Abend) mit antippbarem Zeit-Chip; Desktop als zentriertes
+   Overlay; `DEFAULT_SETTINGS.onboarded=false`.
+2. **Leerzustand „Heute leer"** (`Dashboard.tsx`): Clay-Karte mit Stift-Icon,
+   „Tagesritual starten"-Zeile, gestrichelter „Muster & Stimmung"-Platzhalter.
+3. **Ritual-Abschluss** (`Ritual.tsx`): Punkte-Recap als eine Karte, letzte Zeile
+   `.g`-Italic („Ein guter Satz"), Serie-Zeile mit echtem `computeStreak`, Button
+   „Zurück zum Tag".
+4. **Tab-Leiste** (`Layout.tsx`): feste 82px, Items zentriert, Bodenabstand.
+5. **Rückblick** (`WeeklyReview.tsx`): Foto-Band auf Mobile (Desktop ohne Foto).
+6. **Wochen-Brief** (`WeeklyLetter.tsx`): ruhiger Leerzustand statt Fehlertext.
+7. **Archiv** (`Archive.tsx`): Mobile als kompakte Zeilen-Liste (Punkt = Typ),
+   Desktop behält Karten-Raster.
+8. **Zitat-Karte** (`ShareCard.tsx`): ein Foto + vier Overlay-Welten (statt 6 Foto-
+   Welten + Verläufe); Akzentwort per `*Stern*` in `.g`-Italic (DOM + Canvas).
+9. **Routine-Wechsel** (`Routine.tsx`): Kopfzeile, alt→neu als Pills, Toggle in
+   das antippbare Wochen-Raster integriert, Desktop zweispaltig.
+
+**Warum:** Vronis Beobachtung „mobile Ansicht weicht ab" + Korrektur-Briefing.
+Quelle bewusst der Master-Prototyp, nicht Annahmen.
+
+**Ergebnis/Status:** Build + Typecheck + Lint grün, je Punkt(e) committet und auf
+Branch `claude/charming-ride-rvi3rj` gepusht. Offen: Eintrag-Detail-Tabs und
+Muster „Punkte/Verlauf"-Umschalter (im Briefing als weitere Abweichungen genannt,
+noch nicht umgesetzt); visueller Feinabgleich gegen VORSCHAU steht noch aus.
+
+---
+
 ## 2026-06-21 (Teil 6) — Tagesritual als gekennzeichneter Tageseintrag
 
 **Was:** Abgeschlossene Tagesrituale erscheinen jetzt als verknüpfter Tageseintrag
