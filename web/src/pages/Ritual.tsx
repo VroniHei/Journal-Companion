@@ -3,9 +3,10 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "../components/ui";
 import { DesktopModal } from "../components/DesktopModal";
 import { DictationButton } from "../components/DictationButton";
-import { useDailyRitual } from "../hooks/useData";
+import { useDailyRitual, useEntries } from "../hooks/useData";
 import { dayKey, syncRitualEntry, upsertDailyRitual } from "../db/queries";
 import { isEveningNow, ritualTheme } from "../lib/daypart";
+import { computeStreak } from "../lib/insights";
 
 type Period = "morning" | "evening";
 
@@ -94,6 +95,8 @@ export function Ritual() {
   const date = params.get("date") ?? dayKey();
   const isToday = date === dayKey();
   const ritual = useDailyRitual(date);
+  const entries = useEntries();
+  const streak = computeStreak(entries);
 
   const [gratitude, setGratitude] = useState(["", "", ""]);
   const [makeGreat, setMakeGreat] = useState("");
@@ -309,18 +312,20 @@ export function Ritual() {
 
   // Ruhiger „geschafft"-Moment, sobald alle drei Fragen beantwortet sind.
   if (done) {
-    const recap =
+    // Recap als EINE Karte mit drei Zeilen, je farbiger Punkt (Master).
+    const recap = (
       period === "morning"
         ? [
-            { label: "Dankbar", value: gratitude.find((s) => s.trim()) },
-            { label: "Fokus", value: makeGreat.trim() },
-            { label: "Dein Satz", value: affirmation.trim() },
+            { label: "Dankbar", value: gratitude.find((s) => s.trim()), dot: "#CD8A5B", italic: false },
+            { label: "Fokus", value: makeGreat.trim(), dot: "#DDB14B", italic: false },
+            { label: "Ein guter Satz", value: affirmation.trim(), dot: "#9BA383", italic: true },
           ]
         : [
-            { label: "Gutes getan", value: goodDeed.trim() },
-            { label: "Besser", value: better.trim() },
-            { label: "Momente", value: moments.find((s) => s.trim()) },
-          ];
+            { label: "Gutes getan", value: goodDeed.trim(), dot: "#CD8A5B", italic: false },
+            { label: "Besser", value: better.trim(), dot: "#DDB14B", italic: false },
+            { label: "Momente", value: moments.find((s) => s.trim()), dot: "#9BA383", italic: false },
+          ]
+    ).filter((r) => r.value);
     return (
       <DesktopModal onClose={() => navigate("/")}>
       <section>
@@ -389,30 +394,83 @@ export function Ritual() {
               Sechs Minuten für dich. Das zählt.
             </p>
 
-            <div className="mt-6 space-y-2 text-left">
-              {recap
-                .filter((r) => r.value)
-                .map((r) => (
-                  <div
-                    key={r.label}
-                    className="rounded-2xl border bg-white/70 px-4 py-3"
-                    style={{ borderColor: "rgba(35,34,26,0.07)" }}
-                  >
-                    <div
-                      className="text-[10.5px] font-semibold uppercase tracking-[0.16em]"
-                      style={{ color: theme.eyebrow }}
-                    >
+            <div
+              className="mt-6 rounded-[20px] border bg-white px-[18px] text-left"
+              style={{
+                borderColor: "rgba(35,34,26,0.07)",
+                boxShadow: "0 8px 24px rgba(35,34,26,0.06)",
+              }}
+            >
+              {recap.map((r, i) => (
+                <div
+                  key={r.label}
+                  className="flex items-start gap-3 py-3.5"
+                  style={
+                    i < recap.length - 1
+                      ? { borderBottom: "1px solid rgba(35,34,26,0.07)" }
+                      : undefined
+                  }
+                >
+                  <span
+                    className="mt-[5px] h-[9px] w-[9px] flex-none rounded-full"
+                    style={{ background: r.dot }}
+                  />
+                  <div>
+                    <div className="mb-[3px] text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9a917f]">
                       {r.label}
                     </div>
-                    <div className="mt-0.5 text-[15px] text-[var(--foreground)]">
-                      {r.value}
+                    <div className="text-[15px] leading-[1.4] text-[#23221A]">
+                      {r.italic ? <em className="g">{r.value}</em> : r.value}
                     </div>
                   </div>
-                ))}
+                </div>
+              ))}
             </div>
 
-            <div className="mt-7">
-              <Button onClick={() => navigate("/")}>Fertig</Button>
+            {/* Serie-Zeile mit Blatt-Icon (echte Werte) */}
+            <div className="mt-[18px] flex items-center justify-center gap-2 text-[13px] font-medium text-[#6a5a48]">
+              <svg
+                viewBox="0 0 24 24"
+                width="15"
+                height="15"
+                fill="none"
+                stroke="#CD8A5B"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 3c1 3-2 4-2 7a4.5 4.5 0 0 0 9 0c0-2-1-3-1.5-4 .2 2-1.5 3-1.5 1 0-2.5-2-4-3-4z" />
+                <path d="M9 14a3 3 0 0 0 6 0" />
+              </svg>
+              <span>
+                <strong className="font-[650] text-[#23221A]">
+                  {streak} {streak === 1 ? "Tag" : "Tage"}
+                </strong>{" "}
+                in Folge · 1 Pausentag in Reserve
+              </span>
+            </div>
+
+            <div className="mt-[18px]">
+              <Button
+                onClick={() => navigate("/")}
+                className="w-full px-6 py-[15px] text-base shadow-[0_8px_22px_rgba(110,155,44,0.32)]"
+              >
+                Zurück zum Tag
+                <svg
+                  viewBox="0 0 18 18"
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M4 9h10M9.5 4.5 14 9l-4.5 4.5" />
+                </svg>
+              </Button>
             </div>
           </div>
         </div>
