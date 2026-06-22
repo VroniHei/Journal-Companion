@@ -425,6 +425,24 @@ export function Clarity() {
     </Link>
   );
 
+  // Bottom-CTA (Navigationskarte §00): direkter Weg in die Gedankenschleife
+  // (Screen 09), zusätzlich zum FAB. Steht am Ende des Schleifen-Bereichs.
+  const loosenButton = (
+    <Link
+      to="/schleife"
+      className="lift flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[15px] font-semibold text-[#5a4f6e]"
+      style={{
+        background: "linear-gradient(135deg,#EDE6F6,#E3DAF2)",
+        border: "1px solid rgba(157,139,201,.32)",
+      }}
+    >
+      Neue Schleife lösen
+      <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
+        <path d="M4 9h10M9.5 4.5 14 9l-4.5 4.5" />
+      </svg>
+    </Link>
+  );
+
   return (
     <section className="space-y-6">
       <div>
@@ -465,6 +483,7 @@ export function Clarity() {
       <div className="space-y-6 lg:hidden">
         {tab === "schleifen" && loosenLink}
         {tab === "schleifen" ? <LoopsSection /> : <DecisionsSection />}
+        {tab === "schleifen" && loosenButton}
       </div>
 
       {/* Desktop-Bento: Offene Schleifen | Entscheidungen */}
@@ -473,6 +492,7 @@ export function Clarity() {
           <Eyebrow>Offene Schleifen</Eyebrow>
           {loosenLink}
           <LoopsSection />
+          {loosenButton}
         </div>
         <div className="space-y-5">
           <Eyebrow>Entscheidungen</Eyebrow>

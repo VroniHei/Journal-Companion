@@ -188,10 +188,11 @@ export function WeeklyReview() {
           />
         </div>
 
-        {/* Wochen-Brief */}
+        {/* Wochen-Brief — auf Mobile ans untere Ende (über der Tab-Leiste),
+            auf Desktop behält es seine Bento-Position (Navigationskarte §00). */}
         <Link
           to="/wochen-brief"
-          className="lift flex flex-col overflow-hidden rounded-[20px] border p-[18px] shadow-[0_10px_28px_rgba(120,86,52,.1)] lg:col-span-7"
+          className="lift order-last flex flex-col overflow-hidden rounded-[20px] border p-[18px] shadow-[0_10px_28px_rgba(120,86,52,.1)] lg:order-none lg:col-span-7"
           style={{
             borderColor: "rgba(205,138,91,.22)",
             background: "linear-gradient(160deg,#FBF4E8,#F8F3EA)",
