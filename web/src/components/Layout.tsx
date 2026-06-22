@@ -177,7 +177,11 @@ export function Layout() {
                 type="button"
                 onClick={() => setProfileOpen((v) => !v)}
                 aria-label="Profil"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--sage,#9BA383)] text-sm font-semibold text-white"
+                className="flex h-[39px] w-[39px] items-center justify-center rounded-full text-sm font-semibold text-white transition"
+                style={{
+                  background: "linear-gradient(145deg,#A7B187,#8C966F)",
+                  boxShadow: profileOpen ? "0 0 0 2.5px #A8E84F" : undefined,
+                }}
               >
                 {initial}
               </button>
@@ -188,9 +192,9 @@ export function Layout() {
                     aria-hidden="true"
                     tabIndex={-1}
                     onClick={() => setProfileOpen(false)}
-                    className="fixed inset-0 z-40 cursor-default"
+                    className="fixed inset-0 z-40 cursor-default bg-[rgba(35,34,26,0.07)]"
                   />
-                  <div className="absolute right-0 top-[calc(100%+12px)] z-50 w-64 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-lift)]">
+                  <div className="absolute right-0 top-[calc(100%+12px)] z-50 w-[280px] overflow-hidden rounded-[20px] border border-[var(--border)] bg-[var(--surface)] shadow-[0_20px_52px_rgba(35,34,26,0.24)]">
                     {profileItems}
                   </div>
                 </>
