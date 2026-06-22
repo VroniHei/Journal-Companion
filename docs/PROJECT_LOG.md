@@ -904,3 +904,32 @@ nachziehen.
 
 **Freigabe:** Bash projektweit erlaubt (settings.local.json), damit autonom
 gearbeitet werden kann.
+
+## Block B — Desktop-Screens nach VOLLSTAENDIGES-BRIEFING (22.06.)
+
+Neue Datei direkt von Claude Design gezogen (`VOLLSTAENDIGES-BRIEFING_Claude-Code.md`,
+22 Screens + Navigations-Karte + Block A/B + Abschluss-Check) sowie das Foto
+`journal-mat.webp` (aus `images/`, dekodiert nach `web/public/img/`). Block A war
+über die parallele PR #1 bereits live; meine doppelte A8-Arbeit wurde verworfen.
+
+Umgesetzt & live (je ein Commit, Build/Lint grün):
+- **Icons:** zentrale `icons.tsx` jetzt 1:1 aus Lucide (stroke 1.6) + `tileRelief()`-
+  Token (APP-STYLE §13).
+- **B3** Desktop-Profil-Dropdown (§12: 280px, Radius 20, Scrim .07, Avatar-Ring).
+- **B4** Tagesritual Desktop = echte 2-spaltige Seite (`1fr 432px`) mit Tageszeit-
+  Foto rechts (Morgen `notebook-still`, Abend `journal-mat`); Abschluss bleibt
+  laut Nav-Karte Desktop-Modal.
+- **B1** Onboarding Desktop = 2-spaltiges Modal (660px, `welcome-still` rechts 248px).
+- **B2** Empty State Desktop = 2-spaltig (Clay+Ritual links, Muster-Platzhalter rechts).
+- **B5/B6/B7** Gedankenschleife (560px, Lilac-Emblem) + Impulse (620px) als
+  zentrierte Desktop-Modals mit Schließen-X; Energie-Check auf 540px gesetzt.
+- **B8** Einstellungen Desktop: runder Zurück-Button + Breadcrumb (kein Text-Link),
+  2-spaltiges Bento, Autosave-Statuszeile.
+
+**Bewusste Abweichung:** B8 nennt „Save-Button + Abmelden". Die App speichert
+jede Änderung sofort und hat kein Konto/Login — daher ehrliche Autosave-Status-
+zeile statt Pseudo-Speichern/Abmelden (nicht erfinden, vgl. Briefing-Regel 2/3).
+
+**Noch offen (Feinschliff, nicht blockierend):** Tile-Relief flächig auf ALLE
+Icon-Kacheln ausrollen (FabSheet-Optionen, JournalCard-Ritual-Kachel, Dashboard-
+Kacheln); Mindest-Schriftgrößen (§14) systematisch gegenprüfen.

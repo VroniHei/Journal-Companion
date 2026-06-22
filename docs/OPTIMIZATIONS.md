@@ -85,3 +85,16 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 - 🟢 **KI-Titel-Backfill** für bestehende alte Einträge (einmalig, on demand).
 - 🟢 **Voice-Eingabe in VS-Code-Chat** (separat vom App-Thema; morgen klären).
 - 🟢 **Tests** für Krisen-/Sync-/Titel-Logik.
+
+## Feinschliff aus Block B (Stand 2026-06-22)
+
+- 🟡 **Tile-Relief flächig:** `tileRelief()`-Token aus `icons.tsx` noch auf alle
+  Icon-Kacheln ausrollen (FabSheet-Optionen, JournalCard-Ritual-Kachel,
+  Dashboard-Auswertungs-Kacheln, Profil schon erledigt).
+- 🟡 **Mindest-Schriftgrößen (APP-STYLE §14):** systematisch prüfen — Tab-Labels
+  ≥11.5px, Body ≥14px; vereinzelte 10.5–12.5px-Eyebrows sind ok als Label, aber
+  Fließtext-Stellen gegenchecken.
+- 🟢 **`icons.tsx` Lint-Warnung** (react-refresh/only-export-components): ICONS +
+  tileRelief in eigene Nicht-Komponenten-Datei auslagern, damit Fast-Refresh
+  sauber bleibt (kein Fehler, nur Warnung).
+- 🟢 **Bundle-Größe** >500 KB: Code-Splitting per Route (`React.lazy`) erwägen.
