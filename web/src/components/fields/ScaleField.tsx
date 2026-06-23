@@ -26,9 +26,13 @@ export function ScaleField({
               onClick={() => onChange(n)}
               className="h-9 w-9 rounded-full border text-sm transition"
               style={{
-                borderColor: active ? "var(--accent)" : "var(--border)",
-                background: active ? "var(--accent)" : "transparent",
-                color: active ? "var(--accent-contrast)" : "var(--foreground)",
+                borderColor: active ? "transparent" : "var(--border)",
+                background: active
+                  ? "linear-gradient(135deg,#B4ED63,#A8E84F)"
+                  : "transparent",
+                color: active ? "#23221A" : "var(--foreground)",
+                fontWeight: active ? 700 : 500,
+                boxShadow: active ? "0 3px 8px rgba(110,155,44,.32)" : "none",
               }}
             >
               {n}

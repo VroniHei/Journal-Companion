@@ -51,11 +51,20 @@ export function ChipSelect({
               type="button"
               aria-pressed={active}
               onClick={() => toggle(opt)}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition ${
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm transition ${
                 active
-                  ? "border-[var(--accent)] bg-[var(--accent-soft)] font-medium text-[var(--foreground)]"
-                  : "border-[var(--border)] text-[var(--foreground)] hover:border-[var(--foreground)]"
+                  ? "font-semibold text-[#23221A]"
+                  : "border border-[var(--border)] text-[var(--foreground)] hover:border-[var(--foreground)]"
               }`}
+              style={
+                active
+                  ? {
+                      background: "linear-gradient(135deg,#EEF6E0,#E6F0D4)",
+                      border: "1.5px solid #A8E84F",
+                      boxShadow: "0 2px 5px rgba(110,155,44,.12)",
+                    }
+                  : undefined
+              }
             >
               {active && (
                 <span aria-hidden="true" className="text-[var(--green-deep)]">
