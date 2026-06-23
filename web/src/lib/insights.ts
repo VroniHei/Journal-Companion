@@ -356,14 +356,45 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
     );
   }
 
+  // Häufigstes Bedürfnis
+  const nCounts = new Map<string, number>();
+  for (const e of entries)
+    for (const nd of e.needs) {
+      const k = nd.trim();
+      if (k) nCounts.set(k, (nCounts.get(k) ?? 0) + 1);
+    }
+  const topNeed = [...nCounts.entries()].sort((a, b) => b[1] - a[1])[0];
+  if (topNeed && topNeed[1] >= 2) {
+    cands.push(
+      `Ein Bedürfnis kommt immer wieder durch: <em class="g">${escapeHtml(topNeed[0])}</em>.`,
+    );
+  }
+
+  // Schreib-Konstanz dieser Woche (an wie vielen Tagen etwas festgehalten)
+  const daysThisWeek = new Set(
+    thisWeek.map((e) => new Date(e.createdAt).toDateString()),
+  ).size;
+  if (daysThisWeek >= 3) {
+    cands.push(
+      `Diese Woche hast du an <em class="g">${daysThisWeek} Tagen</em> etwas festgehalten.`,
+    );
+  }
+
   if (cands.length === 0) {
     const m = avg(entries.map((e) => e.mood));
     if (m == null) return null;
-    return `Deine Stimmung lag zuletzt im Schnitt bei <em class="g">${m}/10</em>.`;
+    return `Deine Stimmung lag zuletzt im Schnitt bei <em class="g">${m}/10</em>. Schon das hinzusehen zählt.`;
   }
 
-  // Tägliche Rotation über alle zutreffenden Aussagen.
-  return cands[((seed % cands.length) + cands.length) % cands.length];
+  // Zwei sich ergänzende Aussagen ergeben einen volleren, sinnvollen Block für
+  // die „Was sich zeigt"-Kachel. Beide rotieren täglich (seed); die zweite ist
+  // immer eine andere als die erste, damit sich nichts wiederholt.
+  const len = cands.length;
+  const i = ((seed % len) + len) % len;
+  const primary = cands[i];
+  if (len === 1) return primary;
+  const secondary = cands[(i + 1) % len];
+  return `${primary} ${secondary}`;
 }
 
 export interface WordCount {
