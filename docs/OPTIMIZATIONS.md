@@ -7,11 +7,10 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 ## Offen
 
-- 🟡 **Zitat-Karte: größerer Bild-Pool (30–40):** Mechanik steht (`CARD_PHOTOS`
-  + `dailyPhotos`, 3 wählbare Tagesvorschläge), aber im Repo liegen erst 7 nutzbare
-  Fotos. Für die gewünschte Vielfalt zusätzliche Markenfotos unter
-  `web/public/img/` ergänzen und in `CARD_PHOTOS` aufnehmen. Optional: Auswahl
-  stärker an Stimmung/Thema des Tages koppeln (statt reiner Datums-Rotation).
+- 🟢 **Zitat-Karte: Bildauswahl an Stimmung/Thema koppeln:** Pool ist jetzt groß
+  (40 Fotos, `CARD_PHOTOS` + `dailyPhotos`, 3 Tagesvorschläge), aber die Auswahl
+  rotiert rein nach Datum. Optional die 3 Vorschläge stärker an Stimmung/Top-Thema
+  des Tages ausrichten (z. B. Landschaft bei „leicht", Stillleben bei „schwer").
 - 🟢 **Mini-Karten-Schlüsselwort schärfen:** aktuell das häufigste Wort
   (`wordsOfWeek`). Könnte stärker an den „Roten Faden"/Top-Cluster gekoppelt
   werden, damit Mini-Karte und Themenliste dasselbe Leitwort zeigen.

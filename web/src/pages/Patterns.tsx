@@ -364,8 +364,9 @@ export function Patterns() {
             {wsText}
           </p>
           {words.length > 0 && (
-            <div className="mt-3 flex gap-1.5 overflow-hidden">
-              {words.slice(0, 4).map((w) => (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {/* Eine Zeile, die 3 wichtigsten Tags — kein abgeschnittener Chip. */}
+              {words.slice(0, 3).map((w) => (
                 <span
                   key={w.word}
                   className="whitespace-nowrap rounded-full bg-[var(--sand)] px-[11px] py-1 text-[12px] font-medium text-[var(--foreground)]"

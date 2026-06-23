@@ -984,8 +984,10 @@ export function Dashboard() {
                   {insights[0]}
                 </p>
                 {topWords.length > 0 && (
-                  <div className="mb-3.5 flex gap-1.5 overflow-hidden">
-                    {topWords.map((w) => (
+                  <div className="mb-3.5 flex flex-wrap gap-1.5">
+                    {/* Mobil bewusst nur die 3 wichtigsten (häufigsten) Tags in
+                        einer Zeile — kein abgeschnittener Chip. */}
+                    {topWords.slice(0, 3).map((w) => (
                       <span
                         key={w}
                         className="whitespace-nowrap rounded-full bg-[#F1ECE0] px-3 py-1.5 text-[12.5px] font-medium text-[#5d4f3f]"

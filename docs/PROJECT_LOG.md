@@ -5,6 +5,25 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-23 — Zitat-Karte: 40er-Bild-Pool + Tag-Cutoff behoben
+
+**Was:**
+- **Großer Bild-Pool**: 33 kuratierte, ruhige Markenfotos (Landschaften,
+  Stillleben, ruhige Szenen) aus dem Website-Repo `VroniHei/Website` gezogen
+  (Tarball über `codeload`, da der Git-Proxy nur das Hauptrepo autorisiert) und
+  nach `web/public/img/` gelegt. `CARD_PHOTOS` umfasst nun **40 Fotos**; pro Tag
+  rotieren 3 wählbare Vorschläge. Text-/Grafik-lastige Bilder (Wireframe,
+  Brand-Essence, Moodboards mit Beschriftung, Trust-Grafiken) bewusst aussortiert.
+- **Tag-Cutoff** in „Was sich zeigt" (mobil): der 4. Tag wurde durch
+  `overflow:hidden` halb abgeschnitten. Jetzt **eine Zeile mit den 3 wichtigsten
+  (häufigsten) Tags**, Umbruch statt Clip (`Dashboard.tsx`, `Patterns.tsx`).
+
+**Warum:** Nutzer-Feedback — zu wenig Bildauswahl; abgeschnittene Tags.
+
+**Status:** `build`/`lint`/`typecheck` grün.
+
+---
+
 ## 2026-06-23 — Zitat-Karte: KI-Vorschlag, echtes Logo, Bild-Pool
 
 **Was:** Drei Nachbesserungen an „Als Karte teilen" (`ShareCard.tsx`):
