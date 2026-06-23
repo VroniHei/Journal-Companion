@@ -492,7 +492,7 @@ export function Dashboard() {
             {/* Mobile: kurz, einzeilig; Desktop: Headline nach Prototyp. */}
             <p className="truncate text-[15px] font-[450] leading-snug text-[#3a3247] sm:overflow-visible sm:whitespace-normal sm:text-[20px] sm:leading-[1.4] sm:tracking-[-0.01em]">
               <span className="sm:hidden">
-                In 2 Min. <em className="g">Kopf leeren</em> und sortieren.
+                <em className="g">Kopf leeren</em> und sortieren.
               </span>
               <span className="hidden sm:inline">
                 Kopf leeren und in <em className="g">zwei Minuten</em> sortieren.
@@ -643,10 +643,12 @@ export function Dashboard() {
                 <span className="hidden sm:inline">Tägliches Ritual</span>
               </span>
               <span
-                className="hidden whitespace-nowrap border-l pl-2 text-[11px] font-semibold sm:inline"
+                className="whitespace-nowrap border-l pl-2 text-[11px] font-semibold"
                 style={{ color: "#b08a64", borderColor: "rgba(205,138,91,0.3)" }}
               >
-                6 Min · Dein Begleiter
+                {/* Mobil kurz „6 Min", Desktop mit Zusatz — einzeilig. */}
+                <span className="sm:hidden">6 Min</span>
+                <span className="hidden sm:inline">6 Min · Dein Begleiter</span>
               </span>
             </div>
             </div>
