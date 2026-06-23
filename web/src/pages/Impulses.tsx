@@ -7,6 +7,7 @@ import {
   type ImpulsePack,
 } from "../lib/impulsePacks";
 import { DesktopModal } from "../components/DesktopModal";
+import { tileRelief } from "../components/tile";
 
 function Icon({ name }: { name: ImpulseIcon }) {
   const common = {
@@ -101,7 +102,10 @@ export function Impulses() {
           aria-expanded={isOpen}
           className="flex w-full items-center gap-[13px] px-4 py-[15px] text-left"
         >
-          <span className="inline-flex h-[38px] w-[38px] flex-none items-center justify-center rounded-[11px] bg-[#F1ECE0] text-[#9a917f]">
+          <span
+            className="inline-flex h-[38px] w-[38px] flex-none items-center justify-center rounded-[11px]"
+            style={{ ...tileRelief("#F1ECE0"), color: "#9a917f" }}
+          >
             <Icon name={pack.icon} />
           </span>
           <span className="flex-1">

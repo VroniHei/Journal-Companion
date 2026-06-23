@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createEntry } from "../db/queries";
 import { DictationButton } from "../components/DictationButton";
 import { DesktopModal } from "../components/DesktopModal";
+import { tileRelief } from "../components/tile";
 
 // „Gerade ist viel" — Soforthilfe für den überfüllten Moment: Kopf leeren,
 // dann sortieren. Ruhig, nie therapeutisch. Flieder-/Beruhigungs-Ton.
@@ -85,7 +86,10 @@ export function Relief() {
             borderColor: "rgba(110,155,44,.22)",
           }}
         >
-          <span className="inline-flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[10px] bg-[#F0F4E6] text-[#6E9B2C]">
+          <span
+            className="inline-flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[10px]"
+            style={{ ...tileRelief("#F0F4E6"), color: "#6E9B2C" }}
+          >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
               <path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2" />
             </svg>
