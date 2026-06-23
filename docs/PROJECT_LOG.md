@@ -1224,3 +1224,22 @@ Build/Lint/Typecheck grün; Branch nach `main` fast-forward (ausgerichtet).
 **Bewusst offen / wartet:** „Neuer Eintrag"-Redesign (User holt dazu ein eigenes
 CD-Handoff ein); Gedankenschleife-Mobile bleibt wie gewünscht (kein 1:1-Handoff,
 da die aktuelle Ansicht ausdrücklich gefällt).
+
+---
+
+## 2026-06-23 (Forts. 2) — Neuer Eintrag (Claude-Design §11) + Muster-Feinschliff
+
+- **Muster „Was sich zeigt":** Mini-Karte und Tag-Chips entfernt (die häufigen
+  Worte stehen direkt darunter), Einsicht als Fließtext; Fußzeile als feste
+  `h-5`-Zeile, sodass der Trennstrich exakt mit der Stimmungs-Legende fluchtet.
+- **Neuer Eintrag komplett neu (Handoff §11):** Schreib-Impuls-Karte mit
+  rotierenden Prompts, großes Textfeld (Wortzahl + Zeitstempel + Diktat),
+  Stimmung/Intensität (1–10) immer sichtbar, „Gefühl" offen, „Worum es geht" /
+  „Impuls & Absicht" / „Alltag" als Accordions. Desktop 2-spaltig (Schreiben
+  links, Kontext-Panel rechts), Mobile als Scroll-Editor. Alle Muster-Felder
+  bleiben erhalten.
+- **Felder:** Auswahl-Zustände (ScaleField-Zahlen, ChipSelect) auf den grünen
+  Verlauf umgestellt (nie dunkel, §11) — wirkt app-weit konsistent.
+
+Handoff §10-Sync war bereits umgesetzt; §1–9 aus Vor-Sessions. Damit ist
+Handoff #5 vollständig abgeglichen.
