@@ -7,6 +7,16 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 ## Offen
 
+- 🟡 **Themen-Normalisierung für den Roten Faden:** aktuell clustern `topics`
+  nur per `toLowerCase`. Synonyme/Beugungen („Arbeit"/„Job", „Trennung"/
+  „Trennungen") landen in getrennten Fäden. Optional: leichte Stemming-/
+  Synonym-Zuordnung (kuratierte Map), damit echte Themen zusammenlaufen.
+- 🟢 **„Abmelden"/Konto-Frage offen:** bewusst weggelassen, da App lokal-first
+  ohne Login. Falls später Konten/echter Account-Sync kommen, Menüpunkt
+  (Profil-Sheet `Layout.tsx`) mit echter Semantik nachrüsten.
+- 🟢 **Roter-Faden-Notiz noch reicher:** begleitende Bedürfnisse (`needs`) oder
+  Körpersignale könnten den Untertext weiter personalisieren; aktuell nur
+  Trend/Abklingen/Emotion/Häufigkeit.
 - 🟡 **Visueller Gesamt-Abgleich gegen `Innerline-App-VORSCHAU.html`:** jeden
   betroffenen Screen einmal komplett gegen den Master-Frame legen und Restabweichungen
   mitnehmen. Die 9 Haupt-Punkte des Korrektur-Briefings sind auf

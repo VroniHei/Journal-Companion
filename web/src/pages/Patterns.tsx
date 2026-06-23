@@ -336,14 +336,26 @@ export function Patterns() {
           />
         </div>
 
-        {/* Roter Faden */}
+        {/* Roter Faden — Drill-in: führt auf die eigene Seite. Pfeil + Footer
+            machen das Weitergehen sichtbar. */}
         <Link
           to="/roter-faden"
-          className="lift flex flex-col rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] lg:col-span-5"
+          aria-label="Roter Faden ansehen"
+          className="lift group flex flex-col rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] lg:col-span-5"
         >
-          <div className="mb-2.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
-            <span className="h-2 w-2 rounded-full bg-[var(--clay,#CD8A5B)]" />
-            Roter Faden
+          <div className="mb-2.5 flex items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+            <span className="flex items-center gap-1.5">
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ background: topCluster?.color ?? "var(--clay,#CD8A5B)" }}
+              />
+              Roter Faden
+            </span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--surface-2)] text-[var(--muted)] transition group-hover:bg-[#F2F6E8] group-hover:text-[var(--green-text,#447510)]">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="13" height="13" aria-hidden="true">
+                <path d="M9 6l6 6-6 6" />
+              </svg>
+            </span>
           </div>
           {topCluster ? (
             <p
@@ -356,15 +368,21 @@ export function Patterns() {
               hier, was sich <em className="g">durchzieht</em>.
             </p>
           )}
-          <div className="mt-auto flex flex-wrap gap-1.5 pt-4">
-            {(topCluster?.tags ?? words.slice(0, 4).map((w) => w.word)).map((t) => (
-              <span
-                key={t}
-                className="rounded-full bg-[var(--sand)] px-[11px] py-1 text-[12px] font-medium text-[var(--foreground)]"
-              >
-                {t}
-              </span>
-            ))}
+          <div className="mt-auto pt-4">
+            <div className="flex flex-wrap gap-1.5">
+              {(topCluster?.tags ?? words.slice(0, 4).map((w) => w.word)).map((t) => (
+                <span
+                  key={t}
+                  className="rounded-full bg-[var(--sand)] px-[11px] py-1 text-[12px] font-medium text-[var(--foreground)]"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+            <span className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--green-text,#447510)]">
+              {topCluster ? "Alle Themen ansehen" : "Roter Faden ansehen"}
+              <span className="transition group-hover:translate-x-0.5">→</span>
+            </span>
           </div>
         </Link>
 

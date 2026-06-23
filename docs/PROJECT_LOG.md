@@ -5,6 +5,39 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-23 — Nachbesserungen: Heute-im-Blick (mobil), Roter Faden (Bild + Logik), Muster-Affordanz
+
+**Was:** Drei Punkte aus dem Review umgesetzt (Branch `claude/wizardly-bardeen-4bicc3`):
+
+1. **„Heute im Blick" mobil** (`Dashboard.tsx`): Die Aktionen „Anderer Impuls" /
+   „Dazu schreiben" waren per `hidden sm:flex` nur auf Desktop sichtbar — jetzt
+   auch mobil (wie im Mock), Label an den Mock angeglichen (`Dazu schreiben`).
+2. **Roter Faden** (`RedThread.tsx`, `lib/insights.ts`):
+   - **Bild korrigiert:** `hero-see.webp` (See) → `zitat-weg.webp` (Bergpfad,
+     entspricht dem Mock).
+   - **Klare, dokumentierte Logik** für `themeClusters` (Markenkern). Fenster =
+     letzte 6 Wochen (rollt live). Ein Thema ist erst ein „Faden", wenn es an
+     **≥2 verschiedenen Tagen** vorkommt (echte Wiederkehr statt einem vollen
+     Tag). Reihung nach „Stärke" = Tage×2 + Häufigkeit + Aktualitäts-Bonus;
+     max. 5 Karten. **Randfarbe** = emotionaler Grundton (Ø Stimmung) auf dem
+     Marken-Farbsystem clay→gold→sage→grün — zeigt, *wie sich ein Thema
+     anfühlt*. **Notiz** datengetrieben (Trend → Abklingen → begleitende Emotion
+     → Häufigkeit). Auf der Seite: erklärende Caption + Farb-Legende
+     (`TONE_LEGEND` als eine Quelle der Wahrheit). Emotion in der Notiz wird
+     ge-escaped (kein Self-XSS via `dangerouslySetInnerHTML`).
+3. **Muster-Seite** (`Patterns.tsx`): Roter-Faden-Kachel jetzt erkennbar als
+   Drill-in — Chevron oben rechts + „Alle Themen ansehen →"-Footer; der
+   Eyebrow-Punkt nimmt den Grundton des Top-Themas an.
+
+**Warum:** Mobile-Buttons fehlten; falsches Hero-Bild; Roter-Faden-Karten waren
+inhaltlich nicht nachvollziehbar (Farben/Anzahl/Texte ohne sichtbare Logik); auf
+„Muster" war nicht klar, dass die Karte weiterführt.
+
+**Status:** `npm run build`, `lint`, `typecheck` grün. „Abmelden" im Menü auf
+Wunsch bewusst weggelassen (App ist lokal-first ohne Login/Konto).
+
+---
+
 ## 2026-06-22 — Korrektur-Briefing abgearbeitet (9 Punkte gegen `Innerline App.dc.html`)
 
 **Was:** Den Handoff `design_handoff_app_shell_navigation/` (inkl. `Innerline

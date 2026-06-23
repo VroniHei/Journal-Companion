@@ -387,9 +387,9 @@ export function Dashboard() {
               {prompt.post}
             </p>
           </div>
-          {/* Aktionen nur ab sm — mobil ist die Kachel nur der Impuls (die
-              Schnell-Buttons oben decken Schreiben/Sprechen ab). */}
-          <div className="hidden shrink-0 gap-2 sm:flex sm:flex-wrap">
+          {/* Aktionen: Impuls wechseln oder direkt damit schreiben — mobil wie
+              im Mock unter dem Satz, ab sm rechts daneben. */}
+          <div className="flex flex-wrap gap-2 sm:shrink-0">
             <button
               type="button"
               onClick={() => setPromptIdx((i) => i + 1)}
@@ -406,7 +406,7 @@ export function Dashboard() {
               onClick={() => navigate("/neu")}
               className="rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] transition hover:-translate-y-0.5 hover:bg-[#bdf06a]"
             >
-              Damit schreiben
+              Dazu schreiben
             </button>
           </div>
         </div>
