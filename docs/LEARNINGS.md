@@ -40,6 +40,22 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 - **`pkill -f "<muster>"`** kann sich selbst treffen, wenn das Muster im eigenen
   Kommando vorkommt → lieber per PID killen.
 
+## 2026-06-23
+
+- **„Roter Faden" braucht eine sichtbare Logik, nicht nur einen Algorithmus.**
+  Karten ohne erklärten Grund (Farbe/Anzahl/Text) wirken willkürlich. Lösung:
+  Definition transparent machen (Faden = Thema an ≥2 Tagen im 6-Wochen-Fenster),
+  Reihung nach „Stärke" (Tage×2 + Häufigkeit + Aktualität) und die Randfarbe an
+  das bestehende Stimmungs-Farbsystem koppeln (Grundton clay→gold→sage→grün) —
+  plus Caption + Legende auf der Seite, damit die Farbe lesbar ist.
+- **Legende aus einer Quelle (`TONE_LEGEND`)** halten und mit `moodHue`
+  synchron — sonst driften Bucket-Grenzen und Legende auseinander.
+- **`dangerouslySetInnerHTML` + Nutzertext = escapen.** Sobald eine Nutzer-
+  Emotion in eine HTML-Notiz eingebettet wird, vorher `escapeHtml` (sonst
+  Self-XSS, auch wenn nur lokale Eigendaten).
+- **Bild-Inventar vor „neues Asset nötig?" prüfen:** der gesuchte Bergpfad lag
+  bereits als `zitat-weg.webp` im Repo — Read zeigt webp visuell an.
+
 ## 2026-06-20 (Abend)
 
 - **Prompt-Gewichtung:** Eine rigide Antwortstruktur + bloß angehängter Kontext

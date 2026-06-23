@@ -306,10 +306,17 @@ function capitalize(s: string): string {
 export interface ThemeCluster {
   id: string;
   title: string;
+  /** Anzahl Einträge, in denen das Thema vorkommt (im Fenster). */
   count: number;
-  /** Mood-Farbe nach Durchschnittsstimmung (clay→gold→sage→grün). */
+  /** An wie vielen verschiedenen Tagen das Thema auftauchte (= „roter Faden"). */
+  days: number;
+  /**
+   * Randfarbe = emotionaler Grundton des Themas: die Durchschnittsstimmung der
+   * Einträge, in denen es vorkommt, auf das Marken-Farbsystem gemappt
+   * (clay = schwer → gold = gemischt → sage = okay → grün = leicht).
+   */
   color: string;
-  /** Ruhiger Satz, was das Thema gerade macht (Trend). */
+  /** Ruhiger, datengetriebener Satz, was das Thema gerade macht. */
   note: string;
   /** Zeit-Chips: seit-wann + letztes Auftauchen. */
   tags: string[];
@@ -323,6 +330,27 @@ function moodHue(m: number): string {
   if (m <= 5.5) return "#DDB14B";
   if (m <= 7.5) return "#9BA383";
   return "#A8E84F";
+}
+
+// Eine Quelle der Wahrheit für die Farb-Legende (Roter-Faden-Seite): so bleibt
+// die Erklärung der Randfarben mit `moodHue` synchron.
+export const TONE_LEGEND: { color: string; label: string }[] = [
+  { color: "#CD8A5B", label: "schwer" },
+  { color: "#DDB14B", label: "gemischt" },
+  { color: "#9BA383", label: "okay" },
+  { color: "#A8E84F", label: "leicht" },
+];
+
+// Minimal-Escape für Nutzertext, der per dangerouslySetInnerHTML in die Notiz
+// eingebettet wird (z. B. eine begleitende Emotion).
+function escapeHtml(s: string): string {
+  return s.replace(
+    /[&<>"']/g,
+    (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        c
+      ] as string,
+  );
 }
 
 function sinceLabel(firstAt: string): string {
@@ -350,45 +378,70 @@ function lastLabel(lastAt: string): string {
 
 /**
  * „Roter Faden" (Markenkern): wiederkehrende Themen über die letzten Wochen —
- * nicht nur Wörter, sondern was sich durchzieht. Aus den `topics` der Einträge
- * geclustert: Häufigkeit, Stimmungs-Trend (wird es leichter?), Zeitraum.
+ * nicht nur Wörter, sondern was sich durchzieht.
+ *
+ * Logik (bewusst transparent, damit die Karten nachvollziehbar sind):
+ *
+ *  • Fenster   – nur Einträge der letzten `weeks` Wochen (Default 6). Rollt
+ *                live mit: ältere Themen fallen heraus, neue kommen dazu.
+ *  • Quelle    – die `topics` der Einträge (deine eigenen Worte), normalisiert.
+ *  • Auswahl   – ein Thema ist erst ein „Faden", wenn es an **mindestens `min`
+ *                verschiedenen Tagen** auftaucht (Default 2). So zählt echte
+ *                Wiederkehr über die Zeit, nicht ein einzelner voller Tag.
+ *  • Reihung   – nach „Stärke" = Tage (×2) + Häufigkeit + Aktualitäts-Bonus.
+ *                Aktuelle, oft wiederkehrende Themen stehen oben; `max` Stück.
+ *  • Titel     – das Thema selbst (deine Formulierung), groß geschrieben.
+ *  • Randfarbe – der emotionale Grundton (Ø Stimmung) auf dem Marken-Farbsystem
+ *                clay→gold→sage→grün. Zeigt, *wie sich das Thema anfühlt*.
+ *  • Notiz     – ein datengetriebener Satz: Stimmungs-Trend (wird es leichter/
+ *                schwerer?), Abklingen, begleitende Emotion oder Häufigkeit.
  */
 export function themeClusters(
   entries: JournalEntry[],
   opts: { weeks?: number; min?: number; max?: number } = {},
 ): ThemeCluster[] {
-  const { weeks = 6, min = 2, max = 6 } = opts;
+  const { weeks = 6, min = 2, max = 5 } = opts;
   const cutoff = Date.now() - weeks * 7 * DAY;
   const within = entries.filter((e) => new Date(e.createdAt).getTime() >= cutoff);
 
-  type Acc = { dates: string[]; moods: number[] };
+  type Acc = { dates: string[]; days: Set<string>; moods: number[]; emotions: string[] };
   const map = new Map<string, Acc>();
   for (const e of within) {
+    const dk = dkey(new Date(e.createdAt));
     for (const raw of e.topics) {
       const topic = raw.trim();
       if (!topic) continue;
       const key = topic.toLowerCase();
-      const acc = map.get(key) ?? { dates: [], moods: [] };
+      let acc = map.get(key);
+      if (!acc) {
+        acc = { dates: [], days: new Set(), moods: [], emotions: [] };
+        map.set(key, acc);
+      }
       acc.dates.push(e.createdAt);
+      acc.days.add(dk);
       acc.moods.push(e.mood);
-      if (!map.has(key)) map.set(key, acc);
+      acc.emotions.push(...e.emotions);
     }
   }
 
-  const clusters: ThemeCluster[] = [];
+  const scored: { cluster: ThemeCluster; strength: number }[] = [];
   for (const [key, acc] of map) {
-    if (acc.dates.length < min) continue;
+    // „Roter Faden" = Wiederkehr über die Zeit: an ≥ `min` verschiedenen Tagen.
+    const distinctDays = acc.days.size;
+    if (distinctDays < min) continue;
+
     const sorted = [...acc.dates].sort();
     const firstAt = sorted[0];
     const lastAt = sorted[sorted.length - 1];
     const meanMood = avg(acc.moods) ?? 5;
 
-    // Trend: Stimmung in der ersten vs. zweiten Hälfte der Treffer.
+    // Trend: Stimmung in der ersten vs. zweiten Hälfte der Treffer (nur bei
+    // genügend Datenpunkten, sonst zu verrauscht).
     const half = Math.floor(acc.moods.length / 2);
     const early = avg(acc.moods.slice(0, half || 1));
     const late = avg(acc.moods.slice(half));
     const trend =
-      early != null && late != null
+      acc.moods.length >= 4 && early != null && late != null
         ? late - early >= 0.8
           ? "up"
           : early - late >= 0.8
@@ -399,45 +452,71 @@ export function themeClusters(
       (Date.now() - new Date(lastAt).getTime()) / DAY,
     );
 
+    // Begleitende Emotion: häufigste Emotion in den Einträgen dieses Themas
+    // (nur, wenn sie mindestens zweimal auftaucht — sonst nicht aussagekräftig).
+    const emoCounts = new Map<string, number>();
+    for (const em of acc.emotions) {
+      const t = em.trim();
+      if (t) emoCounts.set(t, (emoCounts.get(t) ?? 0) + 1);
+    }
+    const topEmotion = [...emoCounts.entries()]
+      .filter(([, n]) => n >= 2)
+      .sort((a, b) => b[1] - a[1])[0]?.[0];
+
     // Notiz aus mehreren Signalen, damit nicht überall dasselbe steht.
     let note: string;
     if (trend === "up") {
-      note = "Zuletzt klingst du dabei <em class=\"g\">leichter</em>.";
+      note = 'Zuletzt fühlt sich das <em class="g">leichter</em> an.';
     } else if (trend === "down") {
-      note = "Liegt dir gerade <em class=\"g\">schwerer</em> als zuvor.";
+      note = 'Liegt gerade <em class="g">schwerer</em> als zuvor.';
     } else if (daysSinceLast >= 14) {
-      note = "Zuletzt <em class=\"g\">seltener</em> geworden.";
+      note = 'Zuletzt <em class="g">seltener</em> geworden.';
+    } else if (topEmotion) {
+      note = `Oft begleitet von <em class="g">${escapeHtml(topEmotion)}</em>.`;
     } else {
       // flach & aktuell: gleichwertige Formulierungen, je nach Häufigkeit,
       // pro Thema variiert (sonst klingen zwei Themen identisch).
       const pool =
         acc.dates.length >= 4
           ? [
-              "Kommt <em class=\"g\">immer wieder</em>.",
-              "Zieht sich durch die <em class=\"g\">Wochen</em>.",
-              "Taucht <em class=\"g\">regelmäßig</em> auf.",
+              'Kommt <em class="g">immer wieder</em>.',
+              'Zieht sich durch die <em class="g">Wochen</em>.',
+              'Taucht <em class="g">regelmäßig</em> auf.',
             ]
           : [
-              "Gerade wieder <em class=\"g\">präsent</em>.",
-              "Beschäftigt dich <em class=\"g\">aktuell</em>.",
-              "Zieht sich <em class=\"g\">ruhig</em> durch.",
+              'Gerade wieder <em class="g">präsent</em>.',
+              'Beschäftigt dich <em class="g">aktuell</em>.',
+              'Zieht sich <em class="g">ruhig</em> durch.',
             ];
       note = pool[phraseIndex(key, pool.length)];
     }
 
-    clusters.push({
-      id: key,
-      title: capitalize(key),
-      count: acc.dates.length,
-      color: moodHue(meanMood),
-      note,
-      tags: [sinceLabel(firstAt), lastLabel(lastAt)],
-      firstAt,
-      lastAt,
+    // Stärke: Wiederkehr (Tage) zählt doppelt, plus Häufigkeit, plus ein
+    // Aktualitäts-Bonus (klingt über zwei Wochen aus). So stehen aktuelle,
+    // sich durchziehende Themen oben — verblassende rutschen nach unten.
+    const recency = Math.max(0, 14 - daysSinceLast) / 14;
+    const strength = distinctDays * 2 + acc.dates.length + recency;
+
+    scored.push({
+      cluster: {
+        id: key,
+        title: capitalize(key),
+        count: acc.dates.length,
+        days: distinctDays,
+        color: moodHue(meanMood),
+        note,
+        tags: [sinceLabel(firstAt), lastLabel(lastAt)],
+        firstAt,
+        lastAt,
+      },
+      strength,
     });
   }
 
-  return clusters.sort((a, b) => b.count - a.count).slice(0, max);
+  return scored
+    .sort((a, b) => b.strength - a.strength)
+    .slice(0, max)
+    .map((s) => s.cluster);
 }
 
 // ===== Verlauf („Wie habe ich mich verändert?") ==============================

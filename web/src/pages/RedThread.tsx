@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEntries } from "../hooks/useData";
-import { themeClusters } from "../lib/insights";
+import { themeClusters, TONE_LEGEND } from "../lib/insights";
 
 // Roter Faden (Markenkern): wiederkehrende Themen über die letzten Wochen —
 // nicht nur Wörter, sondern was sich durchzieht. Drill-in aus „Muster":
@@ -34,6 +34,15 @@ export function RedThread() {
         </div>
       </div>
 
+      {clusters.length > 0 && (
+        <p className="max-w-[640px] text-[14px] leading-relaxed text-[var(--muted)]">
+          Themen, die in den letzten Wochen an mehreren Tagen wiederkehren —
+          sortiert nach dem, was sich gerade am stärksten durchzieht. Die Farbe
+          links zeigt, <em className="g">wie sich ein Thema anfühlt</em>: von
+          schwer bis leicht.
+        </p>
+      )}
+
       {clusters.length === 0 ? (
         <p className="max-w-[420px] text-[14px] leading-relaxed text-[var(--muted)]">
           Noch kein roter Faden zu sehen. Sobald sich Themen über mehrere Einträge
@@ -48,10 +57,11 @@ export function RedThread() {
             style={{ boxShadow: "0 16px 40px rgba(35,34,26,.18)" }}
           >
             <img
-              src="/img/hero-see.webp"
+              src="/img/zitat-weg.webp"
               alt=""
               aria-hidden="true"
               className="absolute inset-0 h-full w-full object-cover"
+              style={{ objectPosition: "center 55%" }}
             />
             <div
               className="pointer-events-none absolute inset-0"
@@ -108,6 +118,21 @@ export function RedThread() {
                 </div>
               </div>
             ))}
+
+            {/* Legende: was die Randfarbe bedeutet (Grundton des Themas). */}
+            <div className="flex flex-wrap items-center gap-2.5 px-1 pt-1 text-[11.5px] text-[var(--muted)]">
+              <span>Grundton:</span>
+              {TONE_LEGEND.map((t) => (
+                <span key={t.label} className="inline-flex items-center gap-1.5">
+                  <span
+                    className="h-2.5 w-2.5 rounded-full"
+                    style={{ background: t.color }}
+                    aria-hidden="true"
+                  />
+                  {t.label}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       )}
