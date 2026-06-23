@@ -27,6 +27,7 @@ export function MoodCard({
   className = "",
   hideToggle = false,
   hideLegend = false,
+  fill = false,
 }: {
   entries: JournalEntry[];
   dayCount?: number;
@@ -35,6 +36,9 @@ export function MoodCard({
   className?: string;
   hideToggle?: boolean;
   hideLegend?: boolean;
+  /** Füllt die volle Zellenhöhe und schiebt die Legende (Trennstrich) nach
+   *  unten — für gleich hohe Bento-Kacheln mit ausgerichteten Trennlinien. */
+  fill?: boolean;
 }) {
   const [view, setView] = useState<"punkte" | "verlauf">(defaultView);
   const days = useMemo(() => moodByDay(entries, dayCount), [entries, dayCount]);
@@ -57,7 +61,7 @@ export function MoodCard({
   const last = line[line.length - 1];
 
   return (
-    <div className={`rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] ${className}`}>
+    <div className={`rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] ${fill ? "lg:flex lg:h-full lg:flex-col" : ""} ${className}`}>
       <div className="mb-4 flex items-center justify-between gap-3">
         <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
           {heading}
@@ -159,7 +163,7 @@ export function MoodCard({
       )}
 
       {/* Legende */}
-      <div className={`mt-4 flex flex-wrap gap-x-3 gap-y-2 border-t border-[var(--border)] pt-3.5 ${hideLegend ? "hidden" : ""}`}>
+      <div className={`mt-4 ${fill ? "lg:mt-auto" : ""} flex flex-wrap gap-x-3 gap-y-2 border-t border-[var(--border)] pt-3.5 ${hideLegend ? "hidden" : ""}`}>
         {LEGEND.map((l) => (
           <span key={l.label} className="inline-flex items-center gap-1.5 text-[11.5px] text-[var(--muted)]">
             <span className="h-2.5 w-2.5 rounded-full" style={{ background: l.c }} />

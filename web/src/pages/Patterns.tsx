@@ -341,70 +341,74 @@ export function Patterns() {
 
       {/* Bento: Desktop volle Breite (12-Spalten), Mobile gestapelt. */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-[18px]">
-        {/* Stimmung · 14 Tage (Punkt-Default; 14 statt 30, damit die Punkte
-            nicht über die Karte laufen — einheitlich mit dem Rückblick) */}
-        <div className="lg:col-span-7">
-          <MoodCard
-            entries={entries}
-            dayCount={14}
-            defaultView="punkte"
-            title="Stimmung · 14 Tage"
-          />
-        </div>
+        {/* Stimmung · 7 Tage (Punkt-Default, einheitlich mit dem Dashboard);
+            `fill` schiebt den Trennstrich nach unten, damit beide Top-Kacheln
+            gleich hoch sind und ihre Trennlinien auf einer Höhe laufen. */}
+        <MoodCard
+          entries={entries}
+          dayCount={7}
+          defaultView="punkte"
+          title="Stimmung · 7 Tage"
+          fill
+          className="lg:col-span-6"
+        />
 
-        {/* Was sich zeigt — fasst das Muster zusammen; Mini-Karte + Drill-in zum
-            Roten Faden + Teilen (Claude Design Juni 2026). */}
-        <div className="flex flex-col rounded-[20px] border border-[var(--border)] bg-[radial-gradient(300px_170px_at_90%_0%,rgba(205,138,91,0.07),transparent_62%)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] lg:col-span-5">
+        {/* Was sich zeigt — fasst das Muster zusammen. Text + Tags links,
+            Mini-Karte rechts; darunter ein bündiger Trennstrich (auf gleicher
+            Höhe wie die Stimmungs-Legende) mit Drill-in + Teilen. */}
+        <div className="flex h-full flex-col rounded-[20px] border border-[var(--border)] bg-[radial-gradient(300px_170px_at_90%_0%,rgba(205,138,91,0.07),transparent_62%)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] lg:col-span-6">
           <div className="mb-2.5 inline-flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-[var(--clay,#CD8A5B)]" />
             <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
               Was sich zeigt
             </span>
           </div>
-          <p
-            className="text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]"
-            dangerouslySetInnerHTML={{ __html: wsHtml }}
-          />
-          {words.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {/* Eine Zeile, die 3 wichtigsten Tags — kein abgeschnittener Chip. */}
-              {words.slice(0, 3).map((w) => (
-                <span
-                  key={w.word}
-                  className="whitespace-nowrap rounded-full bg-[var(--sand)] px-[11px] py-1 text-[13px] font-medium text-[var(--foreground)]"
-                >
-                  {w.word}
-                </span>
-              ))}
+          <div className="flex gap-4">
+            <div className="min-w-0 flex-1">
+              <p
+                className="text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]"
+                dangerouslySetInnerHTML={{ __html: wsHtml }}
+              />
+              {words.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {words.slice(0, 3).map((w) => (
+                    <span
+                      key={w.word}
+                      className="whitespace-nowrap rounded-full bg-[var(--sand)] px-[11px] py-1 text-[13px] font-medium text-[var(--foreground)]"
+                    >
+                      {w.word}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-          <div className="mt-auto flex items-center gap-3.5 border-t border-[var(--border)] pt-3.5">
             <ThemeMiniCard
               keyword={wsKeyword}
               wordSize={18}
-              className="h-[76px] w-[110px] flex-none sm:h-[60px] sm:w-[86px]"
+              className="h-[76px] w-[104px] flex-none"
             />
-            <div className="flex flex-1 flex-col gap-2.5">
-              <Link
-                to="/roter-faden"
-                className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--green-text,#447510)]"
-              >
-                Roter Faden ansehen
-                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
-                  <path d="M4 9h10M9.5 4.5 14 9l-4.5 4.5" />
-                </svg>
-              </Link>
-              <Link
-                to="/teilen"
-                className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-[7px] text-[13px] font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)]"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
-                  <path d="M12 14V4M8.5 7.5 12 4l3.5 3.5" />
-                  <path d="M5 12.5V18.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5V12.5" />
-                </svg>
-                Als Karte teilen
-              </Link>
-            </div>
+          </div>
+          <div className="mt-auto flex items-center justify-between gap-3 border-t border-[var(--border)] pt-3.5">
+            <Link
+              to="/roter-faden"
+              className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--green-text,#447510)]"
+            >
+              Roter Faden ansehen
+              <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
+                <path d="M4 9h10M9.5 4.5 14 9l-4.5 4.5" />
+              </svg>
+            </Link>
+            <Link
+              to="/teilen"
+              aria-label="Als Karte teilen"
+              className="inline-flex flex-none items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-[7px] text-[13px] font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)]"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
+                <path d="M12 14V4M8.5 7.5 12 4l3.5 3.5" />
+                <path d="M5 12.5V18.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5V12.5" />
+              </svg>
+              Teilen
+            </Link>
           </div>
         </div>
 
