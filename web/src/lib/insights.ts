@@ -566,6 +566,54 @@ function lastLabel(lastAt: string): string {
  *  • Notiz     – ein datengetriebener Satz: Stimmungs-Trend (wird es leichter/
  *                schwerer?), Abklingen, begleitende Emotion oder Häufigkeit.
  */
+// Kuratierte Synonym-/Grundform-Zuordnung: führt gängige Synonyme auf ein
+// gemeinsames Leitwort zusammen, damit dasselbe Thema in EINEM Faden landet.
+const TOPIC_SYNONYMS: Record<string, string> = {
+  job: "arbeit",
+  beruf: "arbeit",
+  arbeiten: "arbeit",
+  büro: "arbeit",
+  finanzen: "geld",
+  finanz: "geld",
+  geldsorgen: "geld",
+  partnerschaft: "beziehung",
+  partner: "beziehung",
+  freunde: "freundschaft",
+  freund: "freundschaft",
+  freundin: "freundschaft",
+  schlafen: "schlaf",
+  schlaflosigkeit: "schlaf",
+  eltern: "familie",
+  ängste: "angst",
+  angstgefühl: "angst",
+  zukunftsangst: "zukunft",
+  selbstwertgefühl: "selbstwert",
+};
+
+// Konservatives Entbeugen: nur gängige Plural-/Beugungs-Endungen abtrennen und
+// nur, wenn der Rest noch ≥ 4 Zeichen hat (schützt kurze Wörter, vermeidet
+// falsche Zusammenführungen). So treffen sich „Trennung"/„Trennungen",
+// „Sorge"/„Sorgen", „Gedanke"/„Gedanken" im selben Schlüssel.
+function stemTopic(w: string): string {
+  for (const suf of ["en", "n", "e"]) {
+    if (w.length - suf.length >= 4 && w.endsWith(suf)) {
+      return w.slice(0, -suf.length);
+    }
+  }
+  return w;
+}
+
+// Normalisierter Gruppierungs-Schlüssel eines Themas (klein, entbeugt, Synonyme
+// zusammengeführt). Der angezeigte Titel bleibt davon unberührt — dort steht
+// weiter die häufigste Original-Formulierung der Nutzerin.
+export function normalizeTopic(raw: string): string {
+  const base = raw.trim().toLowerCase().replace(/\s+/g, " ");
+  if (!base) return "";
+  if (TOPIC_SYNONYMS[base]) return TOPIC_SYNONYMS[base];
+  const stemmed = stemTopic(base);
+  return TOPIC_SYNONYMS[stemmed] ?? stemmed;
+}
+
 export function themeClusters(
   entries: JournalEntry[],
   opts: { weeks?: number; min?: number; max?: number } = {},
@@ -574,23 +622,33 @@ export function themeClusters(
   const cutoff = Date.now() - weeks * 7 * DAY;
   const within = entries.filter((e) => new Date(e.createdAt).getTime() >= cutoff);
 
-  type Acc = { dates: string[]; days: Set<string>; moods: number[]; emotions: string[] };
+  type Acc = {
+    dates: string[];
+    days: Set<string>;
+    moods: number[];
+    emotions: string[];
+    surfaces: Map<string, number>;
+  };
   const map = new Map<string, Acc>();
   for (const e of within) {
     const dk = dkey(new Date(e.createdAt));
     for (const raw of e.topics) {
       const topic = raw.trim();
       if (!topic) continue;
-      const key = topic.toLowerCase();
+      const key = normalizeTopic(topic);
+      if (!key) continue;
       let acc = map.get(key);
       if (!acc) {
-        acc = { dates: [], days: new Set(), moods: [], emotions: [] };
+        acc = { dates: [], days: new Set(), moods: [], emotions: [], surfaces: new Map() };
         map.set(key, acc);
       }
       acc.dates.push(e.createdAt);
       acc.days.add(dk);
       acc.moods.push(e.mood);
       acc.emotions.push(...e.emotions);
+      // Original-Formulierung zählen, damit der Titel die häufigste eigene
+      // Schreibweise der Nutzerin zeigt (nicht den entbeugten Schlüssel).
+      acc.surfaces.set(topic, (acc.surfaces.get(topic) ?? 0) + 1);
     }
   }
 
@@ -667,10 +725,17 @@ export function themeClusters(
     const recency = Math.max(0, 14 - daysSinceLast) / 14;
     const strength = distinctDays * 2 + acc.dates.length + recency;
 
+    // Titel: die häufigste Original-Schreibweise (bei Gleichstand die kürzeste,
+    // meist die Grundform), groß geschrieben.
+    const titleSurface =
+      [...acc.surfaces.entries()].sort(
+        (a, b) => b[1] - a[1] || a[0].length - b[0].length,
+      )[0]?.[0] ?? key;
+
     scored.push({
       cluster: {
         id: key,
-        title: capitalize(key),
+        title: capitalize(titleSurface),
         count: acc.dates.length,
         days: distinctDays,
         color: moodHue(meanMood),
