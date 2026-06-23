@@ -79,6 +79,17 @@ const CARD_PHOTOS = [
   "/img/zitat-weg.webp",
 ];
 
+// Drei neutrale Naturbilder, die IMMER zur Auswahl stehen — eine generische,
+// motivunabhängige Basis neben den wechselnden, persönlicheren Vorschlägen.
+const NATURE_PHOTOS = [
+  "/img/about-bewegung-berge.webp",
+  "/img/landschaft-see-weg.webp",
+  "/img/zitat-weg.webp",
+];
+
+// Restlicher Pool (ohne die festen Naturbilder), aus dem täglich rotiert wird.
+const ROTATING_PHOTOS = CARD_PHOTOS.filter((p) => !NATURE_PHOTOS.includes(p));
+
 // Tage seit Epoche (lokale Mitternacht) — stabiler Tages-Index für die Rotation.
 function dayIndex(): number {
   const now = new Date();
@@ -86,11 +97,12 @@ function dayIndex(): number {
   return Math.floor(midnight.getTime() / 86_400_000);
 }
 
-// Drei Bildvorschläge für heute: deterministisch rotierend, ohne Dopplung.
+// Wechselnde Bildvorschläge für heute (deterministisch rotierend, ohne Dopplung)
+// aus dem Pool ohne die festen Naturbilder.
 function dailyPhotos(seed = dayIndex(), count = 3): string[] {
-  const n = CARD_PHOTOS.length;
+  const n = ROTATING_PHOTOS.length;
   const start = ((seed % n) + n) % n;
-  return Array.from({ length: Math.min(count, n) }, (_, i) => CARD_PHOTOS[(start + i) % n]);
+  return Array.from({ length: Math.min(count, n) }, (_, i) => ROTATING_PHOTOS[(start + i) % n]);
 }
 
 function world(
@@ -196,8 +208,9 @@ export function ShareCard() {
   const [formatId, setFormatId] = useState<FormatId>("story");
   const [busy, setBusy] = useState(false);
 
-  // Bildvorschläge für heute (3 wechselnde aus dem Pool) + aktuelle Auswahl.
-  const todaysPhotos = useMemo(() => dailyPhotos(), []);
+  // Sechs Auswahlbilder: drei täglich wechselnde Vorschläge + drei feste,
+  // neutrale Naturbilder (immer dabei, für eine generischere Auswahl).
+  const todaysPhotos = useMemo(() => [...dailyPhotos(), ...NATURE_PHOTOS], []);
   const [photo, setPhoto] = useState(() => todaysPhotos[0]);
 
   // Default-Satz: aus dem letzten Eintrag, sonst ruhiger Fallback mit Akzentwort.
@@ -592,12 +605,12 @@ export function ShareCard() {
         </div>
       </div>
 
-      {/* Bild — drei Tagesvorschläge aus dem Pool (wechseln täglich) */}
+      {/* Bild — sechs Vorschläge: drei wechselnde + drei feste Naturbilder */}
       <div>
         <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
           Bild
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           {todaysPhotos.map((p) => {
             const active = p === photo;
             return (
