@@ -24,10 +24,8 @@ import { aggregate } from "../lib/patterns";
 import {
   computeStreak,
   showcaseInsight,
-  themeClusters,
   wordsOfWeek,
 } from "../lib/insights";
-import { ThemeMiniCard } from "../components/ThemeMiniCard";
 import { toPrefs } from "../lib/settings";
 import { postPatternInsights } from "../lib/apiClient";
 import { formatDateTime } from "../lib/format";
@@ -316,19 +314,14 @@ export function Patterns() {
     "rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--accent)]";
 
   // Bento-Daten (Desktop nutzt die volle Breite als mehrspaltiges Raster).
-  const clusters = themeClusters(entries);
-  const topCluster = clusters[0];
   const words = wordsOfWeek(entries);
   const streak = computeStreak(entries, restDays.map((r) => r.date));
 
   // „Was sich zeigt"-Kachel: datengetriebene Einsicht mit .g-Akzent, täglich
-  // rotierend (seed = Tag), + Mini-Karte.
+  // rotierend (seed = Tag).
   const wsHtml =
     showcaseInsight(entries, Math.floor(Date.now() / 86_400_000)) ??
     'Sobald sich Themen über mehrere Einträge wiederholen, zeigt sich hier, was sich <em class="g">durchzieht</em>.';
-  const wsKeywordRaw = words[0]?.word ?? topCluster?.title ?? "Heute";
-  const wsKeyword =
-    wsKeywordRaw.charAt(0).toUpperCase() + wsKeywordRaw.slice(1);
 
   return (
     <section className="space-y-8">
@@ -363,35 +356,17 @@ export function Patterns() {
               Was sich zeigt
             </span>
           </div>
-          <div className="flex gap-4">
-            <div className="min-w-0 flex-1">
-              <p
-                className="text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]"
-                dangerouslySetInnerHTML={{ __html: wsHtml }}
-              />
-              {words.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {words.slice(0, 3).map((w) => (
-                    <span
-                      key={w.word}
-                      className="whitespace-nowrap rounded-full bg-[var(--sand)] px-[11px] py-1 text-[13px] font-medium text-[var(--foreground)]"
-                    >
-                      {w.word}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-            <ThemeMiniCard
-              keyword={wsKeyword}
-              wordSize={18}
-              className="h-[76px] w-[104px] flex-none"
-            />
-          </div>
-          {/* Fußzeile = eine Textzeile auf gleicher Höhe wie die Stimmungs-
-              Legende, damit beide Trennstriche exakt auf einer Linie laufen.
-              „Roter Faden" ist hier wichtiger als Teilen — Teilen entfällt. */}
-          <div className="mt-auto flex items-center border-t border-[var(--border)] pt-3.5">
+          {/* Einsicht als ruhiger Fließtext, volle Breite. Tags/Mini-Karte
+              entfallen hier (die häufigen Worte stehen ohnehin direkt darunter
+              in der eigenen Kachel) — so bleibt die Kachel klar. */}
+          <p
+            className="max-w-[34ch] text-[16px] font-[450] leading-[1.55] text-[var(--foreground)]"
+            dangerouslySetInnerHTML={{ __html: wsHtml }}
+          />
+          {/* Fußzeile = eine Textzeile (h-5) auf gleicher Höhe wie die
+              Stimmungs-Legende, damit beide Trennstriche exakt fluchten. */}
+          <div className="mt-auto border-t border-[var(--border)] pt-3.5">
+            <div className="flex h-5 items-center">
             <Link
               to="/roter-faden"
               className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--green-text,#447510)]"
@@ -401,6 +376,7 @@ export function Patterns() {
                 <path d="M4 9h10M9.5 4.5 14 9l-4.5 4.5" />
               </svg>
             </Link>
+            </div>
           </div>
         </div>
 

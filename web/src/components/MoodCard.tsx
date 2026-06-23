@@ -162,14 +162,17 @@ export function MoodCard({
         </div>
       )}
 
-      {/* Legende */}
-      <div className={`mt-4 ${fill ? "lg:mt-auto" : ""} flex flex-wrap gap-x-3 gap-y-2 border-t border-[var(--border)] pt-3.5 ${hideLegend ? "hidden" : ""}`}>
-        {LEGEND.map((l) => (
-          <span key={l.label} className="inline-flex items-center gap-1.5 text-[11.5px] text-[var(--muted)]">
-            <span className="h-2.5 w-2.5 rounded-full" style={{ background: l.c }} />
-            {l.label}
-          </span>
-        ))}
+      {/* Legende. Bei `fill` ist die Inhaltszeile exakt `h-5` hoch (einzeilig),
+          damit ihr Trennstrich auf gleicher Höhe wie bei Nachbar-Kacheln läuft. */}
+      <div className={`mt-4 ${fill ? "lg:mt-auto" : ""} border-t border-[var(--border)] pt-3.5 ${hideLegend ? "hidden" : ""}`}>
+        <div className={`flex flex-wrap gap-x-3 gap-y-2 ${fill ? "lg:h-5 lg:flex-nowrap lg:items-center" : ""}`}>
+          {LEGEND.map((l) => (
+            <span key={l.label} className="inline-flex items-center gap-1.5 text-[11.5px] text-[var(--muted)]">
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: l.c }} />
+              {l.label}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );
