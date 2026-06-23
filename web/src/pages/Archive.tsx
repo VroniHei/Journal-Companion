@@ -3,18 +3,10 @@ import { Link } from "react-router-dom";
 import type { JournalEntry } from "@journal/shared";
 import { JournalCard } from "../components/JournalCard";
 import { Eyebrow } from "../components/ui";
-import { entryKind, entryTitle, type EntryKind } from "../lib/entryCard";
+import { entryKind, entryTitle, KIND_DOT, type EntryKind } from "../lib/entryCard";
 import { useEntries } from "../hooks/useData";
 
 type Filter = "alle" | EntryKind;
-
-// Punkt-Farbe je Eintragstyp (Master: farbiger Punkt = Eintragstyp).
-const KIND_DOT: Record<EntryKind, string> = {
-  ritual: "#CD8A5B",
-  eintrag: "#A8E84F",
-  reflexion: "#DDB14B",
-  gespraech: "#9BA383",
-};
 
 function previewLine(e: JournalEntry): string {
   const base = e.entrySummary?.trim() || e.text.trim();

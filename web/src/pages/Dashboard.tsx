@@ -16,6 +16,7 @@ import {
 import { addRestDay, dayKey, setEnergyLevel } from "../db/queries";
 import { ritualTheme } from "../lib/daypart";
 import { entryKind } from "../lib/entryCard";
+import { MOOD_SCALE, RITUAL_DOTS } from "../lib/colors";
 import {
   computeStreak,
   moodByDay,
@@ -26,11 +27,8 @@ import {
   type MoodDay,
 } from "../lib/insights";
 
-// Mood-Skala (APP-STYLE §3): clay → gold → sage → grün.
-const MOOD_COLORS = ["#CD8A5B", "#DDB14B", "#9BA383", "#A8E84F"];
-
-// Punkt-Farben der drei Ritual-Recap-Antworten (clay · gold · sage).
-const RITUAL_DOTS = ["#CD8A5B", "#DDB14B", "#9BA383"];
+// Mood-Skala (APP-STYLE §3) + Ritual-Recap-Punkte zentral aus lib/colors.
+const MOOD_COLORS = MOOD_SCALE;
 
 // Schreib-Impulse für „Heute im Blick" (sanft, konkret, nicht coachig; offen,
 // ohne Drängen — vieles darf auch klein oder leicht sein). Der Default rotiert

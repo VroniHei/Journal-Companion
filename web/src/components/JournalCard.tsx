@@ -11,14 +11,7 @@ import {
 import { Icon } from "./icons";
 import { ICONS } from "./iconset";
 import { tileRelief } from "./tile";
-
-// Mood-Skala (APP-STYLE §3): clay (schwer) → gold → sage → grün (leicht).
-function moodColor(m: number): string {
-  if (m <= 3.5) return "#CD8A5B";
-  if (m <= 5.5) return "#DDB14B";
-  if (m <= 7.5) return "#9BA383";
-  return "#A8E84F";
-}
+import { moodColor } from "../lib/colors";
 
 function dayLabel(iso: string): string {
   const startOf = (x: Date) => {

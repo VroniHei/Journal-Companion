@@ -1,21 +1,7 @@
 import { useMemo, useState } from "react";
 import type { JournalEntry } from "@journal/shared";
 import { moodByDay } from "../lib/insights";
-
-// Mood-Skala (APP-STYLE §3): clay (schwer) → gold → sage → grün (leicht).
-function moodColor(v: number): string {
-  if (v <= 3.5) return "#CD8A5B";
-  if (v <= 5.5) return "#DDB14B";
-  if (v <= 7.5) return "#9BA383";
-  return "#A8E84F";
-}
-
-const LEGEND = [
-  { c: "#CD8A5B", label: "schwer" },
-  { c: "#DDB14B", label: "gemischt" },
-  { c: "#9BA383", label: "okay" },
-  { c: "#A8E84F", label: "leicht" },
-];
+import { moodColor, MOOD_LEGEND } from "../lib/colors";
 
 // „Stimmung · 7 Tage": Punkte oder Verlauf, umschaltbar, mit Legende (App-Style).
 // Optional auf 30 Tage / Verlauf-Default umstellbar (Desktop-Muster-Bento).
@@ -166,7 +152,7 @@ export function MoodCard({
           damit ihr Trennstrich auf gleicher Höhe wie bei Nachbar-Kacheln läuft. */}
       <div className={`mt-4 ${fill ? "lg:mt-auto" : ""} border-t border-[var(--border)] pt-3.5 ${hideLegend ? "hidden" : ""}`}>
         <div className={`flex flex-wrap gap-x-3 gap-y-2 ${fill ? "lg:h-5 lg:flex-nowrap lg:items-center" : ""}`}>
-          {LEGEND.map((l) => (
+          {MOOD_LEGEND.map((l) => (
             <span key={l.label} className="inline-flex items-center gap-1.5 text-[11.5px] text-[var(--muted)]">
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: l.c }} />
               {l.label}

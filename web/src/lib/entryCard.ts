@@ -60,6 +60,14 @@ export const KIND_LABEL: Record<EntryKind, string> = {
   gespraech: "Gespräch",
 };
 
+// Punkt-Farbe je Eintragstyp (Master: farbiger Punkt = Eintragstyp).
+export const KIND_DOT: Record<EntryKind, string> = {
+  ritual: "#CD8A5B",
+  eintrag: "#A8E84F",
+  reflexion: "#DDB14B",
+  gespraech: "#9BA383",
+};
+
 // Getönte Badge-Farben je Art (ruhig, lesbar). Tagesritual = warmer Clay-Ton.
 export const KIND_STYLE: Record<EntryKind, { bg: string; text: string }> = {
   ritual: { bg: "#F6ECE0", text: "#a9692f" },
