@@ -61,28 +61,6 @@ export function Loosen() {
       }}
     >
       <div className="mx-auto max-w-[560px]">
-        {/* Desktop-Modal-Kopf: Lilac-Emblem + Schließen-X (Mobile: Tab/Zurück) */}
-        <div className="mb-5 hidden items-start justify-between lg:flex">
-          <span
-            className="flex h-16 w-16 items-center justify-center rounded-[20px] text-white"
-            style={{
-              background: "linear-gradient(145deg,#CBBEF4,#9d8fce)",
-              boxShadow: "0 10px 26px rgba(123,107,150,.34)",
-            }}
-          >
-            <Icon d={ICONS.shell} size={30} />
-          </span>
-          <button
-            type="button"
-            aria-label="Schließen"
-            onClick={() => navigate("/")}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:text-[var(--foreground)]"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="17" height="17">
-              <path d="M6 6l12 12M18 6 6 18" />
-            </svg>
-          </button>
-        </div>
         {done ? (
           <div className="flex flex-col items-center py-14 text-center">
             <div
@@ -110,6 +88,40 @@ export function Loosen() {
           </div>
         ) : (
           <>
+            {/* Kopf: zentrales Lilac-Emblem (mobil + Desktop, wie Ritual);
+                Schließen-X nur im Desktop-Modal oben rechts. */}
+            <div className="relative mb-5 flex flex-col items-center text-center">
+              <button
+                type="button"
+                aria-label="Schließen"
+                onClick={() => navigate("/")}
+                className="absolute right-0 top-0 hidden h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:text-[var(--foreground)] lg:inline-flex"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="17" height="17">
+                  <path d="M6 6l12 12M18 6 6 18" />
+                </svg>
+              </button>
+              <span
+                className="flex h-16 w-16 items-center justify-center rounded-[20px] text-white"
+                style={{
+                  background: "linear-gradient(145deg,#CBBEF4,#9d8fce)",
+                  boxShadow: "0 10px 26px rgba(123,107,150,.34)",
+                }}
+              >
+                <Icon d={ICONS.shell} size={30} />
+              </span>
+              <div className="mt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#7a6b96]">
+                Gedankenschleife
+              </div>
+              <h1 className="serif mt-2 text-[24px] font-semibold leading-[1.18] text-[#3a3247]">
+                Einmal in Ruhe <em className="g">auseinandernehmen</em>.
+              </h1>
+              <p className="lead mt-2 max-w-[360px] text-[15px] leading-[1.5] text-[var(--muted)]">
+                Ein Gedanke dreht sich. Wir nehmen ihn in drei kleinen Schritten
+                auseinander, ruhig.
+              </p>
+            </div>
+
             <div className="mb-4 flex items-center gap-2">
               <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[rgba(35,34,26,.1)]">
                 <div
@@ -124,11 +136,6 @@ export function Loosen() {
                 Schritt {step + 1} von {STEPS.length}
               </span>
             </div>
-
-            <p className="lead mb-4 px-0.5 text-[15.5px] leading-[1.5] text-[var(--foreground)]">
-              Ein Gedanke dreht sich. Wir nehmen ihn einmal{" "}
-              <em className="g">auseinander</em>, ruhig, in drei kleinen Schritten.
-            </p>
 
             <div className="space-y-3">
               {STEPS.map((s, i) => {
