@@ -5,6 +5,20 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-23 — „Heute im Blick": Schreib-Impuls rotiert täglich automatisch
+
+**Was:** Der Default-Impuls der „Heute im Blick"-Kachel (`Dashboard.tsx`) war
+jeden Tag derselbe (`PROMPTS[0]`). Jetzt seedet der Start-Index deterministisch
+über `dayIndex()` (Tage seit lokaler Mitternacht) → jeder Tag startet bei einem
+anderen Impuls, wechselt automatisch um Mitternacht. Pool von 4 auf 18 sanfte,
+offene Impulse erweitert. Die beiden Buttons („Anderer Impuls" zählt von dort
+weiter, „Dazu schreiben") bleiben unverändert. Reflexive Inhalte → vorab
+`therapist-safety` (Level 1, keine Krisen-Indikatoren; Leitplanken beachtet).
+
+**Status:** `lint` + `typecheck` grün.
+
+---
+
 ## 2026-06-23 — Nachbesserungen: Heute-im-Blick (mobil), Roter Faden (Bild + Logik), Muster-Affordanz
 
 **Was:** Drei Punkte aus dem Review umgesetzt (Branch `claude/wizardly-bardeen-4bicc3`):

@@ -24,13 +24,37 @@ import {
 // Mood-Skala (APP-STYLE §3): clay → gold → sage → grün.
 const MOOD_COLORS = ["#CD8A5B", "#DDB14B", "#9BA383", "#A8E84F"];
 
-// Schreib-Impulse für „Heute im Blick" (sanft, konkret, nicht coachig).
+// Schreib-Impulse für „Heute im Blick" (sanft, konkret, nicht coachig; offen,
+// ohne Drängen — vieles darf auch klein oder leicht sein). Der Default rotiert
+// täglich automatisch (siehe `dayIndex`), die Reihenfolge bleibt pro Tag stabil.
 const PROMPTS: { pre: string; accent: string; post: string }[] = [
   { pre: "Was war heute ", accent: "leichter", post: ", als du erwartet hast?" },
   { pre: "Worüber hast du heute mehr ", accent: "nachgedacht", post: " als sonst?" },
   { pre: "Was möchtest du festhalten, bevor der Tag ", accent: "kippt", post: "?" },
   { pre: "Was hat dich heute kurz ", accent: "innehalten", post: " lassen?" },
+  { pre: "Wofür warst du heute, ganz unspektakulär, ", accent: "dankbar", post: "?" },
+  { pre: "Was hat dir heute ", accent: "gutgetan", post: " — auch wenn es klein war?" },
+  { pre: "Was darf heute einfach ", accent: "so sein", post: ", wie es ist?" },
+  { pre: "Welcher Moment heute war ", accent: "ruhiger", post: " als der Rest?" },
+  { pre: "Was hast du heute ", accent: "gebraucht", post: " — und bekommen oder nicht?" },
+  { pre: "Was möchtest du heute ", accent: "loslassen", post: ", bevor du zur Ruhe kommst?" },
+  { pre: "Wer oder was hat dir heute ", accent: "Halt", post: " gegeben?" },
+  { pre: "Was hat dich heute ", accent: "überrascht", post: "?" },
+  { pre: "Worauf hast du dich heute ", accent: "gefreut", post: " — und wie war es dann?" },
+  { pre: "Wo hast du heute ", accent: "Nein", post: " gesagt — oder gern gesagt?" },
+  { pre: "Was war heute ", accent: "genug", post: ", auch wenn es sich nicht so anfühlte?" },
+  { pre: "Welches Gefühl begleitet dich gerade ", accent: "am stärksten", post: "?" },
+  { pre: "Was hat dein Körper dir heute ", accent: "gesagt", post: "?" },
+  { pre: "Was würdest du deinem Morgen-Ich von heute jetzt ", accent: "sagen", post: "?" },
 ];
+
+// Tage seit Epoche (lokale Mitternacht) — stabiler Tages-Index, mit dem der
+// Schreib-Impuls jeden Tag automatisch um eins weiterrückt.
+function dayIndex(): number {
+  const now = new Date();
+  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.floor(midnight.getTime() / 86_400_000);
+}
 
 type TimeOfDay = "morgen" | "tag" | "abend";
 
@@ -150,7 +174,9 @@ export function Dashboard() {
   const energy = useEnergyToday(today);
   const energyLevel = energy?.level ?? 0;
   const [filter, setFilter] = useState("alle");
-  const [promptIdx, setPromptIdx] = useState(0);
+  // Start-Impuls rotiert täglich automatisch; „Anderer Impuls" zählt von hier
+  // aus weiter (PROMPTS[promptIdx % length]).
+  const [promptIdx, setPromptIdx] = useState(() => dayIndex());
   const [moodViz, setMoodViz] = useState<"punkte" | "verlauf">("punkte");
 
   const name = settings.userName?.trim();
