@@ -87,7 +87,7 @@ export function ContactImpulse() {
     addDraft(quarantineText, minutes);
     recordStabilityMoment(
       "entwurf-statt-senden",
-      "Nachricht in Quarantäne statt sofort gesendet",
+      "Nachricht liegen gelassen statt sofort gesendet",
     );
     setDrafts(listDrafts());
   }
@@ -247,8 +247,8 @@ export function ContactImpulse() {
         <Card className="space-y-3 bg-[var(--surface-2)]">
           <p className="text-sm">
             Gib dir Zeit. Wenn du die Nachricht in 20 Minuten noch stimmig
-            findest, schaust du nochmal drauf. Diese Nachricht darf erstmal in
-            Quarantäne.
+            findest, schaust du nochmal drauf. Diese Nachricht darf erstmal
+            liegen bleiben.
           </p>
           <div className="flex flex-wrap gap-2">
             <Button variant="ghost" onClick={() => quarantine(20)}>
@@ -267,7 +267,7 @@ export function ContactImpulse() {
       {drafts.length > 0 && (
         <div className="space-y-3">
           <h2 className="text-sm font-medium text-[var(--muted)]">
-            In Quarantäne
+            Liegt noch
           </h2>
           {drafts.map((d) => {
             const ready = isReady(d);

@@ -168,6 +168,16 @@ offene Optimierungs-Backlog, priorisiert und entdoppelt.
 
 ### B · Brand & Verbal Identity
 
+> **Stand 2026-06-23 — Quick-Wins umgesetzt:** ✅ Default-App-Name „Journal
+> Companion" → **„Innerline"** (+ Tab-Titel) · ✅ „Quarantäne" → „liegen
+> bleiben"/„Liegt noch" (ContactImpulse) · ✅ „High-Quality-Modus" → „Gründlicher
+> Modus", Modell-Hint nutzerzentriert (kein „kosteneffizient").
+> **Offen — Entscheidung der Nutzerin (nicht eigenmächtig):** Sonnet-vs-Opus als
+> Code-Default (CLAUDE.md nennt Opus; Code defaultet Sonnet — Kostenfrage) ·
+> Eigenname für den Begleiter · Route `soforthilfe` → `kopf-leeren` (Refactor) ·
+> Favicon (Lime) vs. Wortmarke (Forest/Clay) gemeinsame Farbe · fester Claim ·
+> personalisierte Defaults (Vroni/Lukas/`vroni-*`-Bilder) bei Skalierung.
+
 - 🔴 **Doppelname:** Default `APP_NAME = "Journal Companion"` (`appName.ts:3`)
   widerspricht der Marke „Innerline" (Logo/Favicon/Onboarding). → Default auf
   „Innerline", „Journal Companion" nur intern.

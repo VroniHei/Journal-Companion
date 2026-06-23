@@ -100,7 +100,10 @@ export function Settings() {
           />
         </Row>
 
-        <Row label="Claude-Modell" hint="Sonnet ist Standard und kosteneffizient.">
+        <Row
+          label="Claude-Modell"
+          hint="Sonnet antwortet schnell und zuverlässig. Opus geht besonders einfühlsam in die Tiefe."
+        >
           <select
             className={selectClass}
             value={s.claudeModel}
@@ -125,7 +128,7 @@ export function Settings() {
                 updateSettings({ highQualityMode: e.target.checked })
               }
             />
-            High-Quality-Modus (Opus)
+            Gründlicher Modus (Opus)
           </label>
         </Row>
 
