@@ -7,6 +7,13 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 ## Offen
 
+- 🟡 **Affirmation & „Dein Satz" wirklich KI-generieren:** Die Zitat-Karte zeigt
+  beide Felder mit `✦ KI-Vorschlag`-Optik, der Default ist aber statisch bzw. aus
+  dem letzten Eintrag. Sinnvoll: einen kurzen, personalisierten Satz + passende
+  Affirmation aus den Journal-Mustern serverseitig vorschlagen (wie Pattern-Insights).
+- 🟢 **Mini-Karten-Schlüsselwort schärfen:** aktuell das häufigste Wort
+  (`wordsOfWeek`). Könnte stärker an den „Roten Faden"/Top-Cluster gekoppelt
+  werden, damit Mini-Karte und Themenliste dasselbe Leitwort zeigen.
 - 🟡 **Themen-Normalisierung für den Roten Faden:** aktuell clustern `topics`
   nur per `toLowerCase`. Synonyme/Beugungen („Arbeit"/„Job", „Trennung"/
   „Trennungen") landen in getrennten Fäden. Optional: leichte Stemming-/

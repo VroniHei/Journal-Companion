@@ -5,6 +5,48 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-23 — Claude-Design Update Juni 2026 (7 Bereiche) eingebaut
+
+**Was:** Handoff `UPDATE-BRIEFING_JUNI-2026` (Quelle: `Innerline App.dc.html`)
+geprüft und alle 7 Bereiche umgesetzt:
+
+1. **„Was sich zeigt" Desktop 3-Spalten** (`Dashboard.tsx`): Einsicht (1.3fr) ·
+   Fokus-Themen (1fr) · Mini-Karte + „Als Karte teilen" (1fr), Spalten mit
+   Trennlinien — gleiches Raster wie die Auswertungskacheln darüber.
+2. **Einheitliche Mini-Karte** (`components/ThemeMiniCard.tsx`, neu): Foto
+   `zitat-weg.webp` + dunkelgrüner Verlauf, Schlüsselwort in Newsreader-Italic
+   (#A8E84F), kein Logo/Subtext. Genutzt an 4 Stellen (Dashboard Desktop/Mobile,
+   Muster Desktop/Mobile).
+3. **Dashboard-Reihenfolge + Mobile** (`Dashboard.tsx`): „Was sich zeigt" jetzt
+   `order-6` (vor „Kopf leeren" `sm:order-7`) und **auch auf Mobile sichtbar**
+   (gestapelt: Text → Tags → Mini-Karte + „Roter Faden ansehen" + Teilen).
+4. **Fokus-Chip aus dem Ritual** (`Dashboard.tsx`): kein Onboarding-Wert mehr,
+   sondern Output des Tagesrituals (`makeGreat` = „Was macht den Tag gut?").
+   Zwei Zustände — gesetzt: Chip mit Fokus + Stift (→ /ritual); offen: leiser
+   gestrichelter Hinweis „Fokus heute noch offen · im Ritual setzen". Mobile
+   (heller Grund) + Desktop-Hero (dunkles Bild) je eigene Optik. Desktop-Hero
+   hatte bisher gar keinen Chip.
+5. **Zitat-Karte teilen** (`ShareCard.tsx`): Eyebrow „Mein Muster" (statt „Mein
+   Impuls für heute"); neues optionales **Affirmations-Feld** (klein/kursiv
+   unter dem Zitat, statt „aus meinem Tagebuch · Datum"); „Entfernen" blendet die
+   Zeile aus; „Dein Satz" mit `✦ KI-Vorschlag`-Label. Canvas-Export angepasst.
+6. **Muster „Was sich zeigt"-Kachel** (`Patterns.tsx`): aus dem Roter-Faden-Mini
+   eine „Was sich zeigt"-Karte — Einsicht + einzeilige Tags + Trennlinie +
+   Mini-Karte (86×60 / mobil 110×76) + „Roter Faden ansehen →" + „Als Karte
+   teilen".
+7. **Chart-Fix ovaler Endpunkt** (`MoodCard.tsx`): bei `preserveAspectRatio="none"`
+   wurde der `<circle>` oval. Punkt jetzt als absolut positioniertes `<span>`
+   außerhalb des SVG (Wrapper mit fester Höhe).
+
+**Warum:** Weiterentwicklung des verbindlichen Claude-Designs (frische Mini-Karten,
+klarere Datenkarten, Fokus als Tagesergebnis, runder Chart-Endpunkt).
+
+**Status:** `npm run build`, `lint`, `typecheck` grün. Mini-Karte als eine Quelle
+(`ThemeMiniCard`) statt 4× dupliziert. Affirmations-Default ist vorerst statisch
+(KI-Vorschlag-Optik), echte KI-Generierung als Backlog notiert.
+
+---
+
 ## 2026-06-23 — „Heute im Blick": Schreib-Impuls rotiert täglich automatisch
 
 **Was:** Der Default-Impuls der „Heute im Blick"-Kachel (`Dashboard.tsx`) war

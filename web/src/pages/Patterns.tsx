@@ -21,7 +21,13 @@ import {
   setPatternNotes,
 } from "../db/queries";
 import { aggregate } from "../lib/patterns";
-import { computeStreak, themeClusters, wordsOfWeek } from "../lib/insights";
+import {
+  buildInsights,
+  computeStreak,
+  themeClusters,
+  wordsOfWeek,
+} from "../lib/insights";
+import { ThemeMiniCard } from "../components/ThemeMiniCard";
 import { toPrefs } from "../lib/settings";
 import { postPatternInsights } from "../lib/apiClient";
 import { formatDateTime } from "../lib/format";
@@ -314,6 +320,15 @@ export function Patterns() {
   const words = wordsOfWeek(entries);
   const streak = computeStreak(entries);
 
+  // „Was sich zeigt"-Kachel (Claude Design Juni 2026): Einsicht + Mini-Karte.
+  const wsInsights = buildInsights(entries);
+  const wsText =
+    wsInsights[0] ??
+    "Sobald sich Themen über mehrere Einträge wiederholen, zeigt sich hier, was sich durchzieht.";
+  const wsKeywordRaw = words[0]?.word ?? topCluster?.title ?? "Heute";
+  const wsKeyword =
+    wsKeywordRaw.charAt(0).toUpperCase() + wsKeywordRaw.slice(1);
+
   return (
     <section className="space-y-8">
       <div>
@@ -336,55 +351,59 @@ export function Patterns() {
           />
         </div>
 
-        {/* Roter Faden — Drill-in: führt auf die eigene Seite. Pfeil + Footer
-            machen das Weitergehen sichtbar. */}
-        <Link
-          to="/roter-faden"
-          aria-label="Roter Faden ansehen"
-          className="lift group flex flex-col rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] lg:col-span-5"
-        >
-          <div className="mb-2.5 flex items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
-            <span className="flex items-center gap-1.5">
-              <span
-                className="h-2 w-2 rounded-full"
-                style={{ background: topCluster?.color ?? "var(--clay,#CD8A5B)" }}
-              />
-              Roter Faden
-            </span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--surface-2)] text-[var(--muted)] transition group-hover:bg-[#F2F6E8] group-hover:text-[var(--green-text,#447510)]">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="13" height="13" aria-hidden="true">
-                <path d="M9 6l6 6-6 6" />
-              </svg>
+        {/* Was sich zeigt — fasst das Muster zusammen; Mini-Karte + Drill-in zum
+            Roten Faden + Teilen (Claude Design Juni 2026). */}
+        <div className="flex flex-col rounded-[20px] border border-[var(--border)] bg-[radial-gradient(300px_170px_at_90%_0%,rgba(205,138,91,0.07),transparent_62%)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] lg:col-span-5">
+          <div className="mb-2.5 inline-flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[var(--clay,#CD8A5B)]" />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+              Was sich zeigt
             </span>
           </div>
-          {topCluster ? (
-            <p
-              className="lead text-[16px] leading-[1.5] text-[var(--foreground)]"
-              dangerouslySetInnerHTML={{ __html: topCluster.note }}
-            />
-          ) : (
-            <p className="lead text-[16px] leading-[1.5] text-[var(--foreground)]">
-              Sobald sich Themen über mehrere Einträge wiederholen, zeigt sich
-              hier, was sich <em className="g">durchzieht</em>.
-            </p>
-          )}
-          <div className="mt-auto pt-4">
-            <div className="flex flex-wrap gap-1.5">
-              {(topCluster?.tags ?? words.slice(0, 4).map((w) => w.word)).map((t) => (
+          <p className="text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]">
+            {wsText}
+          </p>
+          {words.length > 0 && (
+            <div className="mt-3 flex gap-1.5 overflow-hidden">
+              {words.slice(0, 4).map((w) => (
                 <span
-                  key={t}
-                  className="rounded-full bg-[var(--sand)] px-[11px] py-1 text-[12px] font-medium text-[var(--foreground)]"
+                  key={w.word}
+                  className="whitespace-nowrap rounded-full bg-[var(--sand)] px-[11px] py-1 text-[12px] font-medium text-[var(--foreground)]"
                 >
-                  {t}
+                  {w.word}
                 </span>
               ))}
             </div>
-            <span className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--green-text,#447510)]">
-              {topCluster ? "Alle Themen ansehen" : "Roter Faden ansehen"}
-              <span className="transition group-hover:translate-x-0.5">→</span>
-            </span>
+          )}
+          <div className="mt-auto flex items-center gap-3.5 border-t border-[var(--border)] pt-3.5">
+            <ThemeMiniCard
+              keyword={wsKeyword}
+              wordSize={18}
+              className="h-[76px] w-[110px] flex-none sm:h-[60px] sm:w-[86px]"
+            />
+            <div className="flex flex-1 flex-col gap-2.5">
+              <Link
+                to="/roter-faden"
+                className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--green-text,#447510)]"
+              >
+                Roter Faden ansehen
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
+                  <path d="M4 9h10M9.5 4.5 14 9l-4.5 4.5" />
+                </svg>
+              </Link>
+              <Link
+                to="/teilen"
+                className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-[7px] text-[12px] font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)]"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
+                  <path d="M12 14V4M8.5 7.5 12 4l3.5 3.5" />
+                  <path d="M5 12.5V18.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5V12.5" />
+                </svg>
+                Als Karte teilen
+              </Link>
+            </div>
           </div>
-        </Link>
+        </div>
 
         {/* Verlauf ansehen */}
         <Link

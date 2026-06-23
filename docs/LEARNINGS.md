@@ -40,6 +40,19 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 - **`pkill -f "<muster>"`** kann sich selbst treffen, wenn das Muster im eigenen
   Kommando vorkommt → lieber per PID killen.
 
+## 2026-06-23 (Claude-Design Update)
+
+- **Wiederkehrende Design-Bausteine als eine Komponente.** Die Mini-Karten-
+  Vorschau taucht im Handoff an 4 Stellen auf — als `ThemeMiniCard` zentralisiert
+  (Foto + Verlauf + Newsreader-Schlüsselwort), per Props (Größe/`fill`) variiert.
+  Spart Drift und hält den Stil konsistent.
+- **`preserveAspectRatio="none"` verzerrt SVG-Inhalte** (Kreis → Oval). Punkte/
+  Marker daher außerhalb des SVG als absolut positioniertes Element setzen,
+  Position aus den viewBox-Koordinaten in %/px umrechnen.
+- **Fokus = Tagesergebnis, nicht Onboarding-Wert.** Der „Dein Fokus"-Chip kommt
+  jetzt aus dem Ritual (`makeGreat`); Onboarding setzt nur einmalig Präferenzen.
+  Zwei klare Zustände (gesetzt/offen) statt Dauer-Chip.
+
 ## 2026-06-23
 
 - **„Roter Faden" braucht eine sichtbare Logik, nicht nur einen Algorithmus.**

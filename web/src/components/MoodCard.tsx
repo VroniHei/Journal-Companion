@@ -102,26 +102,50 @@ export function MoodCard({
         </div>
       ) : (
         <div>
-          <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="90" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="moodfill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stopColor="rgba(168,232,79,.28)" />
-                <stop offset="1" stopColor="rgba(168,232,79,0)" />
-              </linearGradient>
-            </defs>
-            {area && <path d={area} fill="url(#moodfill)" />}
-            {line.length > 1 && (
-              <polyline
-                points={poly}
-                fill="none"
-                stroke="#6E9B2C"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+          {/* preserveAspectRatio="none" verzerrt das SVG — ein <circle> würde dabei
+              oval. Der Endpunkt liegt daher als absolut positionierter Punkt
+              außerhalb des SVG (Wrapper mit fixer Höhe 90px). */}
+          <div className="relative" style={{ height: 90 }}>
+            <svg
+              viewBox={`0 0 ${W} ${H}`}
+              width="100%"
+              height="90"
+              preserveAspectRatio="none"
+              className="block"
+            >
+              <defs>
+                <linearGradient id="moodfill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stopColor="rgba(168,232,79,.28)" />
+                  <stop offset="1" stopColor="rgba(168,232,79,0)" />
+                </linearGradient>
+              </defs>
+              {area && <path d={area} fill="url(#moodfill)" />}
+              {line.length > 1 && (
+                <polyline
+                  points={poly}
+                  fill="none"
+                  stroke="#6E9B2C"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              )}
+            </svg>
+            {last && (
+              <span
+                className="absolute block rounded-full"
+                style={{
+                  left: `calc(${(last.x / W) * 100}% - 5px)`,
+                  top: (last.y / H) * 90 - 5,
+                  width: 10,
+                  height: 10,
+                  background: "#A8E84F",
+                  border: "1.6px solid #fff",
+                  boxShadow: "0 0 0 1.5px #6E9B2C",
+                }}
               />
             )}
-            {last && <circle cx={last.x} cy={last.y} r="4.5" fill="#A8E84F" stroke="#fff" strokeWidth="2" />}
-          </svg>
+          </div>
           {showDayLabels && (
             <div className="mt-1 flex justify-between">
               {days.map((d, i) => (

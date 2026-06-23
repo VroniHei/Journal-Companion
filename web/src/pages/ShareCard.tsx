@@ -110,10 +110,6 @@ const FORMATS: { id: FormatId; label: string; w: number; h: number; box: string 
   { id: "quer", label: "Quer", w: 1920, h: 1080, box: "w-[26px] h-[18px]" },
 ];
 
-function dateLabel(): string {
-  return new Date().toLocaleDateString("de-DE", { day: "numeric", month: "long" });
-}
-
 // Bild-Cache fürs Canvas-Rendering (Hintergrundfotos der Karte).
 const imgCache: Record<string, HTMLImageElement> = {};
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -147,6 +143,9 @@ export function ShareCard() {
       : "Es darf heute *leicht* sein. Nicht alles auf einmal.";
   }, [entries]);
   const [quote, setQuote] = useState(defaultQuote);
+  // Affirmation (Claude Design Juni 2026): kleiner Satz unter dem Zitat. Leer =
+  // Zeile verschwindet von der Karte.
+  const [affirmation, setAffirmation] = useState("Ich darf heute einfach sein.");
 
   const theme = THEMES.find((t) => t.id === themeId) ?? THEMES[0];
   const format = FORMATS.find((f) => f.id === formatId) ?? FORMATS[0];
@@ -234,7 +233,7 @@ export function ShareCard() {
     // Eyebrow.
     ctx.fillStyle = theme.eyebrow;
     ctx.font = font(Math.round(w * 0.026), 600);
-    const eyebrow = "MEIN IMPULS FÜR HEUTE";
+    const eyebrow = "MEIN MUSTER";
     ctx.fillText(eyebrow.split("").join(" "), pad, y - Math.round(h * 0.05));
 
     // Zitat, Wort für Wort (Akzentwort in Akzentfarbe + Newsreader-Italic).
@@ -251,17 +250,19 @@ export function ShareCard() {
       y += lineHeight;
     }
 
-    // Divider + Meta.
-    ctx.strokeStyle = theme.divider;
-    ctx.lineWidth = Math.max(2, Math.round(w * 0.002));
-    ctx.beginPath();
-    ctx.moveTo(pad, dividerY);
-    ctx.lineTo(pad + Math.round(w * 0.07), dividerY);
-    ctx.stroke();
-    ctx.fillStyle = theme.meta;
-    ctx.font = font(Math.round(w * 0.028), 500);
-    ctx.textBaseline = "bottom";
-    ctx.fillText(`aus meinem Tagebuch · ${dateLabel()}`, pad + Math.round(w * 0.09), dividerY + Math.round(h * 0.006));
+    // Divider + Affirmation (nur wenn gesetzt).
+    if (affirmation.trim()) {
+      ctx.strokeStyle = theme.divider;
+      ctx.lineWidth = Math.max(2, Math.round(w * 0.002));
+      ctx.beginPath();
+      ctx.moveTo(pad, dividerY);
+      ctx.lineTo(pad + Math.round(w * 0.07), dividerY);
+      ctx.stroke();
+      ctx.fillStyle = theme.meta;
+      ctx.font = `italic 500 ${Math.round(w * 0.028)}px Newsreader, Figtree, serif`;
+      ctx.textBaseline = "bottom";
+      ctx.fillText(affirmation, pad + Math.round(w * 0.09), dividerY + Math.round(h * 0.006));
+    }
   }
 
   async function exportCard(share: boolean) {
@@ -356,7 +357,7 @@ export function ShareCard() {
               style={{ color: theme.eyebrow }}
             >
               <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: theme.eyebrow }} />
-              Mein Impuls für heute
+              Mein Muster
             </div>
             <p
               className="font-semibold leading-[1.26] tracking-[-0.015em]"
@@ -372,21 +373,31 @@ export function ShareCard() {
                 ),
               )}
             </p>
-            <div className="mt-[3.5%] flex items-center gap-2.5">
-              <span className="h-px w-[7%]" style={{ background: theme.divider }} />
-              <span className="text-[2.8cqw] font-medium" style={{ color: theme.meta }}>
-                aus meinem Tagebuch · {dateLabel()}
-              </span>
-            </div>
+            {affirmation.trim() && (
+              <div className="mt-[3.5%] flex items-center gap-2.5">
+                <span className="h-px w-[7%]" style={{ background: theme.divider }} />
+                <span className="text-[2.8cqw] font-medium italic" style={{ color: theme.meta }}>
+                  {affirmation}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Satz bearbeiten */}
+      {/* Dein Satz */}
       <div>
-        <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
-          Dein Satz
-        </label>
+        <div className="mb-2 flex items-center justify-between">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
+            Dein Satz
+          </span>
+          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--green-text,#447510)]">
+            <svg viewBox="0 0 20 20" fill="none" stroke="#A8E84F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="11" height="11" aria-hidden="true">
+              <path d="M10 2v16M2 10h16" />
+            </svg>
+            KI-Vorschlag
+          </span>
+        </div>
         <textarea
           value={quote}
           onChange={(e) => setQuote(e.target.value.slice(0, 160))}
@@ -402,6 +413,33 @@ export function ShareCard() {
             onChange={(v) => setQuote(v.slice(0, 160))}
           />
         </div>
+      </div>
+
+      {/* Affirmation (optional) — erscheint klein unter dem Zitat auf der Karte */}
+      <div>
+        <div className="mb-2 flex items-center justify-between">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
+            Affirmation
+          </span>
+          {affirmation.trim() && (
+            <button
+              type="button"
+              onClick={() => setAffirmation("")}
+              className="inline-flex items-center gap-1 text-[11px] font-medium text-[#9a917f] transition hover:text-[var(--foreground)]"
+            >
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="11" height="11" aria-hidden="true">
+                <path d="M2 2l12 12M14 2L2 14" />
+              </svg>
+              Entfernen
+            </button>
+          )}
+        </div>
+        <input
+          value={affirmation}
+          onChange={(e) => setAffirmation(e.target.value.slice(0, 80))}
+          placeholder="Eine kurze Affirmation … (optional)"
+          className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 text-[14px] italic leading-[1.5] text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
+        />
       </div>
 
       {/* Format */}

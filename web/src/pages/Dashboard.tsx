@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Card } from "../components/ui";
 import { Icon, ICONS, tileRelief } from "../components/icons";
 import { JournalCard } from "../components/JournalCard";
+import { ThemeMiniCard } from "../components/ThemeMiniCard";
 import {
   useDailyRitual,
   useEnergyToday,
@@ -201,6 +202,14 @@ export function Dashboard() {
   const ritualT = ritualTheme(!ritualMorning);
   const prompt = PROMPTS[promptIdx % PROMPTS.length];
 
+  // Fokus-Chip (Claude Design Juni 2026): kein eigener Onboarding-Wert mehr,
+  // sondern Output des Tagesrituals (Schritt „Was macht den Tag gut?" = Fokus).
+  // Zwei Zustände: gesetzt → Chip mit Fokus-Text; offen → leiser Hinweis.
+  const todayFocus = ritual?.makeGreat?.trim();
+  // Schlüsselwort für die Mini-Karten-Vorschau („Was sich zeigt").
+  const keyword = topWords[0] ?? "Heute";
+  const keywordCap = keyword.charAt(0).toUpperCase() + keyword.slice(1);
+
   // Gesicherte Antworten für den Erledigt-Zustand der Tagesritual-Karte.
   const ritualAnswers: { label: string; value: string }[] = ritual
     ? (ritualMorning
@@ -244,14 +253,14 @@ export function Dashboard() {
           {name ? `, ${name}` : ""}
         </h1>
 
-        {settings.focusArea && (
+        {todayFocus ? (
           <Link
-            to="/einstellungen"
+            to="/ritual"
             className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-medium text-[#5d4f3f] transition hover:opacity-80"
             style={{ background: "#F1ECE0" }}
           >
             <span className="h-[7px] w-[7px] rounded-full bg-[var(--clay)]" />
-            Dein Fokus: {settings.focusArea}
+            Dein Fokus: {todayFocus}
             <svg
               viewBox="0 0 24 24"
               width="12"
@@ -266,6 +275,15 @@ export function Dashboard() {
             >
               <path d="M14 5l5 5M4 20l1-4L15.5 4.5l3.5 3.5L7.5 19.5 4 20z" />
             </svg>
+          </Link>
+        ) : (
+          <Link
+            to="/ritual"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-dashed px-3 py-1.5 text-[12.5px] font-medium text-[#b0a896] transition hover:opacity-80"
+            style={{ borderColor: "rgba(35,34,26,.16)" }}
+          >
+            <span className="h-[7px] w-[7px] rounded-full" style={{ background: "#E0D8CE" }} />
+            Fokus heute noch offen · im Ritual setzen
           </Link>
         )}
 
@@ -345,6 +363,32 @@ export function Dashboard() {
               Sprach-Check-in
             </button>
           </div>
+          {/* Fokus-Chip · kommt aus dem Tagesritual (Schritt „Was macht den Tag gut?") */}
+          {todayFocus ? (
+            <Link
+              to="/ritual"
+              className="mt-5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[13.5px] font-medium transition hover:opacity-90"
+              style={{
+                color: "rgba(255,248,236,.78)",
+                background: "rgba(255,248,236,.1)",
+                borderColor: "rgba(255,248,236,.2)",
+              }}
+            >
+              <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#CD8A5B" }} />
+              Dein Fokus: {todayFocus}
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="rgba(255,248,236,.45)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="ml-0.5">
+                <path d="M14 5l5 5M4 20l1-4L15.5 4.5l3.5 3.5L7.5 19.5 4 20z" />
+              </svg>
+            </Link>
+          ) : (
+            <Link
+              to="/ritual"
+              className="mt-5 inline-flex items-center gap-2 rounded-full border border-dashed px-4 py-2 text-[13px] font-medium transition hover:opacity-90"
+              style={{ color: "rgba(255,248,236,.4)", borderColor: "rgba(255,248,236,.2)" }}
+            >
+              Fokus heute noch offen · im Ritual setzen
+            </Link>
+          )}
         </div>
       </div>
 
@@ -352,7 +396,7 @@ export function Dashboard() {
           nach Claude Design) */}
       <Link
         to="/soforthilfe"
-        className="lift order-2 flex items-center justify-between gap-4 rounded-[24px] border p-[18px] shadow-[0_6px_22px_rgba(90,70,130,.06)] sm:order-6 sm:px-7 sm:py-[22px]"
+        className="lift order-2 flex items-center justify-between gap-4 rounded-[24px] border p-[18px] shadow-[0_6px_22px_rgba(90,70,130,.06)] sm:order-7 sm:px-7 sm:py-[22px]"
         style={{
           background: "linear-gradient(135deg,#F3EEF8,#fff)",
           borderColor: "rgba(157,139,201,.26)",
@@ -921,77 +965,110 @@ export function Dashboard() {
           </div>
 
       {hasData && (
-          /* WAS SICH ZEIGT — Desktop (Claude Design): Kopf mit „Als Karte
-             teilen", darunter Insight links + Worte rechts. Mobil ausgeblendet. */
-          <Card className="order-7 hidden bg-[radial-gradient(440px_240px_at_92%_0%,rgba(205,138,91,0.12),transparent_62%)] sm:block">
-            <div className="mb-4 flex items-center justify-between gap-4">
-              <span className="inline-flex items-center gap-2.5">
-                <span className="h-2 w-2 rounded-full bg-[var(--clay)]" />
-                <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-                  Was sich zeigt
-                </span>
-              </span>
-              {/* Kleine echte Karten-Vorschau: Foto + Logo + Spruch-Andeutung,
-                  damit verständlich ist, was beim Teilen entsteht. */}
-              <Link
-                to="/teilen"
-                aria-label="Als Karte teilen"
-                className="group flex flex-none items-center gap-2.5"
-              >
-                <span className="text-[13px] font-semibold text-[var(--muted)] transition group-hover:text-[var(--foreground)]">
-                  Als Karte teilen
-                </span>
-                <span className="relative block h-[58px] w-[46px] flex-none overflow-hidden rounded-[9px] shadow-[0_6px_16px_rgba(35,34,26,.2)] transition group-hover:-translate-y-0.5">
-                  <img
-                    src="/img/zitat-weg.webp"
-                    alt=""
-                    aria-hidden="true"
-                    className="h-full w-full object-cover"
-                    style={{ objectPosition: "center 60%" }}
-                  />
-                  <span
-                    className="absolute inset-0"
-                    style={{
-                      background:
-                        "linear-gradient(180deg, rgba(18,15,9,.2), rgba(18,15,9,.62))",
-                    }}
-                  />
-                  <span className="absolute inset-0 flex flex-col justify-between p-[5px]">
-                    <span className="text-[5.5px] font-bold tracking-wide text-white/90">
-                      innerline
-                    </span>
-                    <span className="line-clamp-2 text-[7px] font-semibold leading-[1.15] text-white">
-                      {insights[0] ?? "Dein Satz für heute."}
-                    </span>
-                  </span>
-                </span>
-              </Link>
-            </div>
-            {insights.length > 0 ? (
-              <div className="flex flex-wrap items-center justify-between gap-x-9 gap-y-4">
-                <p className="lead flex-1 basis-[420px] text-[20px] font-[450] leading-[1.5] tracking-[-0.01em] text-[var(--foreground)]">
+        /* WAS SICH ZEIGT (Claude Design Juni 2026): Mobile gestapelt (Text →
+           Tags → Mini-Karte + Links); Desktop als 3-Spalten-Raster (Einsicht ·
+           Fokus-Themen · Mini-Karte + Teilen), Spalten durch Trennlinien. */
+        <Card className="order-6 bg-[radial-gradient(440px_240px_at_92%_0%,rgba(205,138,91,0.07),transparent_62%)]">
+          <div className="mb-3 inline-flex items-center gap-2.5 sm:mb-5">
+            <span className="h-2 w-2 rounded-full bg-[var(--clay)]" />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)] sm:text-[11.5px]">
+              Was sich zeigt
+            </span>
+          </div>
+
+          {insights.length > 0 ? (
+            <>
+              {/* Mobile */}
+              <div className="sm:hidden">
+                <p className="mb-3 text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]">
                   {insights[0]}
                 </p>
                 {topWords.length > 0 && (
-                  <div className="flex max-w-[300px] flex-1 flex-wrap justify-end gap-2">
+                  <div className="mb-3.5 flex gap-1.5 overflow-hidden">
                     {topWords.map((w) => (
                       <span
                         key={w}
-                        className="rounded-full bg-[#F1ECE0] px-3.5 py-[7px] text-[13px] font-medium text-[#5d4f3f]"
+                        className="whitespace-nowrap rounded-full bg-[#F1ECE0] px-3 py-1.5 text-[12.5px] font-medium text-[#5d4f3f]"
                       >
                         {w}
                       </span>
                     ))}
                   </div>
                 )}
+                <div className="flex items-center gap-[13px] border-t border-[var(--border)] pt-[13px]">
+                  <ThemeMiniCard
+                    keyword={keywordCap}
+                    wordSize={20}
+                    className="h-[76px] w-[110px] flex-none"
+                  />
+                  <div className="flex flex-1 flex-col gap-2.5">
+                    <Link
+                      to="/roter-faden"
+                      className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--green-text,#447510)]"
+                    >
+                      Roter Faden ansehen
+                      <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
+                        <path d="M4 9h10M9.5 4.5 14 9l-4.5 4.5" />
+                      </svg>
+                    </Link>
+                    <Link
+                      to="/teilen"
+                      className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-[7px] text-[12.5px] font-semibold text-[var(--muted)]"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
+                        <path d="M12 14V4M8.5 7.5 12 4l3.5 3.5" />
+                        <path d="M5 12.5V18.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5V12.5" />
+                      </svg>
+                      Als Karte teilen
+                    </Link>
+                  </div>
+                </div>
               </div>
-            ) : (
-              <p className="text-[15px] text-[var(--muted)]">
-                Sobald sich etwas wiederholt, spiegele ich es dir hier. Ganz
-                vorsichtig.
-              </p>
-            )}
-          </Card>
+
+              {/* Desktop: 3 Spalten */}
+              <div className="hidden grid-cols-[1.3fr_1fr_1fr] items-stretch sm:grid">
+                <div className="flex items-center border-r border-[var(--border)] pr-7">
+                  <p className="text-[19px] font-[450] leading-[1.55] tracking-[-0.01em] text-[var(--foreground)]">
+                    {insights[0]}
+                  </p>
+                </div>
+                <div className="flex flex-col justify-center gap-2.5 border-r border-[var(--border)] px-[26px]">
+                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[#9a917f]">
+                    Fokus-Themen
+                  </span>
+                  <div className="flex gap-1.5 overflow-hidden">
+                    {topWords.map((w) => (
+                      <span
+                        key={w}
+                        className="whitespace-nowrap rounded-full bg-[#F1ECE0] px-3.5 py-[7px] text-[13px] font-medium text-[#5d4f3f]"
+                      >
+                        {w}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2.5 pl-[26px]">
+                  <ThemeMiniCard keyword={keywordCap} wordSize={30} fill />
+                  <Link
+                    to="/teilen"
+                    className="flex w-full flex-none items-center justify-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-[13px] font-semibold text-[var(--muted)] transition hover:-translate-y-0.5 hover:text-[var(--foreground)]"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="16" height="16" aria-hidden="true">
+                      <path d="M12 14V4M8.5 7.5 12 4l3.5 3.5" />
+                      <path d="M5 12.5V18.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5V12.5" />
+                    </svg>
+                    Als Karte teilen
+                  </Link>
+                </div>
+              </div>
+            </>
+          ) : (
+            <p className="text-[15px] text-[var(--muted)]">
+              Sobald sich etwas wiederholt, spiegele ich es dir hier. Ganz
+              vorsichtig.
+            </p>
+          )}
+        </Card>
       )}
 
       {/* LETZTE EINTRÄGE — Mobile UND Desktop */}
