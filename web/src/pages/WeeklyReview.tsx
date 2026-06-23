@@ -5,7 +5,7 @@ import type { PatternSummary } from "@journal/shared";
 import { Button, Card } from "../components/ui";
 import { FormattedText } from "../components/FormattedText";
 import { MoodCard } from "../components/MoodCard";
-import { useEntries, useSettings } from "../hooks/useData";
+import { useEntries, useRestDays, useSettings } from "../hooks/useData";
 import { db } from "../db/dexie";
 import { dayKey, listPatternsDesc, savePattern, toDigest } from "../db/queries";
 import { toPrefs } from "../lib/settings";
@@ -25,6 +25,7 @@ const RANGES = [
 export function WeeklyReview() {
   const settings = useSettings();
   const entries = useEntries();
+  const restDays = useRestDays();
   const saved = useLiveQuery(() => listPatternsDesc(), [], []);
 
   const [days, setDays] = useState(7);
@@ -44,7 +45,7 @@ export function WeeklyReview() {
   const maxWord = words[0]?.count ?? 1;
 
   // Ruhige Zusammenfassung (Prototyp): Kennzahlen + Insight + Worte der Woche.
-  const streak = computeStreak(entries);
+  const streak = computeStreak(entries, restDays.map((r) => r.date));
   const insights = buildInsights(inRange);
   const ritualDays =
     useLiveQuery(async () => {

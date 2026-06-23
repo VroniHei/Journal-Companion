@@ -20,10 +20,21 @@ function isMoodEntry(e: JournalEntry): boolean {
   return e.startIntent !== "tagesritual";
 }
 
-/** Aufeinanderfolgende Tage mit mindestens einem Eintrag (heute oder gestern als Start). */
-export function computeStreak(entries: JournalEntry[]): number {
-  if (!entries.length) return 0;
+/**
+ * Aufeinanderfolgende Tage mit mindestens einem Eintrag (heute oder gestern als
+ * Start). Eingelöste Pausentage (`restDays`, Datum „YYYY-MM-DD") zählen als
+ * abgedeckt — so schützt ein Ruhetag die Serie, ohne sie zu unterbrechen.
+ */
+export function computeStreak(
+  entries: JournalEntry[],
+  restDays: string[] = [],
+): number {
+  if (!entries.length && !restDays.length) return 0;
   const days = new Set(entries.map((e) => dkey(new Date(e.createdAt))));
+  for (const d of restDays) {
+    const dt = new Date(`${d}T00:00:00`);
+    if (!Number.isNaN(dt.getTime())) days.add(dkey(dt));
+  }
   const cursor = new Date();
   cursor.setHours(0, 0, 0, 0);
   if (!days.has(dkey(cursor))) {
@@ -36,6 +47,16 @@ export function computeStreak(entries: JournalEntry[]): number {
     cursor.setDate(cursor.getDate() - 1);
   }
   return streak;
+}
+
+/**
+ * Verfügbare Pausentage: je 7 aufeinanderfolgende Tage wird einer verdient,
+ * höchstens 1 gleichzeitig (kein Horten), abzüglich der bereits eingelösten.
+ * Nach dem Einlösen braucht es entsprechend 7 neue Tage für den nächsten.
+ */
+export function pauseDaysAvailable(streak: number, redeemed: number): number {
+  const earned = Math.floor(streak / 7);
+  return Math.max(0, Math.min(1, earned - redeemed));
 }
 
 export interface RecentStats {
@@ -225,6 +246,124 @@ export function buildInsights(entries: JournalEntry[]): string[] {
   }
 
   return out.slice(0, 3);
+}
+
+/**
+ * „Was sich zeigt"-Einsicht für die Dashboard-/Muster-Karte: datengetrieben wie
+ * `buildInsights`, aber (a) mit einem `.g`-Italic-Akzentwort und (b) **täglich
+ * rotierend** über alle gerade zutreffenden Aussagen — so steht nicht tagelang
+ * derselbe Satz. Nutzer-Wörter werden escaped (Einbettung via innerHTML).
+ * Gibt eine HTML-Zeichenkette zurück (oder null bei zu wenig Daten).
+ */
+export function showcaseInsight(entries: JournalEntry[], seed = 0): string | null {
+  if (entries.length < 2) return null;
+  const cands: string[] = [];
+
+  // Bewegung & Stimmung
+  const moveYes = moodOn(entries, (e) => e.movementToday === true);
+  const moveNo = moodOn(entries, (e) => e.movementToday === false);
+  if (
+    moveYes != null &&
+    moveNo != null &&
+    entries.filter((e) => e.movementToday === true).length >= 2 &&
+    entries.filter((e) => e.movementToday === false).length >= 2 &&
+    moveYes - moveNo >= 0.8
+  ) {
+    cands.push(
+      'An Tagen mit Bewegung liegt deine Stimmung im Schnitt <em class="g">höher</em>.',
+    );
+  }
+
+  // Draußen & Stimmung
+  const outYes = moodOn(entries, (e) => e.outsideToday === true);
+  const outNo = moodOn(entries, (e) => e.outsideToday === false);
+  if (
+    outYes != null &&
+    outNo != null &&
+    entries.filter((e) => e.outsideToday === true).length >= 2 &&
+    entries.filter((e) => e.outsideToday === false).length >= 2 &&
+    outYes - outNo >= 0.8
+  ) {
+    cands.push(
+      'An Tagen draußen ist deine Stimmung im Schnitt <em class="g">leichter</em>.',
+    );
+  }
+
+  // Wochen-Trend (diese vs. letzte Woche)
+  const now = Date.now();
+  const thisWeek = entries.filter(
+    (e) => new Date(e.createdAt).getTime() >= now - 7 * DAY,
+  );
+  const lastWeek = entries.filter((e) => {
+    const t = new Date(e.createdAt).getTime();
+    return t < now - 7 * DAY && t >= now - 14 * DAY;
+  });
+  const aThis = avg(thisWeek.map((e) => e.mood));
+  const aLast = avg(lastWeek.map((e) => e.mood));
+  if (aThis != null && aLast != null && thisWeek.length >= 2 && lastWeek.length >= 2) {
+    if (aThis - aLast >= 0.5)
+      cands.push('Diese Woche war deine Stimmung etwas <em class="g">leichter</em> als letzte.');
+    else if (aLast - aThis >= 0.5)
+      cands.push('Diese Woche war deine Stimmung etwas <em class="g">schwerer</em> als letzte. Das darf sein.');
+  }
+
+  // Bester Wochentag
+  const byDay = new Map<number, number[]>();
+  for (const e of entries) {
+    const wd = new Date(e.createdAt).getDay();
+    const arr = byDay.get(wd) ?? [];
+    arr.push(e.mood);
+    byDay.set(wd, arr);
+  }
+  let best: { wd: number; m: number } | null = null;
+  for (const [wd, moods] of byDay) {
+    if (moods.length < 2) continue;
+    const m = avg(moods);
+    if (m == null) continue;
+    if (!best || m > best.m) best = { wd, m };
+  }
+  if (best && byDay.size >= 3) {
+    cands.push(
+      `${capitalize(WEEKDAYS[best.wd])} ist deine Stimmung im Schnitt am <em class="g">höchsten</em>.`,
+    );
+  }
+
+  // Häufigstes Thema (Markenkern: „dasselbe Wort")
+  const tCounts = new Map<string, number>();
+  for (const e of entries)
+    for (const t of e.topics) {
+      const k = t.trim();
+      if (k) tCounts.set(k, (tCounts.get(k) ?? 0) + 1);
+    }
+  const topTopic = [...tCounts.entries()].sort((a, b) => b[1] - a[1])[0];
+  if (topTopic && topTopic[1] >= 2) {
+    cands.push(
+      `Zuletzt taucht oft dasselbe Wort auf: <em class="g">${escapeHtml(topTopic[0])}</em>.`,
+    );
+  }
+
+  // Häufigste Emotion
+  const eCounts = new Map<string, number>();
+  for (const e of entries)
+    for (const em of e.emotions) {
+      const k = em.trim();
+      if (k) eCounts.set(k, (eCounts.get(k) ?? 0) + 1);
+    }
+  const topEmo = [...eCounts.entries()].sort((a, b) => b[1] - a[1])[0];
+  if (topEmo && topEmo[1] >= 2) {
+    cands.push(
+      `<em class="g">${escapeHtml(capitalize(topEmo[0]))}</em> begleitet dich zuletzt am häufigsten.`,
+    );
+  }
+
+  if (cands.length === 0) {
+    const m = avg(entries.map((e) => e.mood));
+    if (m == null) return null;
+    return `Deine Stimmung lag zuletzt im Schnitt bei <em class="g">${m}/10</em>.`;
+  }
+
+  // Tägliche Rotation über alle zutreffenden Aussagen.
+  return cands[((seed % cands.length) + cands.length) % cands.length];
 }
 
 export interface WordCount {

@@ -8,16 +8,18 @@ import {
   useDailyRitual,
   useEnergyToday,
   useEntries,
+  useRestDays,
   useSettings,
 } from "../hooks/useData";
-import { dayKey, setEnergyLevel } from "../db/queries";
+import { addRestDay, dayKey, setEnergyLevel } from "../db/queries";
 import { ritualTheme } from "../lib/daypart";
 import { entryKind } from "../lib/entryCard";
 import {
-  buildInsights,
   computeStreak,
   moodByDay,
+  pauseDaysAvailable,
   recentStats,
+  showcaseInsight,
   wordsOfWeek,
   type MoodDay,
 } from "../lib/insights";
@@ -174,25 +176,51 @@ export function Dashboard() {
   const today = dayKey();
   const energy = useEnergyToday(today);
   const energyLevel = energy?.level ?? 0;
+  const restDays = useRestDays();
   const [filter, setFilter] = useState("alle");
   // Start-Impuls rotiert täglich automatisch; „Anderer Impuls" zählt von hier
   // aus weiter (PROMPTS[promptIdx % length]).
   const [promptIdx, setPromptIdx] = useState(() => dayIndex());
   const [moodViz, setMoodViz] = useState<"punkte" | "verlauf">("punkte");
+  const [pauseSheetOpen, setPauseSheetOpen] = useState(false);
 
   const name = settings.userName?.trim();
   const tod = timeOfDay();
   const quote = QUOTES[tod];
   const hasData = entries.length > 0;
 
-  const streak = computeStreak(entries);
+  // Serie inkl. eingelöster Pausentage (schützen die Serie über Lücken).
+  const restDayDates = restDays.map((r) => r.date);
+  const streak = computeStreak(entries, restDayDates);
   const streakNext = nextMilestone(streak);
   const streakLeft = streakNext - streak;
   const streakPct = Math.min(100, Math.round((streak / streakNext) * 100));
   const streakMilestoneLabel = milestoneLabel(streakNext);
+  // Pausentag-Logik: verfügbare Pausentage + „Serie in Gefahr"-Zustand.
+  const pauseAvailable = pauseDaysAvailable(streak, restDays.length);
+  const isSameLocalDay = (iso: string) =>
+    new Date(iso).toDateString() === new Date().toDateString();
+  const ritualDoneToday =
+    (ritual?.gratitude?.length ?? 0) > 0 ||
+    (ritual?.goodMoments?.length ?? 0) > 0;
+  const activityToday =
+    entries.some((e) => isSameLocalDay(e.createdAt)) ||
+    ritualDoneToday ||
+    restDayDates.includes(today);
+  const streakInDanger =
+    new Date().getHours() >= 18 &&
+    streak > 0 &&
+    pauseAvailable > 0 &&
+    !activityToday;
+
+  function takeRestDay() {
+    void addRestDay(today);
+    setPauseSheetOpen(false);
+  }
   const week = recentStats(entries, 7);
   const moodDays = moodByDay(entries, 7);
-  const insights = buildInsights(entries);
+  // „Was sich zeigt": datengetriebene Einsicht mit .g-Akzent, täglich rotierend.
+  const showcase = showcaseInsight(entries, dayIndex());
   // Worte der Woche für die „Was sich zeigt"-Karte (Claude Design).
   const topWords = wordsOfWeek(entries, 4).map((w) => w.word);
   const ritualMorning = tod !== "abend";
@@ -740,6 +768,45 @@ export function Dashboard() {
                 >
                   Ritual starten →
                 </button>
+
+                {/* Serie in Gefahr (abends, kein Eintrag, Pausentag verfügbar):
+                    Streak-Warnung mit „Pause nehmen". */}
+                {streakInDanger && (
+                  <div
+                    className="mt-4 flex items-center justify-between gap-2.5 rounded-[14px] border px-3.5 py-[11px]"
+                    style={{
+                      background: "rgba(221,177,75,.1)",
+                      borderColor: "rgba(221,177,75,.28)",
+                    }}
+                  >
+                    <div className="flex min-w-0 items-center gap-2">
+                      <span className="flex-none" style={{ color: "#DDB14B" }}>
+                        <Icon d={ICONS.flame} size={18} />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="text-[12px] font-[650] leading-tight" style={{ color: "#8a6b00" }}>
+                          {streak} Tage · endet heute Nacht
+                        </div>
+                        <div className="mt-px text-[11px]" style={{ color: "#a08020" }}>
+                          1 Pausentag verfügbar
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setPauseSheetOpen(true)}
+                      className="inline-flex flex-none items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-[7px] text-[12px] font-[650]"
+                      style={{
+                        color: "#8a6b00",
+                        background: "rgba(221,177,75,.15)",
+                        borderColor: "rgba(221,177,75,.3)",
+                      }}
+                    >
+                      <Icon d={ICONS.pause} size={12} />
+                      Pause nehmen
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -877,13 +944,15 @@ export function Dashboard() {
                   Noch {streakLeft} {streakLeft === 1 ? "Tag" : "Tage"} bis zur{" "}
                   {streakMilestoneLabel}
                 </div>
-                <div
-                  className="mt-[11px] inline-flex items-center gap-1.5 rounded-full px-[11px] py-[5px] text-[11.5px] font-semibold"
-                  style={{ color: "#6E9B2C", background: "#F2F6E8" }}
-                >
-                  <Icon d={ICONS.pause} size={12} />
-                  1 Pausentag in Reserve
-                </div>
+                {pauseAvailable > 0 && (
+                  <div
+                    className="mt-[11px] inline-flex items-center gap-1.5 rounded-full px-[11px] py-[5px] text-[11.5px] font-semibold"
+                    style={{ color: "#6E9B2C", background: "#F2F6E8" }}
+                  >
+                    <Icon d={ICONS.pause} size={12} />
+                    1 Pausentag in Reserve
+                  </div>
+                )}
               </div>
             </Card>
 
@@ -976,13 +1045,14 @@ export function Dashboard() {
             </span>
           </div>
 
-          {insights.length > 0 ? (
+          {showcase ? (
             <>
               {/* Mobile */}
               <div className="sm:hidden">
-                <p className="mb-3 text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]">
-                  {insights[0]}
-                </p>
+                <p
+                  className="mb-3 text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]"
+                  dangerouslySetInnerHTML={{ __html: showcase }}
+                />
                 {topWords.length > 0 && (
                   <div className="mb-3.5 flex flex-wrap gap-1.5">
                     {/* Mobil bewusst nur die 3 wichtigsten (häufigsten) Tags in
@@ -1030,9 +1100,10 @@ export function Dashboard() {
               {/* Desktop: 3 Spalten */}
               <div className="hidden grid-cols-[1.3fr_1fr_1fr] items-stretch sm:grid">
                 <div className="flex items-center border-r border-[var(--border)] pr-7">
-                  <p className="text-[19px] font-[450] leading-[1.55] tracking-[-0.01em] text-[var(--foreground)]">
-                    {insights[0]}
-                  </p>
+                  <p
+                    className="text-[19px] font-[450] leading-[1.55] tracking-[-0.01em] text-[var(--foreground)]"
+                    dangerouslySetInnerHTML={{ __html: showcase }}
+                  />
                 </div>
                 <div className="flex flex-col justify-center gap-2.5 border-r border-[var(--border)] px-[26px]">
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[#9a917f]">
@@ -1221,6 +1292,73 @@ export function Dashboard() {
         </>
       )}
       </div>
+
+      {/* Pausentag-Bestätigung (Bottom-Sheet): Serie schützen, Pausentag einlösen */}
+      {pauseSheetOpen && (
+        <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center">
+          <button
+            type="button"
+            aria-label="Schließen"
+            onClick={() => setPauseSheetOpen(false)}
+            className="absolute inset-0 bg-[rgba(35,34,26,0.46)]"
+          />
+          <div className="relative w-full rounded-t-[24px] bg-[var(--surface)] px-6 pb-9 pt-5 shadow-[0_-20px_48px_rgba(35,34,26,0.22)] sm:mb-0 sm:max-w-[440px] sm:rounded-[24px] sm:px-7 sm:pb-7">
+            <div className="mx-auto mb-[22px] h-1 w-9 rounded-full bg-[#EFEADD] sm:hidden" />
+            <div className="mb-4 flex items-center gap-3.5">
+              <span
+                className="inline-flex h-12 w-12 flex-none items-center justify-center rounded-[14px] shadow-[0_4px_12px_rgba(221,177,75,.22)]"
+                style={{ background: "linear-gradient(145deg,#FDF0D0,#FDEAB8)", color: "#DDB14B" }}
+              >
+                <Icon d={ICONS.flame} size={26} />
+              </span>
+              <div>
+                <div className="text-[20px] font-[650] leading-tight tracking-[-0.02em] text-[var(--foreground)]">
+                  Ruhetag nehmen?
+                </div>
+                <div className="mt-[3px] text-[13px] text-[var(--muted)]">
+                  Deine {streak}-Tage-Serie bleibt erhalten.
+                </div>
+              </div>
+            </div>
+            <p className="mb-5 text-[14.5px] leading-[1.6] text-[#5d564a]">
+              Manchmal ist Pause das Klügste. Heute wird als{" "}
+              <em className="g">Ruhetag</em> gezählt — deine Serie läuft weiter.
+            </p>
+            <div className="mb-[22px] flex items-center gap-2 rounded-xl bg-[var(--surface-2)] px-3.5 py-3">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#9a917f" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="16" height="16" className="flex-none" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4M12 16h.01" />
+              </svg>
+              <span className="text-[12.5px] leading-[1.4] text-[var(--muted)]">
+                Nach dem Ruhetag brauchst du 7 neue Tage, um wieder einen
+                Pausentag zu verdienen.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={takeRestDay}
+              className="mb-3 inline-flex w-full items-center justify-center gap-2 rounded-full py-[14px] text-[15.5px] font-[650] text-[#23221A] shadow-[0_6px_18px_rgba(110,155,44,0.3)]"
+              style={{ background: "linear-gradient(180deg,#B4ED63,#A8E84F)" }}
+            >
+              <Icon d={ICONS.flame} size={18} />
+              Serie schützen · Ruhetag nehmen
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setPauseSheetOpen(false);
+                navigate("/neu");
+              }}
+              className="inline-flex w-full items-center justify-center gap-1.5 py-2 text-[14px] font-semibold text-[var(--green-text,#447510)]"
+            >
+              Doch lieber schreiben
+              <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
+                <path d="M4 9h10M9.5 4.5 14 9l-4.5 4.5" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -5,6 +5,34 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-23 — Pausentag-Feature (§8) + „Was sich zeigt" rotiert mit Italic
+
+**Was:**
+- **Pausentag/Streak-Schutz** (Claude-Design §8): neues, persistiertes Feature.
+  - Datenmodell: `RestDay` (id=Datum), neue Dexie-Tabelle (v10), `SyncKind`
+    `restDays` (wird mitsynchronisiert; Server generisch, unverändert), Queries
+    `listRestDays`/`addRestDay`, Hook `useRestDays`.
+  - Logik (`insights.ts`): `computeStreak(entries, restDays)` zählt eingelöste
+    Ruhetage als abgedeckt (Serie bricht nicht); `pauseDaysAvailable(streak,
+    redeemed)` = +1 je 7 Tage, max 1, abzüglich eingelöster.
+  - UI (`Dashboard.tsx`): „Serie in Gefahr"-Warnstreifen in der Tagesritual-Karte
+    (abends ≥18 Uhr, keine Aktivität heute, Serie>0, Pausentag verfügbar) mit
+    „Pause nehmen"; **Bottom-Sheet** „Ruhetag nehmen?" (Bestätigen löst Pausentag
+    ein → `addRestDay(heute)`, Serie bleibt; „Doch lieber schreiben" → /neu).
+    Der „1 Pausentag in Reserve"-Chip erscheint nur noch bei `pauseAvailable>0`
+    (auch in `Ritual.tsx`); `computeStreak` überall mit Ruhetagen (Patterns,
+    WeeklyReview, Ritual).
+- **„Was sich zeigt" dynamisch** (Nutzer-Feedback: stand tagelang derselbe Satz,
+  ohne Italic): neue Funktion `showcaseInsight(entries, seed)` — sammelt **alle
+  gerade zutreffenden** datengetriebenen Aussagen (Bewegung/Draußen/Wochen-Trend/
+  bester Wochentag/Top-Thema/Top-Emotion), **rotiert täglich** und enthält ein
+  `.g`-Italic-Akzentwort (Nutzerwörter escaped). Dashboard + Muster rendern jetzt
+  via `dangerouslySetInnerHTML`.
+
+**Status:** `build`/`lint`/`typecheck` grün.
+
+---
+
 ## 2026-06-23 — Zitat-Karte: 40er-Bild-Pool + Tag-Cutoff behoben
 
 **Was:**

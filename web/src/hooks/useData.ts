@@ -9,6 +9,7 @@ import {
   listEntriesDesc,
   listMessages,
   listOpenLoops,
+  listRestDays,
   listRoutineDays,
 } from "../db/queries";
 import { DEFAULT_SETTINGS } from "../lib/settings";
@@ -20,6 +21,7 @@ import type {
   EnergyLevel,
   JournalEntry,
   OpenLoop,
+  RestDay,
   RoutineDay,
 } from "@journal/shared";
 
@@ -61,6 +63,10 @@ export function useEnergyToday(date: string): EnergyLevel | undefined {
 
 export function useEnergyLevels(): EnergyLevel[] {
   return useLiveQuery(() => listEnergyLevels(), [], []);
+}
+
+export function useRestDays(): RestDay[] {
+  return useLiveQuery(() => listRestDays(), [], []);
 }
 
 export function useRoutineToday(date: string): RoutineDay | undefined {

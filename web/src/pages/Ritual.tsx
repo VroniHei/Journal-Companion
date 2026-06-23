@@ -3,10 +3,10 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "../components/ui";
 import { DesktopModal } from "../components/DesktopModal";
 import { DictationButton } from "../components/DictationButton";
-import { useDailyRitual, useEntries } from "../hooks/useData";
+import { useDailyRitual, useEntries, useRestDays } from "../hooks/useData";
 import { dayKey, syncRitualEntry, upsertDailyRitual } from "../db/queries";
 import { isEveningNow, ritualTheme } from "../lib/daypart";
-import { computeStreak } from "../lib/insights";
+import { computeStreak, pauseDaysAvailable } from "../lib/insights";
 
 type Period = "morning" | "evening";
 
@@ -96,7 +96,9 @@ export function Ritual() {
   const isToday = date === dayKey();
   const ritual = useDailyRitual(date);
   const entries = useEntries();
-  const streak = computeStreak(entries);
+  const restDays = useRestDays();
+  const streak = computeStreak(entries, restDays.map((r) => r.date));
+  const pauseAvailable = pauseDaysAvailable(streak, restDays.length);
 
   const [gratitude, setGratitude] = useState(["", "", ""]);
   const [makeGreat, setMakeGreat] = useState("");
@@ -447,7 +449,7 @@ export function Ritual() {
                 <strong className="font-[650] text-[#23221A]">
                   {streak} {streak === 1 ? "Tag" : "Tage"}
                 </strong>{" "}
-                in Folge · 1 Pausentag in Reserve
+                in Folge{pauseAvailable > 0 ? " · 1 Pausentag in Reserve" : ""}
               </span>
             </div>
 

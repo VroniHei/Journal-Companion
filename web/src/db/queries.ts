@@ -13,6 +13,7 @@ import type {
   PatternInsight,
   PatternInsightDraft,
   PatternSummary,
+  RestDay,
   StabilityKind,
   StabilityMoment,
   SyncKind,
@@ -566,6 +567,21 @@ export async function setEnergyLevel(date: string, level: number): Promise<void>
     createdAt: current?.createdAt ?? now,
     updatedAt: now,
   });
+  notifyDataChanged();
+}
+
+// --- Pausentag (Streak-Schutz) ---------------------------------------------
+
+export function listRestDays(): Promise<RestDay[]> {
+  return db.restDays.orderBy("date").reverse().toArray();
+}
+
+/** Löst einen Pausentag für `date` ein (idempotent — genau ein Eintrag/Tag). */
+export async function addRestDay(date: string): Promise<void> {
+  const existing = await db.restDays.get(date);
+  if (existing) return;
+  const now = nowIso();
+  await db.restDays.put({ id: date, date, createdAt: now, updatedAt: now });
   notifyDataChanged();
 }
 

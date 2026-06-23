@@ -513,6 +513,17 @@ export interface DailyRitual {
   entryId?: string;
 }
 
+// --- Pausentag (Streak-Schutz) --------------------------------------------
+// Ein bewusst eingelöster Ruhetag: die Serie bleibt erhalten, der Pausentag ist
+// verbraucht. Ein Datensatz pro eingelöstem Tag (id = Datum). Wird mitsynchronisiert.
+
+export interface RestDay {
+  id: string; // = date (YYYY-MM-DD)
+  date: string; // YYYY-MM-DD (lokaler Tag)
+  createdAt: string; // ISO
+  updatedAt: string; // ISO
+}
+
 // --- Geräte-Sync ----------------------------------------------------------
 // Generischer Sync über alle synchronisierten Tabellen. Pro Datensatz wird nur
 // ein „kind" (Tabellenname), eine id, ein Versions-Zeitstempel (ISO) und der
@@ -530,7 +541,8 @@ export type SyncKind =
   | "decisions"
   | "dailyRituals"
   | "energyLevels"
-  | "routineDays";
+  | "routineDays"
+  | "restDays";
 
 export interface SyncRecord {
   kind: SyncKind;

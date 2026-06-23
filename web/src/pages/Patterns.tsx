@@ -11,7 +11,7 @@ import type {
 } from "@journal/shared";
 import { Button, Card, Eyebrow } from "../components/ui";
 import { MoodCard } from "../components/MoodCard";
-import { useEntries, useSettings } from "../hooks/useData";
+import { useEntries, useRestDays, useSettings } from "../hooks/useData";
 import {
   deletePatternInsight,
   listPatternInsights,
@@ -22,8 +22,8 @@ import {
 } from "../db/queries";
 import { aggregate } from "../lib/patterns";
 import {
-  buildInsights,
   computeStreak,
+  showcaseInsight,
   themeClusters,
   wordsOfWeek,
 } from "../lib/insights";
@@ -253,6 +253,7 @@ function PatternCard({ p }: { p: PatternInsight }) {
 export function Patterns() {
   const entries = useEntries();
   const settings = useSettings();
+  const restDays = useRestDays();
   const a = aggregate(entries);
   const moments = useLiveQuery(() => listStabilityMoments(), [], []);
   const insights = useLiveQuery(() => listPatternInsights(), [], []);
@@ -318,13 +319,13 @@ export function Patterns() {
   const clusters = themeClusters(entries);
   const topCluster = clusters[0];
   const words = wordsOfWeek(entries);
-  const streak = computeStreak(entries);
+  const streak = computeStreak(entries, restDays.map((r) => r.date));
 
-  // „Was sich zeigt"-Kachel (Claude Design Juni 2026): Einsicht + Mini-Karte.
-  const wsInsights = buildInsights(entries);
-  const wsText =
-    wsInsights[0] ??
-    "Sobald sich Themen über mehrere Einträge wiederholen, zeigt sich hier, was sich durchzieht.";
+  // „Was sich zeigt"-Kachel: datengetriebene Einsicht mit .g-Akzent, täglich
+  // rotierend (seed = Tag), + Mini-Karte.
+  const wsHtml =
+    showcaseInsight(entries, Math.floor(Date.now() / 86_400_000)) ??
+    'Sobald sich Themen über mehrere Einträge wiederholen, zeigt sich hier, was sich <em class="g">durchzieht</em>.';
   const wsKeywordRaw = words[0]?.word ?? topCluster?.title ?? "Heute";
   const wsKeyword =
     wsKeywordRaw.charAt(0).toUpperCase() + wsKeywordRaw.slice(1);
@@ -360,9 +361,10 @@ export function Patterns() {
               Was sich zeigt
             </span>
           </div>
-          <p className="text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]">
-            {wsText}
-          </p>
+          <p
+            className="text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]"
+            dangerouslySetInnerHTML={{ __html: wsHtml }}
+          />
           {words.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
               {/* Eine Zeile, die 3 wichtigsten Tags — kein abgeschnittener Chip. */}
