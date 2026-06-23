@@ -1181,3 +1181,23 @@ zeile statt Pseudo-Speichern/Abmelden (nicht erfinden, vgl. Briefing-Regel 2/3).
 **Noch offen (Feinschliff, nicht blockierend):** Tile-Relief flächig auf ALLE
 Icon-Kacheln ausrollen (FabSheet-Optionen, JournalCard-Ritual-Kachel, Dashboard-
 Kacheln); Mindest-Schriftgrößen (§14) systematisch gegenprüfen.
+
+---
+
+## 2026-06-23 — App-weiter Zurück-Button, Mobile-Finetuning & Gedankenschleife-Kopf
+
+- **Zurück-Button zentral in der Topbar** (`Layout.tsx`): erscheint auf allen
+  Nicht-Top-Level-Screens (`TOP_PATHS`), damit man aus jedem Screen sicher
+  zurückfindet, ohne versehentlich die App zu schließen. Smarte Logik
+  (`navigate(-1)` bei vorhandener History, sonst `/`). Die separaten
+  Seiten-Zurück-Pfeile entfallen dafür (RedThread, Archive, Routine, Settings,
+  RitualHistory) — keine Dopplung mehr.
+- **Mobile-Finetuning:** mehr Kontrast beim Fokus-Chip, mehr Abstand
+  Eyebrow→Headline app-weit, einzeilige Kurztexte (Gerade ist viel, Ritual-Kopf),
+  klarere Trennung der Ritual-Recap-Antworten.
+- **Gedankenschleife (`Loosen.tsx`) nach Claude-Design-Linie:** Lilac-Emblem
+  jetzt zentral und auf Mobile **und** Desktop sichtbar (vorher nur Desktop,
+  links). Aufbau wie Tagesritual (Emblem → Eyebrow → Titel); Schließen-X bleibt
+  Desktop-Modal oben rechts.
+
+Build/Lint/Typecheck grün; Branch nach `main` fast-forward (ausgerichtet).
