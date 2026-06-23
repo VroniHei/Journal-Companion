@@ -1,8 +1,10 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import type { SleepQuality } from "@journal/shared";
+import { detectCrisis } from "@journal/shared/crisis";
 import { Eyebrow } from "../components/ui";
 import { BoolField } from "../components/fields/BoolField";
+import { CrisisNotice } from "../components/CrisisNotice";
 import { DictationButton } from "../components/DictationButton";
 import {
   BODY_SIGNALS,
@@ -225,6 +227,16 @@ export function NewEntry() {
   });
   const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
 
+  // Niederschwellige, nicht-blockierende Hilfe bei sehr belastetem Zustand:
+  // Krisen-Stichworte im Text ODER sehr niedrige Stimmung + sehr hohe Intensität.
+  const textCrisis = detectCrisis(text);
+  const crisisLevel =
+    textCrisis.level !== "none"
+      ? textCrisis.level
+      : mood <= 2 && intensity >= 9
+        ? "concern"
+        : "none";
+
   async function save() {
     if (!text.trim() || saving) return;
     setSaving(true);
@@ -315,6 +327,8 @@ export function NewEntry() {
               </span>
             </div>
           </div>
+
+          <CrisisNotice level={crisisLevel} />
 
           {/* Speichern + Verwerfen */}
           <div className="flex items-center gap-2.5">

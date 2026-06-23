@@ -857,10 +857,10 @@ export function Dashboard() {
                       </span>
                       <div className="min-w-0">
                         <div className="text-[13px] font-[650] leading-tight" style={{ color: "#8a6b00" }}>
-                          {streak} Tage · endet heute Nacht
+                          Magst du heute kurz festhalten?
                         </div>
                         <div className="mt-px text-[11px]" style={{ color: "#a08020" }}>
-                          1 Pausentag verfügbar
+                          {streak} Tage in Folge · eine Pause ist auch ok
                         </div>
                       </div>
                     </div>
@@ -1012,8 +1012,9 @@ export function Dashboard() {
                   />
                 </div>
                 <div className="mt-[9px] text-[13px] text-[#9a917f]">
-                  Noch {streakLeft} {streakLeft === 1 ? "Tag" : "Tage"} bis zur{" "}
-                  {streakMilestoneLabel}
+                  {streak === 0
+                    ? "Schön, dass du wieder da bist — wir fangen einfach hier an."
+                    : `Noch ${streakLeft} ${streakLeft === 1 ? "Tag" : "Tage"} bis zur ${streakMilestoneLabel}`}
                 </div>
                 {pauseAvailable > 0 && (
                   <div

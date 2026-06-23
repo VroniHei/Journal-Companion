@@ -131,8 +131,9 @@ offene Optimierungs-Backlog, priorisiert und entdoppelt.
 > **Stand 2026-06-23 — Krisennetz geschlossen (s. PROJECT_LOG):** ✅ Krisen-Check
 > jetzt in Relief/Loosen/Ritual (vorher umgangen) · ✅ Heuristik um passive
 > Hilferufe + weiche 2. Stufe (`concern`) erweitert · ✅ immer sichtbarer
-> Hilfe-Anker (Soforthilfe/Reflexion/Disclaimer). **Offen:** Hilfe-Karte bei
-> mood ≤2 + intensity ≥9; Streak-Sprache entschärfen.
+> Hilfe-Anker (Soforthilfe/Reflexion/Disclaimer). · ✅ Hilfe-Karte bei mood ≤2 +
+> intensity ≥9 (NewEntry) · ✅ Streak-Sprache entschärft (kein „endet heute
+> Nacht" mehr; warmer Re-Entry nach Lücken). **§A damit vollständig abgearbeitet.**
 
 - 🔴 **Krisennetz greift nicht überall:** `detectCrisis()` läuft nur in
   reflect/chat/contact-impulse/voiceReflect. **Nicht** in Soforthilfe „nur

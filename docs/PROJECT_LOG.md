@@ -1305,3 +1305,15 @@ Audit gefundenen 🔴-Sicherheitslücken geschlossen:
 **Noch offen aus §A (nächste kleine Schritte):** nicht-blockierende Hilfe-Karte
 bei mood ≤2 + intensity ≥9; Streak-Sprache entschärfen („endet heute Nacht" →
 einladend; warmer Re-Entry nach Lücken).
+
+## 2026-06-23 (Forts. 6) — §A abgeschlossen: mood+intensity-Karte + Streak-Sprache
+
+- **Niederschwellige Hilfe in NewEntry:** `CrisisNotice` erscheint bei
+  Krisen-Stichworten im Text ODER bei sehr belastetem Zustand (mood ≤2 UND
+  intensity ≥9) — nicht-blockierend, über dem Speichern-Button.
+- **Streak entschärft (Dashboard):** „Serie in Gefahr"-Banner sagt nicht mehr
+  „X Tage · endet heute Nacht" (Verlust-Aversion), sondern lädt ein: „Magst du
+  heute kurz festhalten? · X Tage in Folge · eine Pause ist auch ok". Bei
+  Serie = 0 zeigt die „In Folge"-Karte statt eines kalten Countdowns einen
+  warmen Re-Entry: „Schön, dass du wieder da bist — wir fangen einfach hier an."
+- Build/Lint/Typecheck grün. Damit ist Audit §A (Sicherheit) vollständig.
