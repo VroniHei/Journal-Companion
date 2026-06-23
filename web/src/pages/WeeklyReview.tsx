@@ -118,7 +118,7 @@ export function WeeklyReview() {
         <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
           Diese Woche · {rangeLabel}
         </div>
-        <h1 className="serif mt-2 text-3xl font-semibold tracking-[-0.02em]">
+        <h1 className="serif mt-3 text-3xl font-semibold tracking-[-0.02em]">
           Was sich <em className="g">gezeigt</em> hat
         </h1>
       </div>

@@ -334,7 +334,7 @@ export function Patterns() {
     <section className="space-y-8">
       <div>
         <Eyebrow>Deine Muster</Eyebrow>
-        <h1 className="serif mt-2 text-3xl font-semibold tracking-[-0.02em]">
+        <h1 className="serif mt-3 text-3xl font-semibold tracking-[-0.02em]">
           Was sich bei dir <em className="g">durchzieht</em>
         </h1>
       </div>

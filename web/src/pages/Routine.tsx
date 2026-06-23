@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { useRoutineDays, useRoutineToday, useSettings } from "../hooks/useData";
 import { dayKey, setRoutineDay } from "../db/queries";
 import { updateSettings } from "../lib/settings";
@@ -10,7 +9,6 @@ const TRIGGERS = ["Stress", "Langeweile", "Runterkommen", "Gewohnheit", "Einsamk
 
 export function Routine() {
   const settings = useSettings();
-  const navigate = useNavigate();
   const today = dayKey();
   const todayRec = useRoutineToday(today);
   const all = useRoutineDays();
@@ -37,22 +35,10 @@ export function Routine() {
 
   return (
     <section className="space-y-6">
-      {/* Kopf: Zurück-Pfeil + Titel (wie andere Unterseiten) */}
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          aria-label="Zurück"
-          onClick={() => navigate(-1)}
-          className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:text-[var(--foreground)]"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
-            <path d="M15 5l-7 7 7 7" />
-          </svg>
-        </button>
-        <h1 className="serif text-[22px] font-semibold tracking-[-0.02em] sm:text-3xl">
-          Routine-Wechsel
-        </h1>
-      </div>
+      {/* Titel (Zurück liegt zentral in der Topbar) */}
+      <h1 className="serif text-[22px] font-semibold tracking-[-0.02em] sm:text-3xl">
+        Routine-Wechsel
+      </h1>
 
       <p className="lead max-w-[460px] text-[15.5px] text-[var(--foreground)]">
         Nicht verbieten, sondern <em className="g">ersetzen</em>. Auslöser

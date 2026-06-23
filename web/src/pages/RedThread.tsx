@@ -1,37 +1,23 @@
-import { useNavigate } from "react-router-dom";
 import { useEntries } from "../hooks/useData";
 import { themeClusters, TONE_LEGEND } from "../lib/insights";
 
-// Roter Faden (Markenkern): wiederkehrende Themen über die letzten Wochen —
-// nicht nur Wörter, sondern was sich durchzieht. Drill-in aus „Muster":
-// runder Zurück-Button + Eyebrow, links Foto-Karte, rechts die Themen.
+// Roter Faden (Markenkern): wiederkehrende Themen über die letzten Wochen.
+// Nicht nur Wörter, sondern was sich durchzieht. Drill-in aus „Muster";
+// Zurück liegt zentral in der Topbar (Layout).
 export function RedThread() {
-  const navigate = useNavigate();
   const entries = useEntries();
   const clusters = themeClusters(entries);
 
   return (
     <section className="space-y-6">
-      {/* Kopf: runder Zurück-Button + Breadcrumb/Eyebrow + Titel */}
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          aria-label="Zurück zu Muster"
-          onClick={() => navigate("/muster")}
-          className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:text-[var(--foreground)]"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
-            <path d="M15 5l-7 7 7 7" />
-          </svg>
-        </button>
-        <div>
-          <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-            Roter Faden
-          </div>
-          <h1 className="serif text-3xl font-semibold tracking-[-0.02em]">
-            Was sich bei dir <em className="g">durchzieht</em>
-          </h1>
+      {/* Kopf: Eyebrow + Titel (Zurück liegt zentral in der Topbar). */}
+      <div>
+        <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+          Roter Faden
         </div>
+        <h1 className="serif mt-1 text-3xl font-semibold tracking-[-0.02em]">
+          Was sich bei dir <em className="g">durchzieht</em>
+        </h1>
       </div>
 
       {clusters.length > 0 && (

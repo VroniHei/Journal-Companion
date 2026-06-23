@@ -447,7 +447,7 @@ export function Clarity() {
     <section className="space-y-6">
       <div>
         <Eyebrow>Klärung</Eyebrow>
-        <h1 className="serif mt-2 text-3xl font-semibold tracking-[-0.02em]">
+        <h1 className="serif mt-3 text-3xl font-semibold tracking-[-0.02em]">
           Erst <em className="g">sortieren</em>, dann entscheiden
         </h1>
       </div>

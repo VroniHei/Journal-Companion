@@ -1,5 +1,4 @@
 import { useRef, type ChangeEvent, type ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button, Card } from "../components/ui";
 import { useSettings } from "../hooks/useData";
 import { useSyncStatus } from "../hooks/useSync";
@@ -39,7 +38,6 @@ const selectClass =
 
 export function Settings() {
   const s = useSettings();
-  const navigate = useNavigate();
   const sync = useSyncStatus();
   const voices = useVoices();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -76,20 +74,8 @@ export function Settings() {
 
   return (
     <section className="space-y-6">
-      {/* Kopfzeile: runder Zurück-Button + Breadcrumb (kein Text-Link) */}
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          aria-label="Zurück"
-          onClick={() => navigate("/")}
-          className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:text-[var(--foreground)]"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
-            <path d="M15 5l-7 7 7 7" />
-          </svg>
-        </button>
-        <h1 className="serif text-3xl font-semibold">Einstellungen</h1>
-      </div>
+      {/* Titel (Zurück liegt zentral in der Topbar) */}
+      <h1 className="serif text-3xl font-semibold">Einstellungen</h1>
 
       {/* Bento: auf Desktop 2-spaltig, mobil gestapelt */}
       <div className="space-y-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:space-y-0">

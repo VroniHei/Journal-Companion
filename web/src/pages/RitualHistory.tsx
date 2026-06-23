@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
 import type { DailyRitual } from "@journal/shared";
 import { Eyebrow } from "../components/ui";
@@ -27,28 +27,16 @@ function recap(r: DailyRitual): { label: string; value: string }[] {
 // Ritual-Verlauf: alle bisherigen Tagesrituale, neueste zuerst. Jeder Tag ist
 // antippbar und öffnet genau diesen Tag zum Ansehen/Ändern.
 export function RitualHistory() {
-  const navigate = useNavigate();
   const rituals = useLiveQuery(() => listDailyRituals(), [], []);
 
   return (
     <section className="space-y-6">
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          aria-label="Zurück"
-          onClick={() => navigate("/ritual")}
-          className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:text-[var(--foreground)]"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
-            <path d="M15 5l-7 7 7 7" />
-          </svg>
-        </button>
-        <div>
-          <Eyebrow>Tagesritual</Eyebrow>
-          <h1 className="serif mt-2 text-3xl font-semibold tracking-[-0.02em]">
-            Dein <em className="g">Verlauf</em>
-          </h1>
-        </div>
+      {/* Kopf (Zurück liegt zentral in der Topbar) */}
+      <div>
+        <Eyebrow>Tagesritual</Eyebrow>
+        <h1 className="serif mt-3 text-3xl font-semibold tracking-[-0.02em]">
+          Dein <em className="g">Verlauf</em>
+        </h1>
       </div>
 
       {rituals.length === 0 ? (

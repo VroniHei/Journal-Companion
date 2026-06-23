@@ -383,7 +383,7 @@ export function Ritual() {
               Tagesritual · {period === "morning" ? "Morgen" : "Abend"}
             </div>
             <h1
-              className="serif mt-2 text-[26px] font-semibold leading-tight"
+              className="serif mt-3 text-[26px] font-semibold leading-tight"
               style={{ color: theme.title }}
             >
               Geschafft.{" "}

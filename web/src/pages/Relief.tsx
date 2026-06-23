@@ -58,7 +58,7 @@ export function Relief() {
           <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#7a6b96]">
             Gerade ist viel
           </div>
-          <h1 className="serif mt-2 text-[26px] font-semibold leading-[1.16] text-[#3a3247]">
+          <h1 className="serif mt-3 text-[26px] font-semibold leading-[1.16] text-[#3a3247]">
             Leer erst mal den <em className="g">Kopf</em>.
           </h1>
           <p className="lead mt-2 max-w-[300px] text-[15.5px] leading-[1.5] text-[var(--muted)]">

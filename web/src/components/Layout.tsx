@@ -1,11 +1,15 @@
 import { useState, type FormEvent } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { DisclaimerGate } from "./DisclaimerGate";
 import { Onboarding } from "./Onboarding";
 import { FabSheet } from "./FabSheet";
 import { Icon, ICONS, tileRelief } from "./icons";
 import { useSettings } from "../hooks/useData";
 import { useSyncStatus } from "../hooks/useSync";
+
+// Top-Level-Screens (über die Tab-Leiste erreichbar) brauchen keinen
+// Zurück-Button; alle anderen (Drill-ins/Tools) bekommen einen.
+const TOP_PATHS = new Set(["/", "/muster", "/klaerung", "/wochenrueckblick"]);
 
 const NAV = [
   { to: "/", label: "Heute", end: true, icon: ICONS.home },
@@ -39,9 +43,31 @@ export function Layout() {
   const settings = useSettings();
   const sync = useSyncStatus();
   const navigate = useNavigate();
+  const location = useLocation();
   const [q, setQ] = useState("");
   const [profileOpen, setProfileOpen] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
+
+  // Zurück-Button auf allen Nicht-Top-Level-Screens. Smartes Zurück: innerhalb
+  // der App eine Stufe zurück, bei Direkteinstieg (keine In-App-History) zur
+  // Startseite — so kann man nie „in einer Sackgasse" landen.
+  const showBack = !TOP_PATHS.has(location.pathname);
+  function goBack() {
+    if (location.key !== "default") navigate(-1);
+    else navigate("/");
+  }
+  const backButton = (
+    <button
+      type="button"
+      onClick={goBack}
+      aria-label="Zurück"
+      className="flex h-9 w-9 flex-none items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:-translate-y-0.5 hover:text-[var(--foreground)]"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18" aria-hidden="true">
+        <path d="M15 5l-7 7 7 7" />
+      </svg>
+    </button>
+  );
 
   // Einheitliche Content-Breite auf JEDER Seite (wie die Desktop-Frames im
   // Prototyp): kein Springen/„tablet-schmal" mehr zwischen Seiten. Der Inhalt
@@ -136,13 +162,16 @@ export function Layout() {
           className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3"
         >
           <div className="flex items-center gap-8">
-            <NavLink to="/" aria-label={settings.appName}>
-              <img
-                src="/innerline-wordmark.svg"
-                alt={settings.appName}
-                className="h-6 w-auto"
-              />
-            </NavLink>
+            <div className="flex items-center gap-3">
+              {showBack && backButton}
+              <NavLink to="/" aria-label={settings.appName}>
+                <img
+                  src="/innerline-wordmark.svg"
+                  alt={settings.appName}
+                  className="h-6 w-auto"
+                />
+              </NavLink>
+            </div>
             {pillNav}
           </div>
           <div className="flex items-center gap-3">
@@ -206,13 +235,17 @@ export function Layout() {
 
       {/* ===== Mobile-Topbar (solide) ===== */}
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-[var(--border)] bg-[var(--background)] px-4 py-3 shadow-[0_4px_16px_rgba(35,34,26,0.05)] sm:hidden">
-        <NavLink to="/" aria-label={settings.appName}>
-          <img
-            src="/innerline-wordmark.svg"
-            alt={settings.appName}
-            className="h-5 w-auto"
-          />
-        </NavLink>
+        {showBack ? (
+          backButton
+        ) : (
+          <NavLink to="/" aria-label={settings.appName}>
+            <img
+              src="/innerline-wordmark.svg"
+              alt={settings.appName}
+              className="h-5 w-auto"
+            />
+          </NavLink>
+        )}
         <div className="flex items-center gap-2.5">
           <button
             type="button"

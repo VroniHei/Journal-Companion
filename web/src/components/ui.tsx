@@ -64,7 +64,7 @@ export function Button({
 export function Eyebrow({ children }: { children: ReactNode }) {
   // Innerline-Signatur: kleines Label mit grünem Punkt.
   return (
-    <span className="inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+    <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
       <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
       {children}
     </span>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import type { JournalEntry } from "@journal/shared";
 import { JournalCard } from "../components/JournalCard";
 import { Eyebrow } from "../components/ui";
@@ -81,7 +81,6 @@ function monthLabel(iso: string): string {
 // Breite als mehrspaltiges Raster (App-Style: Desktop ist kein verkleinertes Mobile).
 export function Archive() {
   const entries = useEntries();
-  const navigate = useNavigate();
   const [filter, setFilter] = useState<Filter>("alle");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
@@ -174,19 +173,8 @@ export function Archive() {
 
   return (
     <section className="space-y-7">
-      {/* Kopf: Zurück + Suche. */}
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          aria-label="Zurück"
-          onClick={() => navigate(-1)}
-          className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:text-[var(--foreground)]"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
-            <path d="M15 5l-7 7 7 7" />
-          </svg>
-        </button>
-        <div className="flex-1" />
+      {/* Kopf: Suche rechts (Zurück liegt zentral in der Topbar). */}
+      <div className="flex items-center justify-end">
         <Link
           to="/suche"
           aria-label="Suchen"
@@ -203,7 +191,7 @@ export function Archive() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <Eyebrow>Archiv</Eyebrow>
-          <h1 className="serif mt-2 text-3xl font-semibold tracking-[-0.02em]">
+          <h1 className="serif mt-3 text-3xl font-semibold tracking-[-0.02em]">
             Alle <em className="g">Einträge</em>
           </h1>
         </div>

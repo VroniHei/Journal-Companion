@@ -321,8 +321,8 @@ export function Dashboard() {
         {todayFocus ? (
           <Link
             to="/ritual"
-            className="mt-3 inline-flex max-w-full items-center gap-1.5 overflow-hidden rounded-full px-3 py-1.5 text-[13px] font-medium text-[#5d4f3f] transition hover:opacity-80"
-            style={{ background: "#F1ECE0" }}
+            className="mt-3 inline-flex max-w-full items-center gap-1.5 overflow-hidden rounded-full border px-3 py-1.5 text-[13px] font-medium text-[#5d4f3f] transition hover:opacity-80"
+            style={{ background: "#EFE4CF", borderColor: "rgba(120,86,52,0.2)" }}
           >
             <span className="h-[7px] w-[7px] flex-none rounded-full bg-[var(--clay)]" />
             <span className="truncate">Dein Fokus: {todayFocus}</span>
@@ -489,10 +489,10 @@ export function Dashboard() {
                 Gerade ist viel?
               </span>
             </div>
-            {/* Mobile: kurz; Desktop: Headline nach Prototyp. */}
-            <p className="text-[15px] font-[450] leading-snug text-[#3a3247] sm:text-[20px] sm:leading-[1.4] sm:tracking-[-0.01em]">
+            {/* Mobile: kurz, einzeilig; Desktop: Headline nach Prototyp. */}
+            <p className="truncate text-[15px] font-[450] leading-snug text-[#3a3247] sm:overflow-visible sm:whitespace-normal sm:text-[20px] sm:leading-[1.4] sm:tracking-[-0.01em]">
               <span className="sm:hidden">
-                <em className="g">Kopf leeren</em> · in 2 Minuten sortieren.
+                In 2 Min. <em className="g">Kopf leeren</em> und sortieren.
               </span>
               <span className="hidden sm:inline">
                 Kopf leeren und in <em className="g">zwei Minuten</em> sortieren.
@@ -635,17 +635,18 @@ export function Dashboard() {
                 </svg>
               </span>
               <span
-                className="text-[11px] font-semibold uppercase tracking-[0.2em]"
+                className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.2em]"
                 style={{ color: ritualT.eyebrow }}
               >
-                Tägliches Ritual
+                {/* Mobil kürzer, damit der Kopf einzeilig bleibt. */}
+                <span className="sm:hidden">Tagesritual</span>
+                <span className="hidden sm:inline">Tägliches Ritual</span>
               </span>
               <span
-                className="border-l pl-2 text-[11px] font-semibold"
+                className="hidden whitespace-nowrap border-l pl-2 text-[11px] font-semibold sm:inline"
                 style={{ color: "#b08a64", borderColor: "rgba(205,138,91,0.3)" }}
               >
-                <span className="sm:hidden">6 Min</span>
-                <span className="hidden sm:inline">6 Min · Dein Begleiter</span>
+                6 Min · Dein Begleiter
               </span>
             </div>
             </div>
@@ -680,14 +681,14 @@ export function Dashboard() {
                 {/* Recap: eine Karte mit den 3 Antworten + farbigen Punkten */}
                 {ritualAnswers.length > 0 ? (
                   <div
-                    className="mb-5 flex max-w-[480px] flex-col gap-[11px] rounded-[14px] border px-[15px] py-3.5"
+                    className="mb-5 flex max-w-[480px] flex-col divide-y divide-[rgba(205,138,91,0.16)] rounded-[14px] border px-[15px] py-1"
                     style={{
                       background: "rgba(255,255,255,0.72)",
                       borderColor: "rgba(205,138,91,0.2)",
                     }}
                   >
                     {ritualAnswers.map((a, i) => (
-                      <div key={a.label} className="flex items-start gap-2.5">
+                      <div key={a.label} className="flex items-start gap-2.5 py-3">
                         <span
                           className="mt-1 h-[9px] w-[9px] flex-none rounded-full"
                           style={{ background: RITUAL_DOTS[i] ?? "#9BA383" }}
