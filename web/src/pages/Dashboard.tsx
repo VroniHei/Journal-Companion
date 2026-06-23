@@ -68,17 +68,31 @@ function timeOfDay(): TimeOfDay {
   return "abend";
 }
 
-function greetingWord(t: TimeOfDay): string {
-  if (t === "tag") return "Schön, dass du da bist";
-  if (t === "abend") return "Guten Abend";
-  return "Guten Morgen";
+// Warme, persönliche Begrüßung — variiert leicht je Tag (deterministisch), in
+// „Vroni-Voice": nah, freundlich, nie aufdringlich.
+const GREETINGS: Record<TimeOfDay, string[]> = {
+  morgen: ["Guten Morgen", "Hej", "Schön, dass du wach bist"],
+  tag: ["Hej", "Schön, dass du da bist", "Hallo"],
+  abend: ["Guten Abend", "Hej", "Schön, dass du da bist"],
+};
+function greetingWord(t: TimeOfDay, seed = 0): string {
+  const pool = GREETINGS[t];
+  return pool[((seed % pool.length) + pool.length) % pool.length];
 }
 
-const QUOTES: Record<TimeOfDay, { pre: string; accent: string }> = {
-  morgen: { pre: "Heute reicht ein ehrlicher Satz. ", accent: "So wie er kommt." },
-  tag: { pre: "Nicht alles auf einmal. ", accent: "Eins nach dem anderen." },
-  abend: { pre: "Der Tag darf jetzt leiser werden. ", accent: "Stück für Stück." },
-};
+// Einladende, sanfte Frage als zweite Zeile (rotiert täglich). Bewusst ohne
+// Druck — „möchtest du …", „wenn dir danach ist": Opt-out ist immer mitgedacht
+// (therapist-safety: einladend, kein Muss, keine Bewertung/Diagnose).
+const WELCOME_LINES: { pre: string; accent: string; post: string }[] = [
+  { pre: "Wie geht es dir ", accent: "gerade", post: "?" },
+  { pre: "Sollen wir gemeinsam auf deine ", accent: "Gedanken", post: " schauen?" },
+  { pre: "Möchtest du dir etwas von der ", accent: "Seele", post: " schreiben?" },
+  { pre: "Magst du deine Gedanken ein Stück weit ", accent: "sortieren", post: "?" },
+  { pre: "Was möchtest du heute ", accent: "festhalten", post: "?" },
+  { pre: "Wenn dir danach ist — schreib einfach ", accent: "los", post: "." },
+  { pre: "Nimm dir einen Moment, ganz ", accent: "für dich", post: "." },
+  { pre: "Was beschäftigt dich ", accent: "heute", post: "?" },
+];
 
 
 const MILESTONES = [3, 7, 14, 21, 30, 60, 100, 150, 200, 365];
@@ -186,7 +200,8 @@ export function Dashboard() {
 
   const name = settings.userName?.trim();
   const tod = timeOfDay();
-  const quote = QUOTES[tod];
+  const greet = greetingWord(tod, dayIndex());
+  const welcome = WELCOME_LINES[dayIndex() % WELCOME_LINES.length];
   const hasData = entries.length > 0;
 
   // Serie inkl. eingelöster Pausentage (schützen die Serie über Lücken).
@@ -271,15 +286,39 @@ export function Dashboard() {
     // flex-col + order: mobil kompakte Reihenfolge (Begrüßung → Ritual → Heute
     // im Blick → Energie → Stimmung); ab sm volles Bento in Prototyp-Reihenfolge.
     <section className="flex flex-col gap-5">
-      {/* Mobile: helle Begrüßung auf Creme (nach Prototyp) */}
+      {/* Mobile: warme, persönliche Begrüßung auf Creme (Tageszeit-Icon +
+          einladende Frage; freundlicher Einstieg). */}
       <div className="order-1 sm:hidden">
-        <div className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[#9a917f]">
-          {dateLabel}
+        <div className="flex items-center gap-3">
+          <span
+            className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-2xl shadow-[0_4px_12px_rgba(110,155,44,0.16)]"
+            style={{ background: "linear-gradient(145deg,#EEF5E0,#DFEDC6)", color: "#6E9B2C" }}
+            aria-hidden="true"
+          >
+            {/* Lucide „smile" — freundlicher, warmer Einstieg; kollidiert nicht
+                mit den Tageszeit-Icons (Sonne/Mond) des Rituals darunter. */}
+            <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+              <path d="M9 9h.01" />
+              <path d="M15 9h.01" />
+            </svg>
+          </span>
+          <div className="min-w-0">
+            <div className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[#9a917f]">
+              {dateLabel}
+            </div>
+            <h1 className="serif text-[22px] font-semibold leading-tight">
+              {greet}
+              {name ? `, ${name}` : ""}
+            </h1>
+          </div>
         </div>
-        <h1 className="serif mt-1.5 text-[22px] font-semibold leading-tight sm:text-[28px]">
-          {greetingWord(tod)}
-          {name ? `, ${name}` : ""}
-        </h1>
+        <p className="lead mt-2.5 text-[15.5px] leading-snug text-[var(--foreground)]">
+          {welcome.pre}
+          <em className="g text-[var(--accent-text)]">{welcome.accent}</em>
+          {welcome.post}
+        </p>
 
         {todayFocus ? (
           <Link
@@ -364,12 +403,13 @@ export function Dashboard() {
             </span>
           </div>
           <h1 className="serif mb-3 text-[39px] font-semibold leading-[1.08] text-[#F8F5EE]">
-            {greetingWord(tod)}
+            {greet}
             {name ? `, ${name}` : ""}
           </h1>
           <p className="lead mb-6 max-w-[470px] text-[22px] leading-snug text-[#F8F5EE]">
-            {quote.pre}
-            <em className="g text-[var(--accent)]">{quote.accent}</em>
+            {welcome.pre}
+            <em className="g text-[var(--accent)]">{welcome.accent}</em>
+            {welcome.post}
           </p>
           <div className="flex flex-wrap gap-3">
             <button

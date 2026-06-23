@@ -5,6 +5,24 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-23 — Wärmerer, persönlicher Dashboard-Einstieg
+
+**Was:** Die Begrüßung (`Dashboard.tsx`) ist nun warm + einladend statt statisch.
+- **Begrüßung variiert** leicht je Tag (`GREETINGS` pro Tageszeit: „Guten Morgen"/
+  „Hej"/„Schön, dass du wach bist" …), deterministisch über `dayIndex`.
+- **Einladende zweite Zeile** statt fixem Spruch: `WELCOME_LINES` (rotiert täglich)
+  mit sanften, einladenden Fragen in „Vroni-Voice" („Sollen wir gemeinsam auf
+  deine *Gedanken* schauen?", „Möchtest du dir etwas von der *Seele* schreiben?",
+  „Wie geht es dir *gerade*?" …) — `.g`-Italic-Akzent. Bewusst ohne Druck/Opt-out
+  (`therapist-safety` vorab; Recherche zu Empty-State-/Greeting-UX).
+- **Freundliches Visual** (mobil): kleines Lucide-`smile`-Icon in warmem grünem
+  Tile vor der Begrüßung. Bewusst **kein** Sonne/Mond (kollidiert mit den
+  Tageszeit-Icons der Ritual-Karte direkt darunter).
+
+**Status:** `build`/`lint`/`typecheck` grün.
+
+---
+
 ## 2026-06-23 — Pausentag-Feature (§8) + „Was sich zeigt" rotiert mit Italic
 
 **Was:**
