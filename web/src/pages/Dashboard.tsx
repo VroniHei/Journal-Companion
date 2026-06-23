@@ -176,7 +176,7 @@ function MoodSparkline({ days }: { days: MoodDay[] }) {
           strokeWidth="2.6"
         />
       </svg>
-      <div className="mt-2 flex justify-between text-xs text-[var(--muted)]">
+      <div className="mt-2 flex justify-between text-[13px] text-[var(--muted)]">
         {days.map((d, i) => (
           <span key={i}>{d.day}</span>
         ))}
@@ -308,7 +308,7 @@ export function Dashboard() {
             </svg>
           </span>
           <div className="min-w-0">
-            <div className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[#9a917f]">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9a917f]">
               {dateLabel}
             </div>
             <h1 className="serif text-[22px] font-semibold leading-tight">
@@ -635,13 +635,13 @@ export function Dashboard() {
                 </svg>
               </span>
               <span
-                className="text-[10.5px] font-semibold uppercase tracking-[0.2em]"
+                className="text-[11px] font-semibold uppercase tracking-[0.2em]"
                 style={{ color: ritualT.eyebrow }}
               >
                 Tägliches Ritual
               </span>
               <span
-                className="border-l pl-2 text-[10.5px] font-semibold"
+                className="border-l pl-2 text-[11px] font-semibold"
                 style={{ color: "#b08a64", borderColor: "rgba(205,138,91,0.3)" }}
               >
                 <span className="sm:hidden">6 Min</span>
@@ -653,7 +653,7 @@ export function Dashboard() {
             {ritualFilled ? (
               /* ===== Erledigt-Zustand (Recap nach Claude-Design) ===== */
               <>
-                <div className="mb-3 flex items-center gap-2 text-[12.5px] font-semibold text-[var(--green-text,#447510)]">
+                <div className="mb-3 flex items-center gap-2 text-[13px] font-semibold text-[var(--green-text,#447510)]">
                   <span
                     className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-full"
                     style={{ background: "linear-gradient(135deg,#B4ED63,#A8E84F)" }}
@@ -693,7 +693,7 @@ export function Dashboard() {
                           style={{ background: RITUAL_DOTS[i] ?? "#9BA383" }}
                         />
                         <div className="min-w-0">
-                          <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#9c6b3f]">
+                          <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#9c6b3f]">
                             {a.label}
                           </div>
                           <div
@@ -717,7 +717,7 @@ export function Dashboard() {
                 )}
 
                 {/* Serie-Zeile (award) */}
-                <div className="mb-5 flex items-center gap-2 text-[12.5px] font-medium text-[#6a5a48]">
+                <div className="mb-5 flex items-center gap-2 text-[13px] font-medium text-[#6a5a48]">
                   <span className="flex-none" style={{ color: "#DDB14B" }}>
                     <Icon d={ICONS.award} size={16} />
                   </span>
@@ -746,7 +746,7 @@ export function Dashboard() {
               /* ===== Offen-Zustand ===== */
               <>
                 <div
-                  className="mb-3 flex items-center gap-2 text-[12.5px] font-semibold"
+                  className="mb-3 flex items-center gap-2 text-[13px] font-semibold"
                   style={{ color: ritualT.eyebrow }}
                 >
                   <span
@@ -853,7 +853,7 @@ export function Dashboard() {
                         <Icon d={ICONS.pause} size={18} />
                       </span>
                       <div className="min-w-0">
-                        <div className="text-[12px] font-[650] leading-tight" style={{ color: "#8a6b00" }}>
+                        <div className="text-[13px] font-[650] leading-tight" style={{ color: "#8a6b00" }}>
                           {streak} Tage · endet heute Nacht
                         </div>
                         <div className="mt-px text-[11px]" style={{ color: "#a08020" }}>
@@ -864,7 +864,7 @@ export function Dashboard() {
                     <button
                       type="button"
                       onClick={() => setPauseSheetOpen(true)}
-                      className="inline-flex flex-none items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-[7px] text-[12px] font-[650]"
+                      className="inline-flex flex-none items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-[7px] text-[13px] font-[650]"
                       style={{
                         color: "#8a6b00",
                         background: "rgba(221,177,75,.15)",
@@ -931,7 +931,7 @@ export function Dashboard() {
                         type="button"
                         onClick={() => setMoodViz(v)}
                         aria-pressed={active}
-                        className={`rounded-full px-[13px] py-1.5 text-[12px] transition ${
+                        className={`rounded-full px-[13px] py-1.5 text-[13px] transition ${
                           active
                             ? "bg-[var(--surface)] font-semibold text-[var(--foreground)] shadow-[0_2px_6px_rgba(35,34,26,.08)]"
                             : "font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -960,7 +960,7 @@ export function Dashboard() {
                         }}
                         title={d.level === null ? "kein Eintrag" : undefined}
                       />
-                      <span className="text-xs text-[var(--muted)]">{d.day}</span>
+                      <span className="text-[13px] text-[var(--muted)]">{d.day}</span>
                     </div>
                   ))}
                 </div>
@@ -968,7 +968,7 @@ export function Dashboard() {
 
               {/* Legende: Schwer → Leicht */}
               <div className="mt-5 flex items-center gap-2.5 border-t border-[var(--border)] pt-4">
-                <span className="text-xs text-[var(--muted)]">Schwer</span>
+                <span className="text-[13px] text-[var(--muted)]">Schwer</span>
                 <div className="flex gap-1.5">
                   {MOOD_COLORS.map((c) => (
                     <span
@@ -978,7 +978,7 @@ export function Dashboard() {
                     />
                   ))}
                 </div>
-                <span className="text-xs text-[var(--muted)]">Leicht</span>
+                <span className="text-[13px] text-[var(--muted)]">Leicht</span>
               </div>
             </Card>
 
@@ -1008,7 +1008,7 @@ export function Dashboard() {
                     }}
                   />
                 </div>
-                <div className="mt-[9px] text-[12px] text-[#9a917f]">
+                <div className="mt-[9px] text-[13px] text-[#9a917f]">
                   Noch {streakLeft} {streakLeft === 1 ? "Tag" : "Tage"} bis zur{" "}
                   {streakMilestoneLabel}
                 </div>
@@ -1128,7 +1128,7 @@ export function Dashboard() {
                     {topWords.slice(0, 3).map((w) => (
                       <span
                         key={w}
-                        className="whitespace-nowrap rounded-full bg-[#F1ECE0] px-3 py-1.5 text-[12.5px] font-medium text-[#5d4f3f]"
+                        className="whitespace-nowrap rounded-full bg-[#F1ECE0] px-3 py-1.5 text-[13px] font-medium text-[#5d4f3f]"
                       >
                         {w}
                       </span>
@@ -1153,7 +1153,7 @@ export function Dashboard() {
                     </Link>
                     <Link
                       to="/teilen"
-                      className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-[7px] text-[12.5px] font-semibold text-[var(--muted)]"
+                      className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-[7px] text-[13px] font-semibold text-[var(--muted)]"
                     >
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
                         <path d="M12 14V4M8.5 7.5 12 4l3.5 3.5" />
@@ -1174,7 +1174,7 @@ export function Dashboard() {
                   />
                 </div>
                 <div className="flex flex-col justify-center gap-2.5 border-r border-[var(--border)] px-[26px]">
-                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[#9a917f]">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#9a917f]">
                     Fokus-Themen
                   </span>
                   <div className="flex gap-1.5 overflow-hidden">
@@ -1227,7 +1227,7 @@ export function Dashboard() {
                   key={f.id}
                   type="button"
                   onClick={() => setFilter(f.id)}
-                  className="rounded-full px-[14px] py-[7px] text-[12.5px] transition"
+                  className="rounded-full px-[14px] py-[7px] text-[13px] transition"
                   style={{
                     background: active ? "var(--sand)" : "transparent",
                     color: active ? "var(--foreground)" : "var(--muted)",
@@ -1306,7 +1306,7 @@ export function Dashboard() {
               <div className="text-[15px] font-[650] tracking-[-0.01em] text-[var(--foreground)]">
                 Tagesritual starten
               </div>
-              <div className="mt-px text-[12.5px] text-[#9a917f]">
+              <div className="mt-px text-[13px] text-[#9a917f]">
                 6 Minuten · ein ruhiger Anfang
               </div>
             </div>
@@ -1321,7 +1321,7 @@ export function Dashboard() {
             className="rounded-[18px] border border-dashed p-[18px] lg:p-6"
             style={{ borderColor: "rgba(35,34,26,0.16)", background: "rgba(255,255,255,0.5)" }}
           >
-            <div className="mb-3 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
+            <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
               Muster &amp; Stimmung
             </div>
             <div className="mb-3 flex items-center justify-between">

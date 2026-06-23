@@ -31,7 +31,7 @@ function Bubble({
     <div className="flex justify-start">
       <div className="max-w-[88%] rounded-2xl rounded-tl-md border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-[15px] shadow-[var(--shadow-card)]">
         <div className="mb-1.5 flex items-center justify-between gap-3">
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--muted)]">
+          <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[var(--muted)]">
             <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
             Begleiter
           </span>

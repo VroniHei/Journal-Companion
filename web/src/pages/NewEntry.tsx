@@ -95,7 +95,7 @@ export function NewEntry() {
               onChange={setText}
               onActivate={() => setUsedVoice(true)}
             />
-            <span className="text-xs text-[var(--muted)]">
+            <span className="text-[13px] text-[var(--muted)]">
               Sprechen statt tippen (Chrome/Edge)
             </span>
           </div>

@@ -519,7 +519,7 @@ export function ShareCard() {
           className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3.5 py-3 text-[15px] leading-[1.5] outline-none focus:border-[var(--accent)]"
         />
         <div className="mt-2 flex items-center justify-between gap-3">
-          <span className="text-[12px] text-[#9a917f]">
+          <span className="text-[13px] text-[#9a917f]">
             {aiError ?? "Ein Wort mit *Sternchen* wird hervorgehoben."}
           </span>
           <DictationButton
@@ -578,7 +578,7 @@ export function ShareCard() {
               >
                 <span className={`rounded-[4px] border border-[rgba(35,34,26,.16)] bg-[var(--sand)] ${f.box}`} />
                 <span
-                  className="text-[12px]"
+                  className="text-[13px]"
                   style={{
                     fontWeight: active ? 600 : 500,
                     color: active ? "var(--foreground)" : "var(--muted)",

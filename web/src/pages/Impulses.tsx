@@ -108,7 +108,7 @@ export function Impulses() {
             <span className="block text-[15px] font-[650] text-[var(--foreground)]">
               {pack.name}
             </span>
-            <span className="mt-px block text-[12.5px] text-[#9a917f]">
+            <span className="mt-px block text-[13px] text-[#9a917f]">
               {pack.subtitle} · {pack.prompts.length} Impulse
             </span>
           </span>
@@ -162,7 +162,7 @@ export function Impulses() {
 
       {primary && (
         <>
-          <div className="inline-flex items-center gap-[7px] rounded-full bg-[#F1ECE0] px-[13px] py-1.5 pl-[11px] text-[12.5px] font-medium text-[#5d4f3f]">
+          <div className="inline-flex items-center gap-[7px] rounded-full bg-[#F1ECE0] px-[13px] py-1.5 pl-[11px] text-[13px] font-medium text-[#5d4f3f]">
             <span className="h-[7px] w-[7px] rounded-full bg-[#CD8A5B]" />
             Passend zu deinem Fokus: {settings.focusArea}
           </div>

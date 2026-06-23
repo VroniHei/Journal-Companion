@@ -20,7 +20,7 @@ export function SessionClose({
           Eintrag für heute schließen
         </Button>
       </div>
-      {note && <p className="text-xs italic text-[var(--muted)]">{note}</p>}
+      {note && <p className="text-[13px] italic text-[var(--muted)]">{note}</p>}
     </Card>
   );
 }

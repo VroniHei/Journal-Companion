@@ -75,7 +75,7 @@ export function Routine() {
             aria-hidden="true"
           />
           <div className="relative">
-            <div className="mb-2.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[#9c6b3f]">
+            <div className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9c6b3f]">
               Dein Wechsel
             </div>
             <div className="flex items-center gap-3">
@@ -139,7 +139,7 @@ export function Routine() {
             <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
               Diese Woche
             </span>
-            <span className="text-[12.5px] text-[#9a917f]">{doneCount} von 7 ersetzt</span>
+            <span className="text-[13px] text-[#9a917f]">{doneCount} von 7 ersetzt</span>
           </div>
           <div className="flex justify-between">
             {week.map((d) => (
@@ -161,11 +161,11 @@ export function Routine() {
                     </svg>
                   )}
                 </span>
-                <span className="text-[10.5px] text-[#9a917f]">{d.label}</span>
+                <span className="text-[11px] text-[#9a917f]">{d.label}</span>
               </button>
             ))}
           </div>
-          <p className="mt-3 text-[12px] text-[#9a917f]">
+          <p className="mt-3 text-[13px] text-[#9a917f]">
             Tippe einen Tag an, wenn du die neue Routine gewählt hast. Kein Muss.
           </p>
         </div>

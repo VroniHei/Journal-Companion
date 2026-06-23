@@ -31,7 +31,7 @@ function resultToReflectionText(r: VoiceReflectResponse): string {
 function Block({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
-      <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+      <p className="mb-1 text-[13px] font-medium uppercase tracking-wide text-[var(--muted)]">
         {title}
       </p>
       {children}
@@ -151,7 +151,7 @@ export function VoiceCheckin() {
       {crisis && (
         <Card className="border-l-2 border-l-[var(--danger)]">
           <p
-            className="mb-1 text-xs font-medium uppercase tracking-wide"
+            className="mb-1 text-[13px] font-medium uppercase tracking-wide"
             style={{ color: "var(--danger)" }}
           >
             Schutzhinweis
@@ -163,7 +163,7 @@ export function VoiceCheckin() {
       {result && (
         <Card className="space-y-4">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+            <p className="text-[13px] font-medium uppercase tracking-wide text-[var(--muted)]">
               Auswertung
             </p>
             <SpeakButton text={resultToReflectionText(result)} />
@@ -212,7 +212,7 @@ export function VoiceCheckin() {
 
           {result.dontDoNow.length > 0 && (
             <div className="rounded-lg border-l-2 border-l-[var(--accent)] bg-[var(--surface-2)] p-3">
-              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--accent-text)]">
+              <p className="mb-1 text-[13px] font-medium uppercase tracking-wide text-[var(--accent-text)]">
                 Was jetzt eher nicht hilfreich wäre
               </p>
               <ul className="list-disc space-y-1 pl-5 text-sm">

@@ -57,7 +57,7 @@ export function Progress() {
               key={r.id}
               type="button"
               onClick={() => setRange(r.id)}
-              className="flex-1 rounded-full py-2 text-center text-[12.5px] transition"
+              className="flex-1 rounded-full py-2 text-center text-[13px] transition"
               style={{
                 background: active ? "var(--surface)" : "transparent",
                 color: active ? "var(--foreground)" : "var(--muted)",
@@ -79,7 +79,7 @@ export function Progress() {
             "radial-gradient(280px 160px at 100% 0%, rgba(168,232,79,.12), transparent 62%), var(--surface)",
         }}
       >
-        <div className="mb-2 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
+        <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
           {story.range}
         </div>
         <p
@@ -110,7 +110,7 @@ export function Progress() {
         </svg>
         <div className="mt-1 flex justify-between">
           {buckets.map((b, i) => (
-            <span key={i} className="text-[10.5px] text-[#9a917f]">
+            <span key={i} className="text-[11px] text-[#9a917f]">
               {b.label}
             </span>
           ))}
@@ -161,7 +161,7 @@ export function Progress() {
                   <div className="text-[14.5px] font-semibold text-[var(--foreground)]">
                     {up ? `„${s.word}" kommt häufiger` : `„${s.word}" seltener`}
                   </div>
-                  <div className="mt-px text-[12.5px] text-[#9a917f]">
+                  <div className="mt-px text-[13px] text-[#9a917f]">
                     {s.from}× → {s.to}× pro Monat
                   </div>
                 </div>

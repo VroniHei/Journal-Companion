@@ -37,7 +37,7 @@ export function ChipSelect({
           )}
         </span>
         {multi && count > 0 && (
-          <span className="rounded-full bg-[var(--accent-soft)] px-2 py-0.5 text-xs font-medium text-[var(--accent-text)]">
+          <span className="rounded-full bg-[var(--accent-soft)] px-2 py-0.5 text-[13px] font-medium text-[var(--accent-text)]">
             {count} gewählt
           </span>
         )}

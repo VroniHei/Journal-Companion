@@ -254,7 +254,7 @@ export function Onboarding() {
                     </span>
                     <div className="min-w-0 flex-1">
                       <div className="text-[15px] font-[650] tracking-[-0.01em] text-[#23221A]">{d.label}</div>
-                      <div className="mt-px text-[12.5px] text-[#9a917f]">{d.micro}</div>
+                      <div className="mt-px text-[13px] text-[#9a917f]">{d.micro}</div>
                     </div>
                     {/* Zeit-Chip: antippbar, öffnet native Uhrzeit-Auswahl */}
                     <label
@@ -289,7 +289,7 @@ export function Onboarding() {
               })}
             </div>
 
-            <div className="mt-3 flex items-center gap-1.5 text-[12.5px] text-[#9a917f]">
+            <div className="mt-3 flex items-center gap-1.5 text-[13px] text-[#9a917f]">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="13" height="13">
                 <circle cx="12" cy="12" r="8.5" />
                 <path d="M12 8v4l3 2" />

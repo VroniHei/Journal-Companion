@@ -55,7 +55,7 @@ export function Relief() {
         </div>
 
         <div className="mt-1.5">
-          <div className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[#7a6b96]">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#7a6b96]">
             Gerade ist viel
           </div>
           <h1 className="serif mt-2 text-[26px] font-semibold leading-[1.16] text-[#3a3247]">

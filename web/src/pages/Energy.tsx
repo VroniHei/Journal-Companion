@@ -68,7 +68,7 @@ export function Energy() {
     <section className="space-y-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="mb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[#9a917f]">
+          <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9a917f]">
             {dateLabel}
           </div>
           <h1 className="serif text-[26px] font-semibold leading-tight">
@@ -113,7 +113,7 @@ export function Energy() {
                 />
                 {l.label && (
                   <span
-                    className="text-[10.5px]"
+                    className="text-[11px]"
                     style={{
                       color: active ? "#5d4f3f" : "#9a917f",
                       fontWeight: active ? 600 : 400,
@@ -150,7 +150,7 @@ export function Energy() {
             borderColor: "rgba(110,155,44,.2)",
           }}
         >
-          <div className="mb-2 inline-flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[#447510]">
+          <div className="mb-2 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#447510]">
             <svg viewBox="0 0 24 24" fill="none" stroke="#6E9B2C" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
               <path d="M13 2 4 14h7l-1 8 9-12h-7z" />
             </svg>
@@ -164,7 +164,7 @@ export function Energy() {
 
       {/* 7-Tage-Historie */}
       <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface)] p-[16px_18px] shadow-[var(--shadow-card)]">
-        <div className="mb-3 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+        <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
           Energie · 7 Tage
         </div>
         <div className="flex items-end justify-between">
@@ -177,7 +177,7 @@ export function Energy() {
                   border: d.level ? "none" : "1.5px dashed rgba(35,34,26,.16)",
                 }}
               />
-              <span className="text-[10.5px] text-[#9a917f]">{d.label}</span>
+              <span className="text-[11px] text-[#9a917f]">{d.label}</span>
             </div>
           ))}
         </div>

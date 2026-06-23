@@ -148,7 +148,7 @@ export function WeeklyLetter() {
               aria-hidden="true"
             />
             <div className="relative">
-              <div className="mb-3.5 text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[#9c6b3f]">
+              <div className="mb-3.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9c6b3f]">
                 Woche · {rangeLabel(days)}
               </div>
               <p className="mb-3.5 text-[17px] leading-[1.6] text-[#3a2e22]">
@@ -167,7 +167,7 @@ export function WeeklyLetter() {
                     borderColor: "rgba(205,138,91,.2)",
                   }}
                 >
-                  <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9c6b3f]">
+                  <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9c6b3f]">
                     Eine Frage für nächste Woche
                   </div>
                   <p className="lead text-[15.5px] leading-[1.5] text-[var(--foreground)]">

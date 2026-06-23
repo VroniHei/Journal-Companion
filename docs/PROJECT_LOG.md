@@ -5,6 +5,24 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-23 — App-weiter Mindestschriftgrößen-Pass (UI/UX/Lesbarkeit)
+
+**Was:** Klare Floors gesetzt und app-weit durchgezogen (31 Dateien, 1:1-Swaps):
+- **Keine Schrift < 11px** mehr: `text-[10px]`/`text-[10.5px]` → `text-[11px]`.
+- **Kleine Lesetexte/Chips ≥ 13px:** `text-[12px]`/`text-[12.5px]` und das Tailwind-
+  `text-xs` (=12px) → `text-[13px]`.
+- **Tab-Labels ≥ 11,5px** (`Layout.tsx`, APP-STYLE §14).
+- Unverändert: Uppercase-Eyebrows/Labels bei 11px (Label-Floor), `text-sm`=14px
+  (Body), Headlines, sowie die `cqw`-Container-Query-Größen der Share-Karten-
+  Vorschau (skalieren bewusst mit der Kartengröße).
+
+**Warum:** Nutzer-/UI-UX-Wunsch — manche Mobile-Texte waren zu klein; jetzt früh
+einen sauberen, konsistenten Mindestgrößen-Standard verankert.
+
+**Status:** `build`/`lint`/`typecheck` grün; keine fixe Schrift mehr unter 11px.
+
+---
+
 ## 2026-06-23 — Kontroll-Durchgang: Hero-Fokus-Chip, Mobile-Layout, Brand-Voice, Schriftgrößen
 
 **Was:**

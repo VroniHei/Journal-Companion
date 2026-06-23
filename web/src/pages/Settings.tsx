@@ -28,7 +28,7 @@ function Row({
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-sm font-medium">{label}</span>
-      {hint && <span className="text-xs text-[var(--muted)]">{hint}</span>}
+      {hint && <span className="text-[13px] text-[var(--muted)]">{hint}</span>}
       {children}
     </div>
   );
@@ -301,7 +301,7 @@ export function Settings() {
           />
           <span>Kostenlose Browser-Spracherkennung bevorzugen</span>
         </label>
-        <p className="text-xs text-[var(--muted)]">
+        <p className="text-[13px] text-[var(--muted)]">
           Empfohlen. Nutzt die gratis Spracherkennung deines Browsers, wo möglich
           (Desktop Chrome/Edge, Android). Die natürliche ElevenLabs-Erkennung
           (verbraucht Guthaben) springt nur ein, wenn der Browser keine
@@ -334,7 +334,7 @@ export function Settings() {
                   ? "Synchronisiere…"
                   : "Jetzt synchronisieren"}
               </Button>
-              <span aria-live="polite" className="text-xs text-[var(--muted)]">
+              <span aria-live="polite" className="text-[13px] text-[var(--muted)]">
                 {sync.state === "error"
                   ? `Fehler: ${sync.error}`
                   : sync.lastSync
@@ -377,7 +377,7 @@ export function Settings() {
           onChange={onImportFile}
           className="hidden"
         />
-        <p className="text-xs text-[var(--muted)]">
+        <p className="text-[13px] text-[var(--muted)]">
           Import führt zusammen: Vorhandenes bleibt erhalten, nur Neueres aus der
           Sicherung wird ergänzt. Einstellungen werden nicht überschrieben.
         </p>
@@ -392,7 +392,7 @@ export function Settings() {
         Änderungen werden automatisch gesichert.
       </div>
 
-      <p className="text-xs text-[var(--muted)]">
+      <p className="text-[13px] text-[var(--muted)]">
         Diese App ersetzt keine Therapie. Sie unterstützt beim Sortieren,
         Reflektieren und Stabilisieren. Bei akuter Gefahr: 112 ·
         TelefonSeelsorge 0800 111 0 111.

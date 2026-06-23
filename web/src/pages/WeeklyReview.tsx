@@ -145,7 +145,7 @@ export function WeeklyReview() {
             />
           </div>
           <div className="flex flex-1 flex-col justify-center p-7">
-            <div className="mb-2 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[#9c6b3f]">
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9c6b3f]">
               Im Kern
             </div>
             <p className="lead text-[19px] leading-[1.5] text-[var(--foreground)]">
@@ -166,19 +166,19 @@ export function WeeklyReview() {
               <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--green-deep,#6E9B2C)]">
                 {inRange.length}
               </div>
-              <div className="text-[12.5px] text-[var(--muted)]">Einträge</div>
+              <div className="text-[13px] text-[var(--muted)]">Einträge</div>
             </div>
             <div className="px-4 first:pl-0 last:pr-0">
               <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--foreground)]">
                 {streak}
               </div>
-              <div className="text-[12.5px] text-[var(--muted)]">Tage Serie</div>
+              <div className="text-[13px] text-[var(--muted)]">Tage Serie</div>
             </div>
             <div className="px-4 first:pl-0 last:pr-0">
               <div className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] text-[var(--clay,#CD8A5B)]">
                 {ritualDays}
               </div>
-              <div className="text-[12.5px] text-[var(--muted)]">Ritual-Tage</div>
+              <div className="text-[13px] text-[var(--muted)]">Ritual-Tage</div>
             </div>
           </div>
           <MoodCard
@@ -311,7 +311,7 @@ export function WeeklyReview() {
             >
               Als Markdown
             </Button>
-            <span className="text-xs text-[var(--muted)]">
+            <span className="text-[13px] text-[var(--muted)]">
               Gespeicherte Muster fließen als Hintergrund in spätere Reflexionen.
             </span>
           </div>
@@ -325,7 +325,7 @@ export function WeeklyReview() {
           </h2>
           {saved.slice(0, 6).map((p) => (
             <Card key={p.id} className="space-y-2">
-              <div className="text-xs text-[var(--muted)]">
+              <div className="text-[13px] text-[var(--muted)]">
                 {formatDate(p.periodStart)} – {formatDate(p.periodEnd)}
               </div>
               <p className="line-clamp-3 whitespace-pre-wrap text-sm">

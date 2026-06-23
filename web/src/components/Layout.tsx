@@ -99,7 +99,7 @@ export function Layout() {
         </span>
         <div className="min-w-0">
           <div className="truncate text-sm font-semibold">{name}</div>
-          <div className="text-xs text-[var(--muted)]">
+          <div className="text-[13px] text-[var(--muted)]">
             {sync.state === "off" ? "Alles bleibt lokal" : "Geräte abgeglichen"}
           </div>
         </div>
@@ -239,7 +239,7 @@ export function Layout() {
         <div className={contentClass}>
           <Outlet />
         </div>
-        <footer className="mt-12 text-center text-xs text-[var(--muted)]">
+        <footer className="mt-12 text-center text-[13px] text-[var(--muted)]">
           Kein Ersatz für Therapie ·{" "}
           {sync.state === "off"
             ? "Deine Einträge bleiben lokal auf diesem Gerät."
@@ -276,7 +276,7 @@ export function Layout() {
                   <Icon d={item.icon} size={21} />
                 </span>
                 <span
-                  className={`text-[10.5px] ${
+                  className={`text-[11.5px] ${
                     isActive
                       ? "font-semibold text-[var(--foreground)]"
                       : "font-medium text-[var(--muted)]"

@@ -47,7 +47,7 @@ function LoopCard({ loop }: { loop: OpenLoop }) {
             </p>
           )}
         </div>
-        <span className="shrink-0 text-xs text-[var(--muted)]">
+        <span className="shrink-0 text-[13px] text-[var(--muted)]">
           {formatShort(loop.createdAt)}
         </span>
       </div>
@@ -208,7 +208,7 @@ function DecisionCard({ d }: { d: Decision }) {
     <Card className="space-y-3">
       <div className="flex items-start justify-between gap-3">
         <h3 className="min-w-0 font-medium leading-snug">{d.question}</h3>
-        <span className="shrink-0 text-xs text-[var(--muted)]">
+        <span className="shrink-0 text-[13px] text-[var(--muted)]">
           {formatShort(d.createdAt)}
         </span>
       </div>
@@ -234,7 +234,7 @@ function DecisionCard({ d }: { d: Decision }) {
       {!open && (
         <div className="space-y-2">
           <span
-            className="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium"
+            className="inline-flex rounded-full px-2.5 py-0.5 text-[13px] font-medium"
             style={{ background: badge.bg, color: badge.color }}
           >
             Rückblick: {badge.label}

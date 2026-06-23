@@ -160,7 +160,7 @@ export function FabSheet({ open, onClose }: { open: boolean; onClose: () => void
                   {o.title}
                 </span>
                 <span
-                  className="mt-0.5 block text-[12.5px]"
+                  className="mt-0.5 block text-[13px]"
                   style={{ color: o.highlight ? "#6a7152" : "#9a917f" }}
                 >
                   {o.subtitle}

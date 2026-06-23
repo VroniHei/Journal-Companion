@@ -60,7 +60,7 @@ export function DictationButton({
   if (!useServer && !browser.supported && !server.supported) {
     return (
       <span
-        className={`inline-flex items-center gap-1.5 text-xs text-[var(--muted)] ${className}`}
+        className={`inline-flex items-center gap-1.5 text-[13px] text-[var(--muted)] ${className}`}
         title="Spracheingabe wird in diesem Browser nicht unterstützt (am besten Chrome oder Edge)."
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="13" height="13" aria-hidden="true">
@@ -136,7 +136,7 @@ export function DictationButton({
       </button>
 
       {useServer && active && (
-        <span className="flex items-center gap-2 text-xs text-[var(--muted)]">
+        <span className="flex items-center gap-2 text-[13px] text-[var(--muted)]">
           <span className="relative h-1.5 w-16 overflow-hidden rounded-full bg-[var(--surface-2)]">
             <span
               className="absolute inset-y-0 left-0 rounded-full bg-[var(--danger)]"
@@ -147,17 +147,17 @@ export function DictationButton({
         </span>
       )}
       {useServer && active && seconds >= 60 && (
-        <span className="text-xs text-[var(--clay,#8a4f2a)]">
+        <span className="text-[13px] text-[var(--clay,#8a4f2a)]">
           Aufnahme wird lang – das verbraucht Sprach-Guthaben.
         </span>
       )}
       {busy && (
-        <span aria-live="polite" className="text-xs text-[var(--muted)]">
+        <span aria-live="polite" className="text-[13px] text-[var(--muted)]">
           Transkribiere auf Deutsch…
         </span>
       )}
       {err && (
-        <span role="alert" className="text-xs text-[var(--danger)]">
+        <span role="alert" className="text-[13px] text-[var(--danger)]">
           {err}
         </span>
       )}
@@ -168,7 +168,7 @@ export function DictationButton({
             setForceBrowser(true);
             browser.toggle();
           }}
-          className="text-xs font-medium text-[var(--accent-text)] hover:underline"
+          className="text-[13px] font-medium text-[var(--accent-text)] hover:underline"
         >
           Stattdessen Browser-Mikrofon nutzen
         </button>

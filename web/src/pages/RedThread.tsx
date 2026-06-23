@@ -97,7 +97,7 @@ export function RedThread() {
                     <span className="text-[16px] font-[650] tracking-[-0.01em] text-[var(--foreground)]">
                       {c.title}
                     </span>
-                    <span className="flex-none text-[12px] text-[#9a917f]">
+                    <span className="flex-none text-[13px] text-[#9a917f]">
                       {c.count} Einträge
                     </span>
                   </div>

@@ -377,7 +377,7 @@ export function Ritual() {
               </svg>
             </span>
             <div
-              className="mt-5 text-[10px] font-semibold uppercase tracking-[0.2em]"
+              className="mt-5 text-[11px] font-semibold uppercase tracking-[0.2em]"
               style={{ color: theme.eyebrow }}
             >
               Tagesritual · {period === "morning" ? "Morgen" : "Abend"}
@@ -544,7 +544,7 @@ export function Ritual() {
         <div className="relative">
           <div className="flex items-center justify-between gap-3">
             <div
-              className="text-[10px] font-semibold uppercase tracking-[0.2em]"
+              className="text-[11px] font-semibold uppercase tracking-[0.2em]"
               style={{ color: theme.eyebrow }}
             >
               {dateLabel}
@@ -561,7 +561,7 @@ export function Ritual() {
                     key={p}
                     type="button"
                     onClick={() => switchPeriod(p)}
-                    className="rounded-full px-3 py-1 text-[12px] transition"
+                    className="rounded-full px-3 py-1 text-[13px] transition"
                     style={{
                       background: active ? "var(--surface)" : "transparent",
                       color: active ? theme.title : theme.eyebrow,
@@ -680,7 +680,7 @@ export function Ritual() {
             <span className="text-sm text-[var(--muted)]">Gespeichert ✓</span>
           )}
         </div>
-        <p className="text-xs text-[var(--muted)]">
+        <p className="text-[13px] text-[var(--muted)]">
           Deine Eingaben werden auch automatisch gesichert, sobald du ein Feld
           verlässt.
         </p>

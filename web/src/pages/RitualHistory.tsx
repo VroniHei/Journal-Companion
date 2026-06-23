@@ -77,7 +77,7 @@ export function RitualHistory() {
                 <div className="space-y-2">
                   {items.slice(0, 4).map((a) => (
                     <div key={a.label}>
-                      <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#9a8a73]">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#9a8a73]">
                         {a.label}
                       </div>
                       <div className="mt-0.5 line-clamp-2 text-[14px] leading-snug text-[#4f4434]">

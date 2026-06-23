@@ -19,7 +19,7 @@ export function ReflectionView({
     >
       <div className="mb-2 flex items-center justify-between gap-3">
         <p
-          className="text-xs font-medium uppercase tracking-wide"
+          className="text-[13px] font-medium uppercase tracking-wide"
           style={{ color }}
         >
           {crisis ? "Schutzhinweis" : "Reflexion des Begleiters"}

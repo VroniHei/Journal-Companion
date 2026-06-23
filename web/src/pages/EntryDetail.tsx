@@ -44,11 +44,11 @@ function MetaRow({ label, values }: { label: string; values: string[] }) {
   if (values.length === 0) return null;
   return (
     <div className="flex flex-wrap items-baseline gap-2">
-      <span className="text-xs text-[var(--muted)]">{label}:</span>
+      <span className="text-[13px] text-[var(--muted)]">{label}:</span>
       {values.map((v) => (
         <span
           key={v}
-          className="rounded-full border border-[var(--border)] px-2.5 py-0.5 text-xs"
+          className="rounded-full border border-[var(--border)] px-2.5 py-0.5 text-[13px]"
         >
           {v}
         </span>
@@ -210,7 +210,7 @@ export function EntryDetail() {
               type="button"
               aria-selected={active}
               onClick={() => setTab(t.key)}
-              className="flex-1 rounded-full py-2 text-center text-[12.5px] transition"
+              className="flex-1 rounded-full py-2 text-center text-[13px] transition"
               style={{
                 background: active ? "var(--surface)" : "transparent",
                 color: active ? "var(--foreground)" : "var(--muted)",
@@ -288,7 +288,7 @@ export function EntryDetail() {
                 crisis={!reflecting && e.crisisFlag}
               />
               {!reflecting && e.aiReflection && messages.length > 0 && (
-                <p className="text-xs text-[var(--muted)]">
+                <p className="text-[13px] text-[var(--muted)]">
                   Bezieht Eintrag + Gespräch ein. „Mit Gespräch neu reflektieren"
                   greift die neuen Themen auf.
                 </p>
@@ -310,7 +310,7 @@ export function EntryDetail() {
                         <li key={i}>
                           <details className="group rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3.5 py-2.5">
                             <summary className="flex cursor-pointer items-center gap-2.5 text-sm marker:content-['']">
-                              <span className="shrink-0 text-xs tabular-nums text-[var(--muted)]">
+                              <span className="shrink-0 text-[13px] tabular-nums text-[var(--muted)]">
                                 {formatShort(p.at)}
                               </span>
                               <span className="min-w-0 flex-1 truncate text-[var(--foreground)]">
@@ -372,7 +372,7 @@ export function EntryDetail() {
                     ? "Mit Gespräch neu reflektieren"
                     : "Mit Gespräch reflektieren"}
               </Button>
-              <p className="text-xs text-[var(--muted)]">
+              <p className="text-[13px] text-[var(--muted)]">
                 Fasst Eintrag + Gespräch zu einer aktualisierten Reflexion
                 zusammen (öffnet den Reflexion-Tab).
               </p>

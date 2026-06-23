@@ -70,7 +70,7 @@ export function MoodCard({
                 key={v}
                 type="button"
                 onClick={() => setView(v)}
-                className="rounded-full px-[13px] py-1.5 text-[12px] transition"
+                className="rounded-full px-[13px] py-1.5 text-[13px] transition"
                 style={{
                   background: active ? "var(--surface)" : "transparent",
                   color: active ? "var(--foreground)" : "var(--muted)",
@@ -96,7 +96,7 @@ export function MoodCard({
                   border: d.value != null ? "none" : "1.5px dashed rgba(35,34,26,.16)",
                 }}
               />
-              <span className="text-[10.5px] text-[#9a917f]">{d.day}</span>
+              <span className="text-[11px] text-[#9a917f]">{d.day}</span>
             </div>
           ))}
         </div>
@@ -149,7 +149,7 @@ export function MoodCard({
           {showDayLabels && (
             <div className="mt-1 flex justify-between">
               {days.map((d, i) => (
-                <span key={i} className="text-[10.5px] text-[#9a917f]">
+                <span key={i} className="text-[11px] text-[#9a917f]">
                   {d.day}
                 </span>
               ))}

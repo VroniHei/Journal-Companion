@@ -26,7 +26,7 @@ export function SpeakButton({
       onClick={() => (speaking ? stop() : speak(stripMarkdown(text)))}
       aria-pressed={speaking}
       aria-label={speaking ? "Vorlesen stoppen" : "Vorlesen"}
-      className={`inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-2.5 py-1 text-xs text-[var(--muted)] transition hover:border-[var(--foreground)] hover:text-[var(--foreground)] ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-2.5 py-1 text-[13px] text-[var(--muted)] transition hover:border-[var(--foreground)] hover:text-[var(--foreground)] ${className}`}
     >
       <span aria-hidden="true">{speaking ? "■" : "🔊"}</span>
       {speaking ? "Stopp" : "Vorlesen"}

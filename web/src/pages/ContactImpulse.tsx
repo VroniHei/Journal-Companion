@@ -167,7 +167,7 @@ export function ContactImpulse() {
       {crisis && (
         <Card className="border-l-2 border-l-[var(--danger)]">
           <p
-            className="mb-1 text-xs font-medium uppercase tracking-wide"
+            className="mb-1 text-[13px] font-medium uppercase tracking-wide"
             style={{ color: "var(--danger)" }}
           >
             Schutzhinweis
@@ -233,7 +233,7 @@ export function ContactImpulse() {
 
           {result.draftMessage && (
             <div className="rounded-lg border-l-2 border-l-[var(--accent)] bg-[var(--surface-2)] p-3">
-              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--accent-text)]">
+              <p className="mb-1 text-[13px] font-medium uppercase tracking-wide text-[var(--accent-text)]">
                 Würdevolle Kurzversion
               </p>
               <p className="whitespace-pre-wrap text-sm">{result.draftMessage}</p>
@@ -274,7 +274,7 @@ export function ContactImpulse() {
             return (
               <Card key={d.id} className="space-y-2">
                 <p className="whitespace-pre-wrap text-sm">{d.text}</p>
-                <p className="text-xs text-[var(--muted)]">
+                <p className="text-[13px] text-[var(--muted)]">
                   {ready
                     ? "Wartezeit vorbei – du kannst jetzt mit Abstand draufschauen."
                     : `Frühestens prüfen ab ${formatTime(d.recheckAt)}.`}

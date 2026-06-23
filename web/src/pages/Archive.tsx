@@ -46,10 +46,10 @@ function CompactRow({ e, dateMode }: { e: JournalEntry; dateMode: "weekday" | "d
           {entryTitle(e)}
         </div>
         {prev && (
-          <div className="mt-px truncate text-[12.5px] text-[#9a917f]">{prev}</div>
+          <div className="mt-px truncate text-[13px] text-[#9a917f]">{prev}</div>
         )}
       </div>
-      <span className="flex-none text-[12px] text-[#9a917f]">
+      <span className="flex-none text-[13px] text-[#9a917f]">
         {rowDate(e.createdAt, dateMode)}
       </span>
     </Link>
@@ -142,7 +142,7 @@ export function Archive() {
           <h2 className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
             {label}
           </h2>
-          <span className="text-[12px] text-[#9a917f]">
+          <span className="text-[13px] text-[#9a917f]">
             {items.length} {items.length === 1 ? "Eintrag" : "Einträge"}
           </span>
         </div>

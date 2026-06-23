@@ -52,7 +52,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <div className="text-2xl font-semibold">{value}</div>
-      <div className="text-xs text-[var(--muted)]">{label}</div>
+      <div className="text-[13px] text-[var(--muted)]">{label}</div>
     </div>
   );
 }
@@ -103,7 +103,7 @@ function FieldList({ title, items }: { title: string; items: string[] }) {
   if (!items.length) return null;
   return (
     <div>
-      <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+      <p className="mb-1 text-[13px] font-medium uppercase tracking-wide text-[var(--muted)]">
         {title}
       </p>
       <ul className="space-y-1 text-sm">
@@ -133,7 +133,7 @@ function PatternCard({ p }: { p: PatternInsight }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="text-base font-semibold">{p.title}</h3>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-[13px] text-[var(--muted)]">
             <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5">
               {TYPE_LABEL[p.patternType]}
             </span>
@@ -146,7 +146,7 @@ function PatternCard({ p }: { p: PatternInsight }) {
 
       {p.typicalSequence.length > 0 && (
         <div>
-          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+          <p className="mb-1 text-[13px] font-medium uppercase tracking-wide text-[var(--muted)]">
             Typischer Ablauf
           </p>
           <ol className="list-decimal space-y-1 pl-5 text-sm">
@@ -162,7 +162,7 @@ function PatternCard({ p }: { p: PatternInsight }) {
       <div className="grid gap-4 sm:grid-cols-2">
         {p.helpfulSide && (
           <div>
-            <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--accent-text)]">
+            <p className="mb-1 text-[13px] font-medium uppercase tracking-wide text-[var(--accent-text)]">
               Hilfreiche Seite
             </p>
             <p className="text-sm">{p.helpfulSide}</p>
@@ -170,7 +170,7 @@ function PatternCard({ p }: { p: PatternInsight }) {
         )}
         {p.difficultSide && (
           <div>
-            <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+            <p className="mb-1 text-[13px] font-medium uppercase tracking-wide text-[var(--muted)]">
               Schwierige Seite
             </p>
             <p className="text-sm">{p.difficultSide}</p>
@@ -182,7 +182,7 @@ function PatternCard({ p }: { p: PatternInsight }) {
 
       {p.dontDoNow.length > 0 && (
         <div className="rounded-lg border-l-2 border-l-[var(--danger)] bg-[var(--surface-2)] p-3">
-          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--danger)]">
+          <p className="mb-1 text-[13px] font-medium uppercase tracking-wide text-[var(--danger)]">
             Was jetzt eher nicht hilft
           </p>
           <ul className="space-y-1 text-sm">
@@ -195,7 +195,7 @@ function PatternCard({ p }: { p: PatternInsight }) {
 
       {p.suggestedExperiment && (
         <div>
-          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+          <p className="mb-1 text-[13px] font-medium uppercase tracking-wide text-[var(--muted)]">
             Kleines Experiment
           </p>
           <p className="text-sm">{p.suggestedExperiment}</p>
@@ -211,7 +211,7 @@ function PatternCard({ p }: { p: PatternInsight }) {
       {/* Feedback + Notizen */}
       <div className="space-y-3 border-t border-[var(--border)] pt-3">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs text-[var(--muted)]">Passt dieses Muster?</span>
+          <span className="text-[13px] text-[var(--muted)]">Passt dieses Muster?</span>
           {FEEDBACKS.map((f) => {
             const active = p.userFeedback === f.key;
             return (
@@ -232,7 +232,7 @@ function PatternCard({ p }: { p: PatternInsight }) {
           <button
             type="button"
             onClick={() => deletePatternInsight(p.id)}
-            className="ml-auto text-xs text-[var(--muted)] hover:text-[var(--danger)]"
+            className="ml-auto text-[13px] text-[var(--muted)] hover:text-[var(--danger)]"
           >
             Entfernen
           </button>
@@ -371,7 +371,7 @@ export function Patterns() {
               {words.slice(0, 3).map((w) => (
                 <span
                   key={w.word}
-                  className="whitespace-nowrap rounded-full bg-[var(--sand)] px-[11px] py-1 text-[12px] font-medium text-[var(--foreground)]"
+                  className="whitespace-nowrap rounded-full bg-[var(--sand)] px-[11px] py-1 text-[13px] font-medium text-[var(--foreground)]"
                 >
                   {w.word}
                 </span>
@@ -396,7 +396,7 @@ export function Patterns() {
               </Link>
               <Link
                 to="/teilen"
-                className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-[7px] text-[12px] font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)]"
+                className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-[7px] text-[13px] font-semibold text-[var(--muted)] transition hover:text-[var(--foreground)]"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
                   <path d="M12 14V4M8.5 7.5 12 4l3.5 3.5" />
@@ -434,7 +434,7 @@ export function Patterns() {
               {words.map((w) => (
                 <span
                   key={w.word}
-                  className="rounded-full bg-[var(--sand)] px-[11px] py-1 text-[12px] font-medium text-[var(--foreground)]"
+                  className="rounded-full bg-[var(--sand)] px-[11px] py-1 text-[13px] font-medium text-[var(--foreground)]"
                 >
                   {w.word}
                 </span>
@@ -511,7 +511,7 @@ export function Patterns() {
                 <li key={m.id} className="flex items-baseline gap-2">
                   <span style={{ color: "var(--accent-text)" }}>•</span>
                   <span>{m.label}</span>
-                  <span className="text-xs text-[var(--muted)]">
+                  <span className="text-[13px] text-[var(--muted)]">
                     {formatDateTime(m.createdAt)}
                   </span>
                 </li>
@@ -530,7 +530,7 @@ export function Patterns() {
             wie sich Themen, Gefühle, Impulse und Handlungen verketten.
           </p>
           <div className="flex flex-wrap items-end gap-3">
-            <label className="flex flex-col gap-1 text-xs text-[var(--muted)]">
+            <label className="flex flex-col gap-1 text-[13px] text-[var(--muted)]">
               Zeitraum
               <select
                 className={selectClass}
@@ -542,7 +542,7 @@ export function Patterns() {
                 <option value="alle">alle Einträge</option>
               </select>
             </label>
-            <label className="flex flex-col gap-1 text-xs text-[var(--muted)]">
+            <label className="flex flex-col gap-1 text-[13px] text-[var(--muted)]">
               Tiefe
               <select
                 className={selectClass}
@@ -583,7 +583,7 @@ export function Patterns() {
             {a.highIntensity.slice(0, 8).map((e) => (
               <Link key={e.id} to={`/eintrag/${e.id}`} className="block">
                 <Card className="lift hover:border-[var(--accent)]">
-                  <div className="text-xs text-[var(--muted)]">
+                  <div className="text-[13px] text-[var(--muted)]">
                     {formatDateTime(e.createdAt)} · Intensität {e.intensity}
                   </div>
                   <p className="line-clamp-1 text-sm">{e.text}</p>
