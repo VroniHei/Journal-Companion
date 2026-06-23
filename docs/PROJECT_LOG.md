@@ -1243,3 +1243,22 @@ da die aktuelle Ansicht ausdrücklich gefällt).
 
 Handoff §10-Sync war bereits umgesetzt; §1–9 aus Vor-Sessions. Damit ist
 Handoff #5 vollständig abgeglichen.
+
+---
+
+## 2026-06-23 (Forts. 3) — Handoff #6 (Session-3-Änderungen)
+
+- **1–10-Skala** (Neuer Eintrag) flexibel: `flex:1` + `aspect-square`, läuft nie
+  über die Breite, bleibt rund.
+- **FAB** in der Tab-Leiste mittig zentriert (kein Schweben mehr), Plus 26px.
+- **Impuls-Pakete** nach Vorlage: „Schwere Phasen" als Standard-Fokus oben,
+  darunter Sortieren / Aus der Schleife / Zur Ruhe kommen / Entscheidungen /
+  Beziehung klären / Einfach schreiben. 1:1-Lucide-Icons (list-checks, shell,
+  moon, signpost, heart, pen, life-buoy) in fester §14-Cluster-Farbe.
+- PNGs des Handoffs sind veraltet → ausschließlich am Master-Markup orientiert.
+
+**Noch offen aus Session-3:** Muster-Mobile-Feinschliff laut Master (Karten
+gleich breit, Listen zusammenfassen, „Erkannte Muster" über „Stabile Momente").
+Unsere Mobile-Muster-Ansicht ist bereits anders aufgebaut (Bento + Erkannte
+Muster, Quantitatives ab sm) — vor einem Umbau mit der Nutzerin abstimmen, um
+die zuvor abgenommenen Muster-Änderungen nicht zu überschreiben.
