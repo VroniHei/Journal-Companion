@@ -431,19 +431,20 @@ export function Ritual() {
 
             {/* Serie-Zeile mit Blatt-Icon (echte Werte) */}
             <div className="mt-[18px] flex items-center justify-center gap-2 text-[13px] font-medium text-[#6a5a48]">
+              {/* Serie/Streak = award (Lucide, 1:1) */}
               <svg
                 viewBox="0 0 24 24"
-                width="15"
-                height="15"
+                width="16"
+                height="16"
                 fill="none"
-                stroke="#CD8A5B"
-                strokeWidth="2.2"
+                stroke="#DDB14B"
+                strokeWidth="1.7"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 aria-hidden="true"
               >
-                <path d="M12 3c1 3-2 4-2 7a4.5 4.5 0 0 0 9 0c0-2-1-3-1.5-4 .2 2-1.5 3-1.5 1 0-2.5-2-4-3-4z" />
-                <path d="M9 14a3 3 0 0 0 6 0" />
+                <circle cx="12" cy="8" r="6" />
+                <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
               </svg>
               <span>
                 <strong className="font-[650] text-[#23221A]">

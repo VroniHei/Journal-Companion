@@ -5,6 +5,28 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-23 — Handoff #3: Ritual-erledigt-Recap, Lucide-Icons, Brand-Voice
+
+**Was:** Neues Design-Briefing (HTML +1 Zeile, neue `CLAUDE.md` mit Brand-Regeln:
+Icons 1:1 aus Lucide, keine Em-Dashes/Emoji, Desktop+Mobile konsistent).
+
+- **Ritual „erledigt"-Zustand neu** (`Dashboard.tsx`, geteilt Mobile/Desktop):
+  Badge ohne doppeltes „6 Min" („Heute erledigt · automatisch gesichert"); Recap
+  als **eine** Karte mit 3 Antworten (farbige Punkte clay/gold/sage, „Ein guter
+  Satz" in Newsreader-Italic); **Serie-Zeile** mit Lucide-`award` + Streak +
+  Pausentag (nur wenn verfügbar); „Eintrag ansehen".
+- **Lucide-Icons korrigiert** (1:1): neues `award` (Streak-Recap, in Dashboard +
+  `Ritual.tsx`); Pausentag-Konzept durchgängig `pause` (Warnstreifen-Icon,
+  Sheet-Tile, CTA) statt der hand­gezeichneten Flamme; „Pause nehmen"-Button ohne
+  Icon (wie Design).
+- **Brand-Voice (keine Em-Dashes)**: Pausentag-Sheet-Text gemäß Design
+  („Manchmal ist aussetzen das Klügste. Heute zählt als Ruhetag. Deine Serie
+  läuft weiter."); Em-Dashes aus Begrüßungs-/Impuls-Copy entfernt.
+
+**Status:** `build`/`lint`/`typecheck` grün.
+
+---
+
 ## 2026-06-23 — Wärmerer, persönlicher Dashboard-Einstieg
 
 **Was:** Die Begrüßung (`Dashboard.tsx`) ist nun warm + einladend statt statisch.

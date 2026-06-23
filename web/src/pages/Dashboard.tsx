@@ -27,6 +27,9 @@ import {
 // Mood-Skala (APP-STYLE §3): clay → gold → sage → grün.
 const MOOD_COLORS = ["#CD8A5B", "#DDB14B", "#9BA383", "#A8E84F"];
 
+// Punkt-Farben der drei Ritual-Recap-Antworten (clay · gold · sage).
+const RITUAL_DOTS = ["#CD8A5B", "#DDB14B", "#9BA383"];
+
 // Schreib-Impulse für „Heute im Blick" (sanft, konkret, nicht coachig; offen,
 // ohne Drängen — vieles darf auch klein oder leicht sein). Der Default rotiert
 // täglich automatisch (siehe `dayIndex`), die Reihenfolge bleibt pro Tag stabil.
@@ -36,15 +39,15 @@ const PROMPTS: { pre: string; accent: string; post: string }[] = [
   { pre: "Was möchtest du festhalten, bevor der Tag ", accent: "kippt", post: "?" },
   { pre: "Was hat dich heute kurz ", accent: "innehalten", post: " lassen?" },
   { pre: "Wofür warst du heute, ganz unspektakulär, ", accent: "dankbar", post: "?" },
-  { pre: "Was hat dir heute ", accent: "gutgetan", post: " — auch wenn es klein war?" },
+  { pre: "Was hat dir heute ", accent: "gutgetan", post: ", auch wenn es klein war?" },
   { pre: "Was darf heute einfach ", accent: "so sein", post: ", wie es ist?" },
   { pre: "Welcher Moment heute war ", accent: "ruhiger", post: " als der Rest?" },
-  { pre: "Was hast du heute ", accent: "gebraucht", post: " — und bekommen oder nicht?" },
+  { pre: "Was hast du heute ", accent: "gebraucht", post: ", und bekommen oder nicht?" },
   { pre: "Was möchtest du heute ", accent: "loslassen", post: ", bevor du zur Ruhe kommst?" },
   { pre: "Wer oder was hat dir heute ", accent: "Halt", post: " gegeben?" },
   { pre: "Was hat dich heute ", accent: "überrascht", post: "?" },
-  { pre: "Worauf hast du dich heute ", accent: "gefreut", post: " — und wie war es dann?" },
-  { pre: "Wo hast du heute ", accent: "Nein", post: " gesagt — oder gern gesagt?" },
+  { pre: "Worauf hast du dich heute ", accent: "gefreut", post: "? Und wie war es dann?" },
+  { pre: "Wo hast du heute ", accent: "Nein", post: " gesagt, oder gern gesagt?" },
   { pre: "Was war heute ", accent: "genug", post: ", auch wenn es sich nicht so anfühlte?" },
   { pre: "Welches Gefühl begleitet dich gerade ", accent: "am stärksten", post: "?" },
   { pre: "Was hat dein Körper dir heute ", accent: "gesagt", post: "?" },
@@ -89,7 +92,7 @@ const WELCOME_LINES: { pre: string; accent: string; post: string }[] = [
   { pre: "Möchtest du dir etwas von der ", accent: "Seele", post: " schreiben?" },
   { pre: "Magst du deine Gedanken ein Stück weit ", accent: "sortieren", post: "?" },
   { pre: "Was möchtest du heute ", accent: "festhalten", post: "?" },
-  { pre: "Wenn dir danach ist — schreib einfach ", accent: "los", post: "." },
+  { pre: "Wenn dir danach ist, schreib einfach ", accent: "los", post: "." },
   { pre: "Nimm dir einen Moment, ganz ", accent: "für dich", post: "." },
   { pre: "Was beschäftigt dich ", accent: "heute", post: "?" },
 ];
@@ -647,7 +650,7 @@ export function Dashboard() {
             </div>
 
             {ritualFilled ? (
-              /* ===== Erledigt-Zustand (nicht wieder „offen" zeigen) ===== */
+              /* ===== Erledigt-Zustand (Recap nach Claude-Design) ===== */
               <>
                 <div className="mb-3 flex items-center gap-2 text-[12.5px] font-semibold text-[var(--green-text,#447510)]">
                   <span
@@ -661,43 +664,68 @@ export function Dashboard() {
                   Heute erledigt
                   <span style={{ color: "#b08a64", fontWeight: 500 }}>
                     {" "}
-                    · 6 Min · automatisch gesichert
+                    · automatisch gesichert
                   </span>
                 </div>
 
                 <h2
-                  className="serif mb-3 text-[26px] font-semibold leading-tight"
+                  className="serif mb-3 text-[24px] font-semibold leading-tight sm:text-[26px]"
                   style={{ color: ritualT.title }}
                 >
-                  {ritualMorning ? "Gut sortiert" : "Gut abgeschlossen"} in den{" "}
-                  <em className="g">Tag</em>.
+                  Den Tag{" "}
+                  <em className="g">{ritualMorning ? "sortieren" : "abschließen"}</em>.
                 </h2>
 
-                {/* Blick auf das Gesicherte */}
-                <div className="mb-6 space-y-2.5">
-                  {ritualAnswers.length > 0 ? (
-                    ritualAnswers.map((a) => (
-                      <div
-                        key={a.label}
-                        className="rounded-[14px] border px-3.5 py-2.5"
-                        style={{
-                          background: "rgba(255,255,255,0.6)",
-                          borderColor: "rgba(35,34,26,0.07)",
-                        }}
-                      >
-                        <div className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[#9a8a73]">
-                          {a.label}
-                        </div>
-                        <div className="mt-0.5 text-[14.5px] leading-snug text-[#4f4434]">
-                          {a.value}
+                {/* Recap: eine Karte mit den 3 Antworten + farbigen Punkten */}
+                {ritualAnswers.length > 0 ? (
+                  <div
+                    className="mb-5 flex max-w-[480px] flex-col gap-[11px] rounded-[14px] border px-[15px] py-3.5"
+                    style={{
+                      background: "rgba(255,255,255,0.72)",
+                      borderColor: "rgba(205,138,91,0.2)",
+                    }}
+                  >
+                    {ritualAnswers.map((a, i) => (
+                      <div key={a.label} className="flex items-start gap-2.5">
+                        <span
+                          className="mt-1 h-[9px] w-[9px] flex-none rounded-full"
+                          style={{ background: RITUAL_DOTS[i] ?? "#9BA383" }}
+                        />
+                        <div className="min-w-0">
+                          <div className="text-[9.5px] font-semibold uppercase tracking-[0.16em] text-[#9c6b3f]">
+                            {a.label}
+                          </div>
+                          <div
+                            className="mt-0.5 text-[13.5px] leading-[1.4] text-[#4a4034]"
+                            style={
+                              ritualMorning && i === 2
+                                ? { fontFamily: "var(--font-serif)", fontStyle: "italic" }
+                                : undefined
+                            }
+                          >
+                            {a.value}
+                          </div>
                         </div>
                       </div>
-                    ))
-                  ) : (
-                    <p className="text-[14.5px] text-[#6a5a48]">
-                      Heute schon festgehalten. Schön.
-                    </p>
-                  )}
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mb-5 text-[14.5px] text-[#6a5a48]">
+                    Heute schon festgehalten. Schön.
+                  </p>
+                )}
+
+                {/* Serie-Zeile (award) */}
+                <div className="mb-5 flex items-center gap-2 text-[12.5px] font-medium text-[#6a5a48]">
+                  <span className="flex-none" style={{ color: "#DDB14B" }}>
+                    <Icon d={ICONS.award} size={16} />
+                  </span>
+                  <span>
+                    <strong className="font-[650] text-[var(--foreground)]">
+                      {streak} {streak === 1 ? "Tag" : "Tage"}
+                    </strong>{" "}
+                    in Folge{pauseAvailable > 0 ? " · 1 Pausentag in Reserve" : ""}
+                  </span>
                 </div>
 
                 <button
@@ -821,7 +849,7 @@ export function Dashboard() {
                   >
                     <div className="flex min-w-0 items-center gap-2">
                       <span className="flex-none" style={{ color: "#DDB14B" }}>
-                        <Icon d={ICONS.flame} size={18} />
+                        <Icon d={ICONS.pause} size={18} />
                       </span>
                       <div className="min-w-0">
                         <div className="text-[12px] font-[650] leading-tight" style={{ color: "#8a6b00" }}>
@@ -842,7 +870,6 @@ export function Dashboard() {
                         borderColor: "rgba(221,177,75,.3)",
                       }}
                     >
-                      <Icon d={ICONS.pause} size={12} />
                       Pause nehmen
                     </button>
                   </div>
@@ -1349,7 +1376,7 @@ export function Dashboard() {
                 className="inline-flex h-12 w-12 flex-none items-center justify-center rounded-[14px] shadow-[0_4px_12px_rgba(221,177,75,.22)]"
                 style={{ background: "linear-gradient(145deg,#FDF0D0,#FDEAB8)", color: "#DDB14B" }}
               >
-                <Icon d={ICONS.flame} size={26} />
+                <Icon d={ICONS.pause} size={24} />
               </span>
               <div>
                 <div className="text-[20px] font-[650] leading-tight tracking-[-0.02em] text-[var(--foreground)]">
@@ -1361,8 +1388,8 @@ export function Dashboard() {
               </div>
             </div>
             <p className="mb-5 text-[14.5px] leading-[1.6] text-[#5d564a]">
-              Manchmal ist Pause das Klügste. Heute wird als{" "}
-              <em className="g">Ruhetag</em> gezählt — deine Serie läuft weiter.
+              Manchmal ist aussetzen das Klügste. Heute zählt als{" "}
+              <em className="g">Ruhetag</em>. Deine Serie läuft weiter.
             </p>
             <div className="mb-[22px] flex items-center gap-2 rounded-xl bg-[var(--surface-2)] px-3.5 py-3">
               <svg viewBox="0 0 24 24" fill="none" stroke="#9a917f" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="16" height="16" className="flex-none" aria-hidden="true">
@@ -1380,7 +1407,7 @@ export function Dashboard() {
               className="mb-3 inline-flex w-full items-center justify-center gap-2 rounded-full py-[14px] text-[15.5px] font-[650] text-[#23221A] shadow-[0_6px_18px_rgba(110,155,44,0.3)]"
               style={{ background: "linear-gradient(180deg,#B4ED63,#A8E84F)" }}
             >
-              <Icon d={ICONS.flame} size={18} />
+              <Icon d={ICONS.pause} size={18} />
               Serie schützen · Ruhetag nehmen
             </button>
             <button
