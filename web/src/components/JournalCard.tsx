@@ -8,7 +8,9 @@ import {
   KIND_LABEL,
   KIND_STYLE,
 } from "../lib/entryCard";
-import { Icon, ICONS, tileRelief } from "./icons";
+import { Icon } from "./icons";
+import { ICONS } from "./iconset";
+import { tileRelief } from "./tile";
 
 // Mood-Skala (APP-STYLE §3): clay (schwer) → gold → sage → grün (leicht).
 function moodColor(m: number): string {

@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { recordStabilityMoment } from "../db/queries";
 import { DictationButton } from "../components/DictationButton";
 import { DesktopModal } from "../components/DesktopModal";
-import { Icon, ICONS } from "../components/icons";
+import { Icon } from "../components/icons";
+import { ICONS } from "../components/iconset";
 
 // Gedankenschleife lösen: benennen → auseinandernehmen → ein kleiner Schritt.
 // Ruhiger Fokus-Flow im Flieder-/Beruhigungs-Ton (App-Style §8). In Vronis

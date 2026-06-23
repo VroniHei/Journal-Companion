@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card } from "../components/ui";
-import { Icon, ICONS, tileRelief } from "../components/icons";
+import { Icon } from "../components/icons";
+import { ICONS } from "../components/iconset";
+import { tileRelief } from "../components/tile";
 import { JournalCard } from "../components/JournalCard";
 import { ThemeMiniCard } from "../components/ThemeMiniCard";
 import {

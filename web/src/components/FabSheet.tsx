@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
-import { tileRelief } from "./icons";
+import { tileRelief } from "./tile";
 
 // FAB-Auswahl „Was möchtest du tun?" — schließt die größte Navigations-Lücke
 // (kein unklares Direkt-Springen in einen Eintrag). Mobile = Bottom-Sheet,

@@ -3,7 +3,9 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { DisclaimerGate } from "./DisclaimerGate";
 import { Onboarding } from "./Onboarding";
 import { FabSheet } from "./FabSheet";
-import { Icon, ICONS, tileRelief } from "./icons";
+import { Icon } from "./icons";
+import { ICONS } from "./iconset";
+import { tileRelief } from "./tile";
 import { useSettings } from "../hooks/useData";
 import { useSyncStatus } from "../hooks/useSync";
 
