@@ -5,6 +5,31 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-23 — Kontroll-Durchgang: Hero-Fokus-Chip, Mobile-Layout, Brand-Voice, Schriftgrößen
+
+**Was:**
+- **Hero-Fokus-Chip (Desktop) optimiert** (`Dashboard.tsx`, nach Claude-Design):
+  zeigt nur den Fokus-Text mit Ellipsis-Kürzung (`max-w-[400px]`, `truncate`),
+  ohne „Dein Fokus:"-Präfix und ohne Stift; offen: „Fokus noch offen · im Ritual
+  setzen". Mobil bleibt „Dein Fokus: … ✎" (designkonform).
+- **Mobile-Korrekturen:** Fokus-Chip in den **oberen Bereich** (direkt unter die
+  Begrüßung, vor die Willkommenszeile); „Heute im Blick"-Buttons jetzt in **einer
+  Zeile** (kein Umbruch, „Dazu schreiben" füllt den Rest).
+- **Brand-Voice (keine Em-Dashes) app-weit:** 5 nutzersichtbare Stellen bereinigt
+  (RedThread-Caption, 2 Markdown-Export-Überschriften, `CRISIS_MESSAGE`,
+  STT-Fehlertext). Übrige Em-Dashes sind Code-Kommentare/Modell-Prompts (nicht
+  nutzersichtbar); der System-Prompt schreibt der KI „keine Gedankenstriche"
+  ohnehin vor.
+- **Mobile-Schriftgrößen (UI/UX):** kleinste Lese-/Label-Texte angehoben
+  (Energie-Tipp 12,5→13px, Pausentag-Info 12,5→13px, Recap-Label 9,5→10px,
+  Fokus-Chip 12,5→13px). Eyebrows (Uppercase, getrackt) bleiben designkonform.
+- **Kontrolle:** alle internen Links → existierende Routen; alle Bildpfade
+  vorhanden; alle 40 Pool-Bilder in Verwendung; Working Tree sauber, kein Junk.
+
+**Status:** `build`/`lint`/`typecheck` grün.
+
+---
+
 ## 2026-06-23 — Handoff #3: Ritual-erledigt-Recap, Lucide-Icons, Brand-Voice
 
 **Was:** Neues Design-Briefing (HTML +1 Zeile, neue `CLAUDE.md` mit Brand-Regeln:

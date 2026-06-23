@@ -36,7 +36,7 @@ export function RedThread() {
 
       {clusters.length > 0 && (
         <p className="max-w-[640px] text-[14px] leading-relaxed text-[var(--muted)]">
-          Themen, die in den letzten Wochen an mehreren Tagen wiederkehren —
+          Themen, die in den letzten Wochen an mehreren Tagen wiederkehren,
           sortiert nach dem, was sich gerade am stärksten durchzieht. Die Farbe
           links zeigt, <em className="g">wie sich ein Thema anfühlt</em>: von
           schwer bis leicht.

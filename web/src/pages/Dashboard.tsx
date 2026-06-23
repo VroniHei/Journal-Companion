@@ -317,20 +317,15 @@ export function Dashboard() {
             </h1>
           </div>
         </div>
-        <p className="lead mt-2.5 text-[15.5px] leading-snug text-[var(--foreground)]">
-          {welcome.pre}
-          <em className="g text-[var(--accent-text)]">{welcome.accent}</em>
-          {welcome.post}
-        </p>
-
+        {/* Fokus-Chip im oberen Bereich, direkt unter der Begrüßung. */}
         {todayFocus ? (
           <Link
             to="/ritual"
-            className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-medium text-[#5d4f3f] transition hover:opacity-80"
+            className="mt-3 inline-flex max-w-full items-center gap-1.5 overflow-hidden rounded-full px-3 py-1.5 text-[13px] font-medium text-[#5d4f3f] transition hover:opacity-80"
             style={{ background: "#F1ECE0" }}
           >
-            <span className="h-[7px] w-[7px] rounded-full bg-[var(--clay)]" />
-            Dein Fokus: {todayFocus}
+            <span className="h-[7px] w-[7px] flex-none rounded-full bg-[var(--clay)]" />
+            <span className="truncate">Dein Fokus: {todayFocus}</span>
             <svg
               viewBox="0 0 24 24"
               width="12"
@@ -341,7 +336,7 @@ export function Dashboard() {
               strokeLinecap="round"
               strokeLinejoin="round"
               aria-hidden="true"
-              className="ml-0.5"
+              className="ml-0.5 flex-none"
             >
               <path d="M14 5l5 5M4 20l1-4L15.5 4.5l3.5 3.5L7.5 19.5 4 20z" />
             </svg>
@@ -349,13 +344,19 @@ export function Dashboard() {
         ) : (
           <Link
             to="/ritual"
-            className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-dashed px-3 py-1.5 text-[12.5px] font-medium text-[#b0a896] transition hover:opacity-80"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-dashed px-3 py-1.5 text-[13px] font-medium text-[#b0a896] transition hover:opacity-80"
             style={{ borderColor: "rgba(35,34,26,.16)" }}
           >
             <span className="h-[7px] w-[7px] rounded-full" style={{ background: "#E0D8CE" }} />
             Fokus heute noch offen · im Ritual setzen
           </Link>
         )}
+
+        <p className="lead mt-3 text-[15.5px] leading-snug text-[var(--foreground)]">
+          {welcome.pre}
+          <em className="g text-[var(--accent-text)]">{welcome.accent}</em>
+          {welcome.post}
+        </p>
 
         <div className="mt-4 grid grid-cols-2 gap-2.5 sm:inline-grid sm:auto-cols-max sm:grid-flow-col">
           <button
@@ -434,30 +435,30 @@ export function Dashboard() {
               Sprach-Check-in
             </button>
           </div>
-          {/* Fokus-Chip · kommt aus dem Tagesritual (Schritt „Was macht den Tag gut?") */}
+          {/* Fokus-Chip (Hero, Claude-Design-Optimierung): nur der Fokus-Text,
+              auf Hero-Breite per Ellipsis gekürzt — ohne „Dein Fokus:"-Präfix
+              und ohne Stift (kompakter auf dem dunklen Foto). */}
           {todayFocus ? (
             <Link
               to="/ritual"
-              className="mt-5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[13.5px] font-medium transition hover:opacity-90"
+              aria-label={`Dein Fokus: ${todayFocus}`}
+              className="mt-5 inline-flex max-w-[400px] items-center gap-[9px] overflow-hidden rounded-full border py-2 pl-3.5 pr-[18px] text-[13.5px] font-medium transition hover:opacity-90"
               style={{
                 color: "rgba(255,248,236,.78)",
                 background: "rgba(255,248,236,.1)",
                 borderColor: "rgba(255,248,236,.2)",
               }}
             >
-              <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#CD8A5B" }} />
-              Dein Fokus: {todayFocus}
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="rgba(255,248,236,.45)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="ml-0.5">
-                <path d="M14 5l5 5M4 20l1-4L15.5 4.5l3.5 3.5L7.5 19.5 4 20z" />
-              </svg>
+              <span className="h-2 w-2 flex-none rounded-full" style={{ background: "#CD8A5B" }} />
+              <span className="truncate">{todayFocus}</span>
             </Link>
           ) : (
             <Link
               to="/ritual"
-              className="mt-5 inline-flex items-center gap-2 rounded-full border border-dashed px-4 py-2 text-[13px] font-medium transition hover:opacity-90"
-              style={{ color: "rgba(255,248,236,.4)", borderColor: "rgba(255,248,236,.2)" }}
+              className="mt-5 inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-dashed px-[15px] py-[7px] text-[13px] font-medium transition hover:opacity-90"
+              style={{ color: "rgba(255,248,236,.35)", borderColor: "rgba(255,248,236,.2)" }}
             >
-              Fokus heute noch offen · im Ritual setzen
+              Fokus noch offen · im Ritual setzen
             </Link>
           )}
         </div>
@@ -528,13 +529,13 @@ export function Dashboard() {
               {prompt.post}
             </p>
           </div>
-          {/* Aktionen: Impuls wechseln oder direkt damit schreiben — mobil wie
-              im Mock unter dem Satz, ab sm rechts daneben. */}
-          <div className="flex flex-wrap gap-2 sm:shrink-0">
+          {/* Aktionen: Impuls wechseln oder direkt damit schreiben. Mobil immer
+              in EINER Zeile (kein Umbruch): „Dazu schreiben" füllt den Rest. */}
+          <div className="flex gap-2 sm:shrink-0">
             <button
               type="button"
               onClick={() => setPromptIdx((i) => i + 1)}
-              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--foreground)] hover:bg-[var(--surface-2)]"
+              className="inline-flex flex-none items-center justify-center gap-1.5 rounded-full border border-[var(--border)] px-3.5 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--foreground)] hover:bg-[var(--surface-2)] sm:px-4"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
                 <path d="M21 12a9 9 0 1 1-2.64-6.36" />
@@ -545,7 +546,7 @@ export function Dashboard() {
             <button
               type="button"
               onClick={() => navigate("/neu")}
-              className="rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] transition hover:-translate-y-0.5 hover:bg-[#bdf06a]"
+              className="inline-flex flex-1 items-center justify-center rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] transition hover:-translate-y-0.5 hover:bg-[#bdf06a] sm:flex-none"
             >
               Dazu schreiben
             </button>
@@ -692,7 +693,7 @@ export function Dashboard() {
                           style={{ background: RITUAL_DOTS[i] ?? "#9BA383" }}
                         />
                         <div className="min-w-0">
-                          <div className="text-[9.5px] font-semibold uppercase tracking-[0.16em] text-[#9c6b3f]">
+                          <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#9c6b3f]">
                             {a.label}
                           </div>
                           <div
@@ -1070,7 +1071,7 @@ export function Dashboard() {
                   Wie viel Energie hast du <em className="g">heute</em>?
                 </p>
               )}
-              <p className="text-[12.5px] leading-[1.45] text-[#9a917f] sm:text-[13px]">
+              <p className="text-[13px] leading-[1.45] text-[#9a917f]">
                 Tipp an, wie viel du heute hast. Deine Impulse passen sich daran an.
               </p>
             </div>
@@ -1396,7 +1397,7 @@ export function Dashboard() {
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 8v4M12 16h.01" />
               </svg>
-              <span className="text-[12.5px] leading-[1.4] text-[var(--muted)]">
+              <span className="text-[13px] leading-[1.4] text-[var(--muted)]">
                 Nach dem Ruhetag brauchst du 7 neue Tage, um wieder einen
                 Pausentag zu verdienen.
               </span>

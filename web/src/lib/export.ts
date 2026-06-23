@@ -24,7 +24,7 @@ export function entryToMarkdown(
   entry: JournalEntry,
   messages: ChatMessage[] = [],
 ): string {
-  let md = `# Eintrag — ${formatDateTime(entry.createdAt)}\n\n`;
+  let md = `# Eintrag vom ${formatDateTime(entry.createdAt)}\n\n`;
   md += `- **Stimmung:** ${entry.mood}/10 · **Intensität:** ${entry.intensity}/10\n`;
   md += line("Emotionen", entry.emotions);
   md += line("Körper", entry.bodySignals);
@@ -58,7 +58,7 @@ export async function downloadEntryMarkdown(entry: JournalEntry): Promise<void> 
 }
 
 export function patternToMarkdown(p: PatternSummary): string {
-  const md = `# Wochenrückblick — ${p.periodStart.slice(0, 10)} bis ${p.periodEnd.slice(0, 10)}\n\n${p.summary}\n`;
+  const md = `# Wochenrückblick ${p.periodStart.slice(0, 10)} bis ${p.periodEnd.slice(0, 10)}\n\n${p.summary}\n`;
   return md;
 }
 

@@ -50,7 +50,7 @@ export function detectCrisis(text: string): CrisisResult {
 }
 
 // Feste, warme, menschliche Sicherheitsantwort (kein Coaching, keine Analyse).
-export const CRISIS_MESSAGE = `Was du gerade schreibst, klingt sehr schwer — und ich nehme das ernst.
+export const CRISIS_MESSAGE = `Was du gerade schreibst, klingt sehr schwer, und ich nehme das ernst.
 
 Ich bin nur eine App und kann dir in einem solchen Moment nicht das geben, was du jetzt verdienst: einen echten Menschen.
 

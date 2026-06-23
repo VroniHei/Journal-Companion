@@ -52,7 +52,7 @@ sttRouter.post(
         if (low.includes("quota_exceeded") || low.includes("credits")) {
           res.status(402).json({
             error:
-              "Das Sprach-Guthaben ist gerade aufgebraucht. Tippe deinen Text einfach ein — oder nimm kürzer auf, sobald wieder Guthaben da ist.",
+              "Das Sprach-Guthaben ist gerade aufgebraucht. Tippe deinen Text einfach ein, oder nimm kürzer auf, sobald wieder Guthaben da ist.",
             code: "quota",
           });
           return;
