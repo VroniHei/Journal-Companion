@@ -333,9 +333,9 @@ export function Layout() {
             order: 2,
             background: "linear-gradient(160deg,#B4ED63,#97D63E)",
           }}
-          className="fab-glow -mt-7 flex h-[58px] w-[58px] items-center justify-center rounded-full text-[var(--accent-contrast)]"
+          className="fab-glow flex h-[58px] w-[58px] items-center justify-center rounded-full text-[var(--accent-contrast)]"
         >
-          <Icon d={ICONS.plus} size={24} />
+          <Icon d={ICONS.plus} size={26} />
         </button>
       </nav>
 

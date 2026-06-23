@@ -48,7 +48,7 @@ function Scale({
         <span className="text-[12px] font-[650] text-[#23221A]">{label}</span>
         <span className="text-[11.5px] text-[#b0a896]">{hint}</span>
       </div>
-      <div className="flex justify-between gap-1">
+      <div className="flex gap-1.5">
         {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => {
           const active = value === n;
           return (
@@ -58,7 +58,7 @@ function Scale({
               aria-pressed={active}
               aria-label={`${label}: ${n}`}
               onClick={() => onChange(n)}
-              className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-full text-[12.5px] transition"
+              className="flex aspect-square min-w-0 flex-1 items-center justify-center rounded-full p-0 text-[12.5px] transition"
               style={{
                 background: active
                   ? "linear-gradient(135deg,#B4ED63,#A8E84F)"
