@@ -11,6 +11,7 @@ import type {
 } from "@journal/shared";
 import { Button, Card, Eyebrow } from "../components/ui";
 import { MoodCard } from "../components/MoodCard";
+import { ThemeMiniCard } from "../components/ThemeMiniCard";
 import { useEntries, useRestDays, useSettings } from "../hooks/useData";
 import {
   deletePatternInsight,
@@ -317,6 +318,11 @@ export function Patterns() {
   const words = wordsOfWeek(entries);
   const streak = computeStreak(entries, restDays.map((r) => r.date));
 
+  // Schlüsselwort für die Mini-Karten-Vorschau in „Was sich zeigt" (Claude
+  // Design §6): häufigstes Wort, großgeschrieben.
+  const keyword = words[0]?.word ?? "Ruhe";
+  const keywordCap = keyword.charAt(0).toUpperCase() + keyword.slice(1);
+
   // „Was sich zeigt"-Kachel: datengetriebene Einsicht mit .g-Akzent, täglich
   // rotierend (seed = Tag).
   const wsHtml =
@@ -356,26 +362,53 @@ export function Patterns() {
               Was sich zeigt
             </span>
           </div>
-          {/* Einsicht als ruhiger Fließtext, volle Breite. Tags/Mini-Karte
-              entfallen hier (die häufigen Worte stehen ohnehin direkt darunter
-              in der eigenen Kachel) — so bleibt die Kachel klar. */}
+          {/* Einsicht (Lead 450, .g-Akzent). */}
           <p
-            className="max-w-[34ch] text-[16px] font-[450] leading-[1.55] text-[var(--foreground)]"
+            className="text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]"
             dangerouslySetInnerHTML={{ __html: wsHtml }}
           />
-          {/* Fußzeile = eine Textzeile (h-5) auf gleicher Höhe wie die
-              Stimmungs-Legende, damit beide Trennstriche exakt fluchten. */}
-          <div className="mt-auto border-t border-[var(--border)] pt-3.5">
-            <div className="flex h-5 items-center">
-            <Link
-              to="/roter-faden"
-              className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--green-text,#447510)]"
-            >
-              Roter Faden ansehen
-              <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
-                <path d="M4 9h10M9.5 4.5 14 9l-4.5 4.5" />
-              </svg>
-            </Link>
+          {/* Fokus-Themen: einzeilig (Master §6: flex-wrap nowrap, overflow
+              hidden — kein Umbruch, längere Worte werden beschnitten). */}
+          {words.length > 0 && (
+            <div className="mt-3 flex gap-[7px] overflow-hidden">
+              {words.slice(0, 5).map((w) => (
+                <span
+                  key={w.word}
+                  className="whitespace-nowrap rounded-full bg-[#F1ECE0] px-3 py-1.5 text-[12.5px] font-medium text-[#5d4f3f]"
+                >
+                  {w.word}
+                </span>
+              ))}
+            </div>
+          )}
+          {/* Trennstrich + Mini-Karte (zitat-weg.webp) + Roter Faden + Teilen
+              (Master §6). mt-auto schiebt den Block ans untere Karten-Ende. */}
+          <div className="mt-auto flex items-center gap-[13px] border-t border-[var(--border)] pt-[13px]">
+            <ThemeMiniCard
+              keyword={keywordCap}
+              wordSize={20}
+              className="h-[76px] w-[110px] flex-none"
+            />
+            <div className="flex flex-1 flex-col gap-[9px]">
+              <Link
+                to="/roter-faden"
+                className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--green-text,#447510)]"
+              >
+                Roter Faden ansehen
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
+                  <path d="M4 9h10M9.5 4.5 14 9l-4.5 4.5" />
+                </svg>
+              </Link>
+              <Link
+                to="/teilen"
+                className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-[7px] text-[13px] font-semibold text-[var(--muted)] transition hover:-translate-y-0.5 hover:text-[var(--foreground)]"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
+                  <path d="M12 14V4M8.5 7.5 12 4l3.5 3.5" />
+                  <path d="M5 12.5V18.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5V12.5" />
+                </svg>
+                Als Karte teilen
+              </Link>
             </div>
           </div>
         </div>

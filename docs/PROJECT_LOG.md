@@ -1262,3 +1262,19 @@ gleich breit, Listen zusammenfassen, „Erkannte Muster" über „Stabile Moment
 Unsere Mobile-Muster-Ansicht ist bereits anders aufgebaut (Bento + Erkannte
 Muster, Quantitatives ab sm) — vor einem Umbau mit der Nutzerin abstimmen, um
 die zuvor abgenommenen Muster-Änderungen nicht zu überschreiben.
+
+## 2026-06-23 (Forts. 4) — Muster Desktop „Was sich zeigt"-Kachel nach Master §6
+
+Auf Hinweis der Nutzerin (rechte Kachel auf `/muster` wich vom Design ab) die
+Desktop-„Was sich zeigt"-Kachel exakt ans Master-Markup angeglichen
+(`Innerline App.dc.html`, Frame DESKTOP · MUSTER, frisch über DesignSync gezogen):
+- **Einzeilige Fokus-Themen-Tags** (flex-wrap nowrap, overflow hidden) unter der
+  Einsicht.
+- **Mini-Karte 110×76** (`ThemeMiniCard`, `zitat-weg.webp` + dunkelgrüner
+  Verlauf, Schlüsselwort in `#A8E84F`) — Komponente vom Dashboard wiederverwendet.
+- Trennstrich-Block mit **„Roter Faden ansehen →"** und neuem **„Als Karte
+  teilen"**-Button (→ `/teilen`), `mt-auto` schiebt ihn ans Karten-Ende.
+
+Die frühere Variante (nur Label + Fließtext + ein Link, Mini-Karte/Tags bewusst
+entfernt) war ein abgenommener Zwischenstand, deckte sich aber nicht mit dem
+finalen Master. Build/Typecheck/Lint grün (0 Warnungen).
