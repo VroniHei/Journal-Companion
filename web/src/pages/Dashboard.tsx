@@ -990,7 +990,7 @@ export function Dashboard() {
             {/* In Folge */}
             <Card className="hidden sm:block">
               <div className="mb-3.5 flex items-center gap-2 text-[var(--clay,#CD8A5B)]">
-                <Icon d={ICONS.flame} size={16} />
+                <Icon d={ICONS.award} size={16} />
                 <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
                   In Folge
                 </span>

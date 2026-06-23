@@ -25,14 +25,15 @@ const NAV = [
 const TILE = {
   green: { bg: "#EEF1E6", fg: "#6E9B2C" },
   clay: { bg: "#F6ECE3", fg: "#CD8A5B" },
-  gold: { bg: "#F6EFDC", fg: "#b08a2f" },
+  gold: { bg: "#FDF5E0", fg: "#DDB14B" },
   sand: { bg: "#F1ECE0", fg: "#7a6f5b" },
+  lila: { bg: "#EEE8FA", fg: "#7a6b96" },
 } as const;
 
 const PROFILE_LINKS = [
   { to: "/ritual", label: "Tagesritual", icon: ICONS.sun, tile: TILE.green },
-  { to: "/ritual-verlauf", label: "Ritual-Verlauf", icon: ICONS.calendar, tile: TILE.sand },
-  { to: "/klaerung", label: "Klärung", icon: ICONS.compass, tile: TILE.sand },
+  { to: "/ritual-verlauf", label: "Ritual-Verlauf", icon: ICONS.calendar, tile: TILE.clay },
+  { to: "/klaerung", label: "Klärung", icon: ICONS.compass, tile: TILE.lila },
   { to: "/sprechen", label: "Sprach-Check-in", icon: ICONS.mic, tile: TILE.sand },
   { to: "/kontaktimpuls", label: "Kontaktimpuls", icon: ICONS.chat, tile: TILE.clay },
   { to: "/energie", label: "Energie heute", icon: ICONS.bolt, tile: TILE.gold },
@@ -330,7 +331,7 @@ export function Layout() {
           aria-label="Was möchtest du tun?"
           style={{
             order: 2,
-            background: "linear-gradient(180deg,#bdf06a,#8ed03a)",
+            background: "linear-gradient(160deg,#B4ED63,#97D63E)",
           }}
           className="fab-glow -mt-7 flex h-[58px] w-[58px] items-center justify-center rounded-full text-[var(--accent-contrast)]"
         >
