@@ -1201,3 +1201,26 @@ Kacheln); Mindest-Schriftgrößen (§14) systematisch gegenprüfen.
   Desktop-Modal oben rechts.
 
 Build/Lint/Typecheck grün; Branch nach `main` fast-forward (ausgerichtet).
+
+---
+
+## 2026-06-23 (Forts.) — Aufräumen, Handoff-Sync & mehrere Feinschliffe
+
+- **Aufräumen:** Icon-Daten sauber getrennt (`icons.tsx` = nur Komponente,
+  `iconset.tsx` = ICONS, `tile.ts` = tileRelief) → `npm run lint` warnungsfrei.
+- **Muster-Top:** „Stimmung" und „Was sich zeigt" jetzt 50/50, gleich hoch,
+  Trennstriche bündig (MoodCard-`fill`-Flag, 7-Tage); „Was sich zeigt" neu
+  aufgeteilt (Text+Tags links, Mini-Karte rechts, kompaktes Teilen).
+- **Handoff-Sync (§10):** Favicon auf FAB-Optik (book-heart), TILE.gold/lila
+  korrigiert (+ Profil Klärung=Lila, Ritual-Verlauf=Clay), korrupter
+  `flame`-Pfad gefixt + Serie nutzt `award`, FAB-Verlauf 160deg.
+- **„Was sich zeigt"-Text:** showcaseInsight liefert zwei sich ergänzende,
+  datengetriebene Sätze (+ Bedürfnis- und Schreib-Konstanz-Quelle).
+- **Roter Faden:** `normalizeTopic()` führt Synonyme/Beugungen zusammen; Titel
+  bleibt die häufigste eigene Schreibweise.
+- **Tile-Relief:** auf die letzten flachen Icon-Kacheln (Impulse, Soforthilfe).
+- **Teilen-Karte:** 6 Auswahlbilder, davon 3 feste neutrale Naturbilder.
+
+**Bewusst offen / wartet:** „Neuer Eintrag"-Redesign (User holt dazu ein eigenes
+CD-Handoff ein); Gedankenschleife-Mobile bleibt wie gewünscht (kein 1:1-Handoff,
+da die aktuelle Ansicht ausdrücklich gefällt).
