@@ -499,3 +499,41 @@ export function buildPatternInsightsUser(
     .filter(Boolean)
     .join("\n\n");
 }
+
+// --- Zitat-Karte: KI-Vorschlag (Satz + Affirmation) -----------------------
+
+const SHARE_SUGGESTION_DIRECTIVE = `Aufgabe: Formuliere aus den Einträgen EINEN ruhigen Satz, der ein wiederkehrendes Thema oder eine Erkenntnis der Person spiegelt — für eine schöne, teilbare Zitat-Karte. Dazu eine kurze, sanfte Affirmation.
+
+Haltung:
+- Ruhig, wertschätzend, in der Sprache der Person (Deutsch). Nicht kitschig, nicht marktschreierisch, kein Coaching-Ton.
+- KEINE Diagnosen, keine Ratschläge, keine Versprechen, keine Bewertung. Nur spiegeln, was sich zeigt.
+- Persönlich verankert, aber allgemein genug, dass man es gern teilt.
+
+Feld "sentence":
+- Ein bis zwei kurze Sätze, höchstens ~90 Zeichen.
+- Markiere genau EIN zentrales Wort mit *Sternchen* (Akzentwort), z. B. "*Ruhe* ist keine Pause. Sie ist das Ziel."
+
+Feld "affirmation":
+- Kurzer "Ich …"-Satz, höchstens ~60 Zeichen, sanft und selbstmitfühlend (z. B. "Ich darf heute einfach sein.").`;
+
+const SHARE_SUGGESTION_JSON_CONTRACT = `Antworte AUSSCHLIESSLICH mit gültigem JSON, ohne Markdown, ohne Vor- oder Nachtext:
+{"sentence": "…", "affirmation": "…"}`;
+
+export function buildShareSuggestionSystem(style: ResponseStyle): string {
+  return [
+    BASE_SYSTEM_PROMPT,
+    "",
+    SHARE_SUGGESTION_DIRECTIVE,
+    styleInstruction(style),
+    "",
+    SHARE_SUGGESTION_JSON_CONTRACT,
+  ].join("\n");
+}
+
+export function buildShareSuggestionUser(entries: PatternEntryInput[]): string {
+  return [
+    `Anzahl Einträge: ${entries.length}. Spiegle das, was sich über sie hinweg durchzieht.`,
+    "Einträge (chronologisch):",
+    entries.map(formatPatternEntry).join("\n"),
+  ].join("\n\n");
+}

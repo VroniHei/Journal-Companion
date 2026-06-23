@@ -5,6 +5,35 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-23 — Zitat-Karte: KI-Vorschlag, echtes Logo, Bild-Pool
+
+**Was:** Drei Nachbesserungen an „Als Karte teilen" (`ShareCard.tsx`):
+
+1. **KI-Vorschlag funktional** (vorher Deko): neue Route `POST /api/share-suggestion`
+   (`routes/shareSuggestion.ts`, Builder `buildShareSuggestion*`, Typen
+   `ShareSuggestion*`, `apiClient.postShareSuggestion`). Erzeugt einen ruhigen,
+   personalisierten Satz (ein *Akzentwort*) + passende Affirmation aus den
+   Journal-Mustern. **On-demand** per Button (Datenschutz: Text geht nur auf Klick
+   an den Server). **Krisen-Heuristik** (`detectCrisis`) vorgeschaltet → bei
+   Krisensignalen sanfter Fallback statt KI (keine muntere Affirmation). Busy-/
+   Fehlerzustand im UI.
+2. **Echtes Logo statt Text**: Wortmarke `innerline-wordmark-light.svg` in der
+   DOM-Vorschau und im Canvas-Export (mit Text-Fallback), nicht mehr `<span>`-Text.
+3. **Bild-Pool statt Einzelbild**: `CARD_PHOTOS`-Liste (aktuell 7 Markenfotos,
+   `faden-weg.webp` ergänzt); pro Tag rotieren 3 Vorschläge (`dailyPhotos`,
+   deterministisch nach Datum), wählbar als neue **„Bild"-Optionen neben der
+   Farbwelt**. Foto entkoppelt vom Theme (Theme = nur Overlay/Akzent).
+
+**Warum:** Nutzer-Feedback — KI-Vorschlag ohne Funktion, Logo war Text, zu wenig
+Bildauswahl.
+
+**Status:** `build`/`lint`/`typecheck` grün. `therapist-safety` vorab (Vorschläge
+nicht-klinisch, kein Drängen; Krisen-Fallback). **Offen:** echter 30–40-Bilder-Pool
+braucht zusätzliche Fotos (aktuell nur 7 im Repo) — Mechanik skaliert, sobald
+Bilder unter `web/public/img/` ergänzt werden.
+
+---
+
 ## 2026-06-23 — Claude-Design Update Juni 2026 (7 Bereiche) eingebaut
 
 **Was:** Handoff `UPDATE-BRIEFING_JUNI-2026` (Quelle: `Innerline App.dc.html`)

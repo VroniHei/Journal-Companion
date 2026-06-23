@@ -425,6 +425,25 @@ export interface PatternInsightsResponse {
   patterns: PatternInsightDraft[];
 }
 
+// --- Zitat-Karte: KI-Vorschlag (Satz + Affirmation) -----------------------
+// Personalisierter, ruhiger Satz aus den Journal-Mustern + passende Affirmation
+// für die „Als Karte teilen"-Ansicht. On-demand (Datenschutz: Text verlässt das
+// Gerät nur auf Anforderung). Bei Krisensignalen sanfter Fallback statt KI.
+
+export interface ShareSuggestionRequest {
+  entries: PatternEntryInput[];
+  prefs: ResponsePrefs;
+}
+
+export interface ShareSuggestionResponse {
+  /** Kurzer, ruhiger Satz; ein *Akzentwort* mit Sternchen markiert. */
+  sentence: string;
+  /** Kurze, sanfte Affirmation („Ich …"). */
+  affirmation: string;
+  /** false, wenn Krisensignale erkannt wurden (sanfter Fallback ohne KI). */
+  safe: boolean;
+}
+
 // --- Offene Schleifen (Selbstführung „Klärung") ---------------------------
 // Leichte Erfassung innerer „offener Punkte", die Kopf-Raum belegen. Kein
 // To-do-Druck — ruhig, wertschätzend. Wird mitsynchronisiert.

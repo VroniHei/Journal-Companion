@@ -6,6 +6,8 @@ import type {
   PatternInsightsRequest,
   PatternInsightsResponse,
   ReflectRequest,
+  ShareSuggestionRequest,
+  ShareSuggestionResponse,
   SyncPullResponse,
   SyncRecord,
   WeeklyLetterResponse,
@@ -222,6 +224,23 @@ export async function postPatternInsights(
     );
   }
   return data as PatternInsightsResponse;
+}
+
+export async function postShareSuggestion(
+  body: ShareSuggestionRequest,
+): Promise<ShareSuggestionResponse> {
+  const res = await fetch("/api/share-suggestion", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(
+      (data as { error?: string }).error ?? `Fehler ${res.status}`,
+    );
+  }
+  return data as ShareSuggestionResponse;
 }
 
 export async function postVoiceReflect(

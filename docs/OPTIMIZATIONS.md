@@ -7,10 +7,11 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 ## Offen
 
-- 🟡 **Affirmation & „Dein Satz" wirklich KI-generieren:** Die Zitat-Karte zeigt
-  beide Felder mit `✦ KI-Vorschlag`-Optik, der Default ist aber statisch bzw. aus
-  dem letzten Eintrag. Sinnvoll: einen kurzen, personalisierten Satz + passende
-  Affirmation aus den Journal-Mustern serverseitig vorschlagen (wie Pattern-Insights).
+- 🟡 **Zitat-Karte: größerer Bild-Pool (30–40):** Mechanik steht (`CARD_PHOTOS`
+  + `dailyPhotos`, 3 wählbare Tagesvorschläge), aber im Repo liegen erst 7 nutzbare
+  Fotos. Für die gewünschte Vielfalt zusätzliche Markenfotos unter
+  `web/public/img/` ergänzen und in `CARD_PHOTOS` aufnehmen. Optional: Auswahl
+  stärker an Stimmung/Thema des Tages koppeln (statt reiner Datums-Rotation).
 - 🟢 **Mini-Karten-Schlüsselwort schärfen:** aktuell das häufigste Wort
   (`wordsOfWeek`). Könnte stärker an den „Roten Faden"/Top-Cluster gekoppelt
   werden, damit Mini-Karte und Themenliste dasselbe Leitwort zeigen.
@@ -62,6 +63,9 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 ## Erledigt
 
+- ✅ Zitat-Karte: **KI-Vorschlag** (Satz + Affirmation) serverseitig generiert
+  (`/api/share-suggestion`, on-demand, Krisen-Fallback); echtes Logo statt Text;
+  Bild-Pool mit 3 wählbaren Tagesvorschlägen. (2026-06-23)
 - ✅ Next.js auf gepatchte Version `^15.5.19` angehoben (CVE-2025-66478).
 - ✅ Engineering-Doku (`CLAUDE.md` + `docs/`) als selbstpflegendes Setup angelegt.
 - ✅ Automatik-Hooks: pre-commit (Lint/Typecheck-Gate) + Stop-Hook (Doku-Erinnerung).

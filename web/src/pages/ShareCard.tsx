@@ -1,7 +1,9 @@
 import { Fragment, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEntries } from "../hooks/useData";
+import { useEntries, useSettings } from "../hooks/useData";
 import { entrySummaryText } from "../lib/entryCard";
+import { toPrefs } from "../lib/settings";
+import { postShareSuggestion } from "../lib/apiClient";
 import { DictationButton } from "../components/DictationButton";
 import { DesktopModal } from "../components/DesktopModal";
 
@@ -22,14 +24,41 @@ interface Theme {
   accent: string;
   meta: string;
   divider: string;
-  photo?: string; // Hintergrundbild (Claude Design: zitat-weg.webp)
   overlay?: [string, string]; // dunkles Overlay über dem Foto (Lesbarkeit)
 }
 
-// Master-Modell: die Karte zeigt IMMER dasselbe Foto (zitat-weg.webp); die
-// Farbwelt wechselt nur das getönte Overlay + die Akzentfarbe. Quote/Meta bleiben
-// hell (Foto ist dunkel getönt). Vier Welten: Tag · Abend · Natur · Klar.
-const CARD_PHOTO = "/img/zitat-weg.webp";
+// Logo der Karte (helle Wortmarke für die dunkel getönten Fotos).
+const CARD_LOGO = "/innerline-wordmark-light.svg";
+const CARD_LOGO_RATIO = 1200 / 305.7; // viewBox der Wortmarke (Breite/Höhe)
+
+// Bild-Pool für die Karte (Claude Design): mehrere Markenfotos. Jeden Tag wird
+// ein anderer 3er-Satz vorgeschlagen (deterministisch nach Datum); die Farbwelt
+// steuert nur Overlay + Akzent. Pool ist bewusst eine einfache Liste — neue
+// Fotos unter `web/public/img/` ablegen und hier ergänzen, dann wachsen die
+// Vorschläge automatisch mit.
+const CARD_PHOTOS = [
+  "/img/zitat-weg.webp",
+  "/img/faden-weg.webp",
+  "/img/hero-see.webp",
+  "/img/journaling-desk.webp",
+  "/img/notebook-still.webp",
+  "/img/journal-mat.webp",
+  "/img/welcome-still.webp",
+];
+
+// Tage seit Epoche (lokale Mitternacht) — stabiler Tages-Index für die Rotation.
+function dayIndex(): number {
+  const now = new Date();
+  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.floor(midnight.getTime() / 86_400_000);
+}
+
+// Drei Bildvorschläge für heute: deterministisch rotierend, ohne Dopplung.
+function dailyPhotos(seed = dayIndex(), count = 3): string[] {
+  const n = CARD_PHOTOS.length;
+  const start = ((seed % n) + n) % n;
+  return Array.from({ length: Math.min(count, n) }, (_, i) => CARD_PHOTOS[(start + i) % n]);
+}
 
 function world(
   id: ThemeId,
@@ -44,7 +73,6 @@ function world(
     label,
     swatch,
     bg: ["#3a4a2c", "#23291a"],
-    photo: CARD_PHOTO,
     overlay,
     quote: "#F8F5EE",
     eyebrow,
@@ -129,10 +157,15 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 export function ShareCard() {
   const navigate = useNavigate();
   const entries = useEntries();
+  const settings = useSettings();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [themeId, setThemeId] = useState<ThemeId>("tag");
   const [formatId, setFormatId] = useState<FormatId>("story");
   const [busy, setBusy] = useState(false);
+
+  // Bildvorschläge für heute (3 wechselnde aus dem Pool) + aktuelle Auswahl.
+  const todaysPhotos = useMemo(() => dailyPhotos(), []);
+  const [photo, setPhoto] = useState(() => todaysPhotos[0]);
 
   // Default-Satz: aus dem letzten Eintrag, sonst ruhiger Fallback mit Akzentwort.
   const defaultQuote = useMemo(() => {
@@ -147,15 +180,47 @@ export function ShareCard() {
   // Zeile verschwindet von der Karte.
   const [affirmation, setAffirmation] = useState("Ich darf heute einfach sein.");
 
+  // KI-Vorschlag (on-demand): personalisierter Satz + Affirmation aus den
+  // Journal-Mustern. Datenschutz: Eintragstext geht nur auf Klick an den Server.
+  const [aiBusy, setAiBusy] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  async function suggest() {
+    if (aiBusy || entries.length === 0) return;
+    setAiBusy(true);
+    setAiError(null);
+    try {
+      const inputs = entries.slice(0, 20).map((e) => ({
+        id: e.id,
+        createdAt: e.createdAt,
+        mood: e.mood,
+        intensity: e.intensity,
+        emotions: e.emotions,
+        bodySignals: e.bodySignals,
+        topics: e.topics,
+        needs: e.needs,
+        impulse: e.impulse,
+        text: e.text.slice(0, 600),
+      }));
+      const r = await postShareSuggestion({ entries: inputs, prefs: toPrefs(settings) });
+      setQuote(r.sentence.slice(0, 160));
+      setAffirmation(r.affirmation.slice(0, 80));
+    } catch (err) {
+      setAiError(err instanceof Error ? err.message : "Vorschlag fehlgeschlagen.");
+    } finally {
+      setAiBusy(false);
+    }
+  }
+
   const theme = THEMES.find((t) => t.id === themeId) ?? THEMES[0];
   const format = FORMATS.find((f) => f.id === formatId) ?? FORMATS[0];
 
   async function drawCard(ctx: CanvasRenderingContext2D, w: number, h: number) {
-    // Hintergrund: Foto (Claude Design) mit dunklem Overlay, sonst Verlauf.
+    // Hintergrund: gewähltes Foto mit dunklem Overlay, sonst Verlauf.
     let drewPhoto = false;
-    if (theme.photo) {
+    if (photo) {
       try {
-        const im = await loadImage(theme.photo);
+        const im = await loadImage(photo);
         const ir = im.width / im.height;
         const cr = w / h;
         let sw: number, sh: number, sx: number, sy: number;
@@ -193,11 +258,18 @@ export function ShareCard() {
     const font = (size: number, weight: number) =>
       `${weight} ${size}px Figtree, system-ui, sans-serif`;
 
-    // Wortmarke oben links.
-    ctx.fillStyle = theme.quote;
-    ctx.font = font(Math.round(w * 0.03), 700);
-    ctx.textBaseline = "top";
-    ctx.fillText("innerline", pad, pad);
+    // Wortmarke oben links: echtes Logo-SVG, mit Text-Fallback.
+    try {
+      const logo = await loadImage(CARD_LOGO);
+      const lh = Math.round(w * 0.05);
+      const lw = Math.round(lh * CARD_LOGO_RATIO);
+      ctx.drawImage(logo, pad, pad, lw, lh);
+    } catch {
+      ctx.fillStyle = theme.quote;
+      ctx.font = font(Math.round(w * 0.03), 700);
+      ctx.textBaseline = "top";
+      ctx.fillText("innerline", pad, pad);
+    }
 
     // Eyebrow (über dem Zitat).
     const quoteSize = formatId === "quer" ? Math.round(h * 0.072) : Math.round(w * 0.066);
@@ -330,27 +402,26 @@ export function ShareCard() {
         className="relative mx-auto w-full max-w-[360px] overflow-hidden rounded-[22px] shadow-[0_18px_40px_rgba(35,34,26,.16)] [container-type:size]"
         style={{ aspectRatio: aspect, background: `linear-gradient(140deg, ${theme.bg[0]}, ${theme.bg[1]})` }}
       >
-        {theme.photo && (
-          <>
-            <img
-              src={theme.photo}
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-cover"
-              style={{ objectPosition: "center 60%" }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background: `linear-gradient(180deg, ${theme.overlay?.[0] ?? "rgba(18,15,9,.25)"}, ${theme.overlay?.[1] ?? "rgba(18,15,9,.6)"})`,
-              }}
-            />
-          </>
-        )}
+        <img
+          src={photo}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: "center 60%" }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(180deg, ${theme.overlay?.[0] ?? "rgba(18,15,9,.25)"}, ${theme.overlay?.[1] ?? "rgba(18,15,9,.6)"})`,
+          }}
+        />
         <div className="relative flex h-full flex-col justify-between p-[7%]">
-          <span className="text-[3cqw] font-bold" style={{ color: theme.quote }}>
-            innerline
-          </span>
+          <img
+            src={CARD_LOGO}
+            alt="innerline"
+            className="self-start"
+            style={{ width: "26%", height: "auto", filter: "drop-shadow(0 1px 2px rgba(0,0,0,.22))" }}
+          />
           <div>
             <div
               className="mb-[3%] inline-flex items-center gap-1.5 text-[2.6cqw] font-semibold uppercase tracking-[0.2em]"
@@ -391,12 +462,22 @@ export function ShareCard() {
           <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
             Dein Satz
           </span>
-          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--green-text,#447510)]">
+          <button
+            type="button"
+            onClick={suggest}
+            disabled={aiBusy || entries.length === 0}
+            title={
+              entries.length === 0
+                ? "Noch keine Einträge für einen Vorschlag"
+                : "Satz & Affirmation aus deinen Mustern vorschlagen"
+            }
+            className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold text-[var(--green-text,#447510)] transition hover:bg-[#F2F6E8] disabled:opacity-50"
+          >
             <svg viewBox="0 0 20 20" fill="none" stroke="#A8E84F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="11" height="11" aria-hidden="true">
               <path d="M10 2v16M2 10h16" />
             </svg>
-            KI-Vorschlag
-          </span>
+            {aiBusy ? "Schlage vor …" : "KI-Vorschlag"}
+          </button>
         </div>
         <textarea
           value={quote}
@@ -406,7 +487,7 @@ export function ShareCard() {
         />
         <div className="mt-2 flex items-center justify-between gap-3">
           <span className="text-[12px] text-[#9a917f]">
-            Ein Wort mit *Sternchen* wird hervorgehoben.
+            {aiError ?? "Ein Wort mit *Sternchen* wird hervorgehoben."}
           </span>
           <DictationButton
             value={quote}
@@ -472,6 +553,35 @@ export function ShareCard() {
                 >
                   {f.label}
                 </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Bild — drei Tagesvorschläge aus dem Pool (wechseln täglich) */}
+      <div>
+        <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
+          Bild
+        </div>
+        <div className="flex gap-3">
+          {todaysPhotos.map((p) => {
+            const active = p === photo;
+            return (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setPhoto(p)}
+                aria-label="Hintergrundbild wählen"
+                aria-pressed={active}
+                className="relative h-[58px] w-[46px] flex-none overflow-hidden rounded-[10px] transition"
+                style={{
+                  boxShadow: active
+                    ? "0 0 0 2px var(--surface), 0 0 0 4px #A8E84F"
+                    : "0 2px 8px rgba(35,34,26,.14)",
+                }}
+              >
+                <img src={p} alt="" aria-hidden="true" className="h-full w-full object-cover" style={{ objectPosition: "center 60%" }} />
               </button>
             );
           })}

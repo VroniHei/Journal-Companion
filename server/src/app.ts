@@ -9,6 +9,7 @@ import { voiceReflectRouter } from "./routes/voiceReflect";
 import { ttsRouter } from "./routes/tts";
 import { sttRouter } from "./routes/stt";
 import { patternInsightsRouter } from "./routes/patternInsights";
+import { shareSuggestionRouter } from "./routes/shareSuggestion";
 import { syncRouter } from "./routes/sync";
 import { titleRouter } from "./routes/title";
 
@@ -53,6 +54,7 @@ app.use("/api", voiceReflectRouter);
 app.use("/api", ttsRouter);
 app.use("/api", sttRouter);
 app.use("/api", patternInsightsRouter);
+app.use("/api", shareSuggestionRouter);
 app.use("/api", syncRouter);
 app.use("/api", titleRouter);
 
