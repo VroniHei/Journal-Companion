@@ -1,5 +1,6 @@
 import { FormattedText } from "./FormattedText";
 import { SpeakButton } from "./SpeakButton";
+import { HelpLine } from "./HelpLine";
 
 export function ReflectionView({
   text,
@@ -30,6 +31,9 @@ export function ReflectionView({
         <FormattedText text={text} className="text-[15px]" />
       ) : (
         <div className="text-[15px] text-[var(--muted)]">…</div>
+      )}
+      {text && (
+        <HelpLine className="mt-4 border-t border-[var(--border)] pt-3" />
       )}
     </div>
   );

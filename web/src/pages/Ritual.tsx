@@ -1,8 +1,10 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { detectCrisis } from "@journal/shared/crisis";
 import { Button } from "../components/ui";
 import { DesktopModal } from "../components/DesktopModal";
 import { DictationButton } from "../components/DictationButton";
+import { CrisisNotice } from "../components/CrisisNotice";
 import { useDailyRitual, useEntries, useRestDays } from "../hooks/useData";
 import { dayKey, syncRitualEntry, upsertDailyRitual } from "../db/queries";
 import { isEveningNow, ritualTheme } from "../lib/daypart";
@@ -306,6 +308,12 @@ export function Ritual() {
   const hero = HERO[period];
   const step = open + 1;
   const allAnswered = questions.every((q) => q.answered);
+  // Krisen-Check über alle Ritual-Freitexte (auch dieser Pfad umging das Netz).
+  const crisis = detectCrisis(
+    [...gratitude, makeGreat, affirmation, goodDeed, better, ...moments].join(
+      " ",
+    ),
+  );
 
   function finish() {
     commit();
@@ -670,6 +678,8 @@ export function Ritual() {
           );
         })}
       </div>
+
+      <CrisisNotice level={crisis.level} className="mt-4" />
 
       <div className="space-y-1.5 pt-1">
         <div className="flex flex-wrap items-center gap-3">

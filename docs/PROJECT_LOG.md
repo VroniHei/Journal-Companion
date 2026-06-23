@@ -1278,3 +1278,30 @@ Desktop-„Was sich zeigt"-Kachel exakt ans Master-Markup angeglichen
 Die frühere Variante (nur Label + Fließtext + ein Link, Mini-Karte/Tags bewusst
 entfernt) war ein abgenommener Zwischenstand, deckte sich aber nicht mit dem
 finalen Master. Build/Typecheck/Lint grün (0 Warnungen).
+
+## 2026-06-23 (Forts. 5) — Krisennetz geschlossen (Audit §A, Sicherheit)
+
+Zuerst `therapist-safety`-Check durchlaufen (Pflicht). Dann die im Psychologie-
+Audit gefundenen 🔴-Sicherheitslücken geschlossen:
+
+- **Krisen-Logik zentral in `shared/src/crisis.ts`** (eine Quelle für Server +
+  Web; `server/src/safety/crisis.ts` re-exportiert nur noch). Subpath-Export
+  `@journal/shared/crisis` — löst in Vite, tsc UND esbuild-Bundle auf (verifiziert).
+- **Zwei-Stufen-Heuristik** (angelehnt an therapist-safety Risk-Level): `acute`
+  (Level 3–4, fester Block + `CRISIS_MESSAGE`) und neu `concern` (Level 2,
+  weicher `CONCERN_MESSAGE`, KEIN Block). Muster erweitert um passive
+  Suizidalität/indirekte Hilferufe („besser ohne mich", „keiner würde mich
+  vermissen", „nur eine Last", „lieber tot") + Überlastungs-/Aufgeben-Signale.
+  `flagged` bleibt nur bei `acute` → Server-Verhalten rückwärtskompatibel.
+- **Client-Krisen-Check** (`CrisisNotice`, live am Textfeld) jetzt in **Relief**
+  (beide Speicher-Wege, vorher ungeschützt), **Loosen** und **Ritual**-Feldern —
+  blockt den Ausdruck nicht, macht aber Hilfe sichtbar.
+- **Immer sichtbarer Hilfe-Anker** (`HelpLine`, antippbare tel:-Nummern) in
+  Soforthilfe-Fuß, unter jeder Begleiter-Reflexion (`ReflectionView`) und im
+  `DisclaimerGate`.
+- **8 Krisen-Tests grün** (inkl. neuer passiver/weicher Fälle + Abgrenzung
+  „nicht mehr schlafen" ≠ Krise). Build/Lint/Typecheck/esbuild grün.
+
+**Noch offen aus §A (nächste kleine Schritte):** nicht-blockierende Hilfe-Karte
+bei mood ≤2 + intensity ≥9; Streak-Sprache entschärfen („endet heute Nacht" →
+einladend; warmer Re-Entry nach Lücken).

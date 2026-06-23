@@ -31,4 +31,26 @@ describe("detectCrisis", () => {
       false,
     );
   });
+
+  it("flaggt passive Suizidalität / indirekte Hilferufe als akut", () => {
+    expect(detectCrisis("vielleicht wäre es besser ohne mich").level).toBe(
+      "acute",
+    );
+    expect(detectCrisis("keiner würde mich vermissen").level).toBe("acute");
+    expect(detectCrisis("ich bin für alle nur eine Last").level).toBe("acute");
+    expect(detectCrisis("ich wäre lieber tot").level).toBe("acute");
+  });
+
+  it("erkennt Überlastung als weiche Stufe (concern, nicht blockierend)", () => {
+    const r = detectCrisis("ich kann einfach nicht mehr");
+    expect(r.level).toBe("concern");
+    expect(r.flagged).toBe(false); // weiche Stufe blockt NICHT
+    expect(detectCrisis("ich gebe auf").level).toBe("concern");
+    expect(detectCrisis("das alles ist so sinnlos").level).toBe("concern");
+  });
+
+  it("verwechselt Überlastung-Sätze nicht mit Krise", () => {
+    expect(detectCrisis("ich kann nicht mehr schlafen").level).toBe("none");
+    expect(detectCrisis("ich halte das nicht aus").level).toBe("none");
+  });
 });

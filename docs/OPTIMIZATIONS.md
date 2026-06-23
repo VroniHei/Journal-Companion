@@ -128,6 +128,12 @@ offene Optimierungs-Backlog, priorisiert und entdoppelt.
 
 ### A · Psychologie & emotionale Sicherheit (höchste Priorität)
 
+> **Stand 2026-06-23 — Krisennetz geschlossen (s. PROJECT_LOG):** ✅ Krisen-Check
+> jetzt in Relief/Loosen/Ritual (vorher umgangen) · ✅ Heuristik um passive
+> Hilferufe + weiche 2. Stufe (`concern`) erweitert · ✅ immer sichtbarer
+> Hilfe-Anker (Soforthilfe/Reflexion/Disclaimer). **Offen:** Hilfe-Karte bei
+> mood ≤2 + intensity ≥9; Streak-Sprache entschärfen.
+
 - 🔴 **Krisennetz greift nicht überall:** `detectCrisis()` läuft nur in
   reflect/chat/contact-impulse/voiceReflect. **Nicht** in Soforthilfe „nur
   rauslassen" (`Relief.tsx:117`, Intensität-Default 7 = riskanteste Stelle),

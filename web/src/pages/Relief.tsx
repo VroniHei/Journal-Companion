@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { detectCrisis } from "@journal/shared/crisis";
 import { createEntry } from "../db/queries";
 import { DictationButton } from "../components/DictationButton";
 import { DesktopModal } from "../components/DesktopModal";
+import { CrisisNotice } from "../components/CrisisNotice";
+import { HelpLine } from "../components/HelpLine";
 import { tileRelief } from "../components/tile";
 
 // „Gerade ist viel" — Soforthilfe für den überfüllten Moment: Kopf leeren,
@@ -11,6 +14,9 @@ export function Relief() {
   const navigate = useNavigate();
   const [text, setText] = useState("");
   const [saving, setSaving] = useState(false);
+  // Krisen-Check direkt am Text — greift unabhängig davon, ob „sortieren" oder
+  // „nur rauslassen" gewählt wird (dieser Pfad umging das Sicherheitsnetz).
+  const crisis = detectCrisis(text);
 
   async function save(sort: boolean) {
     const body = text.trim();
@@ -100,6 +106,8 @@ export function Relief() {
           </p>
         </div>
 
+        <CrisisNotice level={crisis.level} className="mt-[14px]" />
+
         <div className="mt-[14px]">
           <button
             type="button"
@@ -124,6 +132,8 @@ export function Relief() {
             </button>
           </div>
         </div>
+
+        <HelpLine className="mt-6 text-center" />
       </div>
     </section>
     </DesktopModal>

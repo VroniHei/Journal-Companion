@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { detectCrisis } from "@journal/shared/crisis";
 import { recordStabilityMoment } from "../db/queries";
 import { DictationButton } from "../components/DictationButton";
 import { DesktopModal } from "../components/DesktopModal";
+import { CrisisNotice } from "../components/CrisisNotice";
 import { Icon } from "../components/icons";
 import { ICONS } from "../components/iconset";
 
@@ -36,6 +38,7 @@ export function Loosen() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState(["", "", ""]);
   const [done, setDone] = useState(false);
+  const crisis = detectCrisis(answers.join(" "));
 
   function setAnswer(i: number, v: string) {
     setAnswers((a) => a.map((x, j) => (j === i ? v : x)));
@@ -199,6 +202,8 @@ export function Loosen() {
                 );
               })}
             </div>
+
+            <CrisisNotice level={crisis.level} className="mt-4" />
 
             <button
               type="button"

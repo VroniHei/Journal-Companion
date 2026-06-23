@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { acceptDisclaimer, isDisclaimerAccepted } from "../lib/disclaimer";
 import { Button } from "./ui";
+import { HelpLine } from "./HelpLine";
 
 export function DisclaimerGate() {
   const [accepted, setAccepted] = useState(isDisclaimerAccepted);
@@ -17,6 +18,9 @@ export function DisclaimerGate() {
           Gerät gespeichert. Wenn du die KI-Funktionen nutzt, werden die
           jeweiligen Inhalte zur Verarbeitung an die Claude-API gesendet.
         </p>
+        <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-3">
+          <HelpLine />
+        </div>
         <div className="mt-5 flex justify-end">
           <Button
             onClick={() => {
