@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
 import { tileRelief } from "./tile";
+import { ICONS } from "./iconset";
 
 // FAB-Auswahl „Was möchtest du tun?" — schließt die größte Navigations-Lücke
 // (kein unklares Direkt-Springen in einen Eintrag). Mobile = Bottom-Sheet,
-// Desktop = zentriertes Modal über gedimmtem Dashboard. (Innerline App.dc.html)
+// Desktop = zentriertes Modal über gedimmtem Dashboard. Icons + Farben 1:1 aus
+// der Vorlage (Innerline App.dc.html, §17 FAB-Auswahl).
 
 interface Option {
   to: string;
@@ -13,6 +15,10 @@ interface Option {
   icon: ReactNode;
   iconBg: string;
   iconColor: string;
+  /** Optionaler exakter Kachel-Verlauf (sonst tileRelief(iconBg)). */
+  iconTile?: string;
+  /** Optionale Karten-Randfarbe (sonst neutraler Standard). */
+  cardBorder?: string;
   highlight?: boolean;
 }
 
@@ -24,12 +30,7 @@ const OPTIONS: Option[] = [
     iconBg: "#fff",
     iconColor: "#6E9B2C",
     highlight: true,
-    icon: (
-      <>
-        <path d="M12 20h9" />
-        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
-      </>
-    ),
+    icon: ICONS.pen,
   },
   {
     to: "/sprechen",
@@ -37,12 +38,7 @@ const OPTIONS: Option[] = [
     subtitle: "Einsprechen, ich sortiere es",
     iconBg: "#F6ECE2",
     iconColor: "#CD8A5B",
-    icon: (
-      <>
-        <rect x="9" y="3" width="6" height="11" rx="3" />
-        <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" />
-      </>
-    ),
+    icon: ICONS.mic,
   },
   {
     to: "/ritual",
@@ -50,12 +46,8 @@ const OPTIONS: Option[] = [
     subtitle: "Sechs Minuten, die den Tag sortieren",
     iconBg: "#F6ECE2",
     iconColor: "#CD8A5B",
-    icon: (
-      <>
-        <path d="M3 18h18M5.6 18a6.4 6.4 0 0 1 12.8 0" />
-        <path d="M12 4.5v2.4M5 9l1.6 1.2M19 9l-1.6 1.2" />
-      </>
-    ),
+    iconTile: "linear-gradient(145deg,#F6ECE2,#EFEFE0)",
+    icon: ICONS.sun,
   },
   {
     to: "/schleife",
@@ -74,9 +66,10 @@ const OPTIONS: Option[] = [
     to: "/soforthilfe",
     title: "Gerade ist viel",
     subtitle: "Kopf leeren, wenn alles gleichzeitig ist",
-    iconBg: "#EFEAF7",
+    iconBg: "#DDCFEF",
     iconColor: "#7a6b96",
-    icon: <path d="M12 3v3M5 8l2 2M19 8l-2 2M3 16h4l2 4 4-12 2 6h6" />,
+    cardBorder: "rgba(203,190,244,.4)",
+    icon: ICONS.brain,
   },
 ];
 
@@ -134,7 +127,7 @@ export function FabSheet({ open, onClose }: { open: boolean; onClose: () => void
                     }
                   : {
                       background: "var(--surface)",
-                      borderColor: "rgba(35,34,26,.08)",
+                      borderColor: o.cardBorder ?? "rgba(35,34,26,.08)",
                       boxShadow: "0 4px 14px rgba(35,34,26,.04)",
                     }
               }
@@ -148,10 +141,17 @@ export function FabSheet({ open, onClose }: { open: boolean; onClose: () => void
                         color: o.iconColor,
                         boxShadow: "0 3px 10px rgba(110,155,44,.18)",
                       }
-                    : { ...tileRelief(o.iconBg), color: o.iconColor }
+                    : o.iconTile
+                      ? {
+                          background: o.iconTile,
+                          color: o.iconColor,
+                          boxShadow:
+                            "0 2px 6px rgba(35,34,26,.07), inset 0 1px 0 rgba(255,255,255,.55)",
+                        }
+                      : { ...tileRelief(o.iconBg), color: o.iconColor }
                 }
               >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
                   {o.icon}
                 </svg>
               </span>
