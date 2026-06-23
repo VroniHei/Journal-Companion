@@ -118,3 +118,121 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
   tileRelief in eigene Nicht-Komponenten-Datei auslagern, damit Fast-Refresh
   sauber bleibt (kein Fehler, nur Warnung).
 - 🟢 **Bundle-Größe** >500 KB: Code-Splitting per Route (`React.lazy`) erwägen.
+
+## Gesamt-Audit 2026-06-23 (UI/UX · Brand · Psychologie)
+
+Vier-Linsen-Review der kompletten App (alle 22 Seiten Desktop+Mobile, Shell,
+Microcopy, Begleiter-Prompts, Krisen-Heuristik). **Teil „Entdopplung" ist
+erledigt** (`lib/colors.ts`, `KIND_DOT` zentral — s. PROJECT_LOG). Hier der
+offene Optimierungs-Backlog, priorisiert und entdoppelt.
+
+### A · Psychologie & emotionale Sicherheit (höchste Priorität)
+
+- 🔴 **Krisennetz greift nicht überall:** `detectCrisis()` läuft nur in
+  reflect/chat/contact-impulse/voiceReflect. **Nicht** in Soforthilfe „nur
+  rauslassen" (`Relief.tsx:117`, Intensität-Default 7 = riskanteste Stelle),
+  Gedankenschleife (`Loosen.tsx`) und Ritual-Reflexionsfeldern (`Ritual.tsx`).
+  → `detectCrisis` (reine clientfähige Regex) auf alle substanziellen
+  Freitextfelder anwenden, bei Treffer `CRISIS_MESSAGE` einblenden.
+- 🔴 **Heuristik-Lücken** (`server/src/safety/crisis.ts:21`): passive/indirekte
+  Hilferufe fehlen („ich kann nicht mehr", „es soll aufhören", „besser ohne
+  mich", „alle nur eine Last", Mittel/Plan/Abschied, engl. Formulierungen).
+  → Pattern-Liste erweitern + **zweite, weiche Stufe** (kein Block, aber warmer
+  Zusatzhinweis + TelefonSeelsorge 0800 111 0 111).
+- 🔴 **Kein Safety-Net bei mood ≤2 + intensity ≥9:** nicht-blockierende Hilfe-
+  Karte ergänzen (`builders.ts:105` schaltet nur „kürzer", ohne Eskalation).
+- 🔴 **Hilfe-Anker unsichtbar:** Krisennummer nur tief in Settings
+  (`Settings.tsx:383`), nicht im Disclaimer-Gate. → dezente, immer erreichbare
+  „Akute Hilfe"-Zeile (Soforthilfe-Fuß, Reflexions-Footer) + 1 Satz im
+  `DisclaimerGate.tsx`.
+- 🟡 **Streak erzeugt Leistungsdruck/Scham:** „X Tage · endet heute Nacht"
+  (`Dashboard.tsx:859`, Verlust-Aversion), Milestones bis 365 (`insights.ts:101`)
+  belohnen App-Nutzung statt Selbstführung (Widerspruch zu `microcopy.ts:3`),
+  harter Fall auf 0 ohne Auffang-Text. → einladend statt drohend formulieren,
+  warmer Re-Entry-Text nach Lücken (Self-Compassion: erhöht Wiederaufnahme).
+- 🟡 **Reflexion enthält Direktiven** trotz „keine Ratschläge": „nächster
+  Schritt" als Pflicht (`systemPrompt.ts:19`, `builders.ts:50`). → als freiwillige
+  Einladung/Frage formulieren oder Außenkommunikation präzisieren.
+- 🟡 **Intensität-Default 7 in Soforthilfe** (`Relief.tsx:28`) = Fremdzuschreibung;
+  neutral defaulten (`null`) oder aus Mood-Auswertungen ausschließen.
+- 🟢 Energie-Label „leer" → „sehr wenig" (sanfter); Ironie-Zeile
+  `microcopy.ts:20` bei mood ≤3 durch warme Variante ersetzen; `TYPE_LABEL`
+  Muster-Etiketten (`Patterns.tsx:59`) weicher (Hypothese statt Festschreibung).
+
+### B · Brand & Verbal Identity
+
+- 🔴 **Doppelname:** Default `APP_NAME = "Journal Companion"` (`appName.ts:3`)
+  widerspricht der Marke „Innerline" (Logo/Favicon/Onboarding). → Default auf
+  „Innerline", „Journal Companion" nur intern.
+- 🔴 **„Quarantäne"** (`ContactImpulse.tsx:90,245`) = klinisch/kalt. → „Liegen
+  lassen" / „Schutzraum" / „Ruht bis morgen früh".
+- 🟡 **„Soforthilfe"-Route** (`router.tsx:48`) = Notfall-Sprache, kollidiert mit
+  dem warmen UI-Wording „Kopf leeren". → Route `kopf-leeren`.
+- 🟡 **Begleiter namenlos** („dein Begleiter") = verschenkte Differenzierung;
+  „Vroni Voice 5.0" existiert im Prompt. → eigene ruhige Benennung erwägen.
+- 🟡 **Toncbrüche/Denglisch:** „die Akte" + ironische Klammer (`microcopy.ts:20`,
+  bricht eigene Prompt-Regel), „High-Quality-Modus" (`Settings.tsx:128`) →
+  „Gründlicher Modus"; „Hej" als Zufallsbeimischung (`Dashboard.tsx:77`).
+- 🟡 **Modell-Hint widerspricht CLAUDE.md:** „Sonnet ist Standard, kosteneffizient"
+  (`Settings.tsx:103`) — Default ist `claude-opus-4-8`; nutzerzentriert texten.
+- 🟢 **Eintrag vs. Notiz** bewusst trennen; **Tagesritual**-Schreibweise
+  vereinheitlichen; **Favicon (Lime) vs. Wortmarke (Forest/Clay)** teilen keine
+  Farbe — bewusst entscheiden.
+- 🟢 **Claim verankern** (z.B. „sortieren, bevor du reagierst") — bündelt die
+  „Selbstführung statt Performance"-Position. **Personalisierte Defaults**
+  (`Vroni`, `Lukas`, `vroni-*`-Bildpool) sind Skalierungs-Blocker, falls über
+  Einzelnutzerin hinaus.
+
+### C · UI/UX (seitenübergreifend)
+
+- 🔴 **Touch-Targets <44px global:** Basis-`Button` (`ui.tsx:53`, ~38px),
+  `Chips`/Scale-Kreise (`NewEntry`), Inputs (`Clarity.tsx:21`), Range-/Feedback-/
+  Filter-Buttons (Patterns, WeeklyReview, Archive). → an der Quelle `py-3`.
+- 🔴 **Doppelte Exit-Affordanzen:** Topbar-Zurück + eigenes Schließen-X auf
+  Tool-/Modal-Seiten (ShareCard, Energy, Relief, Impulses, EntryDetail) —
+  navigieren teils unterschiedlich. → X nur im `DesktopModal`-Kontext.
+- 🔴 **VoiceCheckin + ContactImpulse alte UI-Generation** (`rounded-lg`,
+  transparente Inputs) — sichtbarster Stilbruch. → auf neuen App-Style heben.
+- 🟡 **„Große Zahl"-Pattern dreifach uneinheitlich:** 46px (Dashboard) / 40px
+  (Patterns) / 26px (WeeklyReview). → 2-stufige Skala definieren.
+- 🟡 **Patterns untere Hälfte „alt"** (`Patterns.tsx:467`, generische Card/Stat
+  vs. Bento oben) — an obere Designsprache angleichen.
+- 🟡 **WeeklyReview:** Range-Auswahl steuert Kennzahlen, aber MoodCard fix 14
+  Tage + Titel „Diese Woche" entkoppelt (`WeeklyReview.tsx:187,240`); Control
+  steht zudem unter den gesteuerten Inhalten.
+- 🟡 **Settings:** native `alert`/`confirm` (`:51,66`) brechen den ruhigen Ton →
+  Inline-Status; Section-Titel ohne Hierarchie; native Mini-Checkboxen.
+- 🟡 **EntryDetail:** Default-Tab „reflexion" landet bei leeren Einträgen im
+  Leerzustand → bei fehlender Reflexion „eintrag" defaulten; Fehlermeldung
+  außerhalb des Viewports nach Scroll.
+- 🟡 **Archive:** Monatsgruppen ohne Jahr (Dez 2025/2024 verschmelzen),
+  Filter-Chips als Inline-`style` (3 verschiedene Chip-Implementierungen).
+- 🟢 Empty-States mit CTA (Archive/RitualHistory/Search-Idle); Suchtreffer-Grid
+  `lg:grid-cols-3` (wie Archive); Ritual „Schritt X von 3" an `answered` koppeln
+  statt an Sichtbarkeit; Eyebrow-Größen-Drift (11 vs 11.5px) vereinheitlichen.
+
+### D · Code-Qualität / Sicherheit / weitere Entdopplung
+
+- 🔴 **`dangerouslySetInnerHTML`** für KI-/Nutzer-Text in `RedThread.tsx:92` +
+  `Progress.tsx:87` (XSS-Risiko) → sicheren `withAccents()`-Helfer nutzen (wie
+  WeeklyLetter).
+- 🟡 **Farben als Hex statt Tokens** in 14+ Dateien (`#9a917f` Tertiärgrau
+  dutzendfach, `#5d4f3f`, `#6a5a48`, `#b0a896`) — eigenes undokumentiertes
+  Graustufenset neben `--muted`. → Tokens `--muted-2`/`--ink-faint`. CTA-Gradient
+  `180deg,#B4ED63,#A8E84F` 15× inline → 1 Utility/Token.
+- 🟡 **Inline-SVGs statt Icon-System:** Pfeil 10×, Schließen-X 6×, Häkchen 7×,
+  Upload mehrfach → in `iconset.tsx` ergänzen. „Als Karte teilen"/„Roter Faden"-
+  Block dupliziert (Dashboard×2 + Patterns) → `<ShareCardLink/>`.
+- 🟡 **`TILE`/`CLUSTER`/impulsePacks-Farben** 3 Varianten derselben Bereichs-
+  sprache (`Layout.tsx:25`, `Impulses.tsx:13`, `impulsePacks.ts:14`); doppelte
+  Sparkline (`Progress.tsx:29` vs `MoodCard.tsx:51`); `dayLabel` vs `formatShort`.
+- 🟢 **6 byte-identische Bild-Paare** (~0,5 MB), alle referenziert. **Verdächtig:**
+  `vroni-journaling-schreibtisch.webp` == `vroni-lesen-fenster.webp` (gleicher
+  Inhalt, verschiedene Namen = wahrscheinlich Inhalts-Fehler). → fachlich klären,
+  dann konsolidieren oder korrektes 2. Foto einsetzen. (Nicht eigenmächtig
+  gelöscht.) Paare: about-weg=faden-weg, claim-weg=welcome-still,
+  about-notebook-still=notebook-still, about-journal-mat=journal-mat,
+  about-claim-see=hero-see.
+- 🟢 `FabSheet.tsx:121` `p-[14px_15px]` fragiles Arbitrary → `px-/py-` trennen
+  (auch Relief/Energy); doppelter `aria-label="Schließen"` (Scrim+X);
+  `DesktopModal` ohne Fokus-Trap/Scroll-Lock.
