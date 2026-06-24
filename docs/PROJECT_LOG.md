@@ -5,6 +5,29 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-24 — Production-Hotfix: Serverless-Funktion stürzte beim Start ab
+
+**Was:** Auf Vercel lieferte **jede** `/api/*`-Route 500 (Reflexion „kaputt",
+Geräte-Sync zeigte fälschlich „nicht eingerichtet"). Ursache: Die gebündelte
+Funktion (`api/_server-app.mjs`) importierte zur Laufzeit
+`@journal/shared/crisis` → wegen `--packages=external` blieb der Workspace-Import
+extern und löste auf die **TS-Quelle** `shared/src/crisis.ts` auf, die im
+Vercel-Runtime nicht existiert → `ERR_MODULE_NOT_FOUND` beim Start.
+
+**Warum jetzt:** `server/src/safety/crisis.ts` re-exportiert seit Kurzem
+`@journal/shared/crisis` als **echten Laufzeitwert** (vorher waren alle
+`@journal/shared`-Importe `import type` → vom Build entfernt, daher unsichtbar).
+
+**Fix:** esbuild-Build in `vercel.json` so erweitert, dass der Workspace-Code
+mit eingebündelt wird (npm-Pakete bleiben extern):
+`--alias:@journal/shared=./shared/src/types.ts`
+`--alias:@journal/shared/crisis=./shared/src/crisis.ts`.
+
+**Ergebnis/Status:** Verifiziert — neues Bundle enthält **0** verbleibende
+`@journal`-Importe, startet lokal sauber (`/api/config` 200). Lint + Typecheck +
+Build grün. Geht mit dem nächsten `main`-Deploy live; behebt Reflexion **und**
+Sync-Anzeige in einem.
+
 ## 2026-06-23 — App-weiter Mindestschriftgrößen-Pass (UI/UX/Lesbarkeit)
 
 **Was:** Klare Floors gesetzt und app-weit durchgezogen (31 Dateien, 1:1-Swaps):

@@ -18,6 +18,22 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ## Technische Learnings
 
+- **Monorepo-Workspace-Importe müssen ins Vercel-Bundle.** Der Server-Build
+  nutzt `esbuild --packages=external` (npm-Pakete bleiben extern, in
+  `node_modules`). Das externalisiert aber **auch** `@journal/shared`, dessen
+  `exports` auf **TS-Quellen** zeigen (`./src/*.ts`). Solange `@journal/shared`
+  nur `import type` genutzt wird, ist das egal (Typimporte werden entfernt).
+  Sobald ein **Laufzeitwert** importiert wird (z. B. `crisis`), sucht die
+  Funktion zur Laufzeit eine `.ts`, die es im Vercel-Runtime nicht gibt →
+  `ERR_MODULE_NOT_FOUND`, ganze Funktion stürzt ab (alle `/api/*` = 500). Fix:
+  Workspace-Pakete per `--alias:@journal/shared=./shared/src/types.ts` (+ Subpfad
+  `…/crisis`) **mit einbündeln**. Faustregel: Bricht „alles auf einmal" auf
+  Vercel, aber lokal nicht → erst `…/api/health` aufrufen (gibt `INIT_ERROR` +
+  Stacktrace aus), bevor man Env/Config verdächtigt.
+- **„Sync off" kann ein Folgefehler sein.** Der Client setzt `hasSync:false`
+  auch, wenn `/api/config` *scheitert* (catch-Fallback in `apiClient.ts`). Ein
+  Totalausfall der Funktion sieht damit identisch aus wie „Sync nicht
+  konfiguriert" — nicht in die Irre führen lassen.
 - **SDK `@anthropic-ai/sdk` 0.69.x** typisiert `thinking: {type: "adaptive"}`
   noch nicht (`Type '"adaptive"' is not assignable to ...`). Lösung vorerst:
   Thinking-Parameter weglassen (für kurze Reflexionen unkritisch). Bei

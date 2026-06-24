@@ -7,6 +7,17 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 ## Offen
 
+- 🟡 **Build-Härtung gegen Workspace-Laufzeitimporte:** Der `--alias`-Fix in
+  `vercel.json` ist gezielt, aber jedes **neue** Subpfad-Export aus
+  `@journal/shared` (außer `.`/`crisis`) bräuchte einen weiteren Alias, sonst
+  droht derselbe `ERR_MODULE_NOT_FOUND`-Absturz. Robustere Optionen: (a)
+  `@journal/shared` als echtes Paket nach JS kompilieren (eigener Build-Step,
+  `exports` auf `dist/*.js` statt `src/*.ts`), oder (b) Server-Build ohne
+  `--packages=external` voll bündeln. Bis dahin: bei neuen Shared-Exports an den
+  Alias denken.
+- 🟡 **Smoke-Test für `/api/health` nach Deploy:** Ein winziger Post-Deploy-Check
+  (CI oder manuell) gegen `…/api/health` hätte den Totalausfall sofort sichtbar
+  gemacht, statt ihn als „Sync kaputt" zu erleben. Optional als GitHub-Action.
 - 🟢 **Zitat-Karte: Bildauswahl an Stimmung/Thema koppeln:** Pool ist jetzt groß
   (40 Fotos, `CARD_PHOTOS` + `dailyPhotos`, 3 Tagesvorschläge), aber die Auswahl
   rotiert rein nach Datum. Optional die 3 Vorschläge stärker an Stimmung/Top-Thema
