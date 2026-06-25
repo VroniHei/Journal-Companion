@@ -83,6 +83,28 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
   + `withAccents` verwenden. **Seed = Tag + Datenmenge** (`+ entries.length`),
   damit sich der Satz nicht nur täglich, sondern auch bei Datenänderung sichtbar
   ändert — sonst wirkt er trotz Datengetriebenheit „fix".
+- **Immersive Kopfzeile = gleiche Elemente, nur Leiste weg.** Auf dem Dashboard
+  (`location.pathname === "/"`) wird die mobile Kopfzeile `absolute` + transparent
+  (helle Wortmarke, Glas-Suche, Avatar mit weißem Rand) und schwebt über dem Foto;
+  sonst solide Leiste. Logo links / Suche + Avatar rechts bleiben an **derselben
+  Position** — so wirkt der Seitenwechsel ruhig. Wichtig: Suche/Avatar/Logo waren
+  schon global, nur die Leiste fällt weg.
+- **Mini-/Teilen-Karte aus EINER Quelle.** Schlüsselwort + Seed der „Was sich
+  zeigt"-Karten zentral in `lib/insights.ts` (`showcaseSeed`/`showcaseKeyword`).
+  Vorher berechneten Dashboard und Muster eigene Seeds/Wortlisten → unterschiedliche
+  Karten. Gemeinsame Helfer = identische Karte auf allen Seiten und „ändert sich
+  mit den Daten" bleibt erhalten.
+- **Text an Kartenbreite anpassen statt abschneiden.** `ThemeMiniCard` verkleinert
+  lange Wörter proportional (Schwellenlänge je `fill`, Untergrenze 0.58·wordSize,
+  `white-space:nowrap`). Reine Längen-Heuristik (keine DOM-Messung) — reicht für
+  die dekorative Vorschau, vermeidet Überlauf ohne Glyph-Verzerrung.
+- **Wortmarke gibt es in zwei Farbvarianten.** `innerline-wordmark.svg` (dunkel,
+  Akzentlinie Clay) für helle Flächen, `innerline-wordmark-light.svg` (hell) fürs
+  Foto. Akzent-/Markenfarben in BEIDEN pflegen — die helle Variante hatte den
+  Akzent noch in Grün statt Clay.
+- **Abend-Bild ist gekoppelt.** `zitat-weg.webp` (Bergpfad) dient sowohl als
+  Abend-Hero als auch als Mini-Karten-Foto. Wenn das Bild getauscht wird, beide
+  Verwendungen bedenken.
 
 ## 2026-06-23 (Claude-Design Update)
 

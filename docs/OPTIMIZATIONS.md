@@ -22,9 +22,26 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
   (40 Fotos, `CARD_PHOTOS` + `dailyPhotos`, 3 Tagesvorschläge), aber die Auswahl
   rotiert rein nach Datum. Optional die 3 Vorschläge stärker an Stimmung/Top-Thema
   des Tages ausrichten (z. B. Landschaft bei „leicht", Stillleben bei „schwer").
-- 🟢 **Mini-Karten-Schlüsselwort schärfen:** aktuell das häufigste Wort
-  (`wordsOfWeek`). Könnte stärker an den „Roten Faden"/Top-Cluster gekoppelt
-  werden, damit Mini-Karte und Themenliste dasselbe Leitwort zeigen.
+- 🟢 **Mini-Karten-Schlüsselwort schärfen:** seit 2026-06-25 zentral
+  (`showcaseKeyword`/`showcaseSeed` in `lib/insights.ts`) und auf Dashboard +
+  Muster identisch; rotiert mit dem Seed durch die Top-Themen. **Offen:** noch
+  stärker an den „Roten Faden"/Top-Cluster koppeln, damit Mini-Karte und
+  Themenliste exakt dasselbe Leitwort zeigen.
+- 🟢 **Teilen-Karte auch auf „Roter Faden"/Spur:** dort wird `ThemeMiniCard`
+  aktuell nicht genutzt. Für ein durchgängiges Teilen-Erlebnis könnte die Seite
+  dieselbe Karte (aus `showcaseKeyword`) bekommen.
+- 🟢 **`ThemeMiniCard`-Auto-Fit ist Heuristik:** Wortgröße wird per Zeichenzahl
+  geschätzt (`maxChars`/Untergrenze), nicht gemessen. Für Extremfälle (sehr breite
+  Karte, sehr langes Wort) ggf. messbasiert verfeinern (Canvas-Textbreite oder
+  `ResizeObserver`), statt fester Schwellen.
+- 🟢 **Tageszeit-Schwellen hardcodiert:** `timeOfDay()` (Dashboard) nutzt feste
+  Grenzen (11/17 Uhr) für Morgen/Tag/Abend. Falls gewünscht später konfigurierbar
+  oder an die Wunsch-Ritualzeit koppeln.
+- 🟢 **Fokus-Modell vereinheitlicht (Doku-Hinweis):** Der Dashboard-Fokus kommt
+  seit 2026-06-25 primär aus `settings.focusArea` (Ritual `makeGreat` überschreibt
+  für den Tag). Das löst die frühere Entscheidung „Fokus = reines Tagesergebnis"
+  (LEARNINGS 2026-06-23) ab. Optional: den Ritual-Schritt „Was macht den Tag gut?"
+  klarer als „Tagesfokus" benennen, damit beide Quellen erkennbar zusammenpassen.
 - 🟡 **Themen-Normalisierung für den Roten Faden:** aktuell clustern `topics`
   nur per `toLowerCase`. Synonyme/Beugungen („Arbeit"/„Job", „Trennung"/
   „Trennungen") landen in getrennten Fäden. Optional: leichte Stemming-/
