@@ -106,7 +106,9 @@ const EMPTY_CONTENT = {
 const MORGEN_SCRIM =
   "linear-gradient(180deg, rgba(58,40,26,.38) 0%, rgba(58,40,26,.08) 20%, rgba(56,38,24,.48) 46%, rgba(50,34,21,.78) 66%, rgba(40,27,16,.95) 100%)";
 const ABEND_SCRIM =
-  "linear-gradient(180deg, rgba(46,34,64,.42) 0%, rgba(46,34,64,.10) 20%, rgba(44,32,62,.52) 46%, rgba(34,26,52,.80) 66%, rgba(26,20,42,.95) 100%)";
+  // Klar flieder/violett (statt muddy-braun): Lese-Verlauf in Lila-Tönen plus
+  // eine flache Flieder-Tönung, die das warme Foto Richtung Abend zieht.
+  "linear-gradient(180deg, rgba(96,78,150,.44) 0%, rgba(124,104,184,.16) 20%, rgba(92,72,148,.54) 46%, rgba(68,50,116,.80) 66%, rgba(52,38,92,.95) 100%), linear-gradient(rgba(150,130,205,.22), rgba(150,130,205,.22))";
 
 // Tageszeit-Glas-Icon (Hero, §6): volle Lucide-Sonne (Morgen/Tag) bzw. Mond
 // (Abend), 1:1 nach Vorlage. stroke-width 1.5, currentColor.
@@ -392,10 +394,11 @@ export function Dashboard() {
             className="absolute inset-0"
             style={{ background: isAbend ? ABEND_SCRIM : MORGEN_SCRIM }}
           />
-          {/* Begrüßungsblock, vertikal zentriert (top 60 lässt die App-Kopfzeile frei). */}
+          {/* Begrüßungsblock, vertikal zentriert (top 60 lässt die App-Kopfzeile
+              frei; bottom 40 lässt unten Luft für den gerundeten Übergang). */}
           <div
             className="absolute left-5 right-5 flex flex-col justify-center"
-            style={{ top: 60, bottom: 18 }}
+            style={{ top: 60, bottom: 40 }}
           >
             <div className="inline-flex items-center gap-[9px]">
               <span
@@ -529,13 +532,17 @@ export function Dashboard() {
           </div>
         </div>
 
-        {/* Dünner Rundungs-Übergang vom Foto zur Creme-Fläche (§10.2). */}
+        {/* Rundungs-Übergang vom Foto zur Creme-Fläche: eine creme Fläche, die
+            mit klar gerundeter Oberkante über das Foto steigt; weicher Schatten
+            an der Kante, damit die Rundung sichtbar wird (statt flacher Linie). */}
         <div
           style={{
-            marginTop: -24,
-            height: 24,
+            position: "relative",
+            marginTop: -34,
+            height: 36,
             background: "#F8F5EE",
-            borderRadius: "24px 24px 0 0",
+            borderRadius: "30px 30px 0 0",
+            boxShadow: "0 -12px 26px rgba(35,34,26,.14)",
           }}
         />
       </div>
@@ -555,7 +562,7 @@ export function Dashboard() {
           className="absolute inset-0"
           style={{
             background: isAbend
-              ? "linear-gradient(100deg, rgba(34,26,52,.9) 0%, rgba(34,26,52,.62) 52%, rgba(34,26,52,.22) 100%)"
+              ? "linear-gradient(100deg, rgba(58,42,98,.9) 0%, rgba(72,54,118,.6) 52%, rgba(96,78,150,.24) 100%), linear-gradient(rgba(150,130,205,.16), rgba(150,130,205,.16))"
               : "linear-gradient(100deg, rgba(28,33,22,.9) 0%, rgba(28,33,22,.62) 52%, rgba(28,33,22,.22) 100%)",
           }}
         />
@@ -827,46 +834,47 @@ export function Dashboard() {
                 </svg>
               )}
             </div>
-            <div className="inline-flex items-center gap-2">
-              <span
-                className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.2em]"
-                style={{ color: ritualT.eyebrow }}
-              >
-                Tagesritual
-              </span>
-              <span
-                className="whitespace-nowrap border-l pl-2 text-[11px] font-semibold"
-                style={{
-                  color: ritualMorning ? "#b08a64" : "#8a7da8",
-                  borderColor: ritualMorning
-                    ? "rgba(205,138,91,0.3)"
-                    : "rgba(157,139,201,0.35)",
-                }}
-              >
-                6 Min
-              </span>
+            {/* Eyebrow + Status gestapelt: Status steht direkt unter „Tagesritual"
+                (§5, Reihenfolge Eyebrow → Status). */}
+            <div className="min-w-0">
+              <div className="inline-flex items-center gap-2">
+                <span
+                  className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.2em]"
+                  style={{ color: ritualT.eyebrow }}
+                >
+                  Tagesritual
+                </span>
+                <span
+                  className="whitespace-nowrap border-l pl-2 text-[11px] font-semibold"
+                  style={{
+                    color: ritualMorning ? "#b08a64" : "#8a7da8",
+                    borderColor: ritualMorning
+                      ? "rgba(205,138,91,0.3)"
+                      : "rgba(157,139,201,0.35)",
+                  }}
+                >
+                  6 Min
+                </span>
+              </div>
+              <div className="mt-1 text-[11.5px] font-semibold leading-tight">
+                {ritualFilled ? (
+                  <span style={{ color: "var(--green-text,#447510)" }}>
+                    Heute erledigt
+                    <span style={{ fontWeight: 500 }}> · automatisch gesichert</span>
+                  </span>
+                ) : (
+                  <span style={{ color: ritualT.eyebrow }}>
+                    Heute noch offen
+                    <span style={{ fontWeight: 500, opacity: 0.78 }}> · kein Muss</span>
+                  </span>
+                )}
+              </div>
             </div>
             </div>
 
             {ritualFilled ? (
               /* ===== Erledigt-Zustand (Recap nach Claude-Design) ===== */
               <>
-                <div className="mb-3 flex items-center gap-2 text-[13px] font-semibold text-[var(--green-text,#447510)]">
-                  <span
-                    className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-full"
-                    style={{ background: "linear-gradient(135deg,#B4ED63,#A8E84F)" }}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#23221A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" width="11" height="11">
-                      <path d="M5 12l5 5L20 6" />
-                    </svg>
-                  </span>
-                  Heute erledigt
-                  <span style={{ color: "#b08a64", fontWeight: 500 }}>
-                    {" "}
-                    · automatisch gesichert
-                  </span>
-                </div>
-
                 <h2
                   className="serif mb-3 text-[24px] font-semibold leading-tight sm:text-[26px]"
                   style={{ color: ritualT.title }}
@@ -898,7 +906,11 @@ export function Dashboard() {
                             className="mt-0.5 text-[13.5px] leading-[1.4] text-[#4a4034]"
                             style={
                               ritualMorning && i === 2
-                                ? { fontFamily: "var(--font-serif)", fontStyle: "italic" }
+                                ? {
+                                    fontFamily: "var(--font-serif)",
+                                    fontStyle: "italic",
+                                    fontSize: "15.5px",
+                                  }
                                 : undefined
                             }
                           >
@@ -943,18 +955,6 @@ export function Dashboard() {
             ) : (
               /* ===== Offen-Zustand ===== */
               <>
-                <div
-                  className="mb-3 flex items-center text-[13px] font-semibold"
-                  style={{ color: ritualT.eyebrow }}
-                >
-                  {/* Kein Punkt davor (§5). */}
-                  Heute noch offen
-                  <span style={{ color: "#b08a64", fontWeight: 500 }}>
-                    {" "}
-                    · kein Muss
-                  </span>
-                </div>
-
                 <h2
                   className="serif mb-2 text-[24px] font-semibold leading-tight sm:text-[26px]"
                   style={{ color: ritualT.title }}
