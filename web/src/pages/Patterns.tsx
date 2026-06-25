@@ -319,15 +319,18 @@ export function Patterns() {
   const words = wordsOfWeek(entries);
   const streak = computeStreak(entries, restDays.map((r) => r.date));
 
+  // Seed = Tag + Datenlage: rotiert täglich UND ändert sich sichtbar, sobald
+  // sich die Einträge ändern (statt immer denselben Satz/dasselbe Wort).
+  const wsSeed = Math.floor(Date.now() / 86_400_000) + entries.length;
+
   // Schlüsselwort für die Mini-Karten-Vorschau in „Was sich zeigt" (Claude
-  // Design §6): häufigstes Wort, großgeschrieben.
-  const keyword = words[0]?.word ?? "Ruhe";
+  // Design §6): rotiert mit dem Seed durch die Top-Themen, großgeschrieben.
+  const keyword = words.length ? words[wsSeed % words.length].word : "Ruhe";
   const keywordCap = keyword.charAt(0).toUpperCase() + keyword.slice(1);
 
-  // „Was sich zeigt"-Kachel: datengetriebene Einsicht mit .g-Akzent, täglich
-  // rotierend (seed = Tag).
+  // „Was sich zeigt"-Kachel: datengetriebene Einsicht mit .g-Akzent.
   const wsHtml =
-    showcaseInsight(entries, Math.floor(Date.now() / 86_400_000)) ??
+    showcaseInsight(entries, wsSeed) ??
     "Sobald sich Themen über mehrere Einträge wiederholen, zeigt sich hier, was sich *durchzieht*.";
 
   return (
@@ -367,11 +370,11 @@ export function Patterns() {
           <p className="text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]">
             {withAccents(wsHtml, "ws")}
           </p>
-          {/* Fokus-Themen: einzeilig (Master §6: flex-wrap nowrap, overflow
-              hidden — kein Umbruch, längere Worte werden beschnitten). */}
+          {/* Fokus-Themen: höchstens 3, mit Umbruch statt Beschnitt — so wird
+              nie ein Wort abgeschnitten. mb gibt Luft zum Trennstrich darunter. */}
           {words.length > 0 && (
-            <div className="mt-3 flex gap-[7px] overflow-hidden">
-              {words.slice(0, 5).map((w) => (
+            <div className="mb-5 mt-3 flex flex-wrap gap-[7px]">
+              {words.slice(0, 3).map((w) => (
                 <span
                   key={w.word}
                   className="whitespace-nowrap rounded-full bg-[#F1ECE0] px-3 py-1.5 text-[12.5px] font-medium text-[#5d4f3f]"
@@ -418,7 +421,10 @@ export function Patterns() {
           to="/verlauf"
           className="lift flex flex-col rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[18px] shadow-[var(--shadow-card)] lg:col-span-4"
         >
-          <div className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+          {/* Navigations-Karte: „Verlauf ansehen" als echter Titel (größer, nicht
+              als Mini-Eyebrow) — wirkt runder und passt optisch zu den anderen
+              Kacheln. */}
+          <div className="mb-1.5 text-[16px] font-[650] tracking-[-0.01em] text-[var(--foreground)]">
             Verlauf ansehen
           </div>
           <p className="text-[14px] leading-[1.5] text-[var(--muted)]">

@@ -11,7 +11,8 @@ import { dayKey, listPatternsDesc, savePattern, toDigest } from "../db/queries";
 import { toPrefs } from "../lib/settings";
 import { postWeeklyReview } from "../lib/apiClient";
 import { aggregate } from "../lib/patterns";
-import { buildInsights, computeStreak, wordsOfWeek } from "../lib/insights";
+import { computeStreak, showcaseInsight, wordsOfWeek } from "../lib/insights";
+import { withAccents } from "../lib/accents";
 import { createId, nowIso } from "../lib/ids";
 import { formatDate } from "../lib/format";
 import { downloadPatternMarkdown } from "../lib/export";
@@ -46,7 +47,13 @@ export function WeeklyReview() {
 
   // Ruhige Zusammenfassung (Prototyp): Kennzahlen + Insight + Worte der Woche.
   const streak = computeStreak(entries, restDays.map((r) => r.date));
-  const insights = buildInsights(inRange);
+  // „Im Kern": datengetriebene Einsicht mit Kursiv-Akzent. Seed = Tag +
+  // Datenlage (Einträge im Zeitraum) — ändert sich sichtbar mit den Daten,
+  // statt immer denselben Satz („… am höchsten") zu zeigen.
+  const coreInsight = showcaseInsight(
+    inRange,
+    Math.floor(Date.now() / 86_400_000) + inRange.length,
+  );
   const ritualDays =
     useLiveQuery(async () => {
       const since = dayKey(start);
@@ -149,7 +156,9 @@ export function WeeklyReview() {
               Im Kern
             </div>
             <p className="lead text-[19px] leading-[1.5] text-[var(--foreground)]">
-              {insights[0] ?? (
+              {coreInsight ? (
+                withAccents(coreInsight, "wr-core")
+              ) : (
                 <>
                   Sobald sich über die Woche etwas wiederholt, fasse ich es hier{" "}
                   <em className="g">ruhig</em> zusammen.

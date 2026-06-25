@@ -5,6 +5,33 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-25 — Ritual-Medaillon, Fokus-Verdrahtung, „Was sich zeigt" datengetrieben
+
+**Was:** Mehrere Korrekturen aus dem Review:
+- **Tagesritual-Karte (mobil):** Foto raus → themed Medaillon (Tageszeit-Farbe
+  via `ritualT.badge`): offen = Sonne (Tag) / Mond (Abend), erledigt = Häkchen;
+  gold/clay morgens, lilac abends. Eyebrow immer „Tagesritual · 6 Min".
+- **Wortmarke (hell):** Akzentlinie von Grün `#A8E84F` → Clay `#CD8A5B`
+  (`innerline-wordmark-light.svg`), passend zur dunklen Variante.
+- **Fokus-Chip:** liest jetzt `settings.focusArea` (Onboarding/Einstellungen) als
+  Basis, `ritual.makeGreat` überschreibt für den Tag. Empty-State verlinkt auf
+  die Einstellungen („Fokus setzen"). Vorher wurde der in den Einstellungen
+  gesetzte Fokus nirgends übernommen.
+- **„Was sich zeigt" (Dashboard + Muster) & „Im Kern" (Rückblick):** waren
+  scheinbar statisch. Ursache: Rückblick nutzte `buildInsights()[0]` (ohne Akzent,
+  ohne Rotation, als Plain-Text). Jetzt überall `showcaseInsight` mit Kursiv-
+  Akzent; Seed = Tag + Einträge-Anzahl → ändert sich sichtbar mit der Datenlage.
+  Mini-Karten-Schlüsselwort rotiert durch die Top-Themen statt immer dasselbe
+  Wort.
+- **Muster-Kachel „Was sich zeigt":** Tags auf max. 3 begrenzt + Umbruch (kein
+  Beschnitt mehr), mehr Abstand zum Trennstrich; „Verlauf ansehen" als echter
+  Titel (größer) statt Mini-Eyebrow.
+
+**Ergebnis:** `typecheck`/`lint`/`build` grün; alle Punkte per Playwright
+(Mobile + Desktop, Seed-Daten) visuell geprüft.
+
+---
+
 ## 2026-06-25 — Immersive Dashboard-Kopfzeile (mobil) + Abend-Bergpfad
 
 **Was:** (1) Abend-Hero nutzt jetzt das Bergpfad-Foto `zitat-weg.webp` (ruhiges

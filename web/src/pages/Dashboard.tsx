@@ -313,8 +313,11 @@ export function Dashboard() {
   }
   const week = recentStats(entries, 7);
   const moodDays = moodByDay(entries, 7);
-  // „Was sich zeigt": datengetriebene Einsicht mit .g-Akzent, täglich rotierend.
-  const showcase = showcaseInsight(entries, dayIndex());
+  // „Was sich zeigt": datengetriebene Einsicht mit .g-Akzent. Seed = Tag +
+  // Datenlage (Einträge-Anzahl), damit der Satz nicht nur täglich rotiert,
+  // sondern sich auch sichtbar ändert, sobald sich die Einträge ändern.
+  const showSeed = dayIndex() + entries.length;
+  const showcase = showcaseInsight(entries, showSeed);
   // Worte der Woche für die „Was sich zeigt"-Karte (Claude Design).
   const topWords = wordsOfWeek(entries, 4).map((w) => w.word);
   const ritualMorning = tod !== "abend";
@@ -327,9 +330,14 @@ export function Dashboard() {
   // Fokus-Chip (Claude Design Juni 2026): kein eigener Onboarding-Wert mehr,
   // sondern Output des Tagesrituals (Schritt „Was macht den Tag gut?" = Fokus).
   // Zwei Zustände: gesetzt → Chip mit Fokus-Text; offen → leiser Hinweis.
-  const todayFocus = ritual?.makeGreat?.trim();
-  // Schlüsselwort für die Mini-Karten-Vorschau („Was sich zeigt").
-  const keyword = topWords[0] ?? "Heute";
+  // Fokus-Quelle: persönlicher Fokus aus Onboarding/Einstellungen
+  // (`settings.focusArea`) als Basis; die heutige Ritual-Antwort „Was macht den
+  // Tag gut?" (`makeGreat`) überschreibt ihn für den Tag, falls gesetzt. So wird
+  // ein in den Einstellungen gesetzter Fokus auch wirklich übernommen.
+  const todayFocus = ritual?.makeGreat?.trim() || settings.focusArea?.trim();
+  // Schlüsselwort für die Mini-Karten-Vorschau („Was sich zeigt") — rotiert
+  // mit demselben Seed durch die Top-Themen, statt immer dasselbe Wort zu zeigen.
+  const keyword = topWords.length ? topWords[showSeed % topWords.length] : "Heute";
   const keywordCap = keyword.charAt(0).toUpperCase() + keyword.slice(1);
 
   // Gesicherte Antworten für den Erledigt-Zustand der Tagesritual-Karte.
@@ -448,10 +456,12 @@ export function Dashboard() {
             borderRadius: "26px 26px 0 0",
           }}
         >
-          {/* Fokus-Chip (gekoppelt ans Ritual) */}
+          {/* Fokus-Chip: zeigt den persönlichen Fokus (Einstellungen/Onboarding,
+              ggf. vom Tagesritual überschrieben). Tippen → in den Einstellungen
+              ändern. */}
           {todayFocus ? (
             <Link
-              to="/ritual"
+              to="/einstellungen"
               className="mb-3.5 inline-flex max-w-full items-center gap-1.5 overflow-hidden rounded-full border px-3 py-1.5 text-[13px] font-medium text-[#5d4f3f] transition hover:opacity-80"
               style={{ background: "#EFE4CF", borderColor: "rgba(120,86,52,0.2)" }}
             >
@@ -460,12 +470,12 @@ export function Dashboard() {
             </Link>
           ) : (
             <Link
-              to="/ritual"
+              to="/einstellungen"
               className="mb-3.5 inline-flex items-center gap-1.5 rounded-full border border-dashed px-3 py-1.5 text-[13px] font-medium text-[#b0a896] transition hover:opacity-80"
               style={{ borderColor: "rgba(35,34,26,.16)" }}
             >
               <span className="h-[7px] w-[7px] rounded-full" style={{ background: "#E0D8CE" }} />
-              Fokus heute noch offen · im Ritual setzen
+              Fokus setzen · in den Einstellungen
             </Link>
           )}
 
@@ -591,7 +601,7 @@ export function Dashboard() {
               und ohne Stift (kompakter auf dem dunklen Foto). */}
           {todayFocus ? (
             <Link
-              to="/ritual"
+              to="/einstellungen"
               aria-label={`Dein Fokus: ${todayFocus}`}
               className="mt-5 inline-flex max-w-[400px] items-center gap-[9px] overflow-hidden rounded-full border py-2 pl-3.5 pr-[18px] text-[13.5px] font-medium transition hover:opacity-90"
               style={{
@@ -605,11 +615,11 @@ export function Dashboard() {
             </Link>
           ) : (
             <Link
-              to="/ritual"
+              to="/einstellungen"
               className="mt-5 inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-dashed px-[15px] py-[7px] text-[13px] font-medium transition hover:opacity-90"
               style={{ color: "rgba(255,248,236,.35)", borderColor: "rgba(255,248,236,.2)" }}
             >
-              Fokus noch offen · im Ritual setzen
+              Fokus setzen · in den Einstellungen
             </Link>
           )}
         </div>
@@ -741,56 +751,26 @@ export function Dashboard() {
         />
         <div className="relative flex items-stretch">
           <div className="min-w-0 flex-1 p-7 sm:p-8">
-            {/* Badge — mobil: Eyebrow oben, Meta kleiner darunter (kein Umbruch
-                in der Pille); ab sm: alles in einer Pille. */}
+            {/* Kopf: themed Medaillon + Eyebrow „Tagesritual · 6 Min".
+                Medaillon (Tageszeit-Farbe): offen = Sonne (Tag) / Mond (Abend),
+                erledigt = Häkchen. Kein Foto mehr. */}
             <div className="mb-4 flex items-center gap-3">
-            {/* Mobile-Medaillon: erledigt → Clay-Medaillon mit weißem Häkchen
-                (§5); offen → 46px Notizbuch-Foto. */}
-            {ritualFilled ? (
-              <div
-                className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full text-white sm:hidden"
-                style={{
-                  background: "linear-gradient(145deg,#D89A6A,#CD8A5B)",
-                  boxShadow: "0 6px 16px rgba(205,138,91,.32)",
-                }}
-                aria-hidden="true"
-              >
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <div
+              className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full text-white"
+              style={{
+                background: ritualT.badge,
+                boxShadow: ritualMorning
+                  ? "0 6px 16px rgba(205,138,91,.30)"
+                  : "0 6px 16px rgba(157,139,201,.34)",
+              }}
+              aria-hidden="true"
+            >
+              {ritualFilled ? (
+                <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12.5l4 4 10-10" />
                 </svg>
-              </div>
-            ) : (
-              <div className="group h-[46px] w-[46px] flex-none overflow-hidden rounded-[14px] sm:hidden">
-                <img
-                  src="/img/journaling-desk.webp"
-                  alt=""
-                  aria-hidden="true"
-                  className="img-zoom h-full w-full object-cover"
-                />
-              </div>
-            )}
-            <div
-              className="inline-flex items-center gap-2.5 rounded-full border py-1.5 pl-2 pr-3"
-              style={{
-                background: "rgba(255,255,255,0.7)",
-                borderColor: "rgba(205,138,91,0.3)",
-              }}
-            >
-              <span
-                className="flex h-[22px] w-[22px] items-center justify-center rounded-full text-white"
-                style={{ background: ritualT.badge }}
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  width="13"
-                  height="13"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
+              ) : (
+                <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   {ritualMorning ? (
                     <>
                       <path d="M3 18h18M5.6 18a6.4 6.4 0 0 1 12.8 0" />
@@ -800,26 +780,26 @@ export function Dashboard() {
                     <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z" />
                   )}
                 </svg>
-              </span>
+              )}
+            </div>
+            <div className="inline-flex items-center gap-2">
               <span
                 className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.2em]"
                 style={{ color: ritualT.eyebrow }}
               >
-                {/* Mobil kürzer, damit der Kopf einzeilig bleibt. */}
-                <span className="sm:hidden">Tagesritual</span>
-                <span className="hidden sm:inline">Tägliches Ritual</span>
+                Tagesritual
               </span>
-              {/* „6 Min" nur morgens (Abend = nur „Tagesritual", §5). */}
-              {ritualMorning && (
               <span
                 className="whitespace-nowrap border-l pl-2 text-[11px] font-semibold"
-                style={{ color: "#b08a64", borderColor: "rgba(205,138,91,0.3)" }}
+                style={{
+                  color: ritualMorning ? "#b08a64" : "#8a7da8",
+                  borderColor: ritualMorning
+                    ? "rgba(205,138,91,0.3)"
+                    : "rgba(157,139,201,0.35)",
+                }}
               >
-                {/* Mobil kurz „6 Min", Desktop mit Zusatz — einzeilig. */}
-                <span className="sm:hidden">6 Min</span>
-                <span className="hidden sm:inline">6 Min · Dein Begleiter</span>
+                6 Min
               </span>
-              )}
             </div>
             </div>
 

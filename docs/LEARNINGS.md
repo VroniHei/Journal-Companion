@@ -73,6 +73,16 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 - **Volle Lucide-Sonne ≠ iconset-`sun`.** Das Projekt-`iconset.sun` ist eine
   Sunrise-Variante; der Hero braucht die volle Sonne mit allen Strahlen → eigene
   `TimeOfDayGlyph`-Komponente mit den exakten Pfaden aus der Spec (§6).
+- **Zwei „Fokus"-Begriffe nicht verwechseln.** `settings.focusArea` (persistent,
+  Onboarding/Einstellungen) vs. `ritual.makeGreat` (Tagesritual-Antwort). Der
+  Dashboard-Chip las nur `makeGreat` → ein in den Einstellungen gesetzter Fokus
+  wurde nie angezeigt. Lösung: `makeGreat || focusArea`, Empty-State → Einstellungen.
+- **„Statische" Einsicht-Kacheln:** Rückblick nutzte `buildInsights()[0]` (kein
+  `*…*`-Akzent, keine Rotation, plain gerendert), während Dashboard/Muster
+  `showcaseInsight` nutzen (Akzent + Seed-Rotation). Einheitlich `showcaseInsight`
+  + `withAccents` verwenden. **Seed = Tag + Datenmenge** (`+ entries.length`),
+  damit sich der Satz nicht nur täglich, sondern auch bei Datenänderung sichtbar
+  ändert — sonst wirkt er trotz Datengetriebenheit „fix".
 
 ## 2026-06-23 (Claude-Design Update)
 
