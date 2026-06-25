@@ -118,7 +118,7 @@ export function ContactImpulse() {
             onChange={(e) => setSituation(e.target.value)}
             rows={4}
             placeholder="Was möchtest du schreiben – und warum gerade jetzt?"
-            className="w-full resize-y rounded-lg border border-[var(--border)] bg-transparent p-3 text-sm outline-none focus:border-[var(--accent)]"
+            className="w-full resize-y rounded-[18px] border border-[var(--border)] bg-[var(--surface)] p-4 text-[15px] leading-[1.6] text-[var(--foreground)] outline-none transition placeholder:text-[#9a917f] focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_rgba(168,232,79,.18)]"
           />
           <div className="mt-2">
             <DictationButton value={situation} onChange={setSituation} />
@@ -147,7 +147,7 @@ export function ContactImpulse() {
             onChange={(e) => setDraft(e.target.value)}
             rows={3}
             placeholder="Falls du schon Worte hast – hier rein (wird nicht gesendet)."
-            className="w-full resize-y rounded-lg border border-[var(--border)] bg-transparent p-3 text-sm outline-none focus:border-[var(--accent)]"
+            className="w-full resize-y rounded-[18px] border border-[var(--border)] bg-[var(--surface)] p-4 text-[15px] leading-[1.6] text-[var(--foreground)] outline-none transition placeholder:text-[#9a917f] focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_rgba(168,232,79,.18)]"
           />
         </div>
 
@@ -232,7 +232,7 @@ export function ContactImpulse() {
           </div>
 
           {result.draftMessage && (
-            <div className="rounded-lg border-l-2 border-l-[var(--accent)] bg-[var(--surface-2)] p-3">
+            <div className="rounded-[16px] border-l-2 border-l-[var(--accent)] bg-[var(--surface-2)] p-4">
               <p className="mb-1 text-[13px] font-medium uppercase tracking-wide text-[var(--accent-text)]">
                 Würdevolle Kurzversion
               </p>
