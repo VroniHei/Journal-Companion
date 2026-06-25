@@ -5,6 +5,25 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-25 — Immersive Dashboard-Kopfzeile (mobil) + Abend-Bergpfad
+
+**Was:** (1) Abend-Hero nutzt jetzt das Bergpfad-Foto `zitat-weg.webp` (ruhiges
+Abendlicht, ohne „roten Faden"); Morgen/Tag wie gehabt. (2) Mobile Kopfzeile auf
+dem Dashboard **immersiv**: Der Foto-Hero reicht bis ganz nach oben, die Leiste
+wird transparent (absolute, ohne Hintergrund/Rand), Logo (helle Wortmarke), Glas-
+Suche und Avatar schweben über dem Bild. Auf allen anderen Seiten bleibt die
+solide Leiste — die drei Elemente (Logo links, Suche + Avatar rechts) stehen in
+beiden Fällen an **exakt derselben Position**, nur die Leiste fällt weg.
+
+**Warum:** Wunsch aus dem Review: immersiver Start wie in der Design-Vorlage,
+aber ohne Inkonsistenz zu den übrigen Seiten. Suche/Avatar/Logo waren bereits
+global in der Kopfzeile; jetzt zusätzlich positions-konsistent über alle Seiten.
+
+**Ergebnis:** `lint`/`build` grün. Visuell geprüft (Dashboard immersiv vs.
+Muster solide, Elemente deckungsgleich).
+
+---
+
 ## 2026-06-25 — Heute-/Dashboard-Screen: Hero „Variante C" + Feinschliff (Claude Design Juni 2026)
 
 **Was:** Den kompletten Heute-/Dashboard-Screen nach dem neuen Design-Handoff

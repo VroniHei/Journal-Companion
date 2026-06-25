@@ -55,6 +55,11 @@ export function Layout() {
   // der App eine Stufe zurück, bei Direkteinstieg (keine In-App-History) zur
   // Startseite — so kann man nie „in einer Sackgasse" landen.
   const showBack = !TOP_PATHS.has(location.pathname);
+  // Immersiver Start: auf dem Dashboard liegt der Foto-Hero bis ganz nach oben;
+  // die mobile Kopfzeile wird dort transparent (gleiche Elemente, gleiche
+  // Position, nur ohne Leiste) und schwebt über dem Bild. Alle anderen Seiten
+  // behalten die solide Kopfzeile.
+  const immersiveHeader = location.pathname === "/";
   function goBack() {
     if (location.key !== "default") navigate(-1);
     else navigate("/");
@@ -236,14 +241,28 @@ export function Layout() {
         </div>
       </header>
 
-      {/* ===== Mobile-Topbar (solide) ===== */}
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-[var(--border)] bg-[var(--background)] px-4 py-3 shadow-[0_4px_16px_rgba(35,34,26,0.05)] sm:hidden">
+      {/* ===== Mobile-Topbar ===== */}
+      {/* Dashboard: transparent über dem Hero-Foto (absolute, keine Leiste,
+          helle/Glas-Elemente). Sonst: solide Leiste. Logo links, Suche +
+          Avatar rechts bleiben in beiden Fällen an exakt derselben Stelle. */}
+      <header
+        className={
+          immersiveHeader
+            ? "absolute inset-x-0 top-0 z-40 flex items-center justify-between px-4 py-3 sm:hidden"
+            : "sticky top-0 z-40 flex items-center justify-between border-b border-[var(--border)] bg-[var(--background)] px-4 py-3 shadow-[0_4px_16px_rgba(35,34,26,0.05)] sm:hidden"
+        }
+        style={
+          immersiveHeader
+            ? { background: "linear-gradient(180deg, rgba(20,14,8,.28), transparent)" }
+            : undefined
+        }
+      >
         {showBack ? (
           backButton
         ) : (
           <NavLink to="/" aria-label={settings.appName}>
             <img
-              src="/innerline-wordmark.svg"
+              src={immersiveHeader ? "/innerline-wordmark-light.svg" : "/innerline-wordmark.svg"}
               alt={settings.appName}
               className="h-5 w-auto"
             />
@@ -254,7 +273,11 @@ export function Layout() {
             type="button"
             onClick={() => navigate("/suche")}
             aria-label="Einträge durchsuchen"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)]"
+            className={
+              immersiveHeader
+                ? "flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white backdrop-blur-md"
+                : "flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)]"
+            }
           >
             <Icon d={ICONS.search} size={17} />
           </button>
@@ -263,6 +286,7 @@ export function Layout() {
             onClick={() => setProfileOpen(true)}
             aria-label="Profil"
             className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--sage,#9BA383)] text-sm font-semibold text-white"
+            style={immersiveHeader ? { border: "1.5px solid rgba(255,255,255,.5)" } : undefined}
           >
             {initial}
           </button>
