@@ -38,7 +38,7 @@ export function JournalCard({ entry }: { entry: JournalEntry }) {
   const isRitual = kind === "ritual";
   return (
     <Link to={`/eintrag/${e.id}`} className="block h-full">
-      <div className="lift flex h-full flex-col rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-[22px] shadow-[var(--shadow-card)]">
+      <div className="lift flex h-full flex-col rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[22px] shadow-[var(--shadow-card)]">
         <div className="mb-3 flex items-center justify-between gap-2">
           <span className="flex items-center gap-[9px]">
             {isRitual ? (

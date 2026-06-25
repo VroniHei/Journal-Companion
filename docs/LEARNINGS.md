@@ -56,6 +56,24 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 - **`pkill -f "<muster>"`** kann sich selbst treffen, wenn das Muster im eigenen
   Kommando vorkommt → lieber per PID killen.
 
+## 2026-06-25 (Heute-Hero Variante C)
+
+- **Foto-Hero full-bleed im gepolsterten `<main>`.** Der `<main>` hat `px-5 pt-6`;
+  der Mobile-Hero soll randlos unter dem App-Header sitzen → äußeren Wrapper mit
+  `-mx-5 -mt-6`, dann Foto (470px) + überlappende Aktions-Fläche (`marginTop:-26`,
+  `border-radius:26px 26px 0 0`) als ein Flex-Item. So bleibt der `gap-5`-Fluss zum
+  Rest der Seite intakt.
+- **Prototyp-Header-Chrome nicht doppeln.** Die Vorlage zeichnet Wortmarke/Suche/
+  Avatar auf das Hero-Foto, weil sie ein standalone Phone-Frame ist. Die echte App
+  hat dafür den Layout-Header — Chrome also weglassen, nur Begrüßungsblock +
+  Aktions-Fläche übernehmen.
+- **Feste Tageszeit-Texte statt Rotation.** Begrüßung + Frage kommen jetzt
+  deterministisch aus dem Zeitfenster (`TIME_CONTENT`), nicht mehr aus täglich
+  rotierenden Pools — entspricht dem Handoff (§3) und macht den Ton vorhersehbar.
+- **Volle Lucide-Sonne ≠ iconset-`sun`.** Das Projekt-`iconset.sun` ist eine
+  Sunrise-Variante; der Hero braucht die volle Sonne mit allen Strahlen → eigene
+  `TimeOfDayGlyph`-Komponente mit den exakten Pfaden aus der Spec (§6).
+
 ## 2026-06-23 (Claude-Design Update)
 
 - **Wiederkehrende Design-Bausteine als eine Komponente.** Die Mini-Karten-

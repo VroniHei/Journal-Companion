@@ -5,6 +5,36 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-25 — Heute-/Dashboard-Screen: Hero „Variante C" + Feinschliff (Claude Design Juni 2026)
+
+**Was:** Den kompletten Heute-/Dashboard-Screen nach dem neuen Design-Handoff
+(`Handoff_Heute-Screen_JUNI-2026`) umgebaut. Kern: neuer **Hero (Variante C)**
+auf Mobile **und** Desktop. Mobile ist jetzt ein **Foto-Hero (470px)** statt des
+Creme-Textblocks: Glas-Icon mit **Sonne (Morgen/Tag) / Mond (Abend)** vor dem
+Datum, Begrüßung „Guten Morgen/Abend, *Vroni*" in **Gewicht 550** mit
+Newsreader-Italic-Name, warme **Tageszeit-Frage**, unten verankert (`bottom 96px`),
+darunter überlappende Aktions-Fläche (Fokus-Chip + 2 Buttons, Sprach-Check-in mit
+Mikrofon). Desktop-Hero analog: Glas-Sonne/-Mond statt grünem Eyebrow-Punkt,
+Gewicht 550, Tageszeit-Frage.
+
+Weiterer Feinschliff: feste Tageszeit-Texte (§3) statt täglich rotierender
+Begrüßung; „Gerade ist viel?" und „Stimmung · 7 Tage" ohne Punkt/Icon davor;
+„Energie heute"-Punkt folgt der Energiestufe; Tagesritual-Karte „Tagesritual ·
+6 Min" (morgens) / „Tagesritual" (abends), Status ohne Punkt davor, erledigt =
+**Clay-Medaillon mit Häkchen** (mobil) statt Foto, volle Button-Breite;
+Serie-in-Gefahr-Block ruhiger/einzeilig; Listenkarten-Radius auf 20px.
+
+**Warum:** Umsetzung des verbindlichen Design-Handoffs (Master
+`Innerline App.dc.html`). Wärmerer, persönlicherer Einstieg; einheitliche
+Eyebrows/Radien.
+
+**Ergebnis:** `npm run typecheck`, `npm run lint`, `npm run build` grün.
+Visuell per Playwright (Mobile 392px + Desktop 1280px, mit Seed-Daten) geprüft:
+Hero, Tageszeit-Logik (Abend → Mond + violetter Scrim), Aktions-Fläche, Ritual,
+Energie, Stimmung, Letzte Einträge rendern wie spezifiziert.
+
+---
+
 ## 2026-06-24 — Production-Hotfix: Serverless-Funktion stürzte beim Start ab
 
 **Was:** Auf Vercel lieferte **jede** `/api/*`-Route 500 (Reflexion „kaputt",

@@ -68,35 +68,97 @@ type TimeOfDay = "morgen" | "tag" | "abend";
 function timeOfDay(): TimeOfDay {
   const h = new Date().getHours();
   if (h < 11) return "morgen";
-  if (h < 18) return "tag";
+  if (h < 17) return "tag";
   return "abend";
 }
 
-// Warme, persönliche Begrüßung — variiert leicht je Tag (deterministisch), in
-// „Vroni-Voice": nah, freundlich, nie aufdringlich.
-const GREETINGS: Record<TimeOfDay, string[]> = {
-  morgen: ["Guten Morgen", "Hej", "Schön, dass du wach bist"],
-  tag: ["Hej", "Schön, dass du da bist", "Hallo"],
-  abend: ["Guten Abend", "Hej", "Schön, dass du da bist"],
+// Tageszeit-Inhalt (Hero, Claude Design Juni 2026 §3): feste Begrüßung + warme
+// Frage je Fenster. Sonne für Morgen/Tag, Mond für Abend. Texte wörtlich, in
+// „Vroni-Voice" (Du-Form, keine Em-Dashes). Der Name kommt als Newsreader-Italic
+// hinter den Gruß; die Frage steht ruhig als zweite Zeile (kein eigener Akzent).
+const TIME_CONTENT: Record<TimeOfDay, { greet: string; question: string }> = {
+  morgen: {
+    greet: "Guten Morgen",
+    question:
+      "Schön, dass du da bist. Magst du kurz ankommen, bevor der Tag richtig losgeht?",
+  },
+  tag: {
+    greet: "Hej",
+    question:
+      "Mitten im Tag. Was beschäftigt dich gerade, das du kurz festhalten magst?",
+  },
+  abend: {
+    greet: "Guten Abend",
+    question: "Der Tag klingt aus. Was möchtest du behalten, bevor du ihn loslässt?",
+  },
 };
-function greetingWord(t: TimeOfDay, seed = 0): string {
-  const pool = GREETINGS[t];
-  return pool[((seed % pool.length) + pool.length) % pool.length];
+// Erststart (noch kein Eintrag): einladender, druckfreier Leerzustand.
+const EMPTY_CONTENT = {
+  greet: "Hej",
+  question: "Schön, dass du da bist. Fang einfach an, wann immer dir danach ist.",
+};
+
+// Hero-Scrim (Foto-Verlauf) — Morgen/Tag warm-bräunlich, Abend ins Violette
+// (Claude Design §2). Sorgt für lesbaren weißen Text auf dem Foto.
+const MORGEN_SCRIM =
+  "linear-gradient(180deg, rgba(58,40,26,.38) 0%, rgba(58,40,26,.08) 20%, rgba(56,38,24,.48) 46%, rgba(50,34,21,.78) 66%, rgba(40,27,16,.95) 100%)";
+const ABEND_SCRIM =
+  "linear-gradient(180deg, rgba(46,34,64,.42) 0%, rgba(46,34,64,.10) 20%, rgba(44,32,62,.52) 46%, rgba(34,26,52,.80) 66%, rgba(26,20,42,.95) 100%)";
+
+// Tageszeit-Glas-Icon (Hero, §6): volle Lucide-Sonne (Morgen/Tag) bzw. Mond
+// (Abend), 1:1 nach Vorlage. stroke-width 1.5, currentColor.
+function TimeOfDayGlyph({ abend, size }: { abend: boolean; size: number }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {abend ? (
+        <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+      ) : (
+        <>
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2" />
+          <path d="M12 20v2" />
+          <path d="m4.93 4.93 1.41 1.41" />
+          <path d="m17.66 17.66 1.41 1.41" />
+          <path d="M2 12h2" />
+          <path d="M20 12h2" />
+          <path d="m6.34 17.66-1.41 1.41" />
+          <path d="m19.07 4.93-1.41 1.41" />
+        </>
+      )}
+    </svg>
+  );
 }
 
-// Einladende, sanfte Frage als zweite Zeile (rotiert täglich). Bewusst ohne
-// Druck — „möchtest du …", „wenn dir danach ist": Opt-out ist immer mitgedacht
-// (therapist-safety: einladend, kein Muss, keine Bewertung/Diagnose).
-const WELCOME_LINES: { pre: string; accent: string; post: string }[] = [
-  { pre: "Wie geht es dir ", accent: "gerade", post: "?" },
-  { pre: "Sollen wir gemeinsam auf deine ", accent: "Gedanken", post: " schauen?" },
-  { pre: "Möchtest du dir etwas von der ", accent: "Seele", post: " schreiben?" },
-  { pre: "Magst du deine Gedanken ein Stück weit ", accent: "sortieren", post: "?" },
-  { pre: "Was möchtest du heute ", accent: "festhalten", post: "?" },
-  { pre: "Wenn dir danach ist, schreib einfach ", accent: "los", post: "." },
-  { pre: "Nimm dir einen Moment, ganz ", accent: "für dich", post: "." },
-  { pre: "Was beschäftigt dich ", accent: "heute", post: "?" },
-];
+// Mikrofon (Lucide „mic", §6) — für die „Sprach-Check-in"-Buttons im Hero.
+function MicGlyph({ size }: { size: number }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 19v3" />
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+      <rect x="9" y="2" width="6" height="13" rx="3" />
+    </svg>
+  );
+}
 
 
 const MILESTONES = [3, 7, 14, 21, 30, 60, 100, 150, 200, 365];
@@ -120,6 +182,8 @@ const FILTERS: { id: string; label: string }[] = [
 const ENERGY_HEIGHTS = [36, 52, 68, 84, 100];
 const ENERGY_FILL = ["#E6D7C4", "#D8C291", "#B6CE72", "#9BD24E", "#A8E84F"];
 const ENERGY_WORD = ["", "sehr wenig", "wenig", "mittlere", "gute", "volle"];
+// Punktfarbe vor „Energie heute" folgt der Stufe (§5: energyDot), Index 0 = offen.
+const ENERGY_DOT = ["#9a917f", "#CD8A5B", "#DDB14B", "#9BA383", "#B6CE72", "#A8E84F"];
 
 // Stimmungs-Verlauf als ruhige Flächen-Linie (aus den Tageswerten der letzten Woche).
 function MoodSparkline({ days }: { days: MoodDay[] }) {
@@ -204,9 +268,14 @@ export function Dashboard() {
 
   const name = settings.userName?.trim();
   const tod = timeOfDay();
-  const greet = greetingWord(tod, dayIndex());
-  const welcome = WELCOME_LINES[dayIndex() % WELCOME_LINES.length];
   const hasData = entries.length > 0;
+  // Hero-Inhalt (Variante C): Erststart hat eigenen, sanften Leerzustand;
+  // sonst feste Tageszeit-Begrüßung + Frage. `isAbend` steuert Bild/Scrim und
+  // das Glas-Icon (Sonne Morgen/Tag, Mond Abend).
+  const isAbend = tod === "abend";
+  const heroContent = hasData ? TIME_CONTENT[tod] : EMPTY_CONTENT;
+  const greet = heroContent.greet;
+  const heroQuestion = heroContent.question;
 
   // Serie inkl. eingelöster Pausentage (schützen die Serie über Lücken).
   const restDayDates = restDays.map((r) => r.date);
@@ -290,131 +359,198 @@ export function Dashboard() {
     // flex-col + order: mobil kompakte Reihenfolge (Begrüßung → Ritual → Heute
     // im Blick → Energie → Stimmung); ab sm volles Bento in Prototyp-Reihenfolge.
     <section className="flex flex-col gap-5">
-      {/* Mobile: warme, persönliche Begrüßung auf Creme (Tageszeit-Icon +
-          einladende Frage; freundlicher Einstieg). */}
-      <div className="order-1 sm:hidden">
-        <div className="flex items-center gap-3">
-          <span
-            className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-2xl shadow-[0_4px_12px_rgba(110,155,44,0.16)]"
-            style={{ background: "linear-gradient(145deg,#EEF5E0,#DFEDC6)", color: "#6E9B2C" }}
+      {/* Mobile-Hero (Variante C, §2): Foto 470px, Tageszeit-Glas-Icon (Sonne/
+          Mond) vor dem Datum, Begrüßung Gewicht 550 mit Newsreader-Italic-Name,
+          warme Tageszeit-Frage, unten verankert. Full-bleed unter dem App-Header;
+          darunter überlappende Aktions-Fläche (Fokus-Chip + 2 Buttons). */}
+      <div className="order-1 -mx-5 -mt-6 sm:hidden">
+        <div className="relative overflow-hidden" style={{ height: 470 }}>
+          <img
+            src="/img/welcome-still.webp"
+            alt=""
             aria-hidden="true"
-          >
-            {/* Lucide „smile" — freundlicher, warmer Einstieg; kollidiert nicht
-                mit den Tageszeit-Icons (Sonne/Mond) des Rituals darunter. */}
-            <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-              <path d="M9 9h.01" />
-              <path d="M15 9h.01" />
-            </svg>
-          </span>
-          <div className="min-w-0">
-            <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9a917f]">
-              {dateLabel}
+            className="hero-zoom absolute inset-0 h-full w-full object-cover"
+            style={{ objectPosition: "center 58%" }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{ background: isAbend ? ABEND_SCRIM : MORGEN_SCRIM }}
+          />
+          {/* Begrüßungsblock, unten verankert (bottom 96px gleicht die Rundung
+              der Fläche darunter aus). */}
+          <div className="absolute left-5 right-5" style={{ bottom: 96 }}>
+            <div className="inline-flex items-center gap-[9px]">
+              <span
+                className="inline-flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full"
+                style={{
+                  background: "rgba(255,255,255,.12)",
+                  backdropFilter: "blur(6px)",
+                  WebkitBackdropFilter: "blur(6px)",
+                  border: "1px solid rgba(255,255,255,.32)",
+                  color: "rgba(248,245,238,.92)",
+                }}
+                aria-hidden="true"
+              >
+                <TimeOfDayGlyph abend={isAbend} size={15} />
+              </span>
+              <span
+                className="text-[10px] font-semibold uppercase tracking-[0.24em]"
+                style={{ color: "rgba(244,242,232,.86)" }}
+              >
+                {dateLabel}
+              </span>
             </div>
-            <h1 className="serif text-[22px] font-semibold leading-tight">
+            <h1
+              className="mt-4 text-[32px] leading-[1.06] tracking-[-0.015em]"
+              style={{
+                fontWeight: 550,
+                color: "#F8F5EE",
+                textShadow: "0 2px 16px rgba(28,20,10,.55)",
+              }}
+            >
               {greet}
-              {name ? `, ${name}` : ""}
+              {name ? (
+                <>
+                  ,
+                  <em className="g ml-[7px]" style={{ fontWeight: 450 }}>
+                    {name}
+                  </em>
+                </>
+              ) : (
+                ""
+              )}
             </h1>
+            <p
+              className="mt-2.5 max-w-[262px] text-[16px] leading-[1.45]"
+              style={{
+                color: "rgba(248,245,238,.92)",
+                textShadow: "0 1px 12px rgba(28,20,10,.6)",
+              }}
+            >
+              {heroQuestion}
+            </p>
           </div>
         </div>
-        {/* Fokus-Chip im oberen Bereich, direkt unter der Begrüßung. */}
-        {todayFocus ? (
-          <Link
-            to="/ritual"
-            className="mt-3 inline-flex max-w-full items-center gap-1.5 overflow-hidden rounded-full border px-3 py-1.5 text-[13px] font-medium text-[#5d4f3f] transition hover:opacity-80"
-            style={{ background: "#EFE4CF", borderColor: "rgba(120,86,52,0.2)" }}
-          >
-            <span className="h-[7px] w-[7px] flex-none rounded-full bg-[var(--clay)]" />
-            <span className="truncate">Dein Fokus: {todayFocus}</span>
-            <svg
-              viewBox="0 0 24 24"
-              width="12"
-              height="12"
-              fill="none"
-              stroke="#9a917f"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              className="ml-0.5 flex-none"
+
+        {/* Aktions-Fläche (überlappt das Bild um 26px) */}
+        <div
+          className="relative px-4 pb-1 pt-[18px]"
+          style={{
+            marginTop: -26,
+            background:
+              "radial-gradient(280px 160px at 100% 0%, rgba(205,138,91,.10), transparent 62%), #FCFAF6",
+            borderRadius: "26px 26px 0 0",
+          }}
+        >
+          {/* Fokus-Chip (gekoppelt ans Ritual) */}
+          {todayFocus ? (
+            <Link
+              to="/ritual"
+              className="mb-3.5 inline-flex max-w-full items-center gap-1.5 overflow-hidden rounded-full border px-3 py-1.5 text-[13px] font-medium text-[#5d4f3f] transition hover:opacity-80"
+              style={{ background: "#EFE4CF", borderColor: "rgba(120,86,52,0.2)" }}
             >
-              <path d="M14 5l5 5M4 20l1-4L15.5 4.5l3.5 3.5L7.5 19.5 4 20z" />
-            </svg>
-          </Link>
-        ) : (
-          <Link
-            to="/ritual"
-            className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-dashed px-3 py-1.5 text-[13px] font-medium text-[#b0a896] transition hover:opacity-80"
-            style={{ borderColor: "rgba(35,34,26,.16)" }}
-          >
-            <span className="h-[7px] w-[7px] rounded-full" style={{ background: "#E0D8CE" }} />
-            Fokus heute noch offen · im Ritual setzen
-          </Link>
-        )}
+              <span className="h-[7px] w-[7px] flex-none rounded-full bg-[var(--clay)]" />
+              <span className="truncate">Dein Fokus: {todayFocus}</span>
+            </Link>
+          ) : (
+            <Link
+              to="/ritual"
+              className="mb-3.5 inline-flex items-center gap-1.5 rounded-full border border-dashed px-3 py-1.5 text-[13px] font-medium text-[#b0a896] transition hover:opacity-80"
+              style={{ borderColor: "rgba(35,34,26,.16)" }}
+            >
+              <span className="h-[7px] w-[7px] rounded-full" style={{ background: "#E0D8CE" }} />
+              Fokus heute noch offen · im Ritual setzen
+            </Link>
+          )}
 
-        <p className="lead mt-3 text-[15.5px] leading-snug text-[var(--foreground)]">
-          {welcome.pre}
-          <em className="g text-[var(--accent-text)]">{welcome.accent}</em>
-          {welcome.post}
-        </p>
-
-        <div className="mt-4 grid grid-cols-2 gap-2.5 sm:inline-grid sm:auto-cols-max sm:grid-flow-col">
-          <button
-            type="button"
-            onClick={() => navigate("/neu")}
-            className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-[var(--accent-contrast)] transition hover:-translate-y-0.5"
-            style={{
-              background: "linear-gradient(180deg,#B4ED63,#A8E84F)",
-              boxShadow: "0 5px 14px rgba(110,155,44,.28)",
-            }}
-          >
-            Eintrag schreiben
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate("/sprechen")}
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-6 py-3 text-sm font-semibold text-[var(--muted)] transition hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
-          >
-            Sprach-Check-in
-          </button>
+          {/* 2 Buttons, volle Breite */}
+          <div className="grid gap-2.5">
+            <button
+              type="button"
+              onClick={() => navigate("/neu")}
+              className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-[var(--accent-contrast)] transition hover:-translate-y-0.5"
+              style={{
+                background: "linear-gradient(180deg,#B4ED63,#A8E84F)",
+                boxShadow: "0 6px 16px rgba(110,155,44,.3)",
+              }}
+            >
+              Eintrag schreiben
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/sprechen")}
+              className="inline-flex items-center justify-center gap-2 rounded-full border bg-white px-6 py-3 text-sm font-semibold text-[#5d564a] transition hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
+              style={{ borderColor: "rgba(35,34,26,.12)" }}
+            >
+              <MicGlyph size={16} />
+              Sprach-Check-in
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Desktop: Foto-Hero mit Overlay (nach Prototyp) */}
-      <div className="relative hidden overflow-hidden rounded-[28px] shadow-[0_22px_48px_rgba(35,34,26,0.13)] sm:order-1 sm:block">
+      {/* Desktop-Hero (Variante C, §7): Foto, Tageszeit-Glas-Icon vor dem Datum
+          (kein grüner Eyebrow-Punkt), Begrüßung Gewicht 550 mit Italic-Name,
+          warme Tageszeit-Frage. */}
+      <div className="relative hidden min-h-[236px] overflow-hidden rounded-[28px] shadow-[0_22px_48px_rgba(35,34,26,0.13)] sm:order-1 sm:block">
         <img
           src="/img/hero-see.webp"
           alt=""
           aria-hidden="true"
           className="hero-zoom absolute inset-0 h-full w-full object-cover"
-          style={{ objectPosition: "center 82%" }}
+          style={{ objectPosition: "center 100%" }}
         />
         <div
           className="absolute inset-0"
           style={{
-            background:
-              "linear-gradient(100deg, rgba(28,33,22,.9) 0%, rgba(28,33,22,.62) 52%, rgba(28,33,22,.22) 100%)",
+            background: isAbend
+              ? "linear-gradient(100deg, rgba(34,26,52,.9) 0%, rgba(34,26,52,.62) 52%, rgba(34,26,52,.22) 100%)"
+              : "linear-gradient(100deg, rgba(28,33,22,.9) 0%, rgba(28,33,22,.62) 52%, rgba(28,33,22,.22) 100%)",
           }}
         />
         <div className="relative max-w-[600px] p-10 lg:p-[46px]">
           <div className="mb-3.5 inline-flex items-center gap-2.5">
             <span
-              className="h-2 w-2 rounded-full bg-[var(--accent)]"
-              style={{ boxShadow: "0 0 12px rgba(168,232,79,.8)" }}
-            />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--accent)]">
+              className="inline-flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full"
+              style={{
+                background: "rgba(255,255,255,.12)",
+                backdropFilter: "blur(6px)",
+                WebkitBackdropFilter: "blur(6px)",
+                border: "1px solid rgba(255,255,255,.32)",
+                color: "rgba(248,245,238,.92)",
+              }}
+              aria-hidden="true"
+            >
+              <TimeOfDayGlyph abend={isAbend} size={18} />
+            </span>
+            <span
+              className="text-[11px] font-semibold uppercase tracking-[0.24em]"
+              style={{ color: "rgba(244,242,232,.9)" }}
+            >
               {dateLabel}
             </span>
           </div>
-          <h1 className="serif mb-3 text-[39px] font-semibold leading-[1.08] text-[#F8F5EE]">
+          <h1
+            className="mb-3 text-[40px] leading-[1.08] tracking-[-0.02em]"
+            style={{ fontWeight: 550, color: "#F8F5EE" }}
+          >
             {greet}
-            {name ? `, ${name}` : ""}
+            {name ? (
+              <>
+                ,
+                <em className="g ml-[9px]" style={{ fontWeight: 450 }}>
+                  {name}
+                </em>
+              </>
+            ) : (
+              ""
+            )}
           </h1>
-          <p className="lead mb-6 max-w-[470px] text-[22px] leading-snug text-[#F8F5EE]">
-            {welcome.pre}
-            <em className="g text-[var(--accent)]">{welcome.accent}</em>
-            {welcome.post}
+          <p
+            className="mb-6 max-w-[468px] text-[21px] leading-[1.4]"
+            style={{ color: "rgba(248,245,238,.92)" }}
+          >
+            {heroQuestion}
           </p>
           <div className="flex flex-wrap gap-3">
             <button
@@ -426,13 +562,21 @@ export function Dashboard() {
                 boxShadow: "0 5px 14px rgba(110,155,44,.28)",
               }}
             >
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
+                <path d="M8 3v10M3 8h10" />
+              </svg>
               Eintrag schreiben
             </button>
             <button
               type="button"
               onClick={() => navigate("/sprechen")}
-              className="rounded-full border border-white/45 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-[var(--foreground)]"
+              className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-[#F8F5EE] transition hover:bg-white hover:text-[var(--foreground)]"
+              style={{
+                background: "rgba(248,245,238,.12)",
+                border: "1.5px solid rgba(248,245,238,.5)",
+              }}
             >
+              <MicGlyph size={16} />
               Sprach-Check-in
             </button>
           </div>
@@ -484,8 +628,8 @@ export function Dashboard() {
             <Icon d={ICONS.pulse} size={23} />
           </span>
           <div className="min-w-0">
-            <div className="mb-1.5 inline-flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#9d8bc9]" />
+            <div className="mb-1.5 inline-flex items-center">
+              {/* Kein Punkt davor — über alle Screens identisch (§9.7). */}
               <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[#7a6b96]">
                 Gerade ist viel?
               </span>
@@ -594,15 +738,31 @@ export function Dashboard() {
             {/* Badge — mobil: Eyebrow oben, Meta kleiner darunter (kein Umbruch
                 in der Pille); ab sm: alles in einer Pille. */}
             <div className="mb-4 flex items-center gap-3">
-            {/* Mobile-Thumbnail (Prototyp: 46px Notizbuch-Foto) */}
-            <div className="group h-[46px] w-[46px] flex-none overflow-hidden rounded-[14px] sm:hidden">
-              <img
-                src="/img/journaling-desk.webp"
-                alt=""
+            {/* Mobile-Medaillon: erledigt → Clay-Medaillon mit weißem Häkchen
+                (§5); offen → 46px Notizbuch-Foto. */}
+            {ritualFilled ? (
+              <div
+                className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full text-white sm:hidden"
+                style={{
+                  background: "linear-gradient(145deg,#D89A6A,#CD8A5B)",
+                  boxShadow: "0 6px 16px rgba(205,138,91,.32)",
+                }}
                 aria-hidden="true"
-                className="img-zoom h-full w-full object-cover"
-              />
-            </div>
+              >
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12.5l4 4 10-10" />
+                </svg>
+              </div>
+            ) : (
+              <div className="group h-[46px] w-[46px] flex-none overflow-hidden rounded-[14px] sm:hidden">
+                <img
+                  src="/img/journaling-desk.webp"
+                  alt=""
+                  aria-hidden="true"
+                  className="img-zoom h-full w-full object-cover"
+                />
+              </div>
+            )}
             <div
               className="inline-flex items-center gap-2.5 rounded-full border py-1.5 pl-2 pr-3"
               style={{
@@ -643,6 +803,8 @@ export function Dashboard() {
                 <span className="sm:hidden">Tagesritual</span>
                 <span className="hidden sm:inline">Tägliches Ritual</span>
               </span>
+              {/* „6 Min" nur morgens (Abend = nur „Tagesritual", §5). */}
+              {ritualMorning && (
               <span
                 className="whitespace-nowrap border-l pl-2 text-[11px] font-semibold"
                 style={{ color: "#b08a64", borderColor: "rgba(205,138,91,0.3)" }}
@@ -651,6 +813,7 @@ export function Dashboard() {
                 <span className="sm:hidden">6 Min</span>
                 <span className="hidden sm:inline">6 Min · Dein Begleiter</span>
               </span>
+              )}
             </div>
             </div>
 
@@ -736,7 +899,7 @@ export function Dashboard() {
                 <button
                   type="button"
                   onClick={() => navigate("/ritual")}
-                  className="inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5 sm:w-auto sm:justify-start"
                   style={{
                     color: "#23221A",
                     background: "rgba(255,255,255,0.7)",
@@ -750,13 +913,10 @@ export function Dashboard() {
               /* ===== Offen-Zustand ===== */
               <>
                 <div
-                  className="mb-3 flex items-center gap-2 text-[13px] font-semibold"
+                  className="mb-3 flex items-center text-[13px] font-semibold"
                   style={{ color: ritualT.eyebrow }}
                 >
-                  <span
-                    className="h-[7px] w-[7px] rounded-full"
-                    style={{ background: ritualMorning ? "#CD8A5B" : "#CBBEF4" }}
-                  />
+                  {/* Kein Punkt davor (§5). */}
                   Heute noch offen
                   <span style={{ color: "#b08a64", fontWeight: 500 }}>
                     {" "}
@@ -832,7 +992,7 @@ export function Dashboard() {
                 <button
                   type="button"
                   onClick={() => navigate("/ritual")}
-                  className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5 sm:w-auto sm:justify-start"
                   style={{
                     color: "#23221A",
                     background: "linear-gradient(180deg,#B4ED63,#A8E84F)",
@@ -843,10 +1003,10 @@ export function Dashboard() {
                 </button>
 
                 {/* Serie in Gefahr (abends, kein Eintrag, Pausentag verfügbar):
-                    Streak-Warnung mit „Pause nehmen". */}
+                    ruhig gesetzt, einzeiliger Text (§9.10). */}
                 {streakInDanger && (
                   <div
-                    className="mt-4 flex items-center justify-between gap-2.5 rounded-[14px] border px-3.5 py-[11px]"
+                    className="mt-6 flex items-center justify-between gap-2.5 rounded-[14px] border px-3.5 py-[11px]"
                     style={{
                       background: "rgba(221,177,75,.1)",
                       borderColor: "rgba(221,177,75,.28)",
@@ -856,13 +1016,8 @@ export function Dashboard() {
                       <span className="flex-none" style={{ color: "#DDB14B" }}>
                         <Icon d={ICONS.pause} size={18} />
                       </span>
-                      <div className="min-w-0">
-                        <div className="text-[13px] font-[650] leading-tight" style={{ color: "#8a6b00" }}>
-                          Magst du heute kurz festhalten?
-                        </div>
-                        <div className="mt-px text-[11px]" style={{ color: "#a08020" }}>
-                          {streak} Tage in Folge · eine Pause ist auch ok
-                        </div>
+                      <div className="min-w-0 truncate text-[13px] font-medium" style={{ color: "#8a6b00" }}>
+                        Endet heute Nacht · 1 Pausentag übrig
                       </div>
                     </div>
                     <button
@@ -919,8 +1074,8 @@ export function Dashboard() {
           <div className="order-5 grid grid-cols-1 gap-4 sm:order-4 sm:grid-cols-[1.3fr_1fr_1fr] sm:gap-[18px]">
             <Card>
               <div className="mb-3.5 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-[var(--green-deep,#6E9B2C)]">
-                  <Icon d={ICONS.wave} size={16} />
+                <div className="flex items-center">
+                  {/* Icon vor „Stimmung" entfernt (§9.5). */}
                   <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
                     Stimmung · 7 Tage
                   </span>
@@ -1057,7 +1212,10 @@ export function Dashboard() {
               {/* Mobil: kompakter Kopf (Label + Wert rechts); ab sm großer Satz. */}
               <div className="mb-[9px] flex items-center justify-between gap-2">
                 <span className="inline-flex items-center gap-2.5">
-                  <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+                  <span
+                    className="h-2 w-2 rounded-full"
+                    style={{ background: ENERGY_DOT[energyLevel] ?? ENERGY_DOT[0] }}
+                  />
                   <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
                     Energie heute
                   </span>
