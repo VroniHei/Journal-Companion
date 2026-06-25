@@ -65,7 +65,9 @@ function startOfWeek(d: Date): Date {
 }
 
 function monthLabel(iso: string): string {
-  return new Date(iso).toLocaleDateString("de-DE", { month: "long" });
+  // Jahr immer mit — sonst verschmelzen gleiche Monate verschiedener Jahre
+  // (z.B. „Dezember" 2025 + 2024) zu einer Gruppe.
+  return new Date(iso).toLocaleDateString("de-DE", { month: "long", year: "numeric" });
 }
 
 // Archiv: alle Einträge, relativ gruppiert (Diese Woche · Letzte Woche · Frühere
@@ -130,7 +132,7 @@ export function Archive() {
     return (
       <div className="space-y-3">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
             {label}
           </h2>
           <span className="text-[13px] text-[#9a917f]">
@@ -223,7 +225,7 @@ export function Archive() {
 
           {months.length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
                 Frühere Monate
               </h2>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">

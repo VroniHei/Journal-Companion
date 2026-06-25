@@ -6,6 +6,7 @@ import { ICONS } from "../components/iconset";
 import { tileRelief } from "../components/tile";
 import { JournalCard } from "../components/JournalCard";
 import { ThemeMiniCard } from "../components/ThemeMiniCard";
+import { RoterFadenLink, ShareCardLink } from "../components/ShareLinks";
 import { withAccents } from "../lib/accents";
 import {
   useDailyRitual,
@@ -647,7 +648,7 @@ export function Dashboard() {
           <div className="min-w-0">
             <div className="mb-1.5 inline-flex items-center">
               {/* Kein Punkt davor — über alle Screens identisch (§9.7). */}
-              <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[#7a6b96]">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#7a6b96]">
                 Gerade ist viel?
               </span>
             </div>
@@ -681,7 +682,7 @@ export function Dashboard() {
           <div>
             <div className="mb-2 inline-flex items-center gap-2.5">
               <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
-              <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
                 Heute im Blick
               </span>
             </div>
@@ -1203,7 +1204,7 @@ export function Dashboard() {
                     className="h-2 w-2 rounded-full"
                     style={{ background: ENERGY_DOT[energyLevel] ?? ENERGY_DOT[0] }}
                   />
-                  <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
                     Energie heute
                   </span>
                 </span>
@@ -1258,7 +1259,7 @@ export function Dashboard() {
         <Card className="order-6 bg-[radial-gradient(440px_240px_at_92%_0%,rgba(205,138,91,0.07),transparent_62%)]">
           <div className="mb-3 inline-flex items-center gap-2.5 sm:mb-5">
             <span className="h-2 w-2 rounded-full bg-[var(--clay)]" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)] sm:text-[11.5px]">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
               Was sich zeigt
             </span>
           </div>
@@ -1291,25 +1292,8 @@ export function Dashboard() {
                     className="h-[76px] w-[110px] flex-none"
                   />
                   <div className="flex flex-1 flex-col gap-2.5">
-                    <Link
-                      to="/roter-faden"
-                      className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--green-text,#447510)]"
-                    >
-                      Roter Faden ansehen
-                      <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
-                        <path d="M4 9h10M9.5 4.5 14 9l-4.5 4.5" />
-                      </svg>
-                    </Link>
-                    <Link
-                      to="/teilen"
-                      className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-[7px] text-[13px] font-semibold text-[var(--muted)]"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
-                        <path d="M12 14V4M8.5 7.5 12 4l3.5 3.5" />
-                        <path d="M5 12.5V18.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5V12.5" />
-                      </svg>
-                      Als Karte teilen
-                    </Link>
+                    <RoterFadenLink />
+                    <ShareCardLink />
                   </div>
                 </div>
               </div>
@@ -1338,16 +1322,7 @@ export function Dashboard() {
                 </div>
                 <div className="flex flex-col gap-2.5 pl-[26px]">
                   <ThemeMiniCard keyword={keywordCap} wordSize={30} fill />
-                  <Link
-                    to="/teilen"
-                    className="flex w-full flex-none items-center justify-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-[13px] font-semibold text-[var(--muted)] transition hover:-translate-y-0.5 hover:text-[var(--foreground)]"
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" width="16" height="16" aria-hidden="true">
-                      <path d="M12 14V4M8.5 7.5 12 4l3.5 3.5" />
-                      <path d="M5 12.5V18.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5V12.5" />
-                    </svg>
-                    Als Karte teilen
-                  </Link>
+                  <ShareCardLink full />
                 </div>
               </div>
             </>
@@ -1363,7 +1338,7 @@ export function Dashboard() {
       {/* LETZTE EINTRÄGE — Mobile UND Desktop */}
       <div className="order-8 flex w-full flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-        <span className="text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
           Letzte Einträge
         </span>
         {hasData && (

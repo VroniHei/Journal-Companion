@@ -64,7 +64,10 @@ export function EntryDetail() {
   const messages = useMessages(id);
   const settings = useSettings();
 
-  const [tab, setTab] = useState<Tab>("reflexion");
+  // `null` = noch keine manuelle Wahl → der Default richtet sich nach den Daten
+  // (mit Reflexion → „reflexion", sonst „eintrag"), damit leere Einträge nicht
+  // im Reflexions-Leerzustand landen.
+  const [tabOverride, setTabOverride] = useState<Tab | null>(null);
   const [reflecting, setReflecting] = useState(false);
   const [streamText, setStreamText] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -82,7 +85,7 @@ export function EntryDetail() {
     setError(null);
     setStreamText("");
     setReflecting(true);
-    setTab("reflexion");
+    setTabOverride("reflexion");
     setTimeout(
       () =>
         reflectionTopRef.current?.scrollIntoView({
@@ -172,6 +175,8 @@ export function EntryDetail() {
 
   const reflexionCount =
     (e.aiReflection ? 1 : 0) + (e.previousReflections?.length ?? 0);
+  // Aktiver Tab: manuelle Wahl gewinnt; sonst datengetriebener Default.
+  const tab: Tab = tabOverride ?? (reflexionCount > 0 ? "reflexion" : "eintrag");
   const TABS: { key: Tab; label: string; count?: number }[] = [
     { key: "eintrag", label: "Eintrag" },
     { key: "reflexion", label: "Reflexion", count: reflexionCount || undefined },
@@ -209,7 +214,7 @@ export function EntryDetail() {
               role="tab"
               type="button"
               aria-selected={active}
-              onClick={() => setTab(t.key)}
+              onClick={() => setTabOverride(t.key)}
               className="flex-1 rounded-full py-2 text-center text-[13px] transition"
               style={{
                 background: active ? "var(--surface)" : "transparent",
