@@ -48,4 +48,11 @@ export default tseslint.config(
       globals: { ...globals.node, ...globals.browser },
     },
   },
+  // Build-/Ops-Skripte (Node, inkl. fetch/AbortSignal aus Node 18+)
+  {
+    files: ["scripts/**/*.{js,mjs}"],
+    languageOptions: {
+      globals: { ...globals.node, fetch: "readonly", AbortSignal: "readonly" },
+    },
+  },
 );

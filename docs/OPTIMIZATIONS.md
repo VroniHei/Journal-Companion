@@ -15,9 +15,10 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
   `exports` auf `dist/*.js` statt `src/*.ts`), oder (b) Server-Build ohne
   `--packages=external` voll bündeln. Bis dahin: bei neuen Shared-Exports an den
   Alias denken.
-- 🟡 **Smoke-Test für `/api/health` nach Deploy:** Ein winziger Post-Deploy-Check
-  (CI oder manuell) gegen `…/api/health` hätte den Totalausfall sofort sichtbar
-  gemacht, statt ihn als „Sync kaputt" zu erleben. Optional als GitHub-Action.
+- ✅ **Smoke-Test für `/api/health` nach Deploy:** `scripts/smoke.mjs` (+ `npm run
+  smoke <url>`) prüft `/api/health` (200 + `{ok:true}`) und `/api/config`; Exit 1
+  bei Ausfall, 2 bei Fehlbedienung. Manuell oder als CI-/Post-Deploy-Step nutzbar.
+  (2026-06-25) Offen: als GitHub-Action automatisieren.
 - 🟢 **Zitat-Karte: Bildauswahl an Stimmung/Thema koppeln:** Pool ist jetzt groß
   (40 Fotos, `CARD_PHOTOS` + `dailyPhotos`, 3 Tagesvorschläge), aber die Auswahl
   rotiert rein nach Datum. Optional die 3 Vorschläge stärker an Stimmung/Top-Thema
@@ -78,8 +79,10 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
   typisiert — verbessert die Qualität der Reflexionen.
 - 🟡 **Fehler-/Leerzustände der UI** verfeinern (z.B. klarer Hinweis, wenn kein
   API-Key gesetzt ist; Retry-Button bei Streaming-Abbruch).
-- 🟢 **Tests** aufsetzen (Unit für `lib/journal.ts`, später E2E für den
-  Reflexionsfluss).
+- 🟡 **Tests ausbauen:** Vitest jetzt auch im **web**-Workspace
+  (`web/src/lib/insights.test.ts`, 11 Tests: wordsOfWeek/showcaseKeyword/-Seed/
+  showcaseInsight/computeStreak); `npm test` läuft server **und** web. Offen:
+  weitere `lib/`-Module abdecken, später E2E für den Reflexionsfluss.
 - 🟢 **Barrierefreiheit prüfen** mit `web-design-guidelines` (Fokus-Reihenfolge,
   Kontraste, Screenreader-Labels der Mood-Buttons).
 - 🟢 **Import** von JSON-Backups (Export ist da; Re-Import noch offen).

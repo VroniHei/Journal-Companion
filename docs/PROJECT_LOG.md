@@ -26,8 +26,12 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 - Touch-Targets: Basis-Button + Inputs min-h-44px; Chips/Filter min-h-40px.
 - VoiceCheckin + ContactImpulse: Textareas/Boxen vom alten `rounded-lg`/
   transparent auf neuen App-Style (Surface, Radius, Fokus-Ring) gehoben.
+- Robustheit: `scripts/smoke.mjs` (`npm run smoke <url>`) als Post-Deploy-Check
+  gegen `/api/health` + `/api/config`; Vitest jetzt auch im web-Workspace
+  (`insights.test.ts`, 11 Tests), `npm test` deckt server **und** web ab.
 
-**Ergebnis:** `lint`/`build` grün; Hero (Mobile + Desktop) per Playwright geprüft.
+**Ergebnis:** `lint`/`typecheck`/`build` grün; alle Tests grün (server 18 + web
+11); Hero (Mobile + Desktop) per Playwright geprüft.
 
 ---
 
