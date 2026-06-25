@@ -532,15 +532,15 @@ export function Dashboard() {
           </div>
         </div>
 
-        {/* Rundungs-Übergang vom Foto zur Creme-Fläche: eine creme Fläche, die
-            mit klar gerundeter Oberkante über das Foto steigt; weicher Schatten
-            an der Kante, damit die Rundung sichtbar wird (statt flacher Linie). */}
+        {/* Rundungs-Übergang vom Foto zur Seitenfläche: steigt mit gerundeter
+            Oberkante + weichem Schatten über das Foto. `bg-page` = exakt dieselbe
+            Fläche wie der body (inkl. Schimmer), damit es nahtlos übergeht. */}
         <div
+          className="bg-page"
           style={{
             position: "relative",
             marginTop: -34,
             height: 36,
-            background: "#F8F5EE",
             borderRadius: "30px 30px 0 0",
             boxShadow: "0 -12px 26px rgba(35,34,26,.14)",
           }}
@@ -681,7 +681,7 @@ export function Dashboard() {
           nach Claude Design) */}
       <Link
         to="/soforthilfe"
-        className="lift order-2 flex items-center justify-between gap-4 rounded-[24px] border p-[18px] shadow-[0_6px_22px_rgba(90,70,130,.06)] sm:order-7 sm:px-7 sm:py-[22px]"
+        className="lift order-2 -mt-3 flex items-center justify-between gap-4 rounded-[24px] border p-[18px] shadow-[0_6px_22px_rgba(90,70,130,.06)] sm:order-7 sm:mt-0 sm:px-7 sm:py-[22px]"
         style={{
           background: "linear-gradient(135deg,#F3EEF8,#fff)",
           borderColor: "rgba(157,139,201,.26)",

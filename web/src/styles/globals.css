@@ -91,6 +91,17 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Exakt dieselbe Hintergrundfläche wie der body (Farbe + zarte Schimmer-
+   Gradients, viewport-fix). Für Brücken-/Übergangsflächen, die nahtlos in die
+   Seite übergehen sollen — sonst wirken sie heller/flacher als der body. */
+.bg-page {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(900px 520px at 88% -4%, rgba(155, 163, 131, 0.12), transparent 60%),
+    radial-gradient(760px 460px at 4% 18%, rgba(205, 138, 91, 0.07), transparent 60%);
+  background-attachment: fixed;
+}
+
 /* Weich treibende Lichtflächen für etwas Tiefe und ruhige Bewegung im
    Hintergrund (App-Style). Bewusst sehr zart, damit es ruhig bleibt. */
 body::before {
