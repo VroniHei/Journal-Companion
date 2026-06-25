@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useEntries } from "../hooks/useData";
+import { withAccents } from "../lib/accents";
 import {
   moodTrend,
   themeShifts,
@@ -82,10 +83,9 @@ export function Progress() {
         <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9a917f]">
           {story.range}
         </div>
-        <p
-          className="lead mb-4 text-[18px] leading-[1.5] text-[var(--foreground)]"
-          dangerouslySetInnerHTML={{ __html: story.lead }}
-        />
+        <p className="lead mb-4 text-[18px] leading-[1.5] text-[var(--foreground)]">
+          {withAccents(story.lead, "lead")}
+        </p>
         <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="84" preserveAspectRatio="none">
           <defs>
             <linearGradient id="vfill" x1="0" y1="0" x2="0" y2="1">

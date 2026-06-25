@@ -1340,3 +1340,14 @@ einladend; warmer Re-Entry nach Lücken).
   Serie = 0 zeigt die „In Folge"-Karte statt eines kalten Countdowns einen
   warmen Re-Entry: „Schön, dass du wieder da bist — wir fangen einfach hier an."
 - Build/Lint/Typecheck grün. Damit ist Audit §A (Sicherheit) vollständig.
+
+## 2026-06-23 (Forts. 7) — Security: dangerouslySetInnerHTML entfernt (§D)
+
+XSS-Härtung: alle 6 `dangerouslySetInnerHTML`-Stellen für Insight-Texte ersetzt.
+- `insights.ts` (`showcaseInsight`, `themeClusters`-Notiz, `trendStory`-Lead)
+  liefert jetzt `*Wort*`-Marker statt `<em class="g">…</em>`-HTML; die
+  `escapeHtml`-Krücke ist weg.
+- Zentraler `withAccents()`-Helfer nach `web/src/lib/accents.tsx` gezogen (vorher
+  lokal in WeeklyLetter dupliziert); rendert als React-Textknoten = sicher.
+- Konsumenten umgestellt: RedThread, Progress, Patterns, Dashboard (mobil+desktop),
+  WeeklyLetter. 0 `dangerouslySetInnerHTML` im Web-Code, 18 Tests grün.

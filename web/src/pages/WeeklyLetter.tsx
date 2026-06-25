@@ -1,24 +1,11 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { WeeklyLetterResponse } from "@journal/shared";
 import { useEntries, useSettings } from "../hooks/useData";
 import { toDigest } from "../db/queries";
 import { toPrefs } from "../lib/settings";
 import { postWeeklyLetter } from "../lib/apiClient";
-
-// *Wort* → behutsamer Newsreader-Italic-Akzent (Innerline-Signatur).
-function withAccents(text: string, keyBase: string) {
-  return text.split(/(\*[^*]+\*)/g).map((part, i) => {
-    if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
-      return (
-        <em key={`${keyBase}-${i}`} className="g">
-          {part.slice(1, -1)}
-        </em>
-      );
-    }
-    return <Fragment key={`${keyBase}-${i}`}>{part}</Fragment>;
-  });
-}
+import { withAccents } from "../lib/accents";
 
 function rangeLabel(days: number): string {
   const now = new Date();

@@ -270,7 +270,7 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
     moveYes - moveNo >= 0.8
   ) {
     cands.push(
-      'An Tagen mit Bewegung liegt deine Stimmung im Schnitt <em class="g">höher</em>.',
+      'An Tagen mit Bewegung liegt deine Stimmung im Schnitt *höher*.',
     );
   }
 
@@ -285,7 +285,7 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
     outYes - outNo >= 0.8
   ) {
     cands.push(
-      'An Tagen draußen ist deine Stimmung im Schnitt <em class="g">leichter</em>.',
+      'An Tagen draußen ist deine Stimmung im Schnitt *leichter*.',
     );
   }
 
@@ -302,9 +302,9 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
   const aLast = avg(lastWeek.map((e) => e.mood));
   if (aThis != null && aLast != null && thisWeek.length >= 2 && lastWeek.length >= 2) {
     if (aThis - aLast >= 0.5)
-      cands.push('Diese Woche war deine Stimmung etwas <em class="g">leichter</em> als letzte.');
+      cands.push('Diese Woche war deine Stimmung etwas *leichter* als letzte.');
     else if (aLast - aThis >= 0.5)
-      cands.push('Diese Woche war deine Stimmung etwas <em class="g">schwerer</em> als letzte. Das darf sein.');
+      cands.push('Diese Woche war deine Stimmung etwas *schwerer* als letzte. Das darf sein.');
   }
 
   // Bester Wochentag
@@ -324,7 +324,7 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
   }
   if (best && byDay.size >= 3) {
     cands.push(
-      `${capitalize(WEEKDAYS[best.wd])} ist deine Stimmung im Schnitt am <em class="g">höchsten</em>.`,
+      `${capitalize(WEEKDAYS[best.wd])} ist deine Stimmung im Schnitt am *höchsten*.`,
     );
   }
 
@@ -338,7 +338,7 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
   const topTopic = [...tCounts.entries()].sort((a, b) => b[1] - a[1])[0];
   if (topTopic && topTopic[1] >= 2) {
     cands.push(
-      `Zuletzt taucht oft dasselbe Wort auf: <em class="g">${escapeHtml(topTopic[0])}</em>.`,
+      `Zuletzt taucht oft dasselbe Wort auf: *${topTopic[0]}*.`,
     );
   }
 
@@ -352,7 +352,7 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
   const topEmo = [...eCounts.entries()].sort((a, b) => b[1] - a[1])[0];
   if (topEmo && topEmo[1] >= 2) {
     cands.push(
-      `<em class="g">${escapeHtml(capitalize(topEmo[0]))}</em> begleitet dich zuletzt am häufigsten.`,
+      `*${capitalize(topEmo[0])}* begleitet dich zuletzt am häufigsten.`,
     );
   }
 
@@ -366,7 +366,7 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
   const topNeed = [...nCounts.entries()].sort((a, b) => b[1] - a[1])[0];
   if (topNeed && topNeed[1] >= 2) {
     cands.push(
-      `Ein Bedürfnis kommt immer wieder durch: <em class="g">${escapeHtml(topNeed[0])}</em>.`,
+      `Ein Bedürfnis kommt immer wieder durch: *${topNeed[0]}*.`,
     );
   }
 
@@ -376,14 +376,14 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
   ).size;
   if (daysThisWeek >= 3) {
     cands.push(
-      `Diese Woche hast du an <em class="g">${daysThisWeek} Tagen</em> etwas festgehalten.`,
+      `Diese Woche hast du an *${daysThisWeek} Tagen* etwas festgehalten.`,
     );
   }
 
   if (cands.length === 0) {
     const m = avg(entries.map((e) => e.mood));
     if (m == null) return null;
-    return `Deine Stimmung lag zuletzt im Schnitt bei <em class="g">${m}/10</em>. Schon das hinzusehen zählt.`;
+    return `Deine Stimmung lag zuletzt im Schnitt bei *${m}/10*. Schon das hinzusehen zählt.`;
   }
 
   // Zwei sich ergänzende Aussagen ergeben einen volleren, sinnvollen Block für
@@ -510,18 +510,6 @@ export const TONE_LEGEND: { color: string; label: string }[] = [
   { color: "#9BA383", label: "okay" },
   { color: "#A8E84F", label: "leicht" },
 ];
-
-// Minimal-Escape für Nutzertext, der per dangerouslySetInnerHTML in die Notiz
-// eingebettet wird (z. B. eine begleitende Emotion).
-function escapeHtml(s: string): string {
-  return s.replace(
-    /[&<>"']/g,
-    (c) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
-        c
-      ] as string,
-  );
-}
 
 function sinceLabel(firstAt: string): string {
   const weeks = Math.floor((Date.now() - new Date(firstAt).getTime()) / (7 * DAY));
@@ -694,27 +682,27 @@ export function themeClusters(
     // Notiz aus mehreren Signalen, damit nicht überall dasselbe steht.
     let note: string;
     if (trend === "up") {
-      note = 'Zuletzt fühlt sich das <em class="g">leichter</em> an.';
+      note = 'Zuletzt fühlt sich das *leichter* an.';
     } else if (trend === "down") {
-      note = 'Liegt gerade <em class="g">schwerer</em> als zuvor.';
+      note = 'Liegt gerade *schwerer* als zuvor.';
     } else if (daysSinceLast >= 14) {
-      note = 'Zuletzt <em class="g">seltener</em> geworden.';
+      note = 'Zuletzt *seltener* geworden.';
     } else if (topEmotion) {
-      note = `Oft begleitet von <em class="g">${escapeHtml(topEmotion)}</em>.`;
+      note = `Oft begleitet von *${topEmotion}*.`;
     } else {
       // flach & aktuell: gleichwertige Formulierungen, je nach Häufigkeit,
       // pro Thema variiert (sonst klingen zwei Themen identisch).
       const pool =
         acc.dates.length >= 4
           ? [
-              'Kommt <em class="g">immer wieder</em>.',
-              'Zieht sich durch die <em class="g">Wochen</em>.',
-              'Taucht <em class="g">regelmäßig</em> auf.',
+              'Kommt *immer wieder*.',
+              'Zieht sich durch die *Wochen*.',
+              'Taucht *regelmäßig* auf.',
             ]
           : [
-              'Gerade wieder <em class="g">präsent</em>.',
-              'Beschäftigt dich <em class="g">aktuell</em>.',
-              'Zieht sich <em class="g">ruhig</em> durch.',
+              'Gerade wieder *präsent*.',
+              'Beschäftigt dich *aktuell*.',
+              'Zieht sich *ruhig* durch.',
             ];
       note = pool[phraseIndex(key, pool.length)];
     }
@@ -854,7 +842,7 @@ export function themeShifts(
 
 export interface TrendStory {
   range: string; // z. B. „Januar – Juni"
-  lead: string; // Lead mit <em class="g">…</em>
+  lead: string; // Lead mit *…*
   conclusion: string;
 }
 
@@ -871,7 +859,7 @@ export function trendStory(entries: JournalEntry[], months: TrendRange): TrendSt
   if (buckets.length < 2) {
     return {
       range,
-      lead: 'Noch zu wenig, um einen Verlauf zu zeichnen. Schreib weiter, dann zeigt sich, <em class="g">wohin</em> es geht.',
+      lead: 'Noch zu wenig, um einen Verlauf zu zeichnen. Schreib weiter, dann zeigt sich, *wohin* es geht.',
       conclusion: "Auch das ist Fortschritt: Du fängst an, hinzuschauen.",
     };
   }
@@ -880,9 +868,9 @@ export function trendStory(entries: JournalEntry[], months: TrendRange): TrendSt
   const last = buckets[buckets.length - 1].value as number;
   const delta = last - first;
   let lead: string;
-  if (delta >= 0.8) lead = 'Über den Zeitraum bist du spürbar <em class="g">ruhiger</em> geworden.';
-  else if (delta <= -0.8) lead = 'Zuletzt war wieder <em class="g">mehr los</em> als am Anfang. Das darf sein.';
-  else lead = 'Über den Zeitraum bist du ziemlich <em class="g">stabil</em> geblieben.';
+  if (delta >= 0.8) lead = 'Über den Zeitraum bist du spürbar *ruhiger* geworden.';
+  else if (delta <= -0.8) lead = 'Zuletzt war wieder *mehr los* als am Anfang. Das darf sein.';
+  else lead = 'Über den Zeitraum bist du ziemlich *stabil* geblieben.';
 
   return {
     range,

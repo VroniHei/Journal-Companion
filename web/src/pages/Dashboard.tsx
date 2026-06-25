@@ -6,6 +6,7 @@ import { ICONS } from "../components/iconset";
 import { tileRelief } from "../components/tile";
 import { JournalCard } from "../components/JournalCard";
 import { ThemeMiniCard } from "../components/ThemeMiniCard";
+import { withAccents } from "../lib/accents";
 import {
   useDailyRitual,
   useEnergyToday,
@@ -1121,10 +1122,9 @@ export function Dashboard() {
             <>
               {/* Mobile */}
               <div className="sm:hidden">
-                <p
-                  className="mb-3 text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]"
-                  dangerouslySetInnerHTML={{ __html: showcase }}
-                />
+                <p className="mb-3 text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]">
+                  {withAccents(showcase, "sc-m")}
+                </p>
                 {topWords.length > 0 && (
                   <div className="mb-3.5 flex flex-wrap gap-1.5">
                     {/* Mobil bewusst nur die 3 wichtigsten (häufigsten) Tags in
@@ -1172,10 +1172,9 @@ export function Dashboard() {
               {/* Desktop: 3 Spalten */}
               <div className="hidden grid-cols-[1.3fr_1fr_1fr] items-stretch sm:grid">
                 <div className="flex items-center border-r border-[var(--border)] pr-7">
-                  <p
-                    className="text-[19px] font-[450] leading-[1.55] tracking-[-0.01em] text-[var(--foreground)]"
-                    dangerouslySetInnerHTML={{ __html: showcase }}
-                  />
+                  <p className="text-[19px] font-[450] leading-[1.55] tracking-[-0.01em] text-[var(--foreground)]">
+                    {withAccents(showcase, "sc-d")}
+                  </p>
                 </div>
                 <div className="flex flex-col justify-center gap-2.5 border-r border-[var(--border)] px-[26px]">
                   <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#9a917f]">

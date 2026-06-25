@@ -12,6 +12,7 @@ import type {
 import { Button, Card, Eyebrow } from "../components/ui";
 import { MoodCard } from "../components/MoodCard";
 import { ThemeMiniCard } from "../components/ThemeMiniCard";
+import { withAccents } from "../lib/accents";
 import { useEntries, useRestDays, useSettings } from "../hooks/useData";
 import {
   deletePatternInsight,
@@ -327,7 +328,7 @@ export function Patterns() {
   // rotierend (seed = Tag).
   const wsHtml =
     showcaseInsight(entries, Math.floor(Date.now() / 86_400_000)) ??
-    'Sobald sich Themen über mehrere Einträge wiederholen, zeigt sich hier, was sich <em class="g">durchzieht</em>.';
+    "Sobald sich Themen über mehrere Einträge wiederholen, zeigt sich hier, was sich *durchzieht*.";
 
   return (
     <section className="space-y-8">
@@ -363,10 +364,9 @@ export function Patterns() {
             </span>
           </div>
           {/* Einsicht (Lead 450, .g-Akzent). */}
-          <p
-            className="text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]"
-            dangerouslySetInnerHTML={{ __html: wsHtml }}
-          />
+          <p className="text-[16px] font-[450] leading-[1.5] text-[var(--foreground)]">
+            {withAccents(wsHtml, "ws")}
+          </p>
           {/* Fokus-Themen: einzeilig (Master §6: flex-wrap nowrap, overflow
               hidden — kein Umbruch, längere Worte werden beschnitten). */}
           {words.length > 0 && (

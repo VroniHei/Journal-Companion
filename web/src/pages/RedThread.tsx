@@ -1,5 +1,6 @@
 import { useEntries } from "../hooks/useData";
 import { themeClusters, TONE_LEGEND } from "../lib/insights";
+import { withAccents } from "../lib/accents";
 
 // Roter Faden (Markenkern): wiederkehrende Themen über die letzten Wochen.
 // Nicht nur Wörter, sondern was sich durchzieht. Drill-in aus „Muster";
@@ -87,10 +88,9 @@ export function RedThread() {
                       {c.count} Einträge
                     </span>
                   </div>
-                  <p
-                    className="mb-3 text-[14.5px] leading-[1.5] text-[var(--muted)]"
-                    dangerouslySetInnerHTML={{ __html: c.note }}
-                  />
+                  <p className="mb-3 text-[14.5px] leading-[1.5] text-[var(--muted)]">
+                    {withAccents(c.note, c.id)}
+                  </p>
                   <div className="flex flex-wrap gap-1.5">
                     {c.tags.map((t) => (
                       <span

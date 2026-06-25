@@ -241,9 +241,12 @@ offene Optimierungs-Backlog, priorisiert und entdoppelt.
 
 ### D · Code-Qualität / Sicherheit / weitere Entdopplung
 
-- 🔴 **`dangerouslySetInnerHTML`** für KI-/Nutzer-Text in `RedThread.tsx:92` +
-  `Progress.tsx:87` (XSS-Risiko) → sicheren `withAccents()`-Helfer nutzen (wie
-  WeeklyLetter).
+- ✅ **`dangerouslySetInnerHTML` komplett entfernt** (war XSS-Risiko): Insight-
+  Texte (`insights.ts`: `showcaseInsight`, `themeClusters`, `trendStory`) liefern
+  jetzt `*Wort*`-Marker statt `<em class="g">`-HTML; alle Konsumenten (RedThread,
+  Progress, Patterns, Dashboard ×2, WeeklyLetter) rendern über den zentralen,
+  sicheren `withAccents()`-Helfer (`lib/accents.tsx`). `escapeHtml`-Krücke
+  entfällt. 0 `dangerouslySetInnerHTML` im Web-Code. (2026-06-23)
 - 🟡 **Farben als Hex statt Tokens** in 14+ Dateien (`#9a917f` Tertiärgrau
   dutzendfach, `#5d4f3f`, `#6a5a48`, `#b0a896`) — eigenes undokumentiertes
   Graustufenset neben `--muted`. → Tokens `--muted-2`/`--ink-faint`. CTA-Gradient
