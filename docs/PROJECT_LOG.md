@@ -5,6 +5,32 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-25 — Hero-Feinschliff (Design §10) + Backlog-Abbau
+
+**Was (Design §10-Nachtrag, finaler Hero-Stand):**
+- **Mobile-Hero umgebaut:** Höhe 470 → **558px**, Begrüßung **vertikal zentriert**
+  (statt unten verankert). **Buttons + Fokus-Chip jetzt IM Foto** (premium): grüner
+  „Eintrag schreiben" + **Glas**-„Sprach-Check-in"; Fokus-Chip als Glas-Element mit
+  **„ändern"-Pille** (Stift). Nur noch ein dünner 24px-Rundungsstreifen als
+  Übergang zur Creme-Fläche (vorher überlappende Aktions-Fläche). Erststart: keine
+  In-Bild-Buttons (Onboarding-Karte hat eigene CTA).
+- **Ken-Burns-Motion** auf allen Hero-Fotos (`.hero-zoom` Keyframe auf scale
+  1.02→1.16 + translate, 18s; hinter `prefers-reduced-motion`).
+- Desktop-Fokus-Chip: ebenfalls „ändern"-Pille für Konsistenz.
+- Bereits zuvor erledigt (in §10 bestätigt): Logo-Welle Clay, „Tagesritual · 6 Min"
+  in allen Zuständen, Glas-Tageszeit-Icon.
+
+**Was (Backlog-Abbau, vom Nutzer beauftragt):**
+- Quick-Wins: `ShareLinks`-Komponente (Dedup Dashboard×2 + Muster), EntryDetail
+  Default-Tab datengetrieben, Archiv-Monatsgruppen mit Jahr, Eyebrows auf 11px.
+- Touch-Targets: Basis-Button + Inputs min-h-44px; Chips/Filter min-h-40px.
+- VoiceCheckin + ContactImpulse: Textareas/Boxen vom alten `rounded-lg`/
+  transparent auf neuen App-Style (Surface, Radius, Fokus-Ring) gehoben.
+
+**Ergebnis:** `lint`/`build` grün; Hero (Mobile + Desktop) per Playwright geprüft.
+
+---
+
 ## 2026-06-25 — Teilen-Karte: seitenübergreifend gleich + Auto-Fit langer Wörter
 
 **Was:** (1) Schlüsselwort/Seed der „Was sich zeigt"-Inhalte jetzt zentral

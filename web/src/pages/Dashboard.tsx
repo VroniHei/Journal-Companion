@@ -375,12 +375,12 @@ export function Dashboard() {
     // flex-col + order: mobil kompakte Reihenfolge (Begrüßung → Ritual → Heute
     // im Blick → Energie → Stimmung); ab sm volles Bento in Prototyp-Reihenfolge.
     <section className="flex flex-col gap-5">
-      {/* Mobile-Hero (Variante C, §2): Foto 470px, Tageszeit-Glas-Icon (Sonne/
-          Mond) vor dem Datum, Begrüßung Gewicht 550 mit Newsreader-Italic-Name,
-          warme Tageszeit-Frage, unten verankert. Full-bleed unter dem App-Header;
-          darunter überlappende Aktions-Fläche (Fokus-Chip + 2 Buttons). */}
+      {/* Mobile-Hero (Variante C + §10-Nachtrag): Foto 558px, Begrüßung vertikal
+          zentriert, Buttons + Fokus-Chip IM Bild (Glas), Ken-Burns-Motion; danach
+          nur ein dünner Rundungsstreifen als Übergang zur Creme-Fläche.
+          Full-bleed unter dem App-Header. Erststart: keine In-Bild-Buttons. */}
       <div className="order-1 -mx-5 -mt-6 sm:hidden">
-        <div className="relative overflow-hidden" style={{ height: 470 }}>
+        <div className="relative overflow-hidden" style={{ height: 558 }}>
           <img
             src={heroImgMobile}
             alt=""
@@ -392,9 +392,11 @@ export function Dashboard() {
             className="absolute inset-0"
             style={{ background: isAbend ? ABEND_SCRIM : MORGEN_SCRIM }}
           />
-          {/* Begrüßungsblock, unten verankert (bottom 96px gleicht die Rundung
-              der Fläche darunter aus). */}
-          <div className="absolute left-5 right-5" style={{ bottom: 96 }}>
+          {/* Begrüßungsblock, vertikal zentriert (top 60 lässt die App-Kopfzeile frei). */}
+          <div
+            className="absolute left-5 right-5 flex flex-col justify-center"
+            style={{ top: 60, bottom: 18 }}
+          >
             <div className="inline-flex items-center gap-[9px]">
               <span
                 className="inline-flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full"
@@ -445,66 +447,97 @@ export function Dashboard() {
             >
               {heroQuestion}
             </p>
+
+            {/* Aktionen + Fokus IM Bild — nur wenn schon Einträge da sind
+                (Erststart: die Onboarding-Karte darunter hat ihre eigene CTA). */}
+            {hasData && (
+              <>
+                <div className="mt-[22px] grid gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => navigate("/neu")}
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-[13px] text-sm font-semibold text-[#23221A] transition hover:-translate-y-0.5"
+                    style={{
+                      background: "linear-gradient(180deg,#B4ED63,#A8E84F)",
+                      boxShadow: "0 8px 20px rgba(110,155,44,.34)",
+                    }}
+                  >
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16" aria-hidden="true">
+                      <path d="M8 3v10M3 8h10" />
+                    </svg>
+                    Eintrag schreiben
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/sprechen")}
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-[13px] text-sm font-semibold text-[#F8F5EE] transition hover:-translate-y-0.5"
+                    style={{
+                      background: "rgba(20,17,11,.18)",
+                      backdropFilter: "blur(8px)",
+                      WebkitBackdropFilter: "blur(8px)",
+                      border: "1px solid rgba(255,255,255,.32)",
+                    }}
+                  >
+                    <MicGlyph size={17} />
+                    Sprach-Check-in
+                  </button>
+                </div>
+
+                {/* Fokus-Chip im Bild (Glas) — gesetzt mit „ändern"-Pille, sonst
+                    leiser gestrichelter Chip. Tippen → Einstellungen. */}
+                {todayFocus ? (
+                  <Link
+                    to="/einstellungen"
+                    className="mt-[14px] inline-flex w-fit max-w-full items-center gap-1.5 rounded-full py-[5px] pl-3 pr-[5px] text-[13px] font-medium transition hover:opacity-90"
+                    style={{
+                      color: "#F4F2E8",
+                      background: "rgba(255,255,255,.14)",
+                      backdropFilter: "blur(6px)",
+                      WebkitBackdropFilter: "blur(6px)",
+                      border: "1px solid rgba(255,255,255,.28)",
+                    }}
+                  >
+                    <span className="h-[7px] w-[7px] flex-none rounded-full bg-[var(--clay)]" />
+                    <span className="truncate">Dein Fokus: {todayFocus}</span>
+                    <span
+                      className="ml-0.5 inline-flex flex-none items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold"
+                      style={{ background: "rgba(248,245,238,.18)", color: "#F8F5EE" }}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" />
+                      </svg>
+                      ändern
+                    </span>
+                  </Link>
+                ) : (
+                  <Link
+                    to="/einstellungen"
+                    className="mt-[14px] inline-flex w-fit items-center gap-1.5 rounded-full border border-dashed px-3 py-1.5 text-[13px] font-medium transition hover:opacity-90"
+                    style={{
+                      color: "rgba(244,242,232,.82)",
+                      background: "rgba(255,255,255,.07)",
+                      borderColor: "rgba(255,255,255,.34)",
+                    }}
+                  >
+                    <span className="h-[7px] w-[7px] flex-none rounded-full" style={{ background: "rgba(244,242,232,.6)" }} />
+                    Fokus setzen · in den Einstellungen
+                  </Link>
+                )}
+              </>
+            )}
           </div>
         </div>
 
-        {/* Aktions-Fläche (überlappt das Bild um 26px) */}
+        {/* Dünner Rundungs-Übergang vom Foto zur Creme-Fläche (§10.2). */}
         <div
-          className="relative px-4 pb-1 pt-[18px]"
           style={{
-            marginTop: -26,
-            background:
-              "radial-gradient(280px 160px at 100% 0%, rgba(205,138,91,.10), transparent 62%), #FCFAF6",
-            borderRadius: "26px 26px 0 0",
+            marginTop: -24,
+            height: 24,
+            background: "#F8F5EE",
+            borderRadius: "24px 24px 0 0",
           }}
-        >
-          {/* Fokus-Chip: zeigt den persönlichen Fokus (Einstellungen/Onboarding,
-              ggf. vom Tagesritual überschrieben). Tippen → in den Einstellungen
-              ändern. */}
-          {todayFocus ? (
-            <Link
-              to="/einstellungen"
-              className="mb-3.5 inline-flex max-w-full items-center gap-1.5 overflow-hidden rounded-full border px-3 py-1.5 text-[13px] font-medium text-[#5d4f3f] transition hover:opacity-80"
-              style={{ background: "#EFE4CF", borderColor: "rgba(120,86,52,0.2)" }}
-            >
-              <span className="h-[7px] w-[7px] flex-none rounded-full bg-[var(--clay)]" />
-              <span className="truncate">Dein Fokus: {todayFocus}</span>
-            </Link>
-          ) : (
-            <Link
-              to="/einstellungen"
-              className="mb-3.5 inline-flex items-center gap-1.5 rounded-full border border-dashed px-3 py-1.5 text-[13px] font-medium text-[#b0a896] transition hover:opacity-80"
-              style={{ borderColor: "rgba(35,34,26,.16)" }}
-            >
-              <span className="h-[7px] w-[7px] rounded-full" style={{ background: "#E0D8CE" }} />
-              Fokus setzen · in den Einstellungen
-            </Link>
-          )}
-
-          {/* 2 Buttons, volle Breite */}
-          <div className="grid gap-2.5">
-            <button
-              type="button"
-              onClick={() => navigate("/neu")}
-              className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-[var(--accent-contrast)] transition hover:-translate-y-0.5"
-              style={{
-                background: "linear-gradient(180deg,#B4ED63,#A8E84F)",
-                boxShadow: "0 6px 16px rgba(110,155,44,.3)",
-              }}
-            >
-              Eintrag schreiben
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/sprechen")}
-              className="inline-flex items-center justify-center gap-2 rounded-full border bg-white px-6 py-3 text-sm font-semibold text-[#5d564a] transition hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
-              style={{ borderColor: "rgba(35,34,26,.12)" }}
-            >
-              <MicGlyph size={16} />
-              Sprach-Check-in
-            </button>
-          </div>
-        </div>
+        />
       </div>
 
       {/* Desktop-Hero (Variante C, §7): Foto, Tageszeit-Glas-Icon vor dem Datum
@@ -604,16 +637,26 @@ export function Dashboard() {
           {todayFocus ? (
             <Link
               to="/einstellungen"
-              aria-label={`Dein Fokus: ${todayFocus}`}
-              className="mt-5 inline-flex max-w-[400px] items-center gap-[9px] overflow-hidden rounded-full border py-2 pl-3.5 pr-[18px] text-[13.5px] font-medium transition hover:opacity-90"
+              aria-label={`Dein Fokus: ${todayFocus} – ändern`}
+              className="mt-5 inline-flex max-w-[420px] items-center gap-[9px] overflow-hidden rounded-full border py-[5px] pl-3.5 pr-[5px] text-[13.5px] font-medium transition hover:opacity-90"
               style={{
-                color: "rgba(255,248,236,.78)",
-                background: "rgba(255,248,236,.1)",
-                borderColor: "rgba(255,248,236,.2)",
+                color: "rgba(255,248,236,.82)",
+                background: "rgba(255,248,236,.12)",
+                borderColor: "rgba(255,248,236,.24)",
               }}
             >
               <span className="h-2 w-2 flex-none rounded-full" style={{ background: "#CD8A5B" }} />
-              <span className="truncate">{todayFocus}</span>
+              <span className="truncate">Dein Fokus: {todayFocus}</span>
+              <span
+                className="ml-0.5 inline-flex flex-none items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold"
+                style={{ background: "rgba(248,245,238,.18)", color: "#F8F5EE" }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden="true">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" />
+                </svg>
+                ändern
+              </span>
             </Link>
           ) : (
             <Link

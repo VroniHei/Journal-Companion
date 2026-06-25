@@ -29,7 +29,7 @@ Die übrigen Frames (Klärung, Muster, Rückblick, Archiv, Einstellungen, Krisen
 - **Barrierefreiheit:** WCAG AA, Touch-Targets ≥ 44px.
 
 ## Was heute geändert wurde — Kurzüberblick
-Details mit exakten Werten in `SPEC_Heute-Screen.md` §„Changelog Juni 2026".
+Details mit exakten Werten in `SPEC_Heute-Screen.md` §9 „Changelog" und §10 „Nachtrag 25. Juni" (Hero-Feinschliff: Buttons im Bild, Ken-Burns-Motion, „ändern"-Affordance, Glas-Sekundärbutton, Logo-Welle clay).
 - Neuer **Hero (Variante C)** in allen Screens: Glas-Icon mit **Sonne (Morgen/Tag)** bzw. **Mond (Abend)** vor dem Datum, Begrüßung „Guten Morgen/Abend, *Vroni*" in **Gewicht 550** mit Newsreader-Italic beim Namen, warme Tageszeit-Fragen. Altes grünes Smiley-Medaillon entfernt.
 - Hero-Bildfläche höher (**470px** Mobile), Begrüßung unten verankert (**bottom 96px**), damit 2-zeilige Begrüßung (lange Namen) + 3-zeilige Frage immer Platz haben und die Rundung der Fläche darunter ausgeglichen ist.
 - **Tagesritual-Karte** neu sortiert (Eyebrow → Status → Titel → voller Button), „Tagesritual · 6 Min", Status ohne Punkt davor, „Geschafft"-Medaillon im erledigten Zustand.

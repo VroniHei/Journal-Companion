@@ -174,3 +174,40 @@ Container `padding:30px`, zwei driftende Lichtflächen (radiale Verläufe, blur,
 10. **Serie-/„Pause nehmen"-Block** ruhiger gesetzt, einzeiliger Text „Endet heute Nacht · 1 Pausentag übrig", mehr Abstand nach oben + zum Button.
 11. **Abstände/Größen vereinheitlicht** (Recap-Label → Wert 6px, Status-Texte 11.5px, Smiley→Datum-Abstand im Desktop-Hero korrigiert).
 12. **Desktop Erststart-Hero** auf Variante C gebracht (Sonnen-Icon, Gewicht 550) + Em-Dash entfernt.
+
+---
+
+## 10 · NACHTRAG 25. Juni — Hero-Feinschliff (überschreibt §2 wo abweichend)
+
+Diese Änderungen sind der **finale Stand** und gehen den älteren Werten in §2 vor.
+
+### 10.1 Buttons jetzt IM Bild (nicht mehr auf heller Fläche)
+Die beiden Aktions-Buttons „Eintrag schreiben" + „Sprach-Check-in" sitzen jetzt **im Foto-Hero** (premium, Calm-Stil), nicht mehr auf der hellen Fläche darunter.
+- **Primär** „Eintrag schreiben": grün `linear-gradient(180deg,#B4ED63,#A8E84F)`, `color:#23221A`, `padding:13px`, Pille, `box-shadow:0 8px 20px rgba(110,155,44,.34)`, Plus-Icon 16px.
+- **Sekundär** „Sprach-Check-in": **dezentes Glas** auf dem Bild — `color:#F8F5EE; background:rgba(20,17,11,.18); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.32); padding:13px`, Mikrofon-Icon 17px. (Bewusst nur ein Hauch dunkler als reines Glas, damit es hochwertig bleibt und trotzdem lesbar ist.)
+- Buttons als `display:grid; gap:10px; margin-top:22px` (volle Breite, gestapelt).
+
+### 10.2 Hero-Höhe + Zentrierung
+- Foto-Hero-Container: `position:relative; height:558px; overflow:hidden;` (overflow:hidden wegen Motion, siehe 10.4).
+- Begrüßungsblock **vertikal zentriert** im Bild (nicht mehr unten festgeklebt): `position:absolute; left:20px; right:20px; top:60px; bottom:18px; display:flex; flex-direction:column; justify-content:center;`. Dadurch sitzt der Inhalt mittig, leicht in den dunkleren unteren Verlauf gezogen, mit Luft nach unten; bei langem Namen (2-zeilige Begrüßung) wächst der Block symmetrisch.
+- Reihenfolge im Block: Datum (Icon+Text) → H1 Begrüßung → Frage → Buttons → **Fokus-Chip** (siehe 10.3).
+- Übergang zum Inhalt: schmale Rundung über dem Bild `<div style="position:relative; margin:-24px 0 0; background:#F8F5EE; border-radius:24px 24px 0 0; height:24px;"></div>`, danach „Gerade ist viel?" usw. auf der Frame-Basis `#F8F5EE`.
+
+### 10.3 Fokus-Chip im Bild (Glas) + „ändern"-Affordance
+Der Fokus-Chip sitzt unter den Buttons im Bild, als Glas-Element:
+- **Fokus gesetzt** (`ritualDone`): antippbarer Button (`cursor:pointer`), `color:#F4F2E8; background:rgba(255,255,255,.14); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.28); border-radius:100px; padding:5px 5px 5px 12px`. Inhalt: clay Punkt + „Dein Fokus: Mich sortieren" + am Ende eine kleine Pille **„ändern"** mit Stift-Icon (`background:rgba(248,245,238,.18); color:#F8F5EE; font-weight:600`; Stift-SVG `width:14`, `stroke-width:1.9`, Pfade `M12 20h9` + `M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z`). **Wichtig:** echtes, klar lesbares „ändern" statt eines winzigen Icons — im Produkt mit den Einstellungen / dem Ritual-Fokus verlinken.
+- **Fokus offen** (`ritualOpen`): leiser gestrichelter Glas-Chip `color:rgba(244,242,232,.82); background:rgba(255,255,255,.07); border:1px dashed rgba(255,255,255,.34)` + Punkt + „Fokus heute noch offen · im Ritual setzen".
+
+### 10.4 Motion — Ken Burns auf allen Hero-Fotos
+Langsamer, ruhiger Zoom auf den Hero-Bildern (auch Abend):
+- Keyframe: `@keyframes kenburns{from{transform:scale(1.02);}to{transform:scale(1.16) translate(-2%,-2.5%);}}`.
+- Auf jedes Hero-`<img>`: `animation:kenburns 18s ease-in-out infinite alternate;`. Container `overflow:hidden` klippt den Zoom sauber.
+- Respektiert `@media (prefers-reduced-motion:reduce){*{animation:none!important;}}`.
+
+### 10.5 Tageszeit-Marke + Logo
+- Tageszeit-Glas-Icon `26×26` vor dem Datum: Sonne (Morgen/Tag) / Mond (Abend), Icon 15px, `stroke-width:1.5`.
+- **Logo-Welle app-weit Clay:** die geschwungene Linie der Wortmarke ist überall `#CD8A5B` (die helle Wortmarke `assets/innerline-wordmark-light.svg` wurde von Grün `#A8E84F` auf Clay umgestellt, die Clay-Wortmarke war es schon). Keine grüne Welle mehr.
+
+### 10.6 Konsistenz
+- „Tagesritual · 6 Min" jetzt in **allen** Karten-Zuständen (Morgen, Abend, Erledigt) — vorher fehlte „· 6 Min" bei Abend/Erledigt.
+- Erststart-Hero (Mobile): kein In-Bild-Button (die Onboarding-Karte darunter hat ihre eigene CTA „Ersten Eintrag schreiben"), Begrüßung zentriert, Sonnen-Icon.
