@@ -105,6 +105,25 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 - **Abend-Bild ist gekoppelt.** `zitat-weg.webp` (Bergpfad) dient sowohl als
   Abend-Hero als auch als Mini-Karten-Foto. Wenn das Bild getauscht wird, beide
   Verwendungen bedenken.
+- **Gerundeter Übergang ≠ flache Linie.** Eine `border-radius:Xpx Xpx 0 0`-Kante
+  hat in der Mitte IMMER eine gerade Kante — sie liest sich nur dann als „Rundung",
+  wenn die creme Fläche genug Präsenz hat (höher gesetzt + weicher Schatten an der
+  Oberkante, der die Kante aufs Foto wirft). Eine dünne, gleichfarbige 24px-Leiste
+  wirkt wie ein Strich.
+- **Abend-Scrim muss das warme Foto übertönen.** Das gewählte Abend-Bild ist warm/
+  golden; ein dunkel-violetter Scrim wird matschig-braun. Lösung: klar gesättigter
+  Lila-Verlauf PLUS eine flache Flieder-Tönung (`rgba(150,130,205,.22)`), damit der
+  Eindruck wirklich flieder wird.
+- **Erledigt-Status: ein Häkchen reicht.** Das Häkchen steckt schon im Medaillon —
+  ein zweiter grüner Haken-Kreis daneben ist doppelt. Status „Heute erledigt ·
+  automatisch gesichert" einheitlich grün, direkt unter „Tagesritual" (gestapelt
+  neben dem Medaillon), Größe 11,5px (§5-Reihenfolge Eyebrow → Status).
+- **Deploy-Verifikation ohne Live-Zugriff.** Die Live-Site ist aus der Build-
+  Umgebung nicht erreichbar (Netzwerk-Policy → HTTP 000). Deploy lässt sich
+  trotzdem absichern: (1) `main`-HEAD über die GitHub-API prüfen, (2) den exakten
+  `vercel.json`-buildCommand lokal ausführen (schließt stillen Build-Abbruch aus).
+  Vercel nutzt `npm install --include=dev` (nicht `npm ci`), repariert das Lockfile
+  also selbst — manuelle Lock-Edits brechen den Build nicht.
 
 ## 2026-06-23 (Claude-Design Update)
 

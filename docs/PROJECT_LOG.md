@@ -5,6 +5,31 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-25 — Hero/Ritual-Korrekturschleife (Review am Live-Stand)
+
+**Was:** Nach dem §10-Deploy am Handy nachgezogen:
+- **Abend-Scrim** war muddy-braun → jetzt klar **flieder/violett** (Lila-Verlauf +
+  flache Flieder-Tönung über dem warmen Foto), mobil und Desktop.
+- **Foto→Creme-Übergang** sah aus wie eine gerade Linie → wieder **sichtbar
+  gerundet**: creme Fläche steigt mit gerundeter Oberkante + weichem Schatten über
+  das Foto; Begrüßungsblock minimal höher für Luft nach unten.
+- **Tagesritual-Kopf** nach §5 (Eyebrow → Status): Status „Heute erledigt/offen"
+  steht jetzt **direkt unter „Tagesritual"** (gestapelt neben dem Medaillon),
+  Status-Größe 11,5px. Erledigt-Status **einheitlich grün**, **ohne** extra
+  grünen Haken-Kreis (Häkchen steckt im Medaillon). Recap „Ein guter Satz"
+  (morgens) auf 15,5px Newsreader-Italic.
+
+**Deploy-Diagnose:** Nutzer sah Änderungen kurz nicht. Verifiziert: `main` =
+`27a4d5d` (GitHub-API), exakter Vercel-Build-Befehl lokal grün (kein stiller
+Abbruch), kein Service-Worker. Ursache war Build-/CDN-Laufzeit bzw. Browser-Cache.
+**Learning:** Live-Site ist aus der Build-Umgebung nicht erreichbar (Netzwerk-
+Policy) — Deploy-Status nur über GitHub-Commit + lokalen Build-Befehl prüfbar.
+
+**Ergebnis:** Live; alle Korrekturen per Playwright (Mobile + Desktop, offen +
+erledigt) geprüft.
+
+---
+
 ## 2026-06-25 — Hero-Feinschliff (Design §10) + Backlog-Abbau
 
 **Was (Design §10-Nachtrag, finaler Hero-Stand):**

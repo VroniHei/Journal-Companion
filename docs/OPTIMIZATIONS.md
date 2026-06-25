@@ -7,6 +7,36 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 ## Offen
 
+### Nächster großer Block: Seiten- & Zustands-Pass (priorisiert)
+- 🔴 **Systematischer „jede Seite, jeder Zustand"-Pass:** Dashboard ist jetzt
+  stark; die übrigen Seiten (Muster, Klärung, Rückblick, Archiv, Einstellungen,
+  Ritual, Energie, Soforthilfe/Relief, Loosen, Kontaktimpuls, EntryDetail,
+  NewEntry, Suche, RedThread, Verlauf, WeeklyLetter, ShareCard) einzeln gegen
+  Design + Konsistenz prüfen — **inkl. aller Zustände**: leer / wenig Daten /
+  voll, Morgen vs. Abend, Lade-/Fehler-/Krisen-Zustand. Pro Seite: Radien,
+  Eyebrows, Touch-Targets, Spacing, Tokens-statt-Hex, Buttons, Empty-States.
+- 🟡 **Token-/Style-Konsolidierung parallel dazu:** wiederkehrende Inline-Hex
+  (`#9a917f`, `#5d4f3f`, CTA-Gradient) und Inline-SVGs in Tokens/Icon-Set/kleine
+  Komponenten ziehen (siehe Audit §D) — reduziert Drift beim Seiten-Pass.
+
+### Produkt-Reife (Richtung „anbietbar")
+- 🔴 **Datenschutz/DSGVO sauber aufsetzen (vor jedem öffentlichen Angebot):** Bei
+  „Reflektieren" verlässt Eintragstext das Gerät → Claude-API (Anthropic, US).
+  Nötig: klare Einwilligung + Transparenz im UI, Auftragsverarbeitungs-Vertrag,
+  Datenschutzerklärung, ggf. EU-Region/Proxy, Lösch-/Export-Recht (Export ist da).
+  Therapeutische Abgrenzung („kein Therapieersatz") ist vorhanden — juristisch
+  final prüfen lassen.
+- 🟡 **Performance/Bundle:** `index.js` ~679 kB (gzip ~202 kB). Routen per
+  `React.lazy`/dynamic import code-splitten; größte Abhängigkeiten prüfen.
+- 🟡 **Onboarding & Retention:** sanfter, aber klarer Erststart; optionale,
+  freundliche Tageserinnerung (kein Druck); Streak bewusst niederschwellig
+  (bereits entschärft) — Balance Motivation vs. Calm halten.
+- 🟡 **Konten/Multi-Device & Monetarisierung (strategisch):** aktuell lokal-first
+  + optionaler Proxy-Sync. Für ein echtes Angebot: Account-Modell, Abrechnung der
+  Claude-API-Kosten (pro Reflexion), Preis-/Limit-Modell.
+- 🟢 **A11y vollständig:** Touch-Targets begonnen; Fokus-Reihenfolge, Screenreader-
+  Labels (Mood-/Energie-Buttons), Kontraste flächendeckend prüfen.
+
 - 🟡 **Build-Härtung gegen Workspace-Laufzeitimporte:** Der `--alias`-Fix in
   `vercel.json` ist gezielt, aber jedes **neue** Subpfad-Export aus
   `@journal/shared` (außer `.`/`crisis`) bräuchte einen weiteren Alias, sonst
