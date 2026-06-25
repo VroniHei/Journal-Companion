@@ -49,8 +49,10 @@ export function Button({
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant }) {
   // Innerline: Pill-Buttons, Figtree 600, sanfter Lift beim Hover.
+  // min-h-[44px]: WCAG-Touch-Target (≥44px) an der Quelle, ohne die Optik der
+  // Pille zu verändern (Padding bleibt, Höhe wird nur garantiert).
   const base =
-    "inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-[transform,background-color,color,border-color] duration-150 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0";
+    "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-[transform,background-color,color,border-color] duration-150 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0";
   const styles: Record<ButtonVariant, string> = {
     primary:
       "bg-[var(--accent)] text-[var(--accent-contrast)] hover:bg-[#bdf06a] hover:-translate-y-0.5 disabled:hover:bg-[var(--accent)]",

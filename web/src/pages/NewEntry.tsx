@@ -117,7 +117,7 @@ function Chips({
               type="button"
               aria-pressed={active}
               onClick={() => toggle(opt)}
-              className="rounded-full px-[13px] py-[6px] text-[13px] transition"
+              className="inline-flex min-h-[40px] items-center rounded-full px-[13px] py-[6px] text-[13px] transition"
               style={
                 active
                   ? {

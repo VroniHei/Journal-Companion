@@ -1350,7 +1350,7 @@ export function Dashboard() {
                   key={f.id}
                   type="button"
                   onClick={() => setFilter(f.id)}
-                  className="rounded-full px-[14px] py-[7px] text-[13px] transition"
+                  className="inline-flex min-h-[40px] items-center rounded-full px-[14px] py-[7px] text-[13px] transition"
                   style={{
                     background: active ? "var(--sand)" : "transparent",
                     color: active ? "var(--foreground)" : "var(--muted)",

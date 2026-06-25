@@ -197,7 +197,7 @@ export function Archive() {
                 key={f.key}
                 type="button"
                 onClick={() => setFilter(f.key)}
-                className="rounded-full px-3.5 py-1.5 text-[13px] transition"
+                className="inline-flex min-h-[40px] items-center rounded-full px-3.5 py-1.5 text-[13px] transition"
                 style={{
                   background: active ? "var(--sand)" : "transparent",
                   border: `1px solid ${active ? "transparent" : "var(--border)"}`,

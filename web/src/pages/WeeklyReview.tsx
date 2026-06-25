@@ -251,7 +251,7 @@ export function WeeklyReview() {
               key={r.days}
               type="button"
               onClick={() => setDays(r.days)}
-              className="rounded-full border px-3 py-1 text-sm transition"
+              className="inline-flex min-h-[40px] items-center rounded-full border px-3 py-1 text-sm transition"
               style={{
                 borderColor: days === r.days ? "var(--accent)" : "var(--border)",
                 background: days === r.days ? "var(--accent-soft)" : "transparent",
