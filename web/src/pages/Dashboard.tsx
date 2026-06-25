@@ -276,6 +276,12 @@ export function Dashboard() {
   const heroContent = hasData ? TIME_CONTENT[tod] : EMPTY_CONTENT;
   const greet = heroContent.greet;
   const heroQuestion = heroContent.question;
+  // Hero-Foto je Tageszeit: Abend = Bergpfad (zitat-weg, ruhiges Abendlicht),
+  // sonst Morgen/Tag-Bild. Bildausschnitt je Format separat gesetzt.
+  const heroImgMobile = isAbend ? "/img/zitat-weg.webp" : "/img/welcome-still.webp";
+  const heroPosMobile = isAbend ? "center 45%" : "center 58%";
+  const heroImgDesktop = isAbend ? "/img/zitat-weg.webp" : "/img/hero-see.webp";
+  const heroPosDesktop = isAbend ? "center 55%" : "center 100%";
 
   // Serie inkl. eingelöster Pausentage (schützen die Serie über Lücken).
   const restDayDates = restDays.map((r) => r.date);
@@ -366,11 +372,11 @@ export function Dashboard() {
       <div className="order-1 -mx-5 -mt-6 sm:hidden">
         <div className="relative overflow-hidden" style={{ height: 470 }}>
           <img
-            src="/img/welcome-still.webp"
+            src={heroImgMobile}
             alt=""
             aria-hidden="true"
             className="hero-zoom absolute inset-0 h-full w-full object-cover"
-            style={{ objectPosition: "center 58%" }}
+            style={{ objectPosition: heroPosMobile }}
           />
           <div
             className="absolute inset-0"
@@ -494,11 +500,11 @@ export function Dashboard() {
           warme Tageszeit-Frage. */}
       <div className="relative hidden min-h-[236px] overflow-hidden rounded-[28px] shadow-[0_22px_48px_rgba(35,34,26,0.13)] sm:order-1 sm:block">
         <img
-          src="/img/hero-see.webp"
+          src={heroImgDesktop}
           alt=""
           aria-hidden="true"
           className="hero-zoom absolute inset-0 h-full w-full object-cover"
-          style={{ objectPosition: "center 100%" }}
+          style={{ objectPosition: heroPosDesktop }}
         />
         <div
           className="absolute inset-0"
