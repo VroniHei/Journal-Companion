@@ -17,6 +17,17 @@ export function ThemeMiniCard({
   className?: string;
   style?: React.CSSProperties;
 }) {
+  // Lange Wörter (z.B. „Erschöpfung") an die Kartenbreite anpassen, statt sie
+  // abzuschneiden: ab einer Schwellenlänge die Schrift proportional verkleinern
+  // (mit Untergrenze, damit es lesbar bleibt). Kurze Wörter behalten `wordSize`.
+  const maxChars = fill ? 10 : 8;
+  const effSize =
+    keyword.length > maxChars
+      ? Math.max(
+          Math.round(wordSize * (maxChars / keyword.length)),
+          Math.round(wordSize * 0.58),
+        )
+      : wordSize;
   return (
     <div
       className={`relative overflow-hidden rounded-[12px] shadow-[0_6px_20px_rgba(28,33,22,.26)] ${
@@ -44,10 +55,11 @@ export function ThemeMiniCard({
             fontFamily: "var(--font-serif)",
             fontStyle: "italic",
             fontWeight: 500,
-            fontSize: wordSize,
+            fontSize: effSize,
             lineHeight: 1.05,
             letterSpacing: "-0.01em",
             color: "#A8E84F",
+            whiteSpace: "nowrap",
           }}
         >
           {keyword}

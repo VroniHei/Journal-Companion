@@ -24,6 +24,8 @@ import {
   pauseDaysAvailable,
   recentStats,
   showcaseInsight,
+  showcaseKeyword,
+  showcaseSeed,
   wordsOfWeek,
   type MoodDay,
 } from "../lib/insights";
@@ -313,11 +315,10 @@ export function Dashboard() {
   }
   const week = recentStats(entries, 7);
   const moodDays = moodByDay(entries, 7);
-  // „Was sich zeigt": datengetriebene Einsicht mit .g-Akzent. Seed = Tag +
-  // Datenlage (Einträge-Anzahl), damit der Satz nicht nur täglich rotiert,
-  // sondern sich auch sichtbar ändert, sobald sich die Einträge ändern.
-  const showSeed = dayIndex() + entries.length;
-  const showcase = showcaseInsight(entries, showSeed);
+  // „Was sich zeigt": datengetriebene Einsicht mit .g-Akzent. Seed zentral aus
+  // `showcaseSeed` (Tag + Datenlage) — identisch zur Muster-Seite, damit die
+  // Inhalte/Teilen-Karten überall gleich sind und sich mit den Daten ändern.
+  const showcase = showcaseInsight(entries, showcaseSeed(entries));
   // Worte der Woche für die „Was sich zeigt"-Karte (Claude Design).
   const topWords = wordsOfWeek(entries, 4).map((w) => w.word);
   const ritualMorning = tod !== "abend";
@@ -335,9 +336,9 @@ export function Dashboard() {
   // Tag gut?" (`makeGreat`) überschreibt ihn für den Tag, falls gesetzt. So wird
   // ein in den Einstellungen gesetzter Fokus auch wirklich übernommen.
   const todayFocus = ritual?.makeGreat?.trim() || settings.focusArea?.trim();
-  // Schlüsselwort für die Mini-Karten-Vorschau („Was sich zeigt") — rotiert
-  // mit demselben Seed durch die Top-Themen, statt immer dasselbe Wort zu zeigen.
-  const keyword = topWords.length ? topWords[showSeed % topWords.length] : "Heute";
+  // Schlüsselwort für die Mini-Karten-Vorschau („Was sich zeigt") — zentral aus
+  // `showcaseKeyword`, damit es auf Dashboard und Muster identisch ist.
+  const keyword = showcaseKeyword(entries);
   const keywordCap = keyword.charAt(0).toUpperCase() + keyword.slice(1);
 
   // Gesicherte Antworten für den Erledigt-Zustand der Tagesritual-Karte.

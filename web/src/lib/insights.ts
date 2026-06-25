@@ -402,6 +402,27 @@ export interface WordCount {
   count: number;
 }
 
+/**
+ * Gemeinsamer Seed für die „Was sich zeigt"-/Showcase-Inhalte: Tag + Datenmenge.
+ * EINE Quelle, damit Dashboard, Muster (und weitere Stellen) zum selben Zeitpunkt
+ * dasselbe zeigen — und sich der Inhalt sichtbar ändert, sobald sich die Einträge
+ * ändern, nicht nur täglich.
+ */
+export function showcaseSeed(entries: JournalEntry[]): number {
+  return Math.floor(Date.now() / 86_400_000) + entries.length;
+}
+
+/**
+ * Schlüsselwort für die Teilen-/Mini-Karte. Rotiert mit `showcaseSeed` durch die
+ * Top-Themen — überall identisch berechnet, damit die Vorschau-Karten auf allen
+ * Seiten dasselbe Wort zeigen.
+ */
+export function showcaseKeyword(entries: JournalEntry[], fallback = "Heute"): string {
+  const words = wordsOfWeek(entries, 4).map((w) => w.word);
+  if (!words.length) return fallback;
+  return words[showcaseSeed(entries) % words.length];
+}
+
 /** „Worte der Woche": häufigste Themen/Gefühle/Bedürfnisse im Zeitraum. */
 export function wordsOfWeek(entries: JournalEntry[], max = 7): WordCount[] {
   const counts = new Map<string, number>();

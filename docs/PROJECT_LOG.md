@@ -5,6 +5,20 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-25 — Teilen-Karte: seitenübergreifend gleich + Auto-Fit langer Wörter
+
+**Was:** (1) Schlüsselwort/Seed der „Was sich zeigt"-Inhalte jetzt zentral
+(`showcaseSeed`/`showcaseKeyword` in `lib/insights.ts`) — Dashboard und Muster
+zeigen dieselbe Teilen-/Mini-Karte (vorher unterschiedliche Wörter durch
+abweichende Seeds/Wortlisten). (2) `ThemeMiniCard` verkleinert lange Wörter
+(z.B. „Erschöpfung") proportional, damit sie in die Karte passen statt
+abgeschnitten zu werden (Untergrenze 0.58·wordSize).
+
+**Ergebnis:** `lint`/`build` grün; per Playwright geprüft (langes Wort passt,
+Karten identisch über Seiten).
+
+---
+
 ## 2026-06-25 — Ritual-Medaillon, Fokus-Verdrahtung, „Was sich zeigt" datengetrieben
 
 **Was:** Mehrere Korrekturen aus dem Review:

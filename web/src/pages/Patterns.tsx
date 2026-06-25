@@ -26,6 +26,8 @@ import { aggregate } from "../lib/patterns";
 import {
   computeStreak,
   showcaseInsight,
+  showcaseKeyword,
+  showcaseSeed,
   wordsOfWeek,
 } from "../lib/insights";
 import { toPrefs } from "../lib/settings";
@@ -319,18 +321,15 @@ export function Patterns() {
   const words = wordsOfWeek(entries);
   const streak = computeStreak(entries, restDays.map((r) => r.date));
 
-  // Seed = Tag + Datenlage: rotiert täglich UND ändert sich sichtbar, sobald
-  // sich die Einträge ändern (statt immer denselben Satz/dasselbe Wort).
-  const wsSeed = Math.floor(Date.now() / 86_400_000) + entries.length;
-
-  // Schlüsselwort für die Mini-Karten-Vorschau in „Was sich zeigt" (Claude
-  // Design §6): rotiert mit dem Seed durch die Top-Themen, großgeschrieben.
-  const keyword = words.length ? words[wsSeed % words.length].word : "Ruhe";
+  // Schlüsselwort für die Mini-Karten-Vorschau in „Was sich zeigt" — zentral aus
+  // `showcaseKeyword`, identisch zum Dashboard (gleiche Teilen-Karte überall).
+  const keyword = showcaseKeyword(entries);
   const keywordCap = keyword.charAt(0).toUpperCase() + keyword.slice(1);
 
-  // „Was sich zeigt"-Kachel: datengetriebene Einsicht mit .g-Akzent.
+  // „Was sich zeigt"-Kachel: datengetriebene Einsicht mit .g-Akzent; Seed zentral
+  // (Tag + Datenlage) — identisch zum Dashboard.
   const wsHtml =
-    showcaseInsight(entries, wsSeed) ??
+    showcaseInsight(entries, showcaseSeed(entries)) ??
     "Sobald sich Themen über mehrere Einträge wiederholen, zeigt sich hier, was sich *durchzieht*.";
 
   return (
