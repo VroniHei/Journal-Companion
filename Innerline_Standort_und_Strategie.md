@@ -250,7 +250,7 @@ Opus für tiefe Reflexion + ElevenLabs pro Nutzer; der Zielnutzer (Vielschreiber
 | E2E / Nutzer-Isolation (Cloud) | ❌ offen | ~ (Auth ja) | ~ | ~ |
 | Mehrnutzer / Auth | ❌ | ✅ | ✅ | ✅ |
 | PWA / mobil installierbar | ❌ Web | ✅ | ✅ | ✅ |
-| Therapeuten-Handoff | ⏳ Konzept (Teil 5) | ~ („assist") | ❌ | ❌ |
+| Therapeuten-Handoff | ✅ umgesetzt (lokal, deskriptiv; Teil 5) | ~ („assist") | ❌ | ❌ |
 | Klinische Validierung | ❌ | teilw. behauptet | ❌ | ✅ (70+ Studien) |
 
 ---

@@ -5,6 +5,34 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-30 (Forts. 8) — „Brücke zur Versorgung": Zusammenfassung exportieren
+
+**Was:** Neuer Screen `/zusammenfassung` (Einstieg aus Einstellungen → Daten):
+eine nutzer-initiierte, editierbare Zusammenfassung für ein Gespräch mit einer
+Fachperson — oder für sich selbst.
+- **Rein lokal aggregiert, KI-frei** (`web/src/lib/summary.ts`, `collectSummary`):
+  Stimmung/Anspannung/Energie-Tendenz, wiederkehrende Themen/Emotionen/Bedürfnisse,
+  **nur `userConfirmed === true`** Muster, offene Schleifen/Entscheidungen, was
+  geholfen hat, Belastungs-Vermerk (falls `crisisFlag`) sachlich + Hilfe-Hinweis.
+- **Strikt deskriptiv**, nie präskriptiv: keine Diagnose, kein Ansatz, keine
+  Therapieform. Drei Verbatim-Textbausteine ([A] Einleitung, [B] Disclaimer,
+  [C] Rahmungssatz) fest eingebaut.
+- **Vorschau**: jeder Block abwählbar und editierbar (kürzen/ändern); 1–3
+  Beispiel-Einträge wählbar; Freitext „Das möchte ich ansprechen".
+- **Export lokal**: Markdown-Download (`downloadTextFile`) + PDF über Druckdialog
+  (`printSummary`, dependency-frei). Nichts wird automatisch verschickt.
+- Default ist die lokale, getemplatete Variante; ein optionaler KI-Glättungsschritt
+  wurde bewusst NICHT gebaut (eng am Scope, kein Präskriptiv-Risiko).
+
+**Warum:** Macht aus „kein Therapie-Ersatz" ein sichtbares Feature, das in die
+Versorgung hineinführt (Strategie-Doc Teil 5). Keine Cloud, keine Schemaänderung.
+
+**Ergebnis/Status:** 7 neue Tests (`summary.test.ts`); gesamt 39 Web- + 20
+Server-Tests grün; Build, Lint, Typecheck grün. State-Export + Strategie-Doc
+(Gap-Tabelle) nachgezogen.
+
+---
+
 ## 2026-06-30 (Forts. 7) — In-Conversation-Recall im Chat
 
 **Was:** Der Chat-Begleiter bekommt jetzt dasselbe Hintergrundwissen wie die

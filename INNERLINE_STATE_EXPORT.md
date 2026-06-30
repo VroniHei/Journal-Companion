@@ -483,6 +483,7 @@ eigener Schritt.
 | Als Karte teilen (`/teilen`) | Zitat-Karte mit KI-Satz + Affirmation, Foto-Pool | fertig |
 | Wochen-Brief (`/wochen-brief`) | Warmer KI-Brief statt Statistik (JSON `body`+`question`) | fertig |
 | Wochenrückblick (`/wochenrueckblick`) | Gegliederter KI-Rückblick über einen Zeitraum | fertig |
+| Zusammenfassung (`/zusammenfassung`) | Nutzer-initiierte, editierbare „Brücke zur Versorgung": rein lokal aggregierte, deskriptive Beobachtungen (Themen/Tendenz/bestätigte Muster/offene Punkte) als Markdown + Druck-PDF, mit Disclaimer; KI-frei | fertig |
 | Energie-Check (`/energie`) | Tägliche Kapazität (1..5), nicht Stimmung | fertig |
 | Soforthilfe (`/soforthilfe`) | Beruhigung/„Kopf leeren" in akuten Momenten | fertig |
 | Routine-Wechsel (`/routine`) | Alte Gewohnheit durch kleine Alternative ersetzen, Tages-Tracking | fertig |

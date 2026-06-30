@@ -5,6 +5,13 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Deskriptiv-Garantie strukturell absichern, nicht dem Modell überlassen.** Die
+  Therapeuten-Zusammenfassung ist Default KI-frei: nur vorhandene, bereits
+  bestätigte Daten (`userConfirmed === true`) werden getemplatet zusammengestellt
+  — so kann gar kein „empfohlener Ansatz"/keine Diagnose entstehen. Krisensignale
+  sachlich + mit Hilfe-Nummer, nie alarmierend. Person sieht/kürzt/wählt alles vor
+  Export ab; nichts wird automatisch verschickt. PDF dependency-frei über den
+  Druckdialog (kein PDF-Paket, local-first). (2026-06-30)
 - **Recall im Chat = Reflexions-Kontext wiederverwenden, nicht neu erfinden.** Der
   Chat bekam denselben `ReflectionContext` (Muster-Summary + Digest), nur knapper
   (3 statt 5) und NACH dem aktuellen Eintrag platziert, damit der Fokus bleibt.

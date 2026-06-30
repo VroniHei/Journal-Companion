@@ -6,6 +6,12 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 ---
 
 ## Erledigt (jüngste oben)
+- ✅ **„Brücke zur Versorgung" / Therapeuten-Zusammenfassung** (`/zusammenfassung`,
+  `lib/summary.ts`): nutzer-initiiert, rein lokal aggregiert (KI-frei), strikt
+  deskriptiv, nur bestätigte Muster, abwähl-/editierbar, Verbatim-Disclaimer,
+  Export als Markdown + Druck-PDF. Strategie-Doc Teil 5. 7 Tests. (2026-06-30)
+  Offen (🟢): optionaler KI-Glättungsschritt (eng geführter Prompt, Krisen-Gate,
+  abschaltbar) — bewusst noch nicht gebaut, Default bleibt lokal.
 - ✅ **In-Conversation-Recall im Chat:** neuestes Muster-Summary + kompakter
   Digest (3) auch im Chat (`buildChatContext` → `ChatRequest.context` →
   `buildChatSystem`), behutsam gerahmt (`CHAT_MEMORY_NOTE`), Fokus bleibt beim

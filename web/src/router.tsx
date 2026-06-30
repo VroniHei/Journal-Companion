@@ -22,6 +22,7 @@ import { WeeklyLetter } from "./pages/WeeklyLetter";
 import { Energy } from "./pages/Energy";
 import { Relief } from "./pages/Relief";
 import { Routine } from "./pages/Routine";
+import { SummaryExport } from "./pages/SummaryExport";
 
 export const router = createBrowserRouter([
   {
@@ -48,6 +49,7 @@ export const router = createBrowserRouter([
       { path: "soforthilfe", element: <Relief /> },
       { path: "routine", element: <Routine /> },
       { path: "wochenrueckblick", element: <WeeklyReview /> },
+      { path: "zusammenfassung", element: <SummaryExport /> },
       { path: "einstellungen", element: <Settings /> },
       { path: "suche", element: <Search /> },
     ],

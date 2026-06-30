@@ -1,4 +1,5 @@
 import { useRef, type ChangeEvent, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Card } from "../components/ui";
 import { useSettings } from "../hooks/useData";
 import { useSyncStatus } from "../hooks/useSync";
@@ -40,6 +41,7 @@ export function Settings() {
   const s = useSettings();
   const sync = useSyncStatus();
   const voices = useVoices();
+  const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
 
   async function onImportFile(e: ChangeEvent<HTMLInputElement>) {
@@ -348,7 +350,14 @@ export function Settings() {
             : "Deine Einträge liegen lokal und werden zusätzlich zwischen deinen Geräten abgeglichen."}{" "}
           Du kannst sie jederzeit als Sicherung exportieren oder alles löschen.
         </p>
+        <p className="text-sm">
+          Für ein Gespräch mit einer Fachperson kannst du dir außerdem eine ruhige,
+          editierbare Zusammenfassung erstellen (Themen, Tendenzen, bestätigte Muster).
+        </p>
         <div className="flex flex-wrap gap-2">
+          <Button onClick={() => navigate("/zusammenfassung")}>
+            Zusammenfassung erstellen
+          </Button>
           <Button variant="ghost" onClick={exportAllJson}>
             Alle Daten exportieren (JSON)
           </Button>
