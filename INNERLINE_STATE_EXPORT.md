@@ -22,7 +22,7 @@ bzw. Vercel-Env-Vars).
   läuft als Serverless-Function unter `api/` (alle `/api/*`-Anfragen).
 
 ### Local-first-Storage: Dexie/IndexedDB
-- DB-Name: `journal-companion`, **Dexie-Schema-Version 10** (`web/src/db/dexie.ts`).
+- DB-Name: `journal-companion`, **Dexie-Schema-Version 11** (`web/src/db/dexie.ts`).
 - Alle Tagebuchinhalte liegen **lokal im Browser** (IndexedDB). Server ist
   stateless bis auf den optionalen Sync-Speicher.
 
@@ -41,6 +41,7 @@ Stores (Store → indizierte Felder → Inhalt/Zweck):
 | `energyLevels` | `id(=Datum), date, updatedAt` | `level(1..5), createdAt, updatedAt` | Energie-Check (Kapazität, nicht Stimmung), ein Wert pro Tag. |
 | `routineDays` | `id(=Datum), date, updatedAt` | `replaced(bool), trigger?` | Routine-Wechsel (alte Gewohnheit durch Alternative ersetzt). |
 | `restDays` | `id(=Datum), date, updatedAt` | `createdAt, updatedAt` | Bewusst eingelöster Pausentag (Streak-Schutz). |
+| `voiceDrafts` | `id, updatedAt, status` | `transcript, status('aktiv'\|'verworfen'), createdAt, updatedAt` | Verlustschutz für (gesprochene) Transkripte: Sofort-Sicherung vor der KI-Analyse, Wiederherstellen beim nächsten Öffnen. **Rein lokal, NICHT gesynct.** |
 | `settings` | `id` | `appName, userName?, claudeModel, responseStyle, maxResponseLength, apiMode, highQualityMode?, autoSpeak?, speechVoiceURI?, preferFreeSpeech?, focusArea?, reminderTime?, onboarded?, routineOld?, routineNew?` | App-Einstellungen (Singleton). **Kein API-Key-Feld.** Wird NICHT synchronisiert. |
 | `tombstones` | `id, updatedAt, kind` | `kind(SyncKind), recordId, updatedAt` | Grabsteine für den Lösch-Sync (Löschung über Geräte propagieren). |
 
@@ -67,7 +68,8 @@ Der einmalige Disclaimer-Status liegt separat in `localStorage`
   patternInsights, openLoops, decisions, dailyRituals, energyLevels, routineDays,
   restDays`.
 - **Was bleibt lokal (nie gesynct)?** `settings` (geräte-spezifisch, z. B.
-  Stimme), der Disclaimer-Flag, und Audio (siehe Abschnitt 4).
+  Stimme), `voiceDrafts` (Sprach-Entwürfe, sensibler Roh-Text), der
+  Disclaimer-Flag, und Audio (siehe Abschnitt 4).
 - **Verschlüsselung?** Transport via HTTPS. **Keine Ende-zu-Ende- oder
   At-Rest-Anwendungsverschlüsselung** der Inhalte: in Supabase liegen die
   Datensätze als Klartext-JSON. Vertraulichkeit hängt an Supabase-Zugriffsschutz
@@ -448,12 +450,15 @@ eigener Schritt.
 - STT und TTS nutzen **denselben** `ELEVENLABS_API_KEY`.
 
 ### Persistenz von Audio/Transkript
-- **Roh-Audio wird NICHT gespeichert** (kein Upload in Dexie/Sync; das Feld
-  `audioNoteId` existiert im Typ, ist aber ungenutzt).
-- **Das Transkript wird NICHT automatisch vor der KI-Analyse gesichert.** Es lebt
-  zunächst nur im Komponenten-State; persistiert wird (als `entries.transcript`/
-  `text`) **erst beim expliziten „Als Eintrag speichern"** — also nach der
-  Auswertung. Geht der Tab vorher verloren, ist das Transkript weg.
+- **Das Transkript wird sofort lokal gesichert** (Stand 2026-06-30): sobald Text
+  da ist, legt der Sprach-Check-in einen `voiceDrafts`-Entwurf an (Erst-Sicherung
+  unmittelbar, Edits debounced ~800 ms) — **bevor** die KI-Auswertung läuft. Geht
+  der Tab verloren, wird der Entwurf beim nächsten Öffnen ruhig zum
+  Wiederherstellen angeboten (aktiv, nicht-leer, < 24 h). Nach „Als Eintrag
+  speichern" wird der Entwurf gelöscht; verworfene/alte Entwürfe räumt der
+  App-Start auf. Der endgültige Eintragstext liegt weiterhin in
+  `entries.transcript`/`text`.
+- **Roh-Audio wird weiterhin NICHT gespeichert** (`audioNoteId` ungenutzt).
 
 ---
 

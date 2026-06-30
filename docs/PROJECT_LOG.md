@@ -5,6 +5,36 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-30 (Forts. 6) — Sprach-Entwürfe: dedizierter Dexie-Store v11
+
+**Was:** Für den Sprach-Check-in den localStorage-Entwurf durch einen robusten,
+lokalen Dexie-Store ersetzt.
+- **Dexie v10 → v11** (additiv): neuer Store `voiceDrafts`
+  (`id, createdAt, updatedAt, transcript, status('aktiv'|'verworfen')`). **Nicht
+  gesynct** (kein `SyncKind`, nicht in `SYNC_TABLES`).
+- Neuer Typ `VoiceDraft` (shared); pure Prädikate `isOfferableVoiceDraft`/
+  `isStaleVoiceDraft` (`lib/voiceDraft.ts`); Queries `upsertVoiceDraft`/
+  `getOfferableVoiceDraft`/`deleteVoiceDraft`/`discardVoiceDraft`/
+  `cleanupVoiceDrafts`.
+- `VoiceCheckin`: Transkript wird sofort gesichert (Erst-Save unmittelbar, Edits
+  ~800 ms debounced), beim Öffnen wird ein aktiver, nicht-leerer Entwurf (< 24 h)
+  ruhig zum Wiederherstellen angeboten (Vroni-Voice, knapp). Nach „Als Eintrag
+  speichern" gelöscht; bewusstes Verwerfen markiert `verworfen`. Aufräumen
+  verworfener/zu alter Entwürfe beim App-Start (`main.tsx`).
+- `clearAllData` löscht `voiceDrafts` mit (Roh-Text; lokal, ohne Tombstone).
+- `INNERLINE_STATE_EXPORT.md` auf v11 + neue Persistenz nachgezogen.
+
+**Warum:** Robuster als der localStorage-Entwurf für den verletzlichsten Fall
+(gesprochene Roh-Transkripte): überlebt Tab-Verlust, ist auffindbar in IndexedDB
+vor jeder Auswertung, bleibt rein lokal. NewEntry behält seinen leichten
+localStorage-Entwurf (außerhalb dieses Scopes).
+
+**Ergebnis/Status:** 7 neue Tests (`voiceDraft.test.ts`), gesamt 32 Web- + 18
+Server-Tests grün; Build, Lint, Typecheck grün. Migration additiv (kein
+Datenverlust bestehender Stores).
+
+---
+
 ## 2026-06-30 (Forts. 5) — Entwurfs-Sicherung gegen Text-/Transkript-Verlust
 
 **Was:** Frei geschriebener/gesprochener Text wird laufend lokal als Entwurf

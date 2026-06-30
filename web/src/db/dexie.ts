@@ -13,6 +13,7 @@ import type {
   PatternSummary,
   StabilityMoment,
   SyncKind,
+  VoiceDraft,
 } from "@journal/shared";
 
 /**
@@ -41,6 +42,8 @@ export class JournalDB extends Dexie {
   routineDays!: Table<RoutineDay, string>;
   restDays!: Table<RestDay, string>;
   tombstones!: Table<Tombstone, string>;
+  // Rein lokal, NICHT gesynct (kein SyncKind): Verlustschutz für Sprach-Entwürfe.
+  voiceDrafts!: Table<VoiceDraft, string>;
 
   constructor() {
     super("journal-companion");
@@ -77,6 +80,10 @@ export class JournalDB extends Dexie {
     });
     this.version(10).stores({
       restDays: "id, date, updatedAt",
+    });
+    // Additiv: nur der neue lokale Store; bestehende Daten bleiben unberührt.
+    this.version(11).stores({
+      voiceDrafts: "id, updatedAt, status",
     });
   }
 }

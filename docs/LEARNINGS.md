@@ -5,6 +5,14 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Verlustschutz nach Sensibilität staffeln.** Für den verletzlichsten Fall
+  (gesprochene Roh-Transkripte) lohnt ein eigener, in IndexedDB auffindbarer,
+  nicht-gesyncter Dexie-Store (`voiceDrafts`) mit Wiederherstellen-Angebot —
+  robuster als ein localStorage-Entwurf. Für tippbaren Fließtext (NewEntry)
+  reicht der leichte localStorage-Entwurf. Stabile id (Ref) statt async erzeugter
+  id vermeidet Doppel-Anlage beim Auto-Save; Freshness/Cleanup als pure Prädikate
+  → testbar ohne IndexedDB. Neuer Store additiv (eigene Dexie-Version), nie in die
+  SyncKind-Liste — so bleibt sensibler Text lokal. (2026-06-30)
 - **Frei eingegebener Text gehört sofort lokal gesichert, nicht erst beim
   Speichern.** Transkript/Schreibtext nur im Komponenten-State zu halten heißt:
   Tab-Verlust = weg. Lösung: ein leichter localStorage-Entwurf (`useDraft`),

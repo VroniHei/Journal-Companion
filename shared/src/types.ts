@@ -524,6 +524,21 @@ export interface RestDay {
   updatedAt: string; // ISO
 }
 
+// --- Sprach-Entwurf (lokaler Verlustschutz) -------------------------------
+// Sofort-Sicherung eines (gesprochenen) Transkripts, BEVOR daraus ein echter
+// Eintrag wird — schützt vor Tab-/Reload-Verlust. Bewusst rein lokal: NICHT in
+// SyncKind/sync_records aufnehmen (sensibler Roh-Text bleibt auf dem Gerät).
+
+export type VoiceDraftStatus = "aktiv" | "verworfen";
+
+export interface VoiceDraft {
+  id: string;
+  createdAt: string; // ISO
+  updatedAt: string; // ISO
+  transcript: string;
+  status: VoiceDraftStatus;
+}
+
 // --- Geräte-Sync ----------------------------------------------------------
 // Generischer Sync über alle synchronisierten Tabellen. Pro Datensatz wird nur
 // ein „kind" (Tabellenname), eine id, ein Versions-Zeitstempel (ISO) und der

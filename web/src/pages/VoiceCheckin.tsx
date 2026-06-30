@@ -1,15 +1,22 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import type { VoiceReflectResponse } from "@journal/shared";
+import type { VoiceDraft, VoiceReflectResponse } from "@journal/shared";
 import { Button, Card, FieldLabel } from "../components/ui";
 import { ScaleField } from "../components/fields/ScaleField";
 import { DictationButton } from "../components/DictationButton";
 import { SpeakButton } from "../components/SpeakButton";
 import { useSettings } from "../hooks/useData";
-import { useDraft } from "../hooks/useDraft";
 import { toPrefs } from "../lib/settings";
 import { postVoiceReflect } from "../lib/apiClient";
-import { createEntry, updateEntry } from "../db/queries";
+import {
+  createEntry,
+  updateEntry,
+  upsertVoiceDraft,
+  getOfferableVoiceDraft,
+  deleteVoiceDraft,
+  discardVoiceDraft,
+} from "../db/queries";
+import { createId } from "../lib/ids";
 import { generateTitleFor } from "../lib/title";
 
 function resultToReflectionText(r: VoiceReflectResponse): string {
@@ -29,6 +36,15 @@ function resultToReflectionText(r: VoiceReflectResponse): string {
     .join("\n\n");
 }
 
+// Ruhige, knappe Zeitangabe für das Wiederherstellen-Angebot.
+function relativeTime(iso: string): string {
+  const min = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if (min < 1) return "gerade eben";
+  if (min < 60) return `vor ${min} Minuten`;
+  const h = Math.round(min / 60);
+  return h === 1 ? "vor einer Stunde" : `vor ${h} Stunden`;
+}
+
 function Block({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
@@ -44,9 +60,13 @@ export function VoiceCheckin() {
   const navigate = useNavigate();
   const settings = useSettings();
 
-  // Transkript wird laufend lokal als Entwurf gesichert — überlebt Tab-Verlust/
-  // Reload, bevor daraus ein echter Eintrag wird (sonst wäre frei Gesprochenes weg).
-  const [transcript, setTranscript, clearTranscript] = useDraft("voice-checkin");
+  const [transcript, setTranscript] = useState("");
+  // Stabile id für den lokalen Sprach-Entwurf (Dexie `voiceDrafts`). Das
+  // Transkript wird laufend gesichert, BEVOR daraus ein echter Eintrag wird —
+  // so überlebt frei Gesprochenes einen Tab-Verlust/Reload.
+  const draftId = useRef(createId());
+  const savedOnce = useRef(false);
+  const [offered, setOffered] = useState<VoiceDraft | null>(null);
   const [mood, setMood] = useState(5);
   const [intensity, setIntensity] = useState(5);
   const [loading, setLoading] = useState(false);
@@ -54,6 +74,42 @@ export function VoiceCheckin() {
   const [crisis, setCrisis] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  // Beim Öffnen: einen aktiven, nicht-leeren Entwurf (< 24 h) ruhig anbieten.
+  useEffect(() => {
+    let alive = true;
+    void getOfferableVoiceDraft().then((d) => {
+      if (alive && d) setOffered(d);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // Sofort-Sicherung: erstes Transkript ohne Verzögerung, weitere Edits debounced.
+  useEffect(() => {
+    if (!transcript.trim()) return;
+    const delay = savedOnce.current ? 800 : 0;
+    const handle = setTimeout(() => {
+      savedOnce.current = true;
+      void upsertVoiceDraft(draftId.current, transcript);
+    }, delay);
+    return () => clearTimeout(handle);
+  }, [transcript]);
+
+  function restoreDraft() {
+    if (!offered) return;
+    draftId.current = offered.id; // denselben Entwurf weiterführen
+    savedOnce.current = true;
+    setTranscript(offered.transcript);
+    setOffered(null);
+  }
+
+  function dismissDraft() {
+    if (!offered) return;
+    void discardVoiceDraft(offered.id);
+    setOffered(null);
+  }
 
   async function evaluate() {
     if (!transcript.trim() || loading) return;
@@ -101,7 +157,7 @@ export function VoiceCheckin() {
       mainNeed: result.mainNeed,
     });
     void generateTitleFor(entry.id, transcript.trim());
-    clearTranscript(); // Entwurf ist jetzt ein echter Eintrag.
+    void deleteVoiceDraft(draftId.current); // Entwurf ist jetzt ein echter Eintrag.
     navigate(`/eintrag/${entry.id}`);
   }
 
@@ -113,6 +169,21 @@ export function VoiceCheckin() {
           Erzähl einfach frei, was gerade los ist. Ich sortiere es danach mit dir.
         </p>
       </div>
+
+      {offered && !transcript.trim() && (
+        <Card className="space-y-3 border-l-2 border-l-[var(--accent)]">
+          <p className="text-sm leading-relaxed">
+            Es gibt einen nicht gespeicherten Sprach-Entwurf von{" "}
+            {relativeTime(offered.updatedAt)}. Möchtest du ihn wiederherstellen?
+          </p>
+          <div className="flex gap-2">
+            <Button onClick={restoreDraft}>Wiederherstellen</Button>
+            <Button variant="ghost" onClick={dismissDraft}>
+              Verwerfen
+            </Button>
+          </div>
+        </Card>
+      )}
 
       <Card className="space-y-4">
         <div className="space-y-2">
