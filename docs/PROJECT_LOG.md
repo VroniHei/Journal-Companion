@@ -5,6 +5,30 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-30 (Forts. 2) — Insights-Vielfalt + Modell-Staffelung
+
+**Was:**
+- **Toter Code entfernt:** `buildInsights` (nirgends genutzt) raus.
+- **Mehr Kandidaten für „Was sich zeigt"** (`showcaseInsight`): Tageszeit-Muster
+  (morgens vs. abends), Wochenende vs. Werktag, Anspannungs-/Intensitäts-Trend
+  (ruhiger werden = Ressource, steigende Anspannung akzeptierend). `POSITIVE_EMOTIONS`
+  deutlich erweitert. Mehr helle Aussagen → öfter ein voller, abwechslungsreicher
+  Block statt bloßer Rotation.
+- **Modell-Staffelung:** tiefe Reflexion (Reflexion/Chat/Wochenrückblick/Sprach-
+  Reflexion/Kontaktimpuls/Muster) nutzt **Opus** als Default (Frontend-Default auf
+  `claude-opus-4-8`); mechanische Kurztexte (Titel, Teilen-Karte) serverseitig fest
+  **Sonnet** (`LIGHT_MODEL`). Settings-Labels/Hints wahrheitsgemäß angepasst.
+
+**Warum:** Reflexionsqualität ist der Produktkern — dort lohnt Opus; bei Titel/
+Karte bringt Opus nichts und kostet unnötig. Behebt zugleich den Widerspruch
+„Code defaultet Sonnet, CLAUDE.md sagt Opus". Nutzerkontrolle (Dropdown +
+Gründlich-Modus) bleibt erhalten.
+
+**Ergebnis/Status:** Build + Lint + Typecheck grün; 15 Web- + 18 Server-Tests grün.
+CLAUDE.md „Modell-Hinweis" um die Staffelung ergänzt.
+
+---
+
 ## 2026-06-30 (Forts.) — „Was sich zeigt": positiv-psychologische Tonalität
 
 **Was:** `showcaseInsight` spiegelt schwierige Muster nicht mehr als nacktes

@@ -149,8 +149,10 @@ describe("showcaseInsight", () => {
     ];
     for (const s of [0, 1, 2, 3, 7, 42]) {
       const out = showcaseInsight(es, s) ?? "";
+      // Kerninvariante: das belastende Wort wird nicht zur Schlagzeile …
       expect(out).not.toContain("Trennung");
-      expect(out.includes("Ruhe") || out.includes("Tagen")).toBe(true);
+      // … und es kommt trotzdem eine echte (akzentuierte) Ressourcen-Aussage.
+      expect(out).toContain("*");
     }
   });
 

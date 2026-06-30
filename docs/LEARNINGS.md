@@ -5,6 +5,12 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Modell-Wahl nach Aufgabe staffeln, nicht global.** Tiefe Reflexion = Opus
+  (Qualität = Produktkern), mechanische Kurztexte (Titel, Teilen-Karte) = Sonnet
+  (fest serverseitig, spart Kosten ohne Qualitätsverlust). Default-Modell als
+  einzige Quelle der Wahrheit setzen, damit Code und CLAUDE.md nicht auseinander-
+  laufen. Nutzerkontrolle (Dropdown + „Gründlich-Modus") bleibt für die tiefen
+  Routen erhalten. (2026-06-30)
 - **Spiegelungen ressourcenorientiert rahmen (SFBT + ACT).** Das häufigste
   Negativwort hervorzuheben (Thema/Gefühl) kann Rumination verstärken. Besser:
   Aussagen in `bright` (Ressourcen/Werte/Fortschritt) und `tender` (Schwieriges,

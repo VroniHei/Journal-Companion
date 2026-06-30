@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { hasApiKey } from "../env";
-import { generateText, singleUser } from "../services/claude";
+import { generateText, LIGHT_MODEL, singleUser } from "../services/claude";
 
 // Erzeugt einen kurzen, treffenden Titel für einen Eintrag (winziger Claude-Aufruf).
 // Bei fehlendem Key antwortet die Route mit 503; der Client nutzt dann den
@@ -31,7 +31,8 @@ titleRouter.post("/title", async (req, res) => {
   }
   try {
     const raw = await generateText({
-      model: parsed.data.model || "claude-sonnet-4-6",
+      // Mechanischer Kurztext → fest LIGHT_MODEL, unabhängig von der Modellwahl.
+      model: LIGHT_MODEL,
       system: SYSTEM,
       messages: singleUser(parsed.data.text.slice(0, 4000)),
       maxTokens: 24,

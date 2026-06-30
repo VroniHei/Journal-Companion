@@ -102,7 +102,7 @@ export function Settings() {
 
         <Row
           label="Claude-Modell"
-          hint="Sonnet antwortet schnell und zuverlässig. Opus geht besonders einfühlsam in die Tiefe."
+          hint="Opus geht besonders einfühlsam in die Tiefe (Standard für Reflexionen). Sonnet ist schlanker und schneller. Kurztexte wie Titel und Teilen-Karte nutzen ohnehin Sonnet."
         >
           <select
             className={selectClass}
@@ -111,14 +111,14 @@ export function Settings() {
               updateSettings({ claudeModel: e.target.value as ClaudeModel })
             }
           >
-            <option value="claude-sonnet-4-6">claude-sonnet-4-6 (Standard)</option>
-            <option value="claude-opus-4-8">claude-opus-4-8 (Qualität)</option>
+            <option value="claude-opus-4-8">claude-opus-4-8 (Standard)</option>
+            <option value="claude-sonnet-4-6">claude-sonnet-4-6 (schlank)</option>
           </select>
         </Row>
 
         <Row
           label="Qualitätsmodus"
-          hint="Nutzt Opus für besonders tiefe Auswertungen, unabhängig vom gewählten Modell."
+          hint="Erzwingt Opus für Reflexionen, auch wenn oben das schlanke Modell gewählt ist."
         >
           <label className="flex items-center gap-2 text-sm">
             <input

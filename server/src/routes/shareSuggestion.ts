@@ -6,7 +6,7 @@ import {
   buildShareSuggestionSystem,
   buildShareSuggestionUser,
 } from "../prompts/builders";
-import { generateText, singleUser } from "../services/claude";
+import { generateText, LIGHT_MODEL, singleUser } from "../services/claude";
 import { extractJson } from "../lib/extractJson";
 import { detectCrisis } from "../safety/crisis";
 
@@ -77,7 +77,8 @@ shareSuggestionRouter.post("/share-suggestion", async (req, res) => {
 
   try {
     const raw = await generateText({
-      model: prefs.model,
+      // Mechanischer Kurztext (Karte) → fest LIGHT_MODEL, nicht das tiefe Modell.
+      model: LIGHT_MODEL,
       system: buildShareSuggestionSystem(prefs.style),
       messages: singleUser(buildShareSuggestionUser(entries)),
       maxTokens: 320,

@@ -6,23 +6,22 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 ---
 
 ## Erledigt (jüngste oben)
+- ✅ **Modell-Staffelung umgesetzt:** tiefe Reflexion → Opus (Default), Titel/
+  Teilen-Karte → fest Sonnet (`LIGHT_MODEL`, server). Behebt den Sonnet-vs-Opus-
+  Widerspruch zu CLAUDE.md. (2026-06-30)
+- ✅ **Mehr Kandidaten für „Was sich zeigt"** (Tageszeit, Wochenende vs. Werktag,
+  Anspannungs-Trend) + `POSITIVE_EMOTIONS` erweitert; toter `buildInsights`
+  entfernt. (2026-06-30)
 - ✅ **„Was sich zeigt" positiv-psychologisch entschärft** (`insights.ts`):
   `bright`/`tender`-Trennung, Ressourcen führen, Schwieriges akzeptierend
   gerahmt (SFBT + ACT) statt Negativwort-Spotlight. (2026-06-30)
-- 🟢 **Toter Code:** `buildInsights` (`insights.ts`) wird nirgends mehr genutzt
-  (nur im Kommentar referenziert) und trägt noch die alte, ungerahmte Tonalität.
-  → entfernen oder, falls künftig gebraucht, an die `showcaseInsight`-Haltung
-  (bright/tender) angleichen. (2026-06-30)
-- 💡 **Folge-Idee:** `POSITIVE_EMOTIONS`-Liste pflegen/erweitern (oder durch ein
-  kleines Sentiment-Lexikon ersetzen), damit mehr Leitgefühle korrekt als
-  Ressource gefeiert statt nur akzeptierend gerahmt werden. (2026-06-30)
 - ✅ **„Was sich zeigt" rotiert wieder täglich** (`insights.ts`): bei genau zwei
   zutreffenden Aussagen wird nicht mehr dauerhaft das gleiche Satzpaar gezeigt,
   sondern täglich rotierend der Primärsatz; zweiter Satz erst ab drei Kandidaten.
   Regressionstest ergänzt. (2026-06-30)
-- 💡 **Folge-Idee:** Mehr Kandidaten-Vielfalt für `showcaseInsight` (z. B.
-  Tageszeit-Muster, Wochenend-vs-Werktag, Intensität-Trend), damit ab drei
-  Aussagen häufiger ein voller Zwei-Satz-Block entsteht statt nur Rotation.
+- 💡 **Folge-Idee:** `POSITIVE_EMOTIONS` ist eine kuratierte Liste; bei Bedarf
+  durch ein kleines Sentiment-Lexikon ersetzen, damit auch unbekannte positive
+  Leitgefühle als Ressource (statt nur akzeptierend) gerahmt werden.
 
 ## Offen
 

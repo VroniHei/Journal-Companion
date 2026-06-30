@@ -127,6 +127,14 @@ design_handoff_app_shell_navigation/  Verbindliche Claude-Design-Vorlage
 
 ## Modell-Hinweis
 
-Standardmodell ist `claude-opus-4-8`. Adaptives Thinking aktivieren, sobald die
-installierte SDK-Version es in den Typen unterstützt (aktuell weggelassen, da
-0.69.x `adaptive` noch nicht typisiert).
+**Modell-Staffelung** (Quelle: `server/src/services/claude.ts`):
+- **Tiefe, emotional bedeutsame Reflexion** (Reflexion, Chat, Wochenrückblick,
+  Sprach-Reflexion, Kontaktimpuls, Muster) → **`claude-opus-4-8`** als Standard
+  (Qualität = Produktkern). Per Einstellung auf das schlanke Modell änderbar; der
+  „Gründliche Modus" erzwingt Opus.
+- **Mechanische Kurztexte** (Eintrags-Titel, Teilen-Karte) → serverseitig fest
+  **`claude-sonnet-4-6`** (`LIGHT_MODEL`), unabhängig von der Modellwahl — Opus
+  bringt dort keinen Mehrwert.
+
+Adaptives Thinking aktivieren, sobald die installierte SDK-Version es in den
+Typen unterstützt (aktuell weggelassen, da 0.69.x `adaptive` noch nicht typisiert).
