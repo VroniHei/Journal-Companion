@@ -249,17 +249,72 @@ export function buildInsights(entries: JournalEntry[]): string[] {
 }
 
 /**
- * „Was sich zeigt"-Einsicht für die Dashboard-/Muster-Karte: datengetrieben wie
- * `buildInsights`, aber (a) mit einem `.g`-Italic-Akzentwort und (b) **täglich
- * rotierend** über alle gerade zutreffenden Aussagen — so steht nicht tagelang
- * derselbe Satz. Nutzer-Wörter werden escaped (Einbettung via innerHTML).
- * Gibt eine HTML-Zeichenkette zurück (oder null bei zu wenig Daten).
+ * Gefühle, die wir guten Gewissens *feiern* dürfen. Liegt das häufigste Gefühl
+ * hier, wird es als Ressource gespiegelt; sonst akzeptierend (s. u.). Bewusst
+ * konservativ — im Zweifel wird ein Gefühl sanft (akzeptierend) statt euphorisch
+ * gerahmt, nie umgekehrt. Vergleich erfolgt klein­geschrieben.
+ */
+const POSITIVE_EMOTIONS = new Set([
+  "freude",
+  "freudig",
+  "glück",
+  "glücklich",
+  "dankbarkeit",
+  "dankbar",
+  "ruhe",
+  "gelassenheit",
+  "zufriedenheit",
+  "zufrieden",
+  "zuversicht",
+  "zuversichtlich",
+  "hoffnung",
+  "hoffnungsvoll",
+  "stolz",
+  "liebe",
+  "verbundenheit",
+  "verbunden",
+  "geborgenheit",
+  "leichtigkeit",
+  "neugier",
+  "vorfreude",
+  "erleichterung",
+  "motivation",
+  "motiviert",
+  "energie",
+  "lebendigkeit",
+  "mut",
+  "freiheit",
+  "klarheit",
+  "frieden",
+  "begeisterung",
+  "optimismus",
+  "optimistisch",
+]);
+
+/**
+ * „Was sich zeigt"-Einsicht für die Dashboard-/Muster-Karte: datengetrieben,
+ * mit einem `*Wort*`-Akzent und **täglich rotierend**, damit nicht tagelang
+ * derselbe Satz steht.
+ *
+ * Haltung (gestützt auf SFBT & ACT, vgl. CLAUDE.md):
+ * - **Ressourcen führen** (SFBT „start with what's going well"): Aussagen werden
+ *   in `bright` (Stärken/Ressourcen/Werte/Fortschritt) und `tender` (schwierige
+ *   Themen/Gefühle) getrennt. Gibt es ≥2 helle Aussagen, rotiert die Kachel nur
+ *   unter ihnen — ein belastendes Wort wird gar nicht erst zur Schlagzeile.
+ * - **Schwieriges akzeptierend spiegeln, nicht verstärken** (ACT): tender-Sätze
+ *   geben dem Thema *Raum* und schaffen Distanz („begleitet dich gerade" ≠
+ *   Identität), statt das häufigste Negativwort nackt hervorzuheben — kein
+ *   Wegdrücken, aber auch kein Sog nach unten (Rumination/Negativitäts-Bias).
+ *
+ * Gibt eine Zeichenkette mit `*Akzent*`-Markern zurück (oder null bei zu wenig
+ * Daten); das Rendering setzt die Akzente sicher als Textknoten (`withAccents`).
  */
 export function showcaseInsight(entries: JournalEntry[], seed = 0): string | null {
   if (entries.length < 2) return null;
-  const cands: string[] = [];
+  const bright: string[] = []; // Ressourcen, Stärken, Werte, Fortschritt
+  const tender: string[] = []; // Schwieriges — sanft, akzeptierend gerahmt
 
-  // Bewegung & Stimmung
+  // Bewegung & Stimmung (Ressource)
   const moveYes = moodOn(entries, (e) => e.movementToday === true);
   const moveNo = moodOn(entries, (e) => e.movementToday === false);
   if (
@@ -269,12 +324,10 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
     entries.filter((e) => e.movementToday === false).length >= 2 &&
     moveYes - moveNo >= 0.8
   ) {
-    cands.push(
-      'An Tagen mit Bewegung liegt deine Stimmung im Schnitt *höher*.',
-    );
+    bright.push('An Tagen mit Bewegung liegt deine Stimmung im Schnitt *höher*.');
   }
 
-  // Draußen & Stimmung
+  // Draußen & Stimmung (Ressource)
   const outYes = moodOn(entries, (e) => e.outsideToday === true);
   const outNo = moodOn(entries, (e) => e.outsideToday === false);
   if (
@@ -284,9 +337,7 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
     entries.filter((e) => e.outsideToday === false).length >= 2 &&
     outYes - outNo >= 0.8
   ) {
-    cands.push(
-      'An Tagen draußen ist deine Stimmung im Schnitt *leichter*.',
-    );
+    bright.push('An Tagen draußen ist deine Stimmung im Schnitt *leichter*.');
   }
 
   // Wochen-Trend (diese vs. letzte Woche)
@@ -302,12 +353,15 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
   const aLast = avg(lastWeek.map((e) => e.mood));
   if (aThis != null && aLast != null && thisWeek.length >= 2 && lastWeek.length >= 2) {
     if (aThis - aLast >= 0.5)
-      cands.push('Diese Woche war deine Stimmung etwas *leichter* als letzte.');
+      bright.push('Diese Woche war deine Stimmung etwas *leichter* als letzte.');
     else if (aLast - aThis >= 0.5)
-      cands.push('Diese Woche war deine Stimmung etwas *schwerer* als letzte. Das darf sein.');
+      // Validierend, nicht wertend (ACT: darf sein) + Stärke (SFBT: du hältst fest).
+      tender.push(
+        'Diese Woche fühlte sich etwas *schwerer* an als letzte. Das darf sein — du hältst trotzdem fest.',
+      );
   }
 
-  // Bester Wochentag
+  // Bester Wochentag (Ressource)
   const byDay = new Map<number, number[]>();
   for (const e of entries) {
     const wd = new Date(e.createdAt).getDay();
@@ -323,40 +377,12 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
     if (!best || m > best.m) best = { wd, m };
   }
   if (best && byDay.size >= 3) {
-    cands.push(
+    bright.push(
       `${capitalize(WEEKDAYS[best.wd])} ist deine Stimmung im Schnitt am *höchsten*.`,
     );
   }
 
-  // Häufigstes Thema (Markenkern: „dasselbe Wort")
-  const tCounts = new Map<string, number>();
-  for (const e of entries)
-    for (const t of e.topics) {
-      const k = t.trim();
-      if (k) tCounts.set(k, (tCounts.get(k) ?? 0) + 1);
-    }
-  const topTopic = [...tCounts.entries()].sort((a, b) => b[1] - a[1])[0];
-  if (topTopic && topTopic[1] >= 2) {
-    cands.push(
-      `Zuletzt taucht oft dasselbe Wort auf: *${topTopic[0]}*.`,
-    );
-  }
-
-  // Häufigste Emotion
-  const eCounts = new Map<string, number>();
-  for (const e of entries)
-    for (const em of e.emotions) {
-      const k = em.trim();
-      if (k) eCounts.set(k, (eCounts.get(k) ?? 0) + 1);
-    }
-  const topEmo = [...eCounts.entries()].sort((a, b) => b[1] - a[1])[0];
-  if (topEmo && topEmo[1] >= 2) {
-    cands.push(
-      `*${capitalize(topEmo[0])}* begleitet dich zuletzt am häufigsten.`,
-    );
-  }
-
-  // Häufigstes Bedürfnis
+  // Häufigstes Bedürfnis (ACT: Bedürfnisse zeigen Werte/Richtung → Ressource)
   const nCounts = new Map<string, number>();
   for (const e of entries)
     for (const nd of e.needs) {
@@ -365,39 +391,69 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
     }
   const topNeed = [...nCounts.entries()].sort((a, b) => b[1] - a[1])[0];
   if (topNeed && topNeed[1] >= 2) {
-    cands.push(
-      `Ein Bedürfnis kommt immer wieder durch: *${topNeed[0]}*.`,
-    );
+    bright.push(`Ein Bedürfnis zeigt sich immer wieder: *${topNeed[0]}* — ein leiser Wegweiser.`);
   }
 
-  // Schreib-Konstanz dieser Woche (an wie vielen Tagen etwas festgehalten)
+  // Schreib-Konstanz dieser Woche (SFBT-Kompliment: Dranbleiben sichtbar machen)
   const daysThisWeek = new Set(
     thisWeek.map((e) => new Date(e.createdAt).toDateString()),
   ).size;
   if (daysThisWeek >= 3) {
-    cands.push(
-      `Diese Woche hast du an *${daysThisWeek} Tagen* etwas festgehalten.`,
-    );
+    bright.push(`Diese Woche hast du an *${daysThisWeek} Tagen* etwas festgehalten.`);
   }
 
-  if (cands.length === 0) {
+  // Häufigste Emotion: positive feiern (Ressource), schwierige akzeptierend (ACT)
+  const eCounts = new Map<string, number>();
+  for (const e of entries)
+    for (const em of e.emotions) {
+      const k = em.trim();
+      if (k) eCounts.set(k, (eCounts.get(k) ?? 0) + 1);
+    }
+  const topEmo = [...eCounts.entries()].sort((a, b) => b[1] - a[1])[0];
+  if (topEmo && topEmo[1] >= 2) {
+    if (POSITIVE_EMOTIONS.has(topEmo[0].toLowerCase()))
+      bright.push(`*${capitalize(topEmo[0])}* hat dich zuletzt oft begleitet — schön, dass auch das da ist.`);
+    else
+      // ACT: Raum geben statt wegdrücken; Defusion über „durfte … da sein".
+      tender.push(`Auch *${topEmo[0]}* durfte zuletzt oft da sein — du musst nichts an dem Gefühl ändern.`);
+  }
+
+  // Häufigstes Thema: akzeptierend spiegeln, nicht als nacktes Negativwort
+  const tCounts = new Map<string, number>();
+  for (const e of entries)
+    for (const t of e.topics) {
+      const k = t.trim();
+      if (k) tCounts.set(k, (tCounts.get(k) ?? 0) + 1);
+    }
+  const topTopic = [...tCounts.entries()].sort((a, b) => b[1] - a[1])[0];
+  if (topTopic && topTopic[1] >= 2) {
+    // ACT-Defusion („begleitet dich gerade" = vorübergehend, nicht Identität) +
+    // SFBT-Kompliment fürs Hinschauen — statt „taucht oft dasselbe Wort auf".
+    tender.push(`Ein Thema begleitet dich gerade oft: *${topTopic[0]}*. Dass du ihm Raum gibst, zählt.`);
+  }
+
+  // Sanfter Fallback, falls (noch) nichts Konkretes zutrifft.
+  if (bright.length === 0 && tender.length === 0) {
     const m = avg(entries.map((e) => e.mood));
     if (m == null) return null;
     return `Deine Stimmung lag zuletzt im Schnitt bei *${m}/10*. Schon das hinzusehen zählt.`;
   }
 
-  // Eine täglich rotierende Primär-Aussage ist die Basis (seed → cands[i]). Eine
-  // zweite Aussage ergänzt sie zu einem volleren Block — aber NUR ab drei
-  // Kandidaten. Grund: bei genau zwei Kandidaten enthielte „primary + secondary"
-  // Tag für Tag beide Sätze (nur die Reihenfolge tauschte), der Block änderte
-  // sich also nie sichtbar. Ab drei Kandidaten wechselt das gezeigte Paar von
-  // Tag zu Tag; bei zwei zeigen wir bewusst nur den rotierenden Primärsatz, damit
-  // sich die Ansage täglich erkennbar ändert.
-  const len = cands.length;
+  // Ressourcen führen: Gibt es ≥2 helle Aussagen, rotiert die Kachel NUR unter
+  // ihnen — Schweres wird nicht zur Schlagzeile. Sonst (höchstens eine helle)
+  // kommt Schweres dazu, aber akzeptierend gerahmt, damit die Ansage trotzdem
+  // täglich wechselt und das Erleben nicht verleugnet wird.
+  const pool = bright.length >= 2 ? bright : [...bright, ...tender];
+
+  // Ein täglich rotierender Primärsatz ist die Basis (seed → pool[i]). Ein
+  // zweiter Satz ergänzt ihn zu einem volleren Block — aber NUR ab drei Aussagen
+  // im Pool: bei genau zweien enthielte „primary + secondary" Tag für Tag beide
+  // (nur die Reihenfolge tauschte) und änderte sich nie sichtbar.
+  const len = pool.length;
   const i = ((seed % len) + len) % len;
-  const primary = cands[i];
+  const primary = pool[i];
   if (len <= 2) return primary;
-  const secondary = cands[(i + 1) % len];
+  const secondary = pool[(i + 1) % len];
   return `${primary} ${secondary}`;
 }
 

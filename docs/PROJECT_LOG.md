@@ -5,6 +5,32 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-30 (Forts.) — „Was sich zeigt": positiv-psychologische Tonalität
+
+**Was:** `showcaseInsight` spiegelt schwierige Muster nicht mehr als nacktes
+Negativwort. Skill-gestützt (zuerst `therapist-safety` → Level 1, dann
+`therapist-sfbt` + `therapist-act`):
+- Aussagen sind jetzt in `bright` (Ressourcen/Stärken/Werte/Fortschritt) und
+  `tender` (Schwieriges, akzeptierend gerahmt) getrennt.
+- **Ressourcen führen** (SFBT): bei ≥2 hellen Aussagen rotiert die Kachel nur
+  unter ihnen — Belastendes wird nicht zur Schlagzeile.
+- **Schwieriges akzeptierend** (ACT): „Ein Thema begleitet dich gerade oft:
+  *Trennung*. Dass du ihm Raum gibst, zählt." statt „… taucht oft dasselbe Wort
+  auf". Gefühle: positive werden gefeiert, schwierige bekommen Raum
+  („Auch *X* durfte da sein — du musst nichts ändern"). Bedürfnisse = Wegweiser.
+
+**Warum:** Das Hervorheben des häufigsten Negativworts (z. B. „Trennung",
+„Trauer") kann Rumination/Negativitäts-Bias verstärken und runterziehen — das
+Gegenteil der gewünschten ruhigen, ressourcenorientierten Begleitung. Kein
+toxisches Positivdenken (ACT): Schweres wird nicht verleugnet, sondern validiert.
+
+**Ergebnis/Status:** 4 neue/angepasste Tests (Tonalität, Ressourcen-Vorrang,
+positives Leitgefühl), 15 Insight-Tests grün. Build + Lint + Typecheck grün.
+Anmerkung: `buildInsights` ist toter Code (nur im Kommentar referenziert) — als
+Aufräum-Punkt in OPTIMIZATIONS notiert.
+
+---
+
 ## 2026-06-30 — „Was sich zeigt": tägliche Rotation repariert
 
 **Was:** `showcaseInsight` (`web/src/lib/insights.ts`) zeigte bei genau zwei

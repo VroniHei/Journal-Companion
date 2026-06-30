@@ -5,6 +5,17 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Spiegelungen ressourcenorientiert rahmen (SFBT + ACT).** Das häufigste
+  Negativwort hervorzuheben (Thema/Gefühl) kann Rumination verstärken. Besser:
+  Aussagen in `bright` (Ressourcen/Werte/Fortschritt) und `tender` (Schwieriges,
+  akzeptierend) trennen, Ressourcen führen lassen, Schweres validieren statt
+  verleugnen oder zur Schlagzeile machen. Defusion in der Sprache („begleitet
+  dich gerade" = vorübergehend, nicht Identität). Kein toxisches Positivdenken:
+  Schwieriges wird nicht weggeschönt, sondern bekommt Raum. (2026-06-30)
+- **Bei therapeutisch-reflexiven Inhalten zuerst `therapist-safety`**, dann die
+  Modalität (hier SFBT für Ressourcen/Ausnahmen, ACT für Akzeptanz/Defusion) —
+  auch bei reiner *Produktgestaltung* von Begleiter-Texten, nicht nur im
+  Live-Dialog. (2026-06-30)
 - **Tägliche Rotation braucht ein wechselndes *Ergebnis*, nicht nur einen
   wechselnden Seed.** Bei `showcaseInsight` rotierte der Seed korrekt täglich,
   doch solange bei genau zwei Kandidaten ohnehin *beide* Sätze gezeigt wurden,

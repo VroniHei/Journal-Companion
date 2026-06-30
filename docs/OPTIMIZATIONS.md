@@ -6,6 +6,16 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 ---
 
 ## Erledigt (jüngste oben)
+- ✅ **„Was sich zeigt" positiv-psychologisch entschärft** (`insights.ts`):
+  `bright`/`tender`-Trennung, Ressourcen führen, Schwieriges akzeptierend
+  gerahmt (SFBT + ACT) statt Negativwort-Spotlight. (2026-06-30)
+- 🟢 **Toter Code:** `buildInsights` (`insights.ts`) wird nirgends mehr genutzt
+  (nur im Kommentar referenziert) und trägt noch die alte, ungerahmte Tonalität.
+  → entfernen oder, falls künftig gebraucht, an die `showcaseInsight`-Haltung
+  (bright/tender) angleichen. (2026-06-30)
+- 💡 **Folge-Idee:** `POSITIVE_EMOTIONS`-Liste pflegen/erweitern (oder durch ein
+  kleines Sentiment-Lexikon ersetzen), damit mehr Leitgefühle korrekt als
+  Ressource gefeiert statt nur akzeptierend gerahmt werden. (2026-06-30)
 - ✅ **„Was sich zeigt" rotiert wieder täglich** (`insights.ts`): bei genau zwei
   zutreffenden Aussagen wird nicht mehr dauerhaft das gleiche Satzpaar gezeigt,
   sondern täglich rotierend der Primärsatz; zweiter Satz erst ab drei Kandidaten.

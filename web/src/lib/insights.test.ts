@@ -109,12 +109,13 @@ describe("showcaseInsight", () => {
   });
 
   it("ändert die Ansage täglich, wenn genau zwei Aussagen zutreffen", () => {
-    // Genau zwei Kandidaten: bester Wochentag (≥3 verschiedene Tage) + häufigstes
-    // Wort. Früher wurden beide jeden Tag gemeinsam gezeigt → nie eine Änderung.
+    // Genau zwei Aussagen: Schreib-Konstanz (3 Tage diese Woche, hell) +
+    // häufigstes Wort (tender). Früher wurden beide jeden Tag gemeinsam gezeigt
+    // → nie eine sichtbare Änderung; jetzt rotiert der Primärsatz täglich.
     const es = [
       entry({ createdAt: daysAgo(0), mood: 9, topics: ["Trennung"] }),
-      entry({ createdAt: daysAgo(2), mood: 4, topics: ["Trennung"] }),
-      entry({ createdAt: daysAgo(4), mood: 5, topics: ["Trennung"] }),
+      entry({ createdAt: daysAgo(1), mood: 4, topics: ["Trennung"] }),
+      entry({ createdAt: daysAgo(2), mood: 5, topics: ["Trennung"] }),
     ];
     // Zwei aufeinanderfolgende „Tage" (seed) müssen verschiedene Ansagen liefern.
     const day1 = showcaseInsight(es, 100);
@@ -122,6 +123,45 @@ describe("showcaseInsight", () => {
     expect(day1).not.toBeNull();
     expect(day2).not.toBeNull();
     expect(day1).not.toBe(day2);
+  });
+
+  it("rahmt ein schwieriges Thema akzeptierend statt als nacktes Negativwort", () => {
+    // Nur ein schwieriges Thema trifft zu (gleicher Tag → keine Konstanz-Aussage).
+    const es = [
+      entry({ createdAt: daysAgo(0), mood: 4, topics: ["Trennung"] }),
+      entry({ createdAt: daysAgo(0), mood: 5, topics: ["Trennung"] }),
+    ];
+    const out = showcaseInsight(es, 0) ?? "";
+    expect(out).toContain("Trennung");
+    // Validierend/akzeptierend (ACT „Raum geben"), nicht das alte Spotlight.
+    expect(out).toContain("Raum");
+    expect(out).not.toContain("taucht oft dasselbe Wort");
+  });
+
+  it("führt mit Ressourcen und macht Schweres nicht zur Schlagzeile", () => {
+    // Zwei helle Aussagen (wiederkehrendes Bedürfnis + Schreib-Konstanz) plus ein
+    // schwieriges Thema. Ist genug Positives da, rotiert die Kachel nur unter den
+    // hellen Aussagen — das belastende Wort taucht gar nicht erst auf.
+    const es = [
+      entry({ createdAt: daysAgo(0), mood: 6, needs: ["Ruhe"], topics: ["Trennung"] }),
+      entry({ createdAt: daysAgo(1), mood: 5, needs: ["Ruhe"], topics: ["Trennung"] }),
+      entry({ createdAt: daysAgo(2), mood: 7, needs: ["Ruhe"], topics: ["Trennung"] }),
+    ];
+    for (const s of [0, 1, 2, 3, 7, 42]) {
+      const out = showcaseInsight(es, s) ?? "";
+      expect(out).not.toContain("Trennung");
+      expect(out.includes("Ruhe") || out.includes("Tagen")).toBe(true);
+    }
+  });
+
+  it("feiert ein positives Leitgefühl als Ressource", () => {
+    const es = [
+      entry({ createdAt: daysAgo(0), mood: 7, emotions: ["Dankbarkeit"] }),
+      entry({ createdAt: daysAgo(0), mood: 8, emotions: ["Dankbarkeit"] }),
+    ];
+    const out = showcaseInsight(es, 0) ?? "";
+    expect(out).toContain("Dankbarkeit");
+    expect(out).toContain("schön");
   });
 });
 
