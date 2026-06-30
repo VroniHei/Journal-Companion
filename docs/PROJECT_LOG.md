@@ -5,6 +5,23 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-30 — „Was sich zeigt": tägliche Rotation repariert
+
+**Was:** `showcaseInsight` (`web/src/lib/insights.ts`) zeigte bei genau zwei
+zutreffenden Aussagen Tag für Tag *beide* Sätze (nur Reihenfolge tauschte) —
+die Kachel stand wochenlang auf „Freitags … am höchsten" + „… Wort: Trennung".
+Fix: zweiter Satz wird erst ab **drei** Kandidaten angehängt; bei genau zwei
+zeigt der Seed täglich rotierend nur den Primärsatz (A, B, A, B …).
+
+**Warum:** Der tägliche Seed war korrekt, konnte aber nichts bewirken, solange
+ohnehin alle Kandidaten gleichzeitig sichtbar waren. Die Ansage soll sich
+erkennbar täglich ändern, sonst verliert sie ihren Sinn.
+
+**Ergebnis/Status:** Regressionstest in `insights.test.ts` (zwei Seeds → zwei
+verschiedene Ansagen). Build + Lint + Typecheck grün, 12 Insight-Tests grün.
+
+---
+
 ## 2026-06-25 — Hero/Ritual-Korrekturschleife (Review am Live-Stand)
 
 **Was:** Nach dem §10-Deploy am Handy nachgezogen:

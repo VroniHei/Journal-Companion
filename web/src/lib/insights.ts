@@ -386,13 +386,17 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
     return `Deine Stimmung lag zuletzt im Schnitt bei *${m}/10*. Schon das hinzusehen zählt.`;
   }
 
-  // Zwei sich ergänzende Aussagen ergeben einen volleren, sinnvollen Block für
-  // die „Was sich zeigt"-Kachel. Beide rotieren täglich (seed); die zweite ist
-  // immer eine andere als die erste, damit sich nichts wiederholt.
+  // Eine täglich rotierende Primär-Aussage ist die Basis (seed → cands[i]). Eine
+  // zweite Aussage ergänzt sie zu einem volleren Block — aber NUR ab drei
+  // Kandidaten. Grund: bei genau zwei Kandidaten enthielte „primary + secondary"
+  // Tag für Tag beide Sätze (nur die Reihenfolge tauschte), der Block änderte
+  // sich also nie sichtbar. Ab drei Kandidaten wechselt das gezeigte Paar von
+  // Tag zu Tag; bei zwei zeigen wir bewusst nur den rotierenden Primärsatz, damit
+  // sich die Ansage täglich erkennbar ändert.
   const len = cands.length;
   const i = ((seed % len) + len) % len;
   const primary = cands[i];
-  if (len === 1) return primary;
+  if (len <= 2) return primary;
   const secondary = cands[(i + 1) % len];
   return `${primary} ${secondary}`;
 }

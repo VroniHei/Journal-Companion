@@ -5,6 +5,13 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Tägliche Rotation braucht ein wechselndes *Ergebnis*, nicht nur einen
+  wechselnden Seed.** Bei `showcaseInsight` rotierte der Seed korrekt täglich,
+  doch solange bei genau zwei Kandidaten ohnehin *beide* Sätze gezeigt wurden,
+  blieb der sichtbare Block konstant. Regel: einen zweiten Eintrag erst anhängen,
+  wenn dadurch nicht die gesamte (Rest-)Menge gezeigt wird — sonst frisst die
+  Vollständigkeit die Rotation. (2026-06-30)
+
 ## Architektur & Entscheidungen
 
 - **Web-App statt Mobile/Desktop**, Stack Next.js 15 + React 19 + TS + Tailwind v4

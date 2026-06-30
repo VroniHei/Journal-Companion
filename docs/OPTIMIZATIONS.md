@@ -5,6 +5,15 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 ---
 
+## Erledigt (jüngste oben)
+- ✅ **„Was sich zeigt" rotiert wieder täglich** (`insights.ts`): bei genau zwei
+  zutreffenden Aussagen wird nicht mehr dauerhaft das gleiche Satzpaar gezeigt,
+  sondern täglich rotierend der Primärsatz; zweiter Satz erst ab drei Kandidaten.
+  Regressionstest ergänzt. (2026-06-30)
+- 💡 **Folge-Idee:** Mehr Kandidaten-Vielfalt für `showcaseInsight` (z. B.
+  Tageszeit-Muster, Wochenend-vs-Werktag, Intensität-Trend), damit ab drei
+  Aussagen häufiger ein voller Zwei-Satz-Block entsteht statt nur Rotation.
+
 ## Offen
 
 ### Nächster großer Block: Seiten- & Zustands-Pass (priorisiert)

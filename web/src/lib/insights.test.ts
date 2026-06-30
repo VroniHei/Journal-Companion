@@ -107,6 +107,22 @@ describe("showcaseInsight", () => {
     expect(typeof out).toBe("string");
     expect(out).toContain("*");
   });
+
+  it("ändert die Ansage täglich, wenn genau zwei Aussagen zutreffen", () => {
+    // Genau zwei Kandidaten: bester Wochentag (≥3 verschiedene Tage) + häufigstes
+    // Wort. Früher wurden beide jeden Tag gemeinsam gezeigt → nie eine Änderung.
+    const es = [
+      entry({ createdAt: daysAgo(0), mood: 9, topics: ["Trennung"] }),
+      entry({ createdAt: daysAgo(2), mood: 4, topics: ["Trennung"] }),
+      entry({ createdAt: daysAgo(4), mood: 5, topics: ["Trennung"] }),
+    ];
+    // Zwei aufeinanderfolgende „Tage" (seed) müssen verschiedene Ansagen liefern.
+    const day1 = showcaseInsight(es, 100);
+    const day2 = showcaseInsight(es, 101);
+    expect(day1).not.toBeNull();
+    expect(day2).not.toBeNull();
+    expect(day1).not.toBe(day2);
+  });
 });
 
 describe("computeStreak", () => {
