@@ -9,6 +9,8 @@ export function useServerDictation(opts: {
   getBase: () => string;
   onChange: (full: string) => void;
   onActivate?: () => void;
+  /** Feuert am Ende einer Transkription mit dem vollständigen Feldtext. */
+  onResult?: (full: string) => void;
 }) {
   const [recording, setRecording] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -114,8 +116,10 @@ export function useServerDictation(opts: {
           const text = await postStt(blob);
           if (text) {
             const base = optsRef.current.getBase();
-            optsRef.current.onChange(base ? `${base} ${text}` : text);
+            const full = base ? `${base} ${text}` : text;
+            optsRef.current.onChange(full);
             optsRef.current.onActivate?.();
+            optsRef.current.onResult?.(full);
           }
         } catch (err) {
           setError(

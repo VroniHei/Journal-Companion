@@ -56,6 +56,8 @@ export function useDictation(opts: {
   getBase: () => string;
   onChange: (full: string) => void;
   onActivate?: () => void;
+  /** Feuert am echten Sitzungsende (Nutzer-Stopp) mit dem vollständigen Feldtext. */
+  onResult?: (full: string) => void;
 }) {
   const [listening, setListening] = useState(false);
   const recRef = useRef<SpeechRecognitionLike | null>(null);
@@ -135,6 +137,11 @@ export function useDictation(opts: {
       }
       if (userStopRef.current) {
         setListening(false);
+        // Echtes Ende → Volltext für einen optionalen Nachbearbeitungsschritt.
+        const base = baseRef.current;
+        const spoken = committedRef.current;
+        const full = base ? (spoken ? `${base} ${spoken}` : base) : spoken;
+        if (full.trim()) optsRef.current.onResult?.(full);
       } else {
         // Weiterhören: nächste kurze Sitzung.
         try {

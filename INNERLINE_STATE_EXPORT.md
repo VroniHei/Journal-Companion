@@ -445,6 +445,11 @@ eigener Schritt.
   Browser sie kann; ElevenLabs nur, wenn der Browser es nicht kann oder bewusst
   gewählt. Latenz STT: **nicht-streamend** (Aufnahme erst nach „Stopp"
   hochladen und transkribieren).
+- **Interpunktion nach dem Diktat** (Stand 2026-06-30): Da die Browser-Erkennung
+  keine Satzzeichen liefert, läuft am Sitzungsende automatisch ein mechanischer
+  Interpunktions-Pass (`/api/punctuate`, `LIGHT_MODEL`, strenger „ändere keine
+  Wörter"-Prompt) — aber nur, wenn der Text wie ein unpunktierter Worthaufen wirkt
+  (`looksUnpunctuated`). Bei Fehler/ohne Key bleibt das Roh-Transkript.
 - **TTS:** **ElevenLabs Text-to-Speech (`eleven_multilingual_v2`)** über
   `/api/tts`, Default-Stimme „Brian" (per `ELEVENLABS_VOICE_ID` änderbar), Rückgabe
   als MP3. On-demand beim Vorlesen. Alternativ Browser-Sprachausgabe.

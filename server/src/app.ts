@@ -12,6 +12,7 @@ import { patternInsightsRouter } from "./routes/patternInsights";
 import { shareSuggestionRouter } from "./routes/shareSuggestion";
 import { syncRouter } from "./routes/sync";
 import { titleRouter } from "./routes/title";
+import { punctuateRouter } from "./routes/punctuate";
 
 // Die konfigurierte Express-App — ohne `listen`, damit sie sowohl lokal
 // (server/src/index.ts) als auch als Vercel-Serverless-Funktion (api/index.ts)
@@ -57,5 +58,6 @@ app.use("/api", patternInsightsRouter);
 app.use("/api", shareSuggestionRouter);
 app.use("/api", syncRouter);
 app.use("/api", titleRouter);
+app.use("/api", punctuateRouter);
 
 export default app;

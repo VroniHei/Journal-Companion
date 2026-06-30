@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useDictation } from "../hooks/useDictation";
 import { useServerDictation } from "../hooks/useServerDictation";
 import { useSettings } from "../hooks/useData";
-import { getConfig } from "../lib/apiClient";
+import { getConfig, postPunctuate } from "../lib/apiClient";
+import { looksUnpunctuated } from "../lib/text";
 
 /**
  * Mikrofon-Button. Bevorzugt serverseitige Spracherkennung (ElevenLabs Scribe,
@@ -39,10 +40,29 @@ export function DictationButton({
     };
   }, []);
 
+  // Nach dem Diktat Satzzeichen/Absätze setzen — aber nur, wenn der Text wie ein
+  // unpunktierter „Worthaufen" wirkt (Browser-Spracherkennung). Mechanisch, ändert
+  // keine Wörter; bei Fehler/ohne Key bleibt das Roh-Transkript.
+  const [polishing, setPolishing] = useState(false);
+  async function handleResult(full: string) {
+    if (!looksUnpunctuated(full)) return;
+    setPolishing(true);
+    try {
+      const improved = await postPunctuate(full);
+      // Nur ersetzen, wenn der Feldinhalt seit dem Diktat unverändert ist.
+      if (improved && improved !== full && valueRef.current === full) {
+        onChange(improved);
+      }
+    } finally {
+      setPolishing(false);
+    }
+  }
+
   const common = {
     getBase: () => valueRef.current,
     onChange,
     onActivate,
+    onResult: handleResult,
   };
   const server = useServerDictation(common);
   const browser = useDictation(common);
@@ -154,6 +174,11 @@ export function DictationButton({
       {busy && (
         <span aria-live="polite" className="text-[13px] text-[var(--muted)]">
           Transkribiere auf Deutsch…
+        </span>
+      )}
+      {polishing && (
+        <span aria-live="polite" className="text-[13px] text-[var(--muted)]">
+          Setze Sätze und Satzzeichen…
         </span>
       )}
       {err && (

@@ -5,6 +5,30 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-30 (Forts. 10) — Diktat: Interpunktion nach der Spracherkennung
+
+**Was:** Sprach-Eingaben kamen als langer „Worthaufen" ohne Satzzeichen
+(Browser-Spracherkennung liefert keine Interpunktion; sie ist Standard wegen
+„kostenlos zuerst"). Jetzt wird nach dem Diktat automatisch Interpunktion gesetzt.
+- Neue Route `POST /api/punctuate` (`server/src/routes/punctuate.ts`, `LIGHT_MODEL`
+  = Sonnet): **rein mechanisch** — strenger Prompt, der NUR Satzzeichen/Groß-
+  schreibung/Absätze setzt und keine Wörter ändert/hinzufügt/entfernt.
+- Hooks `useServerDictation`/`useDictation` haben einen `onResult`-Callback (feuert
+  am echten Sitzungsende mit dem Volltext). `DictationButton` glättet darüber
+  automatisch — aber nur, wenn `looksUnpunctuated()` (`lib/text.ts`) zutrifft
+  (≥12 Wörter, < ~1 Satzzeichen je 15 Wörter), sonst kein Aufruf (spart Kosten,
+  z. B. wenn ElevenLabs schon punktiert hat). Ersetzt nur, wenn das Feld
+  unverändert ist. Sichtbarer Hinweis „Setze Sätze und Satzzeichen…".
+- Bei Fehler/ohne Key bleibt das Roh-Transkript (nicht blockierend).
+
+**Warum:** 400-Wörter-Texte am Stück sind schwer lesbar. Kein KI-„Reflexions"-Text,
+nur Formatierung der eigenen Worte; Krisen-Gate unberührt.
+
+**Ergebnis/Status:** 6 neue Tests (`text.test.ts`); gesamt 45 Web- + 20
+Server-Tests grün; Build, Lint, Typecheck grün.
+
+---
+
 ## 2026-06-30 (Forts. 9) — Performance: Route-Code-Splitting + Vendor-Chunk
 
 **Was:** Seiten werden per `React.lazy` pro Route geladen (Suspense-Grenze im

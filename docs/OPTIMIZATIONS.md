@@ -6,6 +6,10 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 ---
 
 ## Erledigt (jüngste oben)
+- ✅ **Diktat-Interpunktion:** nach der Spracherkennung wird der „Worthaufen"
+  automatisch in Sätze gegliedert (`/api/punctuate`, `LIGHT_MODEL`, rein
+  mechanisch). Nur wenn `looksUnpunctuated()` zutrifft (spart Kosten, wenn schon
+  punktiert). `onResult`-Callback in beiden Diktat-Hooks. 6 Tests. (2026-06-30)
 - ✅ **„Brücke zur Versorgung" / Therapeuten-Zusammenfassung** (`/zusammenfassung`,
   `lib/summary.ts`): nutzer-initiiert, rein lokal aggregiert (KI-frei), strikt
   deskriptiv, nur bestätigte Muster, abwähl-/editierbar, Verbatim-Disclaimer,

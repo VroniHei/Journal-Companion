@@ -5,6 +5,13 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Browser-Spracherkennung liefert keine Satzzeichen.** Die Web Speech API (de-DE,
+  Standard wegen „kostenlos zuerst") hängt nur finale Segmente aneinander → langer
+  Worthaufen. Lösung: ein mechanischer Interpunktions-Pass (schlankes Modell,
+  strenger „ändere keine Wörter"-Prompt) nach dem echten Sitzungsende
+  (`onResult`-Callback), und nur wenn der Text wirklich unpunktiert wirkt
+  (Verhältnis Satzzeichen/Wörter) — so kostet es nichts, wenn ElevenLabs schon
+  punktiert hat. (2026-06-30)
 - **Code-Splitting: Shell eager, Rest lazy + Vendor separat.** Nur Layout +
   Startseite eager laden, alle übrigen Routen per `React.lazy` (eine Suspense-
   Grenze ums `<Outlet/>` genügt). Named-Export-Seiten via `.then(m => ({default:
