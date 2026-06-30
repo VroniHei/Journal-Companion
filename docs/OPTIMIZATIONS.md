@@ -142,10 +142,10 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
   Abbruch (Chat: `ChatThread`, Reflexion: `EntryDetail`); ✅ proaktiver, ruhiger
   API-Key-Hinweis in `EntryDetail` (via `useConfig`-Hook). (2026-06-30) Offen
   (🟢): Hinweis auch auf weiteren KI-Flächen (Voice/Kontaktimpuls/Wochenbrief).
-- 🟡 **Tests ausbauen:** Vitest jetzt auch im **web**-Workspace
-  (`web/src/lib/insights.test.ts`, 11 Tests: wordsOfWeek/showcaseKeyword/-Seed/
-  showcaseInsight/computeStreak); `npm test` läuft server **und** web. Offen:
-  weitere `lib/`-Module abdecken, später E2E für den Reflexionsfluss.
+- 🟡 **Tests ausbauen:** `npm test` läuft server **und** web. Aktuell **32 Web-
+  Tests** (`insights` 20, `draft` 5, `voiceDraft` 7) + **18 Server-Tests**
+  (Krisen-/Grübel-Heuristik, Rate-Limit). Offen: weitere `lib/`-Module abdecken,
+  später E2E für den Reflexionsfluss.
 - 🟢 **Barrierefreiheit prüfen** mit `web-design-guidelines` (Fokus-Reihenfolge,
   Kontraste, Screenreader-Labels der Mood-Buttons).
 - 🟢 **Import** von JSON-Backups (Export ist da; Re-Import noch offen).
