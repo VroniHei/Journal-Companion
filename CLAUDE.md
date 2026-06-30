@@ -65,7 +65,22 @@ server/
   .env.example            ANTHROPIC_API_KEY=
 docs/                     Protokoll, Learnings, Optimierungen (siehe unten)
 design_handoff_app_shell_navigation/  Verbindliche Claude-Design-Vorlage
+INNERLINE_STATE_EXPORT.md             Technische Bestandsaufnahme (Code-Stand)
+Innerline_Standort_und_Strategie.md   Markt-/Wettbewerb/Strategie (lebendes Dok.)
 ```
+
+## Grundlagen-Dokumente (Projektquellen)
+
+Feste Bezugsdokumente im Repo-Wurzelverzeichnis — bei strategischen oder
+größeren technischen Entscheidungen zuerst hier nachsehen und konsistent halten:
+
+- **`Innerline_Standort_und_Strategie.md`** — Markt-, Wettbewerbs- und
+  Markenkohärenz-Analyse plus phasenweise Roadmap (Privat → Test → Produkt).
+  Lebendes Strategiedokument; bei relevanten Richtungsänderungen aktualisieren.
+- **`INNERLINE_STATE_EXPORT.md`** — nüchterne technische Bestandsaufnahme
+  (Architektur, Datenmodell, Prompts, Memory, Voice, Safety). Bildet die
+  Grundlage für Teil 4 des Strategiedokuments; nach größeren technischen
+  Änderungen nachziehen.
 
 ## Stehende Regeln (das „immer")
 

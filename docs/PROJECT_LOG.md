@@ -5,6 +5,21 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-30 (Forts. 4) — Strategiedokument als Projektquelle verankert
+
+**Was:** `Innerline_Standort_und_Strategie.md` (Markt-/Wettbewerbs-/Marken-
+Analyse + Roadmap, Version 1.1) im Repo-Wurzelverzeichnis abgelegt und in
+CLAUDE.md als festes Grundlagen-Dokument referenziert (zusammen mit
+`INNERLINE_STATE_EXPORT.md`).
+
+**Warum:** Strategischer Bezugsrahmen soll fester Bestandteil der Projektquellen
+sein und bei Entscheidungen konsultiert/konsistent gehalten werden.
+
+**Ergebnis/Status:** Dokument + CLAUDE.md-Verweis committet. Reines Doku, kein
+Code berührt.
+
+---
+
 ## 2026-06-30 (Forts. 3) — Robustheit: Retry, API-Key-Hinweis, CI
 
 **Was:**
