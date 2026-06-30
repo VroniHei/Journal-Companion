@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Button, Card } from "../components/ui";
 import { useSettings } from "../hooks/useData";
 import { useSyncStatus } from "../hooks/useSync";
+import { useEmbeddingStatus } from "../hooks/useEmbeddingStatus";
+import { warmSemanticRecall } from "../lib/embeddings";
 import { useSpeech, useVoices } from "../hooks/useSpeech";
 import { updateSettings } from "../lib/settings";
 import { FOCUS_OPTIONS } from "../lib/focus";
@@ -42,7 +44,19 @@ export function Settings() {
   const sync = useSyncStatus();
   const voices = useVoices();
   const navigate = useNavigate();
+  const emb = useEmbeddingStatus();
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const recallOn = s.semanticRecall !== false;
+  const recallStatus = !recallOn
+    ? "Aus. Reflexion und Chat nutzen die zeitlich letzten Einträge."
+    : emb.state === "loading"
+      ? "Lädt einmalig das Sprachmodell (läuft im Hintergrund)…"
+      : emb.state === "indexing"
+        ? `Verknüpft deine Einträge… (${emb.done}/${emb.total})`
+        : emb.state === "ready"
+          ? "Bereit. Passende frühere Einträge fließen behutsam ein."
+          : "Wird im Hintergrund vorbereitet, sobald du die App nutzt.";
 
   async function onImportFile(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -277,6 +291,31 @@ export function Settings() {
             }
           />
         </Row>
+      </Card>
+
+      <Card className="space-y-3">
+        <h2 className="text-sm font-medium text-[var(--muted)]">Rückblick</h2>
+        <label className="flex items-start gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={recallOn}
+            onChange={(e) => {
+              updateSettings({ semanticRecall: e.target.checked });
+              if (e.target.checked) void warmSemanticRecall();
+            }}
+          />
+          <span>
+            Tieferer Rückblick: Verbindungen über die Zeit. Reflexion und Gespräch
+            beziehen behutsam thematisch passende frühere Einträge ein, nicht nur
+            die zeitlich letzten.
+          </span>
+        </label>
+        <p className="text-[13px] text-[var(--muted)]">{recallStatus}</p>
+        <p className="text-[13px] text-[var(--muted)]">
+          Die Berechnung passiert vollständig auf deinem Gerät. Es wird einmalig ein
+          kleines Sprachmodell geladen und im Browser gespeichert. Kein Eintragstext
+          verlässt dafür dein Gerät.
+        </p>
       </Card>
 
       <Card className="space-y-3">

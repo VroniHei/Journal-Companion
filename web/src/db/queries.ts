@@ -208,6 +208,25 @@ export async function recentDigests(
     .map(toDigest);
 }
 
+/** Die letzten `limit` Einträge (ohne `excludeId`) als volle Objekte. */
+export async function recentEntries(
+  limit: number,
+  excludeId?: string,
+): Promise<JournalEntry[]> {
+  const entries = await db.entries
+    .orderBy("createdAt")
+    .reverse()
+    .limit(limit + 1)
+    .toArray();
+  return entries.filter((e) => e.id !== excludeId).slice(0, limit);
+}
+
+/** Einträge zu einer ID-Liste, in der Reihenfolge der IDs (fehlende übersprungen). */
+export async function entriesByIds(ids: string[]): Promise<JournalEntry[]> {
+  const rows = await db.entries.bulkGet(ids);
+  return rows.filter((e): e is JournalEntry => Boolean(e));
+}
+
 /** Digests aller Einträge in einem Zeitraum (für den Wochenrückblick). */
 export async function digestsInRange(
   startIso: string,
@@ -699,5 +718,7 @@ export async function clearAllData(): Promise<void> {
   // Lokale Sprach-Entwürfe ebenfalls entfernen (enthalten Roh-Text; nicht
   // gesynct, daher ohne Tombstone).
   await db.voiceDrafts.clear();
+  // Lokale Embeddings ebenfalls entfernen (abgeleitet aus Eintragstext; lokal).
+  await db.entryEmbeddings.clear();
   notifyDataChanged();
 }
