@@ -15,6 +15,7 @@ import {
   TOPICS,
 } from "../lib/options";
 import { createEntry } from "../db/queries";
+import { useDraft } from "../hooks/useDraft";
 import { generateTitleFor } from "../lib/title";
 import { intentLabel, isStartIntent } from "../lib/intents";
 
@@ -183,7 +184,9 @@ export function NewEntry() {
   const label = intentLabel(intent);
   const promptParam = params.get("prompt")?.trim();
 
-  const [text, setText] = useState("");
+  // Geschriebener Text wird laufend lokal als Entwurf gesichert (überlebt
+  // Tab-Verlust/Reload, bis daraus ein echter Eintrag wird).
+  const [text, setText, clearText] = useDraft("new-entry");
   const [mood, setMood] = useState(5);
   const [intensity, setIntensity] = useState(5);
   const [emotions, setEmotions] = useState<string[]>([]);
@@ -259,6 +262,7 @@ export function NewEntry() {
       cannabisToday,
     });
     void generateTitleFor(entry.id, entry.text);
+    clearText(); // Entwurf ist jetzt ein echter Eintrag.
     navigate(`/eintrag/${entry.id}`);
   }
 

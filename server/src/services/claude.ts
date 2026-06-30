@@ -32,9 +32,18 @@ export function singleUser(text: string): ChatTurn[] {
   return [{ role: "user", content: text }];
 }
 
+// Modell-Staffelung (vgl. CLAUDE.md):
+// - DEEP_MODEL: tiefe, emotional bedeutsame Reflexion (Reflexion, Chat,
+//   Wochenrückblick, Sprach-Reflexion, Kontaktimpuls, Muster). Qualität = Kern
+//   des Produkts → Opus. Standardwahl der Nutzerin; per Einstellung änderbar.
+// - LIGHT_MODEL: rein mechanische Kurztexte (Eintrags-Titel, Teilen-Karte). Hier
+//   bringt Opus keinen Mehrwert → fest Sonnet, unabhängig von der Modellwahl.
+export const DEEP_MODEL = "claude-opus-4-8";
+export const LIGHT_MODEL = "claude-sonnet-4-6";
+
 /**
- * Latenz/Qualität nach Modell: Sonnet (Standard) schnell, Opus (Qualitätsmodus)
- * gründlicher. Aufrufer können `effort` überschreiben.
+ * Latenz/Qualität nach Modell: Sonnet (schlank) schnell, Opus (Standard für
+ * tiefe Reflexion) gründlicher. Aufrufer können `effort` überschreiben.
  */
 export function tuningFor(model: string): { effort: Effort; think: boolean } {
   const isOpus = model.includes("opus");

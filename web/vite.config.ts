@@ -6,6 +6,17 @@ import tailwindcss from "@tailwindcss/vite";
 // So liegt der API-Key nie im Frontend — das Frontend ruft nur sein eigenes Backend.
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    rollupOptions: {
+      output: {
+        // Selten wechselnde Fremdbibliotheken in einen eigenen, gut cachebaren
+        // Vendor-Chunk auslagern (App-Code bleibt klein, Browser-Cache greift).
+        manualChunks(id) {
+          if (id.includes("node_modules")) return "vendor";
+        },
+      },
+    },
+  },
   server: {
     port: 5173,
     proxy: {

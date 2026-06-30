@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { Suspense, useState, type FormEvent } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { DisclaimerGate } from "./DisclaimerGate";
 import { Onboarding } from "./Onboarding";
@@ -297,7 +297,12 @@ export function Layout() {
       <main className="mx-auto max-w-7xl px-5 pb-32 pt-6 sm:pb-12">
         <DisclaimerGate />
         <div className={contentClass}>
-          <Outlet />
+          {/* Suspense-Grenze für per Route lazy geladene Seiten (Code-Splitting). */}
+          <Suspense
+            fallback={<p className="text-[var(--muted)]">Lädt…</p>}
+          >
+            <Outlet />
+          </Suspense>
         </div>
         <footer className="mt-12 text-center text-[13px] text-[var(--muted)]">
           Kein Ersatz für Therapie ·{" "}

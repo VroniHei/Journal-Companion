@@ -5,6 +5,48 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 ---
 
+## Erledigt (jüngste oben)
+- ✅ **Diktat-Interpunktion:** nach der Spracherkennung wird der „Worthaufen"
+  automatisch in Sätze gegliedert (`/api/punctuate`, `LIGHT_MODEL`, rein
+  mechanisch). Nur wenn `looksUnpunctuated()` zutrifft (spart Kosten, wenn schon
+  punktiert). `onResult`-Callback in beiden Diktat-Hooks. 6 Tests. (2026-06-30)
+- ✅ **„Brücke zur Versorgung" / Therapeuten-Zusammenfassung** (`/zusammenfassung`,
+  `lib/summary.ts`): nutzer-initiiert, rein lokal aggregiert (KI-frei), strikt
+  deskriptiv, nur bestätigte Muster, abwähl-/editierbar, Verbatim-Disclaimer,
+  Export als Markdown + Druck-PDF. Strategie-Doc Teil 5. 7 Tests. (2026-06-30)
+  Offen (🟢): optionaler KI-Glättungsschritt (eng geführter Prompt, Krisen-Gate,
+  abschaltbar) — bewusst noch nicht gebaut, Default bleibt lokal.
+- ✅ **In-Conversation-Recall im Chat:** neuestes Muster-Summary + kompakter
+  Digest (3) auch im Chat (`buildChatContext` → `ChatRequest.context` →
+  `buildChatSystem`), behutsam gerahmt (`CHAT_MEMORY_NOTE`), Fokus bleibt beim
+  aktuellen Eintrag. 2 Server-Tests. Strategie-Doc Teil 4.2. (2026-06-30) Offen:
+  semantischer Recall (Embeddings) als größeres Folge-Ticket.
+- ✅ **Sprach-Entwürfe in dediziertem Dexie-Store** (Dexie v11, `voiceDrafts`,
+  nicht gesynct): Transkript wird sofort gesichert, beim Öffnen Wiederherstellen-
+  Angebot (< 24 h), nach Speichern gelöscht, Aufräumen beim App-Start. Ersetzt für
+  den Voice-Pfad den localStorage-Entwurf (robuster, in IndexedDB auffindbar).
+  7 Tests. (2026-06-30)
+- ✅ **Roh-Text/Transkript sofort lokal sichern** (Strategie-Doc Phase Privat #1):
+  Draft-Persistenz (`lib/draft.ts` + `hooks/useDraft.ts`, localStorage) am
+  Schreib-Text (`NewEntry`); für den Voice-Pfad inzwischen durch den `voiceDrafts`-
+  Store abgelöst (s. o.). Behebt Rosebuds meistkritisierten Fehler. (2026-06-30)
+- ✅ **Modell-Staffelung umgesetzt:** tiefe Reflexion → Opus (Default), Titel/
+  Teilen-Karte → fest Sonnet (`LIGHT_MODEL`, server). Behebt den Sonnet-vs-Opus-
+  Widerspruch zu CLAUDE.md. (2026-06-30)
+- ✅ **Mehr Kandidaten für „Was sich zeigt"** (Tageszeit, Wochenende vs. Werktag,
+  Anspannungs-Trend) + `POSITIVE_EMOTIONS` erweitert; toter `buildInsights`
+  entfernt. (2026-06-30)
+- ✅ **„Was sich zeigt" positiv-psychologisch entschärft** (`insights.ts`):
+  `bright`/`tender`-Trennung, Ressourcen führen, Schwieriges akzeptierend
+  gerahmt (SFBT + ACT) statt Negativwort-Spotlight. (2026-06-30)
+- ✅ **„Was sich zeigt" rotiert wieder täglich** (`insights.ts`): bei genau zwei
+  zutreffenden Aussagen wird nicht mehr dauerhaft das gleiche Satzpaar gezeigt,
+  sondern täglich rotierend der Primärsatz; zweiter Satz erst ab drei Kandidaten.
+  Regressionstest ergänzt. (2026-06-30)
+- 💡 **Folge-Idee:** `POSITIVE_EMOTIONS` ist eine kuratierte Liste; bei Bedarf
+  durch ein kleines Sentiment-Lexikon ersetzen, damit auch unbekannte positive
+  Leitgefühle als Ressource (statt nur akzeptierend) gerahmt werden.
+
 ## Offen
 
 ### Nächster großer Block: Seiten- & Zustands-Pass (priorisiert)
@@ -26,8 +68,10 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
   Datenschutzerklärung, ggf. EU-Region/Proxy, Lösch-/Export-Recht (Export ist da).
   Therapeutische Abgrenzung („kein Therapieersatz") ist vorhanden — juristisch
   final prüfen lassen.
-- 🟡 **Performance/Bundle:** `index.js` ~679 kB (gzip ~202 kB). Routen per
-  `React.lazy`/dynamic import code-splitten; größte Abhängigkeiten prüfen.
+- ✅ **Performance/Bundle:** Routen per `React.lazy` code-gesplittet (Suspense im
+  Layout) + Vendor-Chunk via `manualChunks`. Aus einem 679-kB-Chunk wurden
+  vendor ~388 kB (gzip 125, gut gecacht) + App-Shell ~116 kB (gzip 32) +
+  Seiten-Chunks je ~2–5 kB on demand. 500-kB-Warnung weg. (2026-06-30)
 - 🟡 **Onboarding & Retention:** sanfter, aber klarer Erststart; optionale,
   freundliche Tageserinnerung (kein Druck); Streak bewusst niederschwellig
   (bereits entschärft) — Balance Motivation vs. Calm halten.
@@ -48,7 +92,10 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 - ✅ **Smoke-Test für `/api/health` nach Deploy:** `scripts/smoke.mjs` (+ `npm run
   smoke <url>`) prüft `/api/health` (200 + `{ok:true}`) und `/api/config`; Exit 1
   bei Ausfall, 2 bei Fehlbedienung. Manuell oder als CI-/Post-Deploy-Step nutzbar.
-  (2026-06-25) Offen: als GitHub-Action automatisieren.
+  (2026-06-25) ✅ Als GitHub-Action automatisiert: `.github/workflows/smoke.yml`
+  (manuell + täglich; URL aus Eingabe oder `vars.SMOKE_URL`, sonst übersprungen).
+  Zusätzlich `.github/workflows/ci.yml` (Lint/Typecheck/Test/Build bei Push/PR).
+  (2026-06-30)
 - 🟢 **Zitat-Karte: Bildauswahl an Stimmung/Thema koppeln:** Pool ist jetzt groß
   (40 Fotos, `CARD_PHOTOS` + `dailyPhotos`, 3 Tagesvorschläge), aber die Auswahl
   rotiert rein nach Datum. Optional die 3 Vorschläge stärker an Stimmung/Top-Thema
@@ -73,10 +120,11 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
   für den Tag). Das löst die frühere Entscheidung „Fokus = reines Tagesergebnis"
   (LEARNINGS 2026-06-23) ab. Optional: den Ritual-Schritt „Was macht den Tag gut?"
   klarer als „Tagesfokus" benennen, damit beide Quellen erkennbar zusammenpassen.
-- 🟡 **Themen-Normalisierung für den Roten Faden:** aktuell clustern `topics`
-  nur per `toLowerCase`. Synonyme/Beugungen („Arbeit"/„Job", „Trennung"/
-  „Trennungen") landen in getrennten Fäden. Optional: leichte Stemming-/
-  Synonym-Zuordnung (kuratierte Map), damit echte Themen zusammenlaufen.
+- ✅ **Themen-Normalisierung für den Roten Faden:** `normalizeTopic` führt
+  Synonyme (kuratierte Map, z. B. „Job"→„Arbeit") und gängige Beugungen
+  (konservatives Stemming, „Trennungen"→„Trennung") auf ein gemeinsames Leitwort
+  zusammen; `themeClusters` gruppiert danach. Mit Regressionstests abgesichert.
+  Offen (🟢): Map bei Bedarf erweitern. (2026-06-30)
 - 🟢 **„Abmelden"/Konto-Frage offen:** bewusst weggelassen, da App lokal-first
   ohne Login. Falls später Konten/echter Account-Sync kommen, Menüpunkt
   (Profil-Sheet `Layout.tsx`) mit echter Semantik nachrüsten.
@@ -103,16 +151,23 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
   Aggregation) und Themen-Verschiebungen sprachlich glätten, sobald genug Daten.
 - 🟡 **Automatische Gesprächs-Zusammenfassung** bei sehr langen Chats (>~12
   Nachrichten): ältere Turns serverseitig zu `conversationSummary` verdichten,
-  statt nur die letzten 8 zu schicken.
+  statt nur die letzten 8 zu schicken. (Feld + Prompt-Einbettung sind da; es fehlt
+  nur die Erzeugung.)
+- 🟡 **Semantischer Recall statt Recency (Folge-Ticket):** Embeddings über frühere
+  Einträge (lokal-first) + Ähnlichkeitssuche, um THEMATISCH passende statt nur die
+  letzten N Einträge in Reflexions-/Chat-Kontext zu holen. Eigene Architektur-
+  Entscheidung; erst nach dem billigen Recency-Gewinn (jetzt erledigt).
 
 - 🟡 **Adaptives Thinking reaktivieren**, sobald die SDK-Version `adaptive`
   typisiert — verbessert die Qualität der Reflexionen.
-- 🟡 **Fehler-/Leerzustände der UI** verfeinern (z.B. klarer Hinweis, wenn kein
-  API-Key gesetzt ist; Retry-Button bei Streaming-Abbruch).
-- 🟡 **Tests ausbauen:** Vitest jetzt auch im **web**-Workspace
-  (`web/src/lib/insights.test.ts`, 11 Tests: wordsOfWeek/showcaseKeyword/-Seed/
-  showcaseInsight/computeStreak); `npm test` läuft server **und** web. Offen:
-  weitere `lib/`-Module abdecken, später E2E für den Reflexionsfluss.
+- 🟡 **Fehler-/Leerzustände der UI** verfeinern. ✅ Retry-Button bei Streaming-
+  Abbruch (Chat: `ChatThread`, Reflexion: `EntryDetail`); ✅ proaktiver, ruhiger
+  API-Key-Hinweis in `EntryDetail` (via `useConfig`-Hook). (2026-06-30) Offen
+  (🟢): Hinweis auch auf weiteren KI-Flächen (Voice/Kontaktimpuls/Wochenbrief).
+- 🟡 **Tests ausbauen:** `npm test` läuft server **und** web. Aktuell **32 Web-
+  Tests** (`insights` 20, `draft` 5, `voiceDraft` 7) + **18 Server-Tests**
+  (Krisen-/Grübel-Heuristik, Rate-Limit). Offen: weitere `lib/`-Module abdecken,
+  später E2E für den Reflexionsfluss.
 - 🟢 **Barrierefreiheit prüfen** mit `web-design-guidelines` (Fokus-Reihenfolge,
   Kontraste, Screenreader-Labels der Mood-Buttons).
 - 🟢 **Import** von JSON-Backups (Export ist da; Re-Import noch offen).
@@ -178,7 +233,8 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 - 🟢 **`icons.tsx` Lint-Warnung** (react-refresh/only-export-components): ICONS +
   tileRelief in eigene Nicht-Komponenten-Datei auslagern, damit Fast-Refresh
   sauber bleibt (kein Fehler, nur Warnung).
-- 🟢 **Bundle-Größe** >500 KB: Code-Splitting per Route (`React.lazy`) erwägen.
+- ✅ **Bundle-Größe** >500 KB: erledigt durch Route-Code-Splitting + Vendor-Chunk
+  (s. o., 2026-06-30).
 
 ## Gesamt-Audit 2026-06-23 (UI/UX · Brand · Psychologie)
 

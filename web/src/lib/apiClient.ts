@@ -53,6 +53,25 @@ export async function postTitle(text: string, model?: string): Promise<string> {
   }
 }
 
+/**
+ * Setzt Interpunktion/Absätze in ein Roh-Transkript (mechanisch, schlankes
+ * Modell). Gibt bei Fehler/ohne Key den Originaltext zurück — nie blockierend.
+ */
+export async function postPunctuate(text: string): Promise<string> {
+  try {
+    const res = await fetch("/api/punctuate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    if (!res.ok) return text;
+    const data = (await res.json()) as { text?: string };
+    return (data.text ?? "").trim() || text;
+  } catch {
+    return text;
+  }
+}
+
 /** Holt alle (oder ab `since` geänderten) Sync-Datensätze vom Server. */
 export async function pullSync(since?: string): Promise<SyncRecord[]> {
   const url = since

@@ -2,9 +2,11 @@ import { describe, it, expect } from "vitest";
 import type { JournalEntry } from "@journal/shared";
 import {
   computeStreak,
+  normalizeTopic,
   showcaseInsight,
   showcaseKeyword,
   showcaseSeed,
+  themeClusters,
   wordsOfWeek,
 } from "./insights";
 
@@ -106,6 +108,96 @@ describe("showcaseInsight", () => {
     const out = showcaseInsight(es, 0);
     expect(typeof out).toBe("string");
     expect(out).toContain("*");
+  });
+
+  it("ändert die Ansage täglich, wenn genau zwei Aussagen zutreffen", () => {
+    // Genau zwei Aussagen: Schreib-Konstanz (3 Tage diese Woche, hell) +
+    // häufigstes Wort (tender). Früher wurden beide jeden Tag gemeinsam gezeigt
+    // → nie eine sichtbare Änderung; jetzt rotiert der Primärsatz täglich.
+    const es = [
+      entry({ createdAt: daysAgo(0), mood: 9, topics: ["Trennung"] }),
+      entry({ createdAt: daysAgo(1), mood: 4, topics: ["Trennung"] }),
+      entry({ createdAt: daysAgo(2), mood: 5, topics: ["Trennung"] }),
+    ];
+    // Zwei aufeinanderfolgende „Tage" (seed) müssen verschiedene Ansagen liefern.
+    const day1 = showcaseInsight(es, 100);
+    const day2 = showcaseInsight(es, 101);
+    expect(day1).not.toBeNull();
+    expect(day2).not.toBeNull();
+    expect(day1).not.toBe(day2);
+  });
+
+  it("rahmt ein schwieriges Thema akzeptierend statt als nacktes Negativwort", () => {
+    // Nur ein schwieriges Thema trifft zu (gleicher Tag → keine Konstanz-Aussage).
+    const es = [
+      entry({ createdAt: daysAgo(0), mood: 4, topics: ["Trennung"] }),
+      entry({ createdAt: daysAgo(0), mood: 5, topics: ["Trennung"] }),
+    ];
+    const out = showcaseInsight(es, 0) ?? "";
+    expect(out).toContain("Trennung");
+    // Validierend/akzeptierend (ACT „Raum geben"), nicht das alte Spotlight.
+    expect(out).toContain("Raum");
+    expect(out).not.toContain("taucht oft dasselbe Wort");
+  });
+
+  it("führt mit Ressourcen und macht Schweres nicht zur Schlagzeile", () => {
+    // Zwei helle Aussagen (wiederkehrendes Bedürfnis + Schreib-Konstanz) plus ein
+    // schwieriges Thema. Ist genug Positives da, rotiert die Kachel nur unter den
+    // hellen Aussagen — das belastende Wort taucht gar nicht erst auf.
+    const es = [
+      entry({ createdAt: daysAgo(0), mood: 6, needs: ["Ruhe"], topics: ["Trennung"] }),
+      entry({ createdAt: daysAgo(1), mood: 5, needs: ["Ruhe"], topics: ["Trennung"] }),
+      entry({ createdAt: daysAgo(2), mood: 7, needs: ["Ruhe"], topics: ["Trennung"] }),
+    ];
+    for (const s of [0, 1, 2, 3, 7, 42]) {
+      const out = showcaseInsight(es, s) ?? "";
+      // Kerninvariante: das belastende Wort wird nicht zur Schlagzeile …
+      expect(out).not.toContain("Trennung");
+      // … und es kommt trotzdem eine echte (akzentuierte) Ressourcen-Aussage.
+      expect(out).toContain("*");
+    }
+  });
+
+  it("feiert ein positives Leitgefühl als Ressource", () => {
+    const es = [
+      entry({ createdAt: daysAgo(0), mood: 7, emotions: ["Dankbarkeit"] }),
+      entry({ createdAt: daysAgo(0), mood: 8, emotions: ["Dankbarkeit"] }),
+    ];
+    const out = showcaseInsight(es, 0) ?? "";
+    expect(out).toContain("Dankbarkeit");
+    expect(out).toContain("schön");
+  });
+});
+
+describe("normalizeTopic", () => {
+  it("führt Synonyme auf ein gemeinsames Leitwort zusammen", () => {
+    expect(normalizeTopic("Job")).toBe(normalizeTopic("Arbeit"));
+    expect(normalizeTopic("Finanzen")).toBe(normalizeTopic("Geld"));
+    expect(normalizeTopic("Partner")).toBe(normalizeTopic("Beziehung"));
+  });
+
+  it("entbeugt gängige Plural-/Beugungsformen auf dieselbe Grundform", () => {
+    expect(normalizeTopic("Trennungen")).toBe(normalizeTopic("Trennung"));
+    expect(normalizeTopic("Sorgen")).toBe(normalizeTopic("Sorge"));
+  });
+
+  it("ignoriert Groß-/Kleinschreibung und Rand-Leerzeichen", () => {
+    expect(normalizeTopic("  ARBEIT ")).toBe("arbeit");
+  });
+
+  it("lässt kurze Wörter unangetastet (kein Über-Stemming)", () => {
+    expect(normalizeTopic("Ehe")).toBe("ehe");
+  });
+});
+
+describe("themeClusters", () => {
+  it("bündelt Synonyme/Beugungen desselben Themas in EINEN Faden", () => {
+    const es = [
+      entry({ createdAt: daysAgo(0), topics: ["Trennung"] }),
+      entry({ createdAt: daysAgo(1), topics: ["Trennungen"] }),
+    ];
+    const clusters = themeClusters(es, { min: 2 });
+    expect(clusters).toHaveLength(1);
   });
 });
 

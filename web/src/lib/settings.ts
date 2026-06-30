@@ -8,7 +8,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   id: SETTINGS_ID,
   appName: APP_NAME,
   userName: "",
-  claudeModel: "claude-sonnet-4-6", // Standard: kosteneffizient
+  claudeModel: "claude-opus-4-8", // Standard: Opus für tiefe Reflexion (Produktkern)
   responseStyle: "klar",
   maxResponseLength: "mittel",
   apiMode: "claude",
@@ -30,7 +30,12 @@ export async function updateSettings(patch: Partial<AppSettings>): Promise<void>
   await db.settings.put({ ...current, ...patch, id: SETTINGS_ID });
 }
 
-/** High-Quality-Modus erzwingt Opus; sonst das gewählte Modell. */
+/**
+ * Modell für die tiefen Reflexions-Routen. Standard ist Opus (s. DEFAULT_SETTINGS);
+ * der „Gründliche Modus" erzwingt Opus auch dann, wenn bewusst ein schlankeres
+ * Modell gewählt wurde. Mechanische Routen (Titel, Teilen-Karte) ignorieren dies
+ * und nutzen serverseitig fest Sonnet.
+ */
 export function effectiveModel(s: AppSettings): ClaudeModel {
   return s.highQualityMode ? "claude-opus-4-8" : s.claudeModel;
 }

@@ -1,0 +1,46 @@
+name: Smoke (Post-Deploy)
+
+# Prüft, ob die Live-API gesund ist (/api/health + /api/config). Nutzt
+# scripts/smoke.mjs. Die Ziel-URL kommt entweder aus der manuellen Eingabe oder
+# aus der Repo-Variable SMOKE_URL (Settings → Variables). Ohne URL wird der
+# Check übersprungen, statt fehlzuschlagen.
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Basis-URL des Deployments (z. B. https://innerline.vercel.app)"
+        required: false
+        type: string
+  schedule:
+    # Täglich 06:00 UTC — fängt einen stillen Serverless-Ausfall früh ab.
+    - cron: "0 6 * * *"
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Ziel-URL bestimmen
+        id: target
+        env:
+          INPUT_URL: ${{ github.event.inputs.url }}
+          VAR_URL: ${{ vars.SMOKE_URL }}
+        run: |
+          URL="${INPUT_URL:-$VAR_URL}"
+          if [ -z "$URL" ]; then
+            echo "Keine SMOKE_URL gesetzt — Smoke-Test wird übersprungen."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "url=$URL" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Smoke-Test
+        if: steps.target.outputs.skip != 'true'
+        run: node scripts/smoke.mjs "${{ steps.target.outputs.url }}"

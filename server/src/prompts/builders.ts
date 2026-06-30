@@ -174,11 +174,22 @@ const CHAT_DIRECTIVE = `Dies ist ein fortlaufendes, ruhiges Gespräch zu einem T
 Wenn sie sich wiederholt oder im Kreis dreht, analysiere nicht tiefer, sondern benenne sanft die Schleife und hilf beim Stabilisieren (Körper, nächste 20 Minuten, ein kleiner Schritt). Spekuliere nicht weiter über andere Personen.
 Wenn es passt, schließe mit einer einzelnen offenen Frage oder einem kleinen nächsten Schritt — aber nicht zwanghaft.`;
 
+// Rahmung für das Hintergrundwissen aus früheren Einträgen: nur als leiser
+// Resonanzboden, niemals als Pflicht oder Aufzählung. Bewahrt den Fokus auf dem
+// aktuellen Anliegen und hält an der Voice DNA fest.
+const CHAT_MEMORY_NOTE = `Du kennst etwas Hintergrundwissen aus früheren Einträgen (weiter unten). Nutze es nur als leisen Resonanzboden. Wenn es wirklich zum gerade Gesagten passt, darfst du behutsam und natürlich daran anknüpfen, etwa „das klang neulich schon einmal an". Dräng es nicht auf, zähl nichts auf, und lass den Fokus beim aktuellen Anliegen. Stelle keine neuen Muster-Behauptungen über das bereits Bestätigte hinaus auf und spekuliere nicht über andere Personen.`;
+
 export function buildChatSystem(opts: {
   style: ResponseStyle;
   entry: JournalEntry;
   conversationSummary?: string;
+  pattern?: PatternSummary | null;
+  recentDigest?: EntryDigest[];
 }): string {
+  const patternBlock = formatPattern(opts.pattern ?? null);
+  const digestBlock = formatDigest(opts.recentDigest ?? []);
+  const hasMemory = Boolean(patternBlock || digestBlock);
+
   const background = [
     "Hintergrund — der Eintrag, um den es geht:",
     formatEntry(opts.entry),
@@ -193,9 +204,13 @@ export function buildChatSystem(opts: {
     BASE_SYSTEM_PROMPT,
     "",
     CHAT_DIRECTIVE,
+    hasMemory ? CHAT_MEMORY_NOTE : "",
     styleInstruction(opts.style),
     "",
     background,
+    // Älteres Hintergrundwissen NACH dem aktuellen Eintrag — der bleibt der Fokus.
+    patternBlock,
+    digestBlock,
   ]
     .filter(Boolean)
     .join("\n");

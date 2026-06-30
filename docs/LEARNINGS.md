@@ -5,6 +5,74 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Browser-Spracherkennung liefert keine Satzzeichen.** Die Web Speech API (de-DE,
+  Standard wegen „kostenlos zuerst") hängt nur finale Segmente aneinander → langer
+  Worthaufen. Lösung: ein mechanischer Interpunktions-Pass (schlankes Modell,
+  strenger „ändere keine Wörter"-Prompt) nach dem echten Sitzungsende
+  (`onResult`-Callback), und nur wenn der Text wirklich unpunktiert wirkt
+  (Verhältnis Satzzeichen/Wörter) — so kostet es nichts, wenn ElevenLabs schon
+  punktiert hat. (2026-06-30)
+- **Code-Splitting: Shell eager, Rest lazy + Vendor separat.** Nur Layout +
+  Startseite eager laden, alle übrigen Routen per `React.lazy` (eine Suspense-
+  Grenze ums `<Outlet/>` genügt). Named-Export-Seiten via `.then(m => ({default:
+  m.X}))`. Ein `manualChunks`-Vendor-Chunk trennt selten wechselnde Libs ab → der
+  App-Code-Chunk bleibt klein und der Browser-Cache greift über Deploys hinweg.
+  (2026-06-30)
+- **Deskriptiv-Garantie strukturell absichern, nicht dem Modell überlassen.** Die
+  Therapeuten-Zusammenfassung ist Default KI-frei: nur vorhandene, bereits
+  bestätigte Daten (`userConfirmed === true`) werden getemplatet zusammengestellt
+  — so kann gar kein „empfohlener Ansatz"/keine Diagnose entstehen. Krisensignale
+  sachlich + mit Hilfe-Nummer, nie alarmierend. Person sieht/kürzt/wählt alles vor
+  Export ab; nichts wird automatisch verschickt. PDF dependency-frei über den
+  Druckdialog (kein PDF-Paket, local-first). (2026-06-30)
+- **Recall im Chat = Reflexions-Kontext wiederverwenden, nicht neu erfinden.** Der
+  Chat bekam denselben `ReflectionContext` (Muster-Summary + Digest), nur knapper
+  (3 statt 5) und NACH dem aktuellen Eintrag platziert, damit der Fokus bleibt.
+  Entscheidend ist die Prompt-Rahmung (leiser Resonanzboden, nur anknüpfen wenn es
+  passt) — sonst plappert das Modell altes Material aus. Reine String-Builder
+  (`buildChatSystem`) lassen sich ohne Modell testen. (2026-06-30)
+- **Verlustschutz nach Sensibilität staffeln.** Für den verletzlichsten Fall
+  (gesprochene Roh-Transkripte) lohnt ein eigener, in IndexedDB auffindbarer,
+  nicht-gesyncter Dexie-Store (`voiceDrafts`) mit Wiederherstellen-Angebot —
+  robuster als ein localStorage-Entwurf. Für tippbaren Fließtext (NewEntry)
+  reicht der leichte localStorage-Entwurf. Stabile id (Ref) statt async erzeugter
+  id vermeidet Doppel-Anlage beim Auto-Save; Freshness/Cleanup als pure Prädikate
+  → testbar ohne IndexedDB. Neuer Store additiv (eigene Dexie-Version), nie in die
+  SyncKind-Liste — so bleibt sensibler Text lokal. (2026-06-30)
+- **Frei eingegebener Text gehört sofort lokal gesichert, nicht erst beim
+  Speichern.** Transkript/Schreibtext nur im Komponenten-State zu halten heißt:
+  Tab-Verlust = weg. Lösung: ein leichter localStorage-Entwurf (`useDraft`),
+  getrennt von Dexie (kein halbfertiger Eintrag), der nach echtem Speichern
+  gelöscht wird. Reine Persistenz-Logik aus dem Hook ziehen → testbar. (2026-06-30)
+- **Streaming-Retry braucht den Verlaufs-Stand VOR der Nachricht.** Da die
+  Nutzer-Nachricht im Chat sofort persistiert wird, darf ein Retry sie nicht neu
+  anlegen: Den `prior`-Verlauf + den Text in einem Closure festhalten und exakt
+  denselben Stream-Aufruf wiederholen (Teil-Stream wird verworfen, erst bei
+  Erfolg wird die Assistenz-Antwort gespeichert). (2026-06-30)
+- **Modell-Wahl nach Aufgabe staffeln, nicht global.** Tiefe Reflexion = Opus
+  (Qualität = Produktkern), mechanische Kurztexte (Titel, Teilen-Karte) = Sonnet
+  (fest serverseitig, spart Kosten ohne Qualitätsverlust). Default-Modell als
+  einzige Quelle der Wahrheit setzen, damit Code und CLAUDE.md nicht auseinander-
+  laufen. Nutzerkontrolle (Dropdown + „Gründlich-Modus") bleibt für die tiefen
+  Routen erhalten. (2026-06-30)
+- **Spiegelungen ressourcenorientiert rahmen (SFBT + ACT).** Das häufigste
+  Negativwort hervorzuheben (Thema/Gefühl) kann Rumination verstärken. Besser:
+  Aussagen in `bright` (Ressourcen/Werte/Fortschritt) und `tender` (Schwieriges,
+  akzeptierend) trennen, Ressourcen führen lassen, Schweres validieren statt
+  verleugnen oder zur Schlagzeile machen. Defusion in der Sprache („begleitet
+  dich gerade" = vorübergehend, nicht Identität). Kein toxisches Positivdenken:
+  Schwieriges wird nicht weggeschönt, sondern bekommt Raum. (2026-06-30)
+- **Bei therapeutisch-reflexiven Inhalten zuerst `therapist-safety`**, dann die
+  Modalität (hier SFBT für Ressourcen/Ausnahmen, ACT für Akzeptanz/Defusion) —
+  auch bei reiner *Produktgestaltung* von Begleiter-Texten, nicht nur im
+  Live-Dialog. (2026-06-30)
+- **Tägliche Rotation braucht ein wechselndes *Ergebnis*, nicht nur einen
+  wechselnden Seed.** Bei `showcaseInsight` rotierte der Seed korrekt täglich,
+  doch solange bei genau zwei Kandidaten ohnehin *beide* Sätze gezeigt wurden,
+  blieb der sichtbare Block konstant. Regel: einen zweiten Eintrag erst anhängen,
+  wenn dadurch nicht die gesamte (Rest-)Menge gezeigt wird — sonst frisst die
+  Vollständigkeit die Rotation. (2026-06-30)
+
 ## Architektur & Entscheidungen
 
 - **Web-App statt Mobile/Desktop**, Stack Next.js 15 + React 19 + TS + Tailwind v4

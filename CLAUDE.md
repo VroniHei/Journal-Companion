@@ -65,7 +65,22 @@ server/
   .env.example            ANTHROPIC_API_KEY=
 docs/                     Protokoll, Learnings, Optimierungen (siehe unten)
 design_handoff_app_shell_navigation/  Verbindliche Claude-Design-Vorlage
+INNERLINE_STATE_EXPORT.md             Technische Bestandsaufnahme (Code-Stand)
+Innerline_Standort_und_Strategie.md   Markt-/Wettbewerb/Strategie (lebendes Dok.)
 ```
+
+## Grundlagen-Dokumente (Projektquellen)
+
+Feste Bezugsdokumente im Repo-Wurzelverzeichnis — bei strategischen oder
+größeren technischen Entscheidungen zuerst hier nachsehen und konsistent halten:
+
+- **`Innerline_Standort_und_Strategie.md`** — Markt-, Wettbewerbs- und
+  Markenkohärenz-Analyse plus phasenweise Roadmap (Privat → Test → Produkt).
+  Lebendes Strategiedokument; bei relevanten Richtungsänderungen aktualisieren.
+- **`INNERLINE_STATE_EXPORT.md`** — nüchterne technische Bestandsaufnahme
+  (Architektur, Datenmodell, Prompts, Memory, Voice, Safety). Bildet die
+  Grundlage für Teil 4 des Strategiedokuments; nach größeren technischen
+  Änderungen nachziehen.
 
 ## Stehende Regeln (das „immer")
 
@@ -127,6 +142,14 @@ design_handoff_app_shell_navigation/  Verbindliche Claude-Design-Vorlage
 
 ## Modell-Hinweis
 
-Standardmodell ist `claude-opus-4-8`. Adaptives Thinking aktivieren, sobald die
-installierte SDK-Version es in den Typen unterstützt (aktuell weggelassen, da
-0.69.x `adaptive` noch nicht typisiert).
+**Modell-Staffelung** (Quelle: `server/src/services/claude.ts`):
+- **Tiefe, emotional bedeutsame Reflexion** (Reflexion, Chat, Wochenrückblick,
+  Sprach-Reflexion, Kontaktimpuls, Muster) → **`claude-opus-4-8`** als Standard
+  (Qualität = Produktkern). Per Einstellung auf das schlanke Modell änderbar; der
+  „Gründliche Modus" erzwingt Opus.
+- **Mechanische Kurztexte** (Eintrags-Titel, Teilen-Karte) → serverseitig fest
+  **`claude-sonnet-4-6`** (`LIGHT_MODEL`), unabhängig von der Modellwahl — Opus
+  bringt dort keinen Mehrwert.
+
+Adaptives Thinking aktivieren, sobald die installierte SDK-Version es in den
+Typen unterstützt (aktuell weggelassen, da 0.69.x `adaptive` noch nicht typisiert).

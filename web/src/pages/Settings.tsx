@@ -1,4 +1,5 @@
 import { useRef, type ChangeEvent, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Card } from "../components/ui";
 import { useSettings } from "../hooks/useData";
 import { useSyncStatus } from "../hooks/useSync";
@@ -40,6 +41,7 @@ export function Settings() {
   const s = useSettings();
   const sync = useSyncStatus();
   const voices = useVoices();
+  const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
 
   async function onImportFile(e: ChangeEvent<HTMLInputElement>) {
@@ -102,7 +104,7 @@ export function Settings() {
 
         <Row
           label="Claude-Modell"
-          hint="Sonnet antwortet schnell und zuverlässig. Opus geht besonders einfühlsam in die Tiefe."
+          hint="Opus geht besonders einfühlsam in die Tiefe (Standard für Reflexionen). Sonnet ist schlanker und schneller. Kurztexte wie Titel und Teilen-Karte nutzen ohnehin Sonnet."
         >
           <select
             className={selectClass}
@@ -111,14 +113,14 @@ export function Settings() {
               updateSettings({ claudeModel: e.target.value as ClaudeModel })
             }
           >
-            <option value="claude-sonnet-4-6">claude-sonnet-4-6 (Standard)</option>
-            <option value="claude-opus-4-8">claude-opus-4-8 (Qualität)</option>
+            <option value="claude-opus-4-8">claude-opus-4-8 (Standard)</option>
+            <option value="claude-sonnet-4-6">claude-sonnet-4-6 (schlank)</option>
           </select>
         </Row>
 
         <Row
           label="Qualitätsmodus"
-          hint="Nutzt Opus für besonders tiefe Auswertungen, unabhängig vom gewählten Modell."
+          hint="Erzwingt Opus für Reflexionen, auch wenn oben das schlanke Modell gewählt ist."
         >
           <label className="flex items-center gap-2 text-sm">
             <input
@@ -348,7 +350,14 @@ export function Settings() {
             : "Deine Einträge liegen lokal und werden zusätzlich zwischen deinen Geräten abgeglichen."}{" "}
           Du kannst sie jederzeit als Sicherung exportieren oder alles löschen.
         </p>
+        <p className="text-sm">
+          Für ein Gespräch mit einer Fachperson kannst du dir außerdem eine ruhige,
+          editierbare Zusammenfassung erstellen (Themen, Tendenzen, bestätigte Muster).
+        </p>
         <div className="flex flex-wrap gap-2">
+          <Button onClick={() => navigate("/zusammenfassung")}>
+            Zusammenfassung erstellen
+          </Button>
           <Button variant="ghost" onClick={exportAllJson}>
             Alle Daten exportieren (JSON)
           </Button>

@@ -16,6 +16,15 @@ function download(filename: string, content: string, mime: string): void {
   URL.revokeObjectURL(url);
 }
 
+/** Lädt beliebigen Text als lokale Datei herunter (z. B. eine Zusammenfassung). */
+export function downloadTextFile(
+  filename: string,
+  content: string,
+  mime = "text/markdown",
+): void {
+  download(filename, content, mime);
+}
+
 function line(label: string, values: string[]): string {
   return values.length ? `- **${label}:** ${values.join(", ")}\n` : "";
 }

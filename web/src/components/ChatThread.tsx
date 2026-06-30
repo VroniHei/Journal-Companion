@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { JournalEntry } from "@journal/shared";
+import type { JournalEntry, ReflectionContext } from "@journal/shared";
 import { Button } from "./ui";
 import { DictationButton } from "./DictationButton";
 import { FormattedText } from "./FormattedText";
@@ -7,6 +7,7 @@ import { SpeakButton } from "./SpeakButton";
 import { useMessages, useSettings } from "../hooks/useData";
 import { addChatMessage, updateEntry } from "../db/queries";
 import { toPrefs } from "../lib/settings";
+import { buildChatContext } from "../lib/context";
 import { streamChat } from "../lib/apiClient";
 
 function Bubble({
@@ -54,18 +55,22 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
   const [streaming, setStreaming] = useState(false);
   const [streamText, setStreamText] = useState("");
   const [error, setError] = useState<string | null>(null);
+  // Bei Streaming-Abbruch: dieselbe Nachricht erneut senden können, ohne sie neu
+  // einzutippen (die Nutzer-Nachricht ist bereits gespeichert).
+  const [retry, setRetry] = useState<(() => void) | null>(null);
 
-  async function send() {
-    const text = input.trim();
-    if (!text || streaming) return;
-
-    const prior = messages.map((m) => ({ role: m.role, content: m.content }));
-    setInput("");
+  // Streamt die Antwort auf eine bereits gespeicherte Nutzer-Nachricht. `prior`
+  // ist der Verlauf VOR dieser Nachricht, `text` ihr Inhalt. Schlägt es fehl,
+  // wird ein Retry hinterlegt, der exakt diesen Aufruf wiederholt.
+  async function runStream(
+    prior: { role: "user" | "assistant"; content: string }[],
+    text: string,
+    context: ReflectionContext,
+  ) {
     setError(null);
+    setRetry(null);
     setStreamText("");
     setStreaming(true);
-    await addChatMessage(entry.id, "user", text);
-
     try {
       let acc = "";
       const result = await streamChat(
@@ -74,6 +79,7 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
           conversationSummary: entry.conversationSummary,
           recentMessages: prior,
           userMessage: text,
+          context,
           prefs: toPrefs(settings),
         },
         (delta) => {
@@ -87,10 +93,25 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unbekannter Fehler.");
+      setRetry(() => () => {
+        void runStream(prior, text, context);
+      });
     } finally {
       setStreaming(false);
       setStreamText("");
     }
+  }
+
+  async function send() {
+    const text = input.trim();
+    if (!text || streaming) return;
+    const prior = messages.map((m) => ({ role: m.role, content: m.content }));
+    setInput("");
+    await addChatMessage(entry.id, "user", text);
+    // Hintergrundwissen (Muster + kompakter Digest) einmal pro Nachricht laden;
+    // der Retry verwendet denselben Kontext.
+    const context = await buildChatContext(entry);
+    void runStream(prior, text, context);
   }
 
   return (
@@ -114,9 +135,20 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
       )}
 
       {error && (
-        <p role="alert" className="text-sm text-[var(--danger)]">
-          {error}
-        </p>
+        <div className="space-y-1">
+          <p role="alert" className="text-sm text-[var(--danger)]">
+            {error}
+          </p>
+          {retry && !streaming && (
+            <button
+              type="button"
+              onClick={retry}
+              className="text-sm font-medium text-[var(--accent-text)] hover:underline"
+            >
+              Erneut versuchen
+            </button>
+          )}
+        </div>
       )}
 
       <div className="flex gap-2">

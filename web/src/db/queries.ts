@@ -17,8 +17,10 @@ import type {
   StabilityKind,
   StabilityMoment,
   SyncKind,
+  VoiceDraft,
 } from "@journal/shared";
 import { createId, nowIso } from "../lib/ids";
+import { isOfferableVoiceDraft, isStaleVoiceDraft } from "../lib/voiceDraft";
 import { notifyDataChanged } from "../lib/sync";
 
 function tombstone(kind: SyncKind, recordId: string, at: string): Tombstone {
@@ -613,6 +615,55 @@ export async function setRoutineDay(
   notifyDataChanged();
 }
 
+// --- Sprach-Entwürfe (lokaler Verlustschutz, NICHT gesynct) ----------------
+
+/**
+ * Legt einen Sprach-Entwurf an oder aktualisiert ihn (stabile id vom Aufrufer).
+ * `createdAt` bleibt erhalten; `status` ist „aktiv". So überlebt das Transkript
+ * einen Tab-Verlust, bevor daraus ein echter Eintrag wird.
+ */
+export async function upsertVoiceDraft(
+  id: string,
+  transcript: string,
+): Promise<void> {
+  const now = nowIso();
+  const existing = await db.voiceDrafts.get(id);
+  await db.voiceDrafts.put({
+    id,
+    createdAt: existing?.createdAt ?? now,
+    updatedAt: now,
+    transcript,
+    status: "aktiv",
+  });
+}
+
+/** Jüngster aktiver, nicht-leerer Entwurf (< 24 h) — zum Wiederherstellen. */
+export async function getOfferableVoiceDraft(): Promise<VoiceDraft | undefined> {
+  const all = await db.voiceDrafts.toArray();
+  return all
+    .filter((d) => isOfferableVoiceDraft(d))
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
+}
+
+/** Harte Löschung (z. B. nachdem aus dem Entwurf ein echter Eintrag wurde). */
+export async function deleteVoiceDraft(id: string): Promise<void> {
+  await db.voiceDrafts.delete(id);
+}
+
+/** Bewusstes Verwerfen: weich markieren (wird nicht mehr angeboten, später aufgeräumt). */
+export async function discardVoiceDraft(id: string): Promise<void> {
+  const d = await db.voiceDrafts.get(id);
+  if (!d) return;
+  await db.voiceDrafts.put({ ...d, status: "verworfen", updatedAt: nowIso() });
+}
+
+/** Räumt verworfene und zu alte Entwürfe auf (beim App-Start). */
+export async function cleanupVoiceDrafts(): Promise<void> {
+  const all = await db.voiceDrafts.toArray();
+  const stale = all.filter((d) => isStaleVoiceDraft(d)).map((d) => d.id);
+  if (stale.length) await db.voiceDrafts.bulkDelete(stale);
+}
+
 /** Löscht alle synchronisierten Inhalte und legt dafür Tombstones an. */
 export async function clearAllData(): Promise<void> {
   await db.transaction(
@@ -645,5 +696,8 @@ export async function clearAllData(): Promise<void> {
       await db.tombstones.bulkPut(tombs);
     },
   );
+  // Lokale Sprach-Entwürfe ebenfalls entfernen (enthalten Roh-Text; nicht
+  // gesynct, daher ohne Tombstone).
+  await db.voiceDrafts.clear();
   notifyDataChanged();
 }

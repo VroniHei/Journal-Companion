@@ -13,6 +13,17 @@ const prefsSchema = z.object({
   model: z.string().min(1),
 });
 
+const digestSchema = z.object({
+  createdAt: z.string(),
+  mood: z.number(),
+  intensity: z.number(),
+  topics: z.array(z.string()),
+  emotions: z.array(z.string()),
+  needs: z.array(z.string()),
+  impulse: z.string(),
+  excerpt: z.string(),
+});
+
 const chatSchema = z.object({
   entry: z.object({
     text: z.string(),
@@ -35,6 +46,13 @@ const chatSchema = z.object({
     )
     .max(20),
   userMessage: z.string().min(1),
+  // Hintergrundwissen (Muster-Summary + kompakter Digest) für behutsamen Recall.
+  context: z
+    .object({
+      recentDigest: z.array(digestSchema),
+      latestPattern: z.any().nullable(),
+    })
+    .optional(),
   prefs: prefsSchema,
 });
 
@@ -47,7 +65,7 @@ chatRouter.post("/chat", async (req, res) => {
     res.status(400).json({ error: "Ungültige Anfrage." });
     return;
   }
-  const { entry, conversationSummary, recentMessages, userMessage, prefs } =
+  const { entry, conversationSummary, recentMessages, userMessage, context, prefs } =
     parsed.data;
 
   // Krisen-Gate auch im Gespräch (auf die neue Nachricht).
@@ -78,6 +96,8 @@ chatRouter.post("/chat", async (req, res) => {
       ...entry,
     },
     conversationSummary,
+    pattern: context?.latestPattern ?? null,
+    recentDigest: context?.recentDigest ?? [],
   });
 
   const messages: ChatTurn[] = [

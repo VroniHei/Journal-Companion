@@ -135,131 +135,95 @@ const WEEKDAYS = [
   "samstags",
 ];
 
+
 /**
- * Sanfte, persönliche Beobachtungen (max. 3). Spiegeln Muster, ohne Ratschläge
- * zu geben oder zu werten. Nur, wenn genug Daten da sind.
+ * Gefühle, die wir guten Gewissens *feiern* dürfen. Liegt das häufigste Gefühl
+ * hier, wird es als Ressource gespiegelt; sonst akzeptierend (s. u.). Bewusst
+ * konservativ — im Zweifel wird ein Gefühl sanft (akzeptierend) statt euphorisch
+ * gerahmt, nie umgekehrt. Vergleich erfolgt klein­geschrieben.
  */
-export function buildInsights(entries: JournalEntry[]): string[] {
-  const out: string[] = [];
-  if (entries.length < 2) return out;
-
-  // 1) Bewegung & Stimmung
-  const moveYes = moodOn(entries, (e) => e.movementToday === true);
-  const moveNo = moodOn(entries, (e) => e.movementToday === false);
-  const moveYesN = entries.filter((e) => e.movementToday === true).length;
-  const moveNoN = entries.filter((e) => e.movementToday === false).length;
-  if (moveYes !== null && moveNo !== null && moveYesN >= 2 && moveNoN >= 2) {
-    const diff = Math.round((moveYes - moveNo) * 10) / 10;
-    if (diff >= 0.8) {
-      out.push(
-        `An Tagen mit Bewegung liegt deine Stimmung im Schnitt um ${diff} höher.`,
-      );
-    }
-  }
-
-  // 2) Draußen & Stimmung (nur wenn Bewegung nichts ergab, um Redundanz zu vermeiden)
-  if (out.length === 0) {
-    const outYes = moodOn(entries, (e) => e.outsideToday === true);
-    const outNo = moodOn(entries, (e) => e.outsideToday === false);
-    const oYesN = entries.filter((e) => e.outsideToday === true).length;
-    const oNoN = entries.filter((e) => e.outsideToday === false).length;
-    if (outYes !== null && outNo !== null && oYesN >= 2 && oNoN >= 2) {
-      const diff = Math.round((outYes - outNo) * 10) / 10;
-      if (diff >= 0.8) {
-        out.push(
-          `An Tagen draußen ist deine Stimmung im Schnitt um ${diff} leichter.`,
-        );
-      }
-    }
-  }
-
-  // 3) Stimmungs-Trend: letzte 7 Tage vs. die 7 Tage davor
-  const now = Date.now();
-  const thisWeek = entries.filter(
-    (e) => new Date(e.createdAt).getTime() >= now - 7 * DAY,
-  );
-  const lastWeek = entries.filter((e) => {
-    const t = new Date(e.createdAt).getTime();
-    return t < now - 7 * DAY && t >= now - 14 * DAY;
-  });
-  const aThis = avg(thisWeek.map((e) => e.mood));
-  const aLast = avg(lastWeek.map((e) => e.mood));
-  if (aThis !== null && aLast !== null && thisWeek.length >= 2 && lastWeek.length >= 2) {
-    const diff = Math.round((aThis - aLast) * 10) / 10;
-    if (diff >= 0.5) {
-      out.push(`Diese Woche war deine Stimmung etwas leichter als letzte (+${diff}).`);
-    } else if (diff <= -0.5) {
-      out.push(
-        `Diese Woche war deine Stimmung etwas schwerer als letzte (${diff}). Das darf sein.`,
-      );
-    }
-  }
-
-  // 4) Bester Wochentag (genug Streuung vorausgesetzt)
-  if (out.length < 3) {
-    const byDay = new Map<number, number[]>();
-    for (const e of entries) {
-      const wd = new Date(e.createdAt).getDay();
-      const arr = byDay.get(wd) ?? [];
-      arr.push(e.mood);
-      byDay.set(wd, arr);
-    }
-    let best: { wd: number; m: number } | null = null;
-    for (const [wd, moods] of byDay) {
-      if (moods.length < 2) continue;
-      const m = avg(moods);
-      if (m === null) continue;
-      if (!best || m > best.m) best = { wd, m };
-    }
-    if (best && byDay.size >= 3) {
-      out.push(`${capitalize(WEEKDAYS[best.wd])} ist deine Stimmung im Schnitt am höchsten.`);
-    }
-  }
-
-  // 5) Häufigstes Thema als Spiegel
-  if (out.length < 3) {
-    const counts = new Map<string, number>();
-    for (const e of entries) for (const t of e.topics) counts.set(t, (counts.get(t) ?? 0) + 1);
-    const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
-    if (top && top[1] >= 2) {
-      out.push(`„${top[0]}" beschäftigt dich zurzeit besonders (${top[1]} Einträge).`);
-    }
-  }
-
-  // 6) Häufigste Emotion als sanfter Spiegel
-  if (out.length < 3) {
-    const counts = new Map<string, number>();
-    for (const e of entries)
-      for (const em of e.emotions) counts.set(em, (counts.get(em) ?? 0) + 1);
-    const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
-    if (top && top[1] >= 2) {
-      out.push(`„${top[0]}" taucht zuletzt am häufigsten auf (${top[1]}-mal).`);
-    }
-  }
-
-  // 7) Sanfter Fallback, damit die Karte mit etwas Datenlage nie leer bleibt.
-  if (out.length === 0) {
-    const m = avg(entries.map((e) => e.mood));
-    if (m !== null) {
-      out.push(`Deine Stimmung lag in den letzten Einträgen im Schnitt bei ${m}/10.`);
-    }
-  }
-
-  return out.slice(0, 3);
-}
+const POSITIVE_EMOTIONS = new Set([
+  "freude",
+  "freudig",
+  "glück",
+  "glücklich",
+  "dankbarkeit",
+  "dankbar",
+  "ruhe",
+  "gelassenheit",
+  "zufriedenheit",
+  "zufrieden",
+  "zuversicht",
+  "zuversichtlich",
+  "hoffnung",
+  "hoffnungsvoll",
+  "stolz",
+  "liebe",
+  "verbundenheit",
+  "verbunden",
+  "geborgenheit",
+  "leichtigkeit",
+  "neugier",
+  "vorfreude",
+  "erleichterung",
+  "motivation",
+  "motiviert",
+  "energie",
+  "lebendigkeit",
+  "mut",
+  "freiheit",
+  "klarheit",
+  "frieden",
+  "begeisterung",
+  "optimismus",
+  "optimistisch",
+  "froh",
+  "fröhlich",
+  "heiter",
+  "ausgeglichen",
+  "entspannt",
+  "entspannung",
+  "erholt",
+  "ruhig",
+  "gelassen",
+  "geborgen",
+  "vertrauen",
+  "zuneigung",
+  "liebevoll",
+  "inspiriert",
+  "wach",
+  "präsent",
+  "verspielt",
+  "neugierig",
+  "wärme",
+  "stärke",
+  "lebensfreude",
+]);
 
 /**
- * „Was sich zeigt"-Einsicht für die Dashboard-/Muster-Karte: datengetrieben wie
- * `buildInsights`, aber (a) mit einem `.g`-Italic-Akzentwort und (b) **täglich
- * rotierend** über alle gerade zutreffenden Aussagen — so steht nicht tagelang
- * derselbe Satz. Nutzer-Wörter werden escaped (Einbettung via innerHTML).
- * Gibt eine HTML-Zeichenkette zurück (oder null bei zu wenig Daten).
+ * „Was sich zeigt"-Einsicht für die Dashboard-/Muster-Karte: datengetrieben,
+ * mit einem `*Wort*`-Akzent und **täglich rotierend**, damit nicht tagelang
+ * derselbe Satz steht.
+ *
+ * Haltung (gestützt auf SFBT & ACT, vgl. CLAUDE.md):
+ * - **Ressourcen führen** (SFBT „start with what's going well"): Aussagen werden
+ *   in `bright` (Stärken/Ressourcen/Werte/Fortschritt) und `tender` (schwierige
+ *   Themen/Gefühle) getrennt. Gibt es ≥2 helle Aussagen, rotiert die Kachel nur
+ *   unter ihnen — ein belastendes Wort wird gar nicht erst zur Schlagzeile.
+ * - **Schwieriges akzeptierend spiegeln, nicht verstärken** (ACT): tender-Sätze
+ *   geben dem Thema *Raum* und schaffen Distanz („begleitet dich gerade" ≠
+ *   Identität), statt das häufigste Negativwort nackt hervorzuheben — kein
+ *   Wegdrücken, aber auch kein Sog nach unten (Rumination/Negativitäts-Bias).
+ *
+ * Gibt eine Zeichenkette mit `*Akzent*`-Markern zurück (oder null bei zu wenig
+ * Daten); das Rendering setzt die Akzente sicher als Textknoten (`withAccents`).
  */
 export function showcaseInsight(entries: JournalEntry[], seed = 0): string | null {
   if (entries.length < 2) return null;
-  const cands: string[] = [];
+  const bright: string[] = []; // Ressourcen, Stärken, Werte, Fortschritt
+  const tender: string[] = []; // Schwieriges — sanft, akzeptierend gerahmt
 
-  // Bewegung & Stimmung
+  // Bewegung & Stimmung (Ressource)
   const moveYes = moodOn(entries, (e) => e.movementToday === true);
   const moveNo = moodOn(entries, (e) => e.movementToday === false);
   if (
@@ -269,12 +233,10 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
     entries.filter((e) => e.movementToday === false).length >= 2 &&
     moveYes - moveNo >= 0.8
   ) {
-    cands.push(
-      'An Tagen mit Bewegung liegt deine Stimmung im Schnitt *höher*.',
-    );
+    bright.push('An Tagen mit Bewegung liegt deine Stimmung im Schnitt *höher*.');
   }
 
-  // Draußen & Stimmung
+  // Draußen & Stimmung (Ressource)
   const outYes = moodOn(entries, (e) => e.outsideToday === true);
   const outNo = moodOn(entries, (e) => e.outsideToday === false);
   if (
@@ -284,9 +246,7 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
     entries.filter((e) => e.outsideToday === false).length >= 2 &&
     outYes - outNo >= 0.8
   ) {
-    cands.push(
-      'An Tagen draußen ist deine Stimmung im Schnitt *leichter*.',
-    );
+    bright.push('An Tagen draußen ist deine Stimmung im Schnitt *leichter*.');
   }
 
   // Wochen-Trend (diese vs. letzte Woche)
@@ -302,12 +262,27 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
   const aLast = avg(lastWeek.map((e) => e.mood));
   if (aThis != null && aLast != null && thisWeek.length >= 2 && lastWeek.length >= 2) {
     if (aThis - aLast >= 0.5)
-      cands.push('Diese Woche war deine Stimmung etwas *leichter* als letzte.');
+      bright.push('Diese Woche war deine Stimmung etwas *leichter* als letzte.');
     else if (aLast - aThis >= 0.5)
-      cands.push('Diese Woche war deine Stimmung etwas *schwerer* als letzte. Das darf sein.');
+      // Validierend, nicht wertend (ACT: darf sein) + Stärke (SFBT: du hältst fest).
+      tender.push(
+        'Diese Woche fühlte sich etwas *schwerer* an als letzte. Das darf sein — du hältst trotzdem fest.',
+      );
   }
 
-  // Bester Wochentag
+  // Anspannungs-Trend (Intensität diese vs. letzte Woche). Ruhiger werden ist
+  // hier die Ressource (Nervensystem beruhigen); steigende Anspannung wird
+  // akzeptierend gespiegelt, nicht alarmierend.
+  const iThis = avg(thisWeek.map((e) => e.intensity));
+  const iLast = avg(lastWeek.map((e) => e.intensity));
+  if (iThis != null && iLast != null && thisWeek.length >= 2 && lastWeek.length >= 2) {
+    if (iLast - iThis >= 0.8)
+      bright.push('Die Anspannung war diese Woche im Schnitt etwas *ruhiger* als letzte.');
+    else if (iThis - iLast >= 0.8)
+      tender.push('Die Anspannung war zuletzt etwas *höher*. Gut, dass du hinschaust.');
+  }
+
+  // Bester Wochentag (Ressource)
   const byDay = new Map<number, number[]>();
   for (const e of entries) {
     const wd = new Date(e.createdAt).getDay();
@@ -323,40 +298,40 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
     if (!best || m > best.m) best = { wd, m };
   }
   if (best && byDay.size >= 3) {
-    cands.push(
+    bright.push(
       `${capitalize(WEEKDAYS[best.wd])} ist deine Stimmung im Schnitt am *höchsten*.`,
     );
   }
 
-  // Häufigstes Thema (Markenkern: „dasselbe Wort")
-  const tCounts = new Map<string, number>();
-  for (const e of entries)
-    for (const t of e.topics) {
-      const k = t.trim();
-      if (k) tCounts.set(k, (tCounts.get(k) ?? 0) + 1);
-    }
-  const topTopic = [...tCounts.entries()].sort((a, b) => b[1] - a[1])[0];
-  if (topTopic && topTopic[1] >= 2) {
-    cands.push(
-      `Zuletzt taucht oft dasselbe Wort auf: *${topTopic[0]}*.`,
-    );
+  // Tageszeit-Muster (Ressource): wann die Stimmung im Schnitt leichter ist.
+  const morning = moodOn(entries, (e) => new Date(e.createdAt).getHours() < 12);
+  const evening = moodOn(entries, (e) => new Date(e.createdAt).getHours() >= 17);
+  const morningN = entries.filter((e) => new Date(e.createdAt).getHours() < 12).length;
+  const eveningN = entries.filter((e) => new Date(e.createdAt).getHours() >= 17).length;
+  if (morning != null && evening != null && morningN >= 2 && eveningN >= 2) {
+    if (morning - evening >= 0.8)
+      bright.push('Morgens ist deine Stimmung im Schnitt *leichter* als abends.');
+    else if (evening - morning >= 0.8)
+      bright.push('Abends ist deine Stimmung im Schnitt *leichter* als morgens.');
   }
 
-  // Häufigste Emotion
-  const eCounts = new Map<string, number>();
-  for (const e of entries)
-    for (const em of e.emotions) {
-      const k = em.trim();
-      if (k) eCounts.set(k, (eCounts.get(k) ?? 0) + 1);
-    }
-  const topEmo = [...eCounts.entries()].sort((a, b) => b[1] - a[1])[0];
-  if (topEmo && topEmo[1] >= 2) {
-    cands.push(
-      `*${capitalize(topEmo[0])}* begleitet dich zuletzt am häufigsten.`,
-    );
+  // Wochenende vs. Werktag (Ressource): Muster über die Woche sichtbar machen.
+  const isWeekend = (e: JournalEntry) => {
+    const d = new Date(e.createdAt).getDay();
+    return d === 0 || d === 6;
+  };
+  const wend = moodOn(entries, isWeekend);
+  const wday = moodOn(entries, (e) => !isWeekend(e));
+  const wendN = entries.filter(isWeekend).length;
+  const wdayN = entries.filter((e) => !isWeekend(e)).length;
+  if (wend != null && wday != null && wendN >= 2 && wdayN >= 2) {
+    if (wend - wday >= 0.8)
+      bright.push('Am Wochenende ist deine Stimmung im Schnitt *leichter*.');
+    else if (wday - wend >= 0.8)
+      bright.push('An Werktagen ist deine Stimmung im Schnitt *leichter*.');
   }
 
-  // Häufigstes Bedürfnis
+  // Häufigstes Bedürfnis (ACT: Bedürfnisse zeigen Werte/Richtung → Ressource)
   const nCounts = new Map<string, number>();
   for (const e of entries)
     for (const nd of e.needs) {
@@ -365,35 +340,69 @@ export function showcaseInsight(entries: JournalEntry[], seed = 0): string | nul
     }
   const topNeed = [...nCounts.entries()].sort((a, b) => b[1] - a[1])[0];
   if (topNeed && topNeed[1] >= 2) {
-    cands.push(
-      `Ein Bedürfnis kommt immer wieder durch: *${topNeed[0]}*.`,
-    );
+    bright.push(`Ein Bedürfnis zeigt sich immer wieder: *${topNeed[0]}* — ein leiser Wegweiser.`);
   }
 
-  // Schreib-Konstanz dieser Woche (an wie vielen Tagen etwas festgehalten)
+  // Schreib-Konstanz dieser Woche (SFBT-Kompliment: Dranbleiben sichtbar machen)
   const daysThisWeek = new Set(
     thisWeek.map((e) => new Date(e.createdAt).toDateString()),
   ).size;
   if (daysThisWeek >= 3) {
-    cands.push(
-      `Diese Woche hast du an *${daysThisWeek} Tagen* etwas festgehalten.`,
-    );
+    bright.push(`Diese Woche hast du an *${daysThisWeek} Tagen* etwas festgehalten.`);
   }
 
-  if (cands.length === 0) {
+  // Häufigste Emotion: positive feiern (Ressource), schwierige akzeptierend (ACT)
+  const eCounts = new Map<string, number>();
+  for (const e of entries)
+    for (const em of e.emotions) {
+      const k = em.trim();
+      if (k) eCounts.set(k, (eCounts.get(k) ?? 0) + 1);
+    }
+  const topEmo = [...eCounts.entries()].sort((a, b) => b[1] - a[1])[0];
+  if (topEmo && topEmo[1] >= 2) {
+    if (POSITIVE_EMOTIONS.has(topEmo[0].toLowerCase()))
+      bright.push(`*${capitalize(topEmo[0])}* hat dich zuletzt oft begleitet — schön, dass auch das da ist.`);
+    else
+      // ACT: Raum geben statt wegdrücken; Defusion über „durfte … da sein".
+      tender.push(`Auch *${topEmo[0]}* durfte zuletzt oft da sein — du musst nichts an dem Gefühl ändern.`);
+  }
+
+  // Häufigstes Thema: akzeptierend spiegeln, nicht als nacktes Negativwort
+  const tCounts = new Map<string, number>();
+  for (const e of entries)
+    for (const t of e.topics) {
+      const k = t.trim();
+      if (k) tCounts.set(k, (tCounts.get(k) ?? 0) + 1);
+    }
+  const topTopic = [...tCounts.entries()].sort((a, b) => b[1] - a[1])[0];
+  if (topTopic && topTopic[1] >= 2) {
+    // ACT-Defusion („begleitet dich gerade" = vorübergehend, nicht Identität) +
+    // SFBT-Kompliment fürs Hinschauen — statt „taucht oft dasselbe Wort auf".
+    tender.push(`Ein Thema begleitet dich gerade oft: *${topTopic[0]}*. Dass du ihm Raum gibst, zählt.`);
+  }
+
+  // Sanfter Fallback, falls (noch) nichts Konkretes zutrifft.
+  if (bright.length === 0 && tender.length === 0) {
     const m = avg(entries.map((e) => e.mood));
     if (m == null) return null;
     return `Deine Stimmung lag zuletzt im Schnitt bei *${m}/10*. Schon das hinzusehen zählt.`;
   }
 
-  // Zwei sich ergänzende Aussagen ergeben einen volleren, sinnvollen Block für
-  // die „Was sich zeigt"-Kachel. Beide rotieren täglich (seed); die zweite ist
-  // immer eine andere als die erste, damit sich nichts wiederholt.
-  const len = cands.length;
+  // Ressourcen führen: Gibt es ≥2 helle Aussagen, rotiert die Kachel NUR unter
+  // ihnen — Schweres wird nicht zur Schlagzeile. Sonst (höchstens eine helle)
+  // kommt Schweres dazu, aber akzeptierend gerahmt, damit die Ansage trotzdem
+  // täglich wechselt und das Erleben nicht verleugnet wird.
+  const pool = bright.length >= 2 ? bright : [...bright, ...tender];
+
+  // Ein täglich rotierender Primärsatz ist die Basis (seed → pool[i]). Ein
+  // zweiter Satz ergänzt ihn zu einem volleren Block — aber NUR ab drei Aussagen
+  // im Pool: bei genau zweien enthielte „primary + secondary" Tag für Tag beide
+  // (nur die Reihenfolge tauschte) und änderte sich nie sichtbar.
+  const len = pool.length;
   const i = ((seed % len) + len) % len;
-  const primary = cands[i];
-  if (len === 1) return primary;
-  const secondary = cands[(i + 1) % len];
+  const primary = pool[i];
+  if (len <= 2) return primary;
+  const secondary = pool[(i + 1) % len];
   return `${primary} ${secondary}`;
 }
 

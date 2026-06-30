@@ -217,6 +217,12 @@ export interface ChatRequest {
   /** Die letzten N Nachrichten (Kurzkontext). */
   recentMessages: Pick<ChatMessage, "role" | "content">[];
   userMessage: string;
+  /**
+   * Hintergrundwissen für behutsamen Recall im Gespräch: neuestes Muster-Summary
+   * + kompakter Verlaufs-Digest (analog zur Reflexion). Optional — fehlt es,
+   * arbeitet der Chat wie bisher nur mit Eintrag + Thread.
+   */
+  context?: ReflectionContext;
   prefs: ResponsePrefs;
 }
 
@@ -522,6 +528,21 @@ export interface RestDay {
   date: string; // YYYY-MM-DD (lokaler Tag)
   createdAt: string; // ISO
   updatedAt: string; // ISO
+}
+
+// --- Sprach-Entwurf (lokaler Verlustschutz) -------------------------------
+// Sofort-Sicherung eines (gesprochenen) Transkripts, BEVOR daraus ein echter
+// Eintrag wird — schützt vor Tab-/Reload-Verlust. Bewusst rein lokal: NICHT in
+// SyncKind/sync_records aufnehmen (sensibler Roh-Text bleibt auf dem Gerät).
+
+export type VoiceDraftStatus = "aktiv" | "verworfen";
+
+export interface VoiceDraft {
+  id: string;
+  createdAt: string; // ISO
+  updatedAt: string; // ISO
+  transcript: string;
+  status: VoiceDraftStatus;
 }
 
 // --- Geräte-Sync ----------------------------------------------------------

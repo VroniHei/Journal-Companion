@@ -5,6 +5,254 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-30 (Forts. 10) — Diktat: Interpunktion nach der Spracherkennung
+
+**Was:** Sprach-Eingaben kamen als langer „Worthaufen" ohne Satzzeichen
+(Browser-Spracherkennung liefert keine Interpunktion; sie ist Standard wegen
+„kostenlos zuerst"). Jetzt wird nach dem Diktat automatisch Interpunktion gesetzt.
+- Neue Route `POST /api/punctuate` (`server/src/routes/punctuate.ts`, `LIGHT_MODEL`
+  = Sonnet): **rein mechanisch** — strenger Prompt, der NUR Satzzeichen/Groß-
+  schreibung/Absätze setzt und keine Wörter ändert/hinzufügt/entfernt.
+- Hooks `useServerDictation`/`useDictation` haben einen `onResult`-Callback (feuert
+  am echten Sitzungsende mit dem Volltext). `DictationButton` glättet darüber
+  automatisch — aber nur, wenn `looksUnpunctuated()` (`lib/text.ts`) zutrifft
+  (≥12 Wörter, < ~1 Satzzeichen je 15 Wörter), sonst kein Aufruf (spart Kosten,
+  z. B. wenn ElevenLabs schon punktiert hat). Ersetzt nur, wenn das Feld
+  unverändert ist. Sichtbarer Hinweis „Setze Sätze und Satzzeichen…".
+- Bei Fehler/ohne Key bleibt das Roh-Transkript (nicht blockierend).
+
+**Warum:** 400-Wörter-Texte am Stück sind schwer lesbar. Kein KI-„Reflexions"-Text,
+nur Formatierung der eigenen Worte; Krisen-Gate unberührt.
+
+**Ergebnis/Status:** 6 neue Tests (`text.test.ts`); gesamt 45 Web- + 20
+Server-Tests grün; Build, Lint, Typecheck grün.
+
+---
+
+## 2026-06-30 (Forts. 9) — Performance: Route-Code-Splitting + Vendor-Chunk
+
+**Was:** Seiten werden per `React.lazy` pro Route geladen (Suspense-Grenze im
+`Layout` um den `<Outlet/>`; `router.tsx` mit `lazyPage`-Helfer für die benannten
+Exporte). Nur Shell + Startseite (Dashboard) sind eager. Zusätzlich Vendor-Chunk
+über `build.rollupOptions.output.manualChunks` (`vite.config.ts`).
+
+**Warum:** Erststart war ein einzelner ~679-kB-Chunk. Jetzt: vendor ~388 kB
+(gzip 125, selten ändernd → gut gecacht) + App-Shell ~116 kB (gzip 32) +
+Seiten-Chunks je ~2–5 kB on demand. Spürbar schnellerer/leichterer Start, keine
+500-kB-Warnung mehr. Kein Logik-/UI-Eingriff, keine sensible Logik berührt.
+
+**Ergebnis/Status:** Build, Lint, Typecheck grün; 39 Web- + 20 Server-Tests grün.
+
+---
+
+## 2026-06-30 (Forts. 8) — „Brücke zur Versorgung": Zusammenfassung exportieren
+
+**Was:** Neuer Screen `/zusammenfassung` (Einstieg aus Einstellungen → Daten):
+eine nutzer-initiierte, editierbare Zusammenfassung für ein Gespräch mit einer
+Fachperson — oder für sich selbst.
+- **Rein lokal aggregiert, KI-frei** (`web/src/lib/summary.ts`, `collectSummary`):
+  Stimmung/Anspannung/Energie-Tendenz, wiederkehrende Themen/Emotionen/Bedürfnisse,
+  **nur `userConfirmed === true`** Muster, offene Schleifen/Entscheidungen, was
+  geholfen hat, Belastungs-Vermerk (falls `crisisFlag`) sachlich + Hilfe-Hinweis.
+- **Strikt deskriptiv**, nie präskriptiv: keine Diagnose, kein Ansatz, keine
+  Therapieform. Drei Verbatim-Textbausteine ([A] Einleitung, [B] Disclaimer,
+  [C] Rahmungssatz) fest eingebaut.
+- **Vorschau**: jeder Block abwählbar und editierbar (kürzen/ändern); 1–3
+  Beispiel-Einträge wählbar; Freitext „Das möchte ich ansprechen".
+- **Export lokal**: Markdown-Download (`downloadTextFile`) + PDF über Druckdialog
+  (`printSummary`, dependency-frei). Nichts wird automatisch verschickt.
+- Default ist die lokale, getemplatete Variante; ein optionaler KI-Glättungsschritt
+  wurde bewusst NICHT gebaut (eng am Scope, kein Präskriptiv-Risiko).
+
+**Warum:** Macht aus „kein Therapie-Ersatz" ein sichtbares Feature, das in die
+Versorgung hineinführt (Strategie-Doc Teil 5). Keine Cloud, keine Schemaänderung.
+
+**Ergebnis/Status:** 7 neue Tests (`summary.test.ts`); gesamt 39 Web- + 20
+Server-Tests grün; Build, Lint, Typecheck grün. State-Export + Strategie-Doc
+(Gap-Tabelle) nachgezogen.
+
+---
+
+## 2026-06-30 (Forts. 7) — In-Conversation-Recall im Chat
+
+**Was:** Der Chat-Begleiter bekommt jetzt dasselbe Hintergrundwissen wie die
+Reflexion und kann behutsam an Früheres anknüpfen.
+- Client: neuer `buildChatContext` (`web/src/lib/context.ts`) — neuestes
+  `PatternSummary` + **kompakter** Digest (3 Einträge ohne den aktuellen).
+  `ChatThread` sendet ihn pro Nachricht (Retry nutzt denselben Kontext).
+- API: `ChatRequest.context?` (reused `ReflectionContext`); `chat.ts` nimmt es an.
+- Server: `buildChatSystem` bettet Muster + Digest NACH dem aktuellen Eintrag ein
+  (Fokus bleibt) und rahmt es mit `CHAT_MEMORY_NOTE` („leiser Resonanzboden, nur
+  anknüpfen wenn es passt, nicht aufzählen, keine neuen Muster-Behauptungen, keine
+  Spekulation über andere"). Ohne Kontext = Verhalten wie bisher.
+
+**Warum:** Der „erinnert sich an Früheres"-Moment erzeugt Bindung (Strategie-Doc
+Teil 4.2, größter Erlebnis-Hebel). Bisher vergaß der Chat alles außer Eintrag +
+Thread.
+
+**Ergebnis/Status:** 2 neue Server-Tests (`builders.test.ts`); gesamt 32 Web- +
+20 Server-Tests grün; Build, Lint, Typecheck grün. Token-Budget knapp gehalten
+(3er-Digest). `conversationSummary`-Aktivierung bewusst NICHT mitgemacht (eigener
+offener Punkt). Semantischer Recall bleibt späteres Folge-Ticket.
+`INNERLINE_STATE_EXPORT.md` Abschnitt 3 nachgezogen.
+
+---
+
+## 2026-06-30 (Forts. 6) — Sprach-Entwürfe: dedizierter Dexie-Store v11
+
+**Was:** Für den Sprach-Check-in den localStorage-Entwurf durch einen robusten,
+lokalen Dexie-Store ersetzt.
+- **Dexie v10 → v11** (additiv): neuer Store `voiceDrafts`
+  (`id, createdAt, updatedAt, transcript, status('aktiv'|'verworfen')`). **Nicht
+  gesynct** (kein `SyncKind`, nicht in `SYNC_TABLES`).
+- Neuer Typ `VoiceDraft` (shared); pure Prädikate `isOfferableVoiceDraft`/
+  `isStaleVoiceDraft` (`lib/voiceDraft.ts`); Queries `upsertVoiceDraft`/
+  `getOfferableVoiceDraft`/`deleteVoiceDraft`/`discardVoiceDraft`/
+  `cleanupVoiceDrafts`.
+- `VoiceCheckin`: Transkript wird sofort gesichert (Erst-Save unmittelbar, Edits
+  ~800 ms debounced), beim Öffnen wird ein aktiver, nicht-leerer Entwurf (< 24 h)
+  ruhig zum Wiederherstellen angeboten (Vroni-Voice, knapp). Nach „Als Eintrag
+  speichern" gelöscht; bewusstes Verwerfen markiert `verworfen`. Aufräumen
+  verworfener/zu alter Entwürfe beim App-Start (`main.tsx`).
+- `clearAllData` löscht `voiceDrafts` mit (Roh-Text; lokal, ohne Tombstone).
+- `INNERLINE_STATE_EXPORT.md` auf v11 + neue Persistenz nachgezogen.
+
+**Warum:** Robuster als der localStorage-Entwurf für den verletzlichsten Fall
+(gesprochene Roh-Transkripte): überlebt Tab-Verlust, ist auffindbar in IndexedDB
+vor jeder Auswertung, bleibt rein lokal. NewEntry behält seinen leichten
+localStorage-Entwurf (außerhalb dieses Scopes).
+
+**Ergebnis/Status:** 7 neue Tests (`voiceDraft.test.ts`), gesamt 32 Web- + 18
+Server-Tests grün; Build, Lint, Typecheck grün. Migration additiv (kein
+Datenverlust bestehender Stores).
+
+---
+
+## 2026-06-30 (Forts. 5) — Entwurfs-Sicherung gegen Text-/Transkript-Verlust
+
+**Was:** Frei geschriebener/gesprochener Text wird laufend lokal als Entwurf
+gesichert, bevor daraus ein Eintrag wird. Neu: `web/src/lib/draft.ts` (pure
+read/write/clear über localStorage) + `web/src/hooks/useDraft.ts` (State-Hook mit
+Auto-Save + Wiederherstellung). Verdrahtet am Voice-Transkript (`VoiceCheckin`)
+und am Schreib-Text (`NewEntry`); Entwurf wird nach erfolgreichem Speichern
+gelöscht.
+
+**Warum:** Bisher lebten Transkript/Text nur im Komponenten-State → Tab-Verlust/
+Reload = Text weg (genau Rosebuds meistkritisierter Fehler; Strategie-Doc Teil
+4.3 + Phase Privat #1). Billiger High-Value-Fix gegen echtes Datenverlust-Risiko.
+
+**Ergebnis/Status:** 5 neue Tests (`draft.test.ts`), gesamt 25 Web- + 18
+Server-Tests grün; Build, Lint, Typecheck grün.
+
+---
+
+## 2026-06-30 (Forts. 4) — Strategiedokument als Projektquelle verankert
+
+**Was:** `Innerline_Standort_und_Strategie.md` (Markt-/Wettbewerbs-/Marken-
+Analyse + Roadmap, Version 1.1) im Repo-Wurzelverzeichnis abgelegt und in
+CLAUDE.md als festes Grundlagen-Dokument referenziert (zusammen mit
+`INNERLINE_STATE_EXPORT.md`).
+
+**Warum:** Strategischer Bezugsrahmen soll fester Bestandteil der Projektquellen
+sein und bei Entscheidungen konsultiert/konsistent gehalten werden.
+
+**Ergebnis/Status:** Dokument + CLAUDE.md-Verweis committet. Reines Doku, kein
+Code berührt.
+
+---
+
+## 2026-06-30 (Forts. 3) — Robustheit: Retry, API-Key-Hinweis, CI
+
+**Was:**
+- **Streaming-Retry:** Bricht der Stream ab, lässt sich dieselbe Nachricht/
+  Reflexion ohne Neutippen erneut senden — `ChatThread` (hinterlegt einen Retry
+  auf die bereits gespeicherte Nutzer-Nachricht) und `EntryDetail` (Retry-Button
+  im Fehlerblock).
+- **Proaktiver API-Key-Hinweis:** neuer `useConfig`-Hook (`/api/config`); ruhige
+  Notiz in `EntryDetail`, wenn kein Key gesetzt ist (Schreiben bleibt lokal
+  möglich).
+- **Themen-Normalisierung getestet:** `normalizeTopic`/`themeClusters` (Synonyme +
+  konservatives Stemming) waren bereits implementiert, aber ungetestet — jetzt mit
+  Regressionstests abgesichert.
+- **CI:** `.github/workflows/ci.yml` (Lint/Typecheck/Test/Build bei Push/PR) und
+  `.github/workflows/smoke.yml` (Post-Deploy-Smoke, manuell + täglich, URL aus
+  Eingabe oder `vars.SMOKE_URL`).
+
+**Warum:** Verlässlichkeit im echten Moment — ein stiller Streaming-Abbruch oder
+ein fehlender Key soll nicht in einer Sackgasse enden. CI spiegelt das lokale
+pre-commit-Gate serverseitig.
+
+**Ergebnis/Status:** 20 Web- + 18 Server-Tests grün; Build, Lint, Typecheck grün.
+
+---
+
+## 2026-06-30 (Forts. 2) — Insights-Vielfalt + Modell-Staffelung
+
+**Was:**
+- **Toter Code entfernt:** `buildInsights` (nirgends genutzt) raus.
+- **Mehr Kandidaten für „Was sich zeigt"** (`showcaseInsight`): Tageszeit-Muster
+  (morgens vs. abends), Wochenende vs. Werktag, Anspannungs-/Intensitäts-Trend
+  (ruhiger werden = Ressource, steigende Anspannung akzeptierend). `POSITIVE_EMOTIONS`
+  deutlich erweitert. Mehr helle Aussagen → öfter ein voller, abwechslungsreicher
+  Block statt bloßer Rotation.
+- **Modell-Staffelung:** tiefe Reflexion (Reflexion/Chat/Wochenrückblick/Sprach-
+  Reflexion/Kontaktimpuls/Muster) nutzt **Opus** als Default (Frontend-Default auf
+  `claude-opus-4-8`); mechanische Kurztexte (Titel, Teilen-Karte) serverseitig fest
+  **Sonnet** (`LIGHT_MODEL`). Settings-Labels/Hints wahrheitsgemäß angepasst.
+
+**Warum:** Reflexionsqualität ist der Produktkern — dort lohnt Opus; bei Titel/
+Karte bringt Opus nichts und kostet unnötig. Behebt zugleich den Widerspruch
+„Code defaultet Sonnet, CLAUDE.md sagt Opus". Nutzerkontrolle (Dropdown +
+Gründlich-Modus) bleibt erhalten.
+
+**Ergebnis/Status:** Build + Lint + Typecheck grün; 15 Web- + 18 Server-Tests grün.
+CLAUDE.md „Modell-Hinweis" um die Staffelung ergänzt.
+
+---
+
+## 2026-06-30 (Forts.) — „Was sich zeigt": positiv-psychologische Tonalität
+
+**Was:** `showcaseInsight` spiegelt schwierige Muster nicht mehr als nacktes
+Negativwort. Skill-gestützt (zuerst `therapist-safety` → Level 1, dann
+`therapist-sfbt` + `therapist-act`):
+- Aussagen sind jetzt in `bright` (Ressourcen/Stärken/Werte/Fortschritt) und
+  `tender` (Schwieriges, akzeptierend gerahmt) getrennt.
+- **Ressourcen führen** (SFBT): bei ≥2 hellen Aussagen rotiert die Kachel nur
+  unter ihnen — Belastendes wird nicht zur Schlagzeile.
+- **Schwieriges akzeptierend** (ACT): „Ein Thema begleitet dich gerade oft:
+  *Trennung*. Dass du ihm Raum gibst, zählt." statt „… taucht oft dasselbe Wort
+  auf". Gefühle: positive werden gefeiert, schwierige bekommen Raum
+  („Auch *X* durfte da sein — du musst nichts ändern"). Bedürfnisse = Wegweiser.
+
+**Warum:** Das Hervorheben des häufigsten Negativworts (z. B. „Trennung",
+„Trauer") kann Rumination/Negativitäts-Bias verstärken und runterziehen — das
+Gegenteil der gewünschten ruhigen, ressourcenorientierten Begleitung. Kein
+toxisches Positivdenken (ACT): Schweres wird nicht verleugnet, sondern validiert.
+
+**Ergebnis/Status:** 4 neue/angepasste Tests (Tonalität, Ressourcen-Vorrang,
+positives Leitgefühl), 15 Insight-Tests grün. Build + Lint + Typecheck grün.
+Anmerkung: `buildInsights` ist toter Code (nur im Kommentar referenziert) — als
+Aufräum-Punkt in OPTIMIZATIONS notiert.
+
+---
+
+## 2026-06-30 — „Was sich zeigt": tägliche Rotation repariert
+
+**Was:** `showcaseInsight` (`web/src/lib/insights.ts`) zeigte bei genau zwei
+zutreffenden Aussagen Tag für Tag *beide* Sätze (nur Reihenfolge tauschte) —
+die Kachel stand wochenlang auf „Freitags … am höchsten" + „… Wort: Trennung".
+Fix: zweiter Satz wird erst ab **drei** Kandidaten angehängt; bei genau zwei
+zeigt der Seed täglich rotierend nur den Primärsatz (A, B, A, B …).
+
+**Warum:** Der tägliche Seed war korrekt, konnte aber nichts bewirken, solange
+ohnehin alle Kandidaten gleichzeitig sichtbar waren. Die Ansage soll sich
+erkennbar täglich ändern, sonst verliert sie ihren Sinn.
+
+**Ergebnis/Status:** Regressionstest in `insights.test.ts` (zwei Seeds → zwei
+verschiedene Ansagen). Build + Lint + Typecheck grün, 12 Insight-Tests grün.
+
+---
+
 ## 2026-06-25 — Hero/Ritual-Korrekturschleife (Review am Live-Stand)
 
 **Was:** Nach dem §10-Deploy am Handy nachgezogen:
