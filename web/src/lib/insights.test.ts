@@ -2,9 +2,11 @@ import { describe, it, expect } from "vitest";
 import type { JournalEntry } from "@journal/shared";
 import {
   computeStreak,
+  normalizeTopic,
   showcaseInsight,
   showcaseKeyword,
   showcaseSeed,
+  themeClusters,
   wordsOfWeek,
 } from "./insights";
 
@@ -164,6 +166,38 @@ describe("showcaseInsight", () => {
     const out = showcaseInsight(es, 0) ?? "";
     expect(out).toContain("Dankbarkeit");
     expect(out).toContain("schön");
+  });
+});
+
+describe("normalizeTopic", () => {
+  it("führt Synonyme auf ein gemeinsames Leitwort zusammen", () => {
+    expect(normalizeTopic("Job")).toBe(normalizeTopic("Arbeit"));
+    expect(normalizeTopic("Finanzen")).toBe(normalizeTopic("Geld"));
+    expect(normalizeTopic("Partner")).toBe(normalizeTopic("Beziehung"));
+  });
+
+  it("entbeugt gängige Plural-/Beugungsformen auf dieselbe Grundform", () => {
+    expect(normalizeTopic("Trennungen")).toBe(normalizeTopic("Trennung"));
+    expect(normalizeTopic("Sorgen")).toBe(normalizeTopic("Sorge"));
+  });
+
+  it("ignoriert Groß-/Kleinschreibung und Rand-Leerzeichen", () => {
+    expect(normalizeTopic("  ARBEIT ")).toBe("arbeit");
+  });
+
+  it("lässt kurze Wörter unangetastet (kein Über-Stemming)", () => {
+    expect(normalizeTopic("Ehe")).toBe("ehe");
+  });
+});
+
+describe("themeClusters", () => {
+  it("bündelt Synonyme/Beugungen desselben Themas in EINEN Faden", () => {
+    const es = [
+      entry({ createdAt: daysAgo(0), topics: ["Trennung"] }),
+      entry({ createdAt: daysAgo(1), topics: ["Trennungen"] }),
+    ];
+    const clusters = themeClusters(es, { min: 2 });
+    expect(clusters).toHaveLength(1);
   });
 });
 

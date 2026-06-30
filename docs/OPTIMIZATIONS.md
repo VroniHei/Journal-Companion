@@ -66,7 +66,10 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 - ✅ **Smoke-Test für `/api/health` nach Deploy:** `scripts/smoke.mjs` (+ `npm run
   smoke <url>`) prüft `/api/health` (200 + `{ok:true}`) und `/api/config`; Exit 1
   bei Ausfall, 2 bei Fehlbedienung. Manuell oder als CI-/Post-Deploy-Step nutzbar.
-  (2026-06-25) Offen: als GitHub-Action automatisieren.
+  (2026-06-25) ✅ Als GitHub-Action automatisiert: `.github/workflows/smoke.yml`
+  (manuell + täglich; URL aus Eingabe oder `vars.SMOKE_URL`, sonst übersprungen).
+  Zusätzlich `.github/workflows/ci.yml` (Lint/Typecheck/Test/Build bei Push/PR).
+  (2026-06-30)
 - 🟢 **Zitat-Karte: Bildauswahl an Stimmung/Thema koppeln:** Pool ist jetzt groß
   (40 Fotos, `CARD_PHOTOS` + `dailyPhotos`, 3 Tagesvorschläge), aber die Auswahl
   rotiert rein nach Datum. Optional die 3 Vorschläge stärker an Stimmung/Top-Thema
@@ -91,10 +94,11 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
   für den Tag). Das löst die frühere Entscheidung „Fokus = reines Tagesergebnis"
   (LEARNINGS 2026-06-23) ab. Optional: den Ritual-Schritt „Was macht den Tag gut?"
   klarer als „Tagesfokus" benennen, damit beide Quellen erkennbar zusammenpassen.
-- 🟡 **Themen-Normalisierung für den Roten Faden:** aktuell clustern `topics`
-  nur per `toLowerCase`. Synonyme/Beugungen („Arbeit"/„Job", „Trennung"/
-  „Trennungen") landen in getrennten Fäden. Optional: leichte Stemming-/
-  Synonym-Zuordnung (kuratierte Map), damit echte Themen zusammenlaufen.
+- ✅ **Themen-Normalisierung für den Roten Faden:** `normalizeTopic` führt
+  Synonyme (kuratierte Map, z. B. „Job"→„Arbeit") und gängige Beugungen
+  (konservatives Stemming, „Trennungen"→„Trennung") auf ein gemeinsames Leitwort
+  zusammen; `themeClusters` gruppiert danach. Mit Regressionstests abgesichert.
+  Offen (🟢): Map bei Bedarf erweitern. (2026-06-30)
 - 🟢 **„Abmelden"/Konto-Frage offen:** bewusst weggelassen, da App lokal-first
   ohne Login. Falls später Konten/echter Account-Sync kommen, Menüpunkt
   (Profil-Sheet `Layout.tsx`) mit echter Semantik nachrüsten.
@@ -125,8 +129,10 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 
 - 🟡 **Adaptives Thinking reaktivieren**, sobald die SDK-Version `adaptive`
   typisiert — verbessert die Qualität der Reflexionen.
-- 🟡 **Fehler-/Leerzustände der UI** verfeinern (z.B. klarer Hinweis, wenn kein
-  API-Key gesetzt ist; Retry-Button bei Streaming-Abbruch).
+- 🟡 **Fehler-/Leerzustände der UI** verfeinern. ✅ Retry-Button bei Streaming-
+  Abbruch (Chat: `ChatThread`, Reflexion: `EntryDetail`); ✅ proaktiver, ruhiger
+  API-Key-Hinweis in `EntryDetail` (via `useConfig`-Hook). (2026-06-30) Offen
+  (🟢): Hinweis auch auf weiteren KI-Flächen (Voice/Kontaktimpuls/Wochenbrief).
 - 🟡 **Tests ausbauen:** Vitest jetzt auch im **web**-Workspace
   (`web/src/lib/insights.test.ts`, 11 Tests: wordsOfWeek/showcaseKeyword/-Seed/
   showcaseInsight/computeStreak); `npm test` läuft server **und** web. Offen:

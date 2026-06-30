@@ -7,6 +7,7 @@ import { SessionClose } from "../components/SessionClose";
 import { ChatThread } from "../components/ChatThread";
 import { DesktopModal } from "../components/DesktopModal";
 import { useEntry, useMessages, useSettings } from "../hooks/useData";
+import { useConfig } from "../hooks/useConfig";
 import {
   deleteEntry,
   recordStabilityMoment,
@@ -63,6 +64,10 @@ export function EntryDetail() {
   const entry = useEntry(id);
   const messages = useMessages(id);
   const settings = useSettings();
+  const config = useConfig();
+  // Proaktiver, ruhiger Hinweis: Reflexion/Chat brauchen einen API-Key. Wird erst
+  // gezeigt, wenn der Zustand bekannt ist (config !== null) und kein Key da ist.
+  const noApiKey = config !== null && !config.hasApiKey;
 
   // `null` = noch keine manuelle Wahl → der Default richtet sich nach den Daten
   // (mit Reflexion → „reflexion", sonst „eintrag"), damit leere Einträge nicht
@@ -234,6 +239,25 @@ export function EntryDetail() {
         <Card className="border-l-2 border-l-[var(--danger)]">
           <p role="alert" className="text-sm text-[var(--danger)]">
             {error}
+          </p>
+          {!reflecting && (
+            <button
+              type="button"
+              onClick={reflect}
+              className="mt-2 text-sm font-medium text-[var(--accent-text)] hover:underline"
+            >
+              Erneut versuchen
+            </button>
+          )}
+        </Card>
+      )}
+
+      {noApiKey && (
+        <Card className="border-l-2 border-l-[var(--border)]">
+          <p className="text-sm text-[var(--muted)]">
+            Die Reflexion und das Gespräch mit dem Begleiter brauchen einen
+            API-Schlüssel. Solange keiner hinterlegt ist, kannst du in Ruhe
+            schreiben — deine Einträge bleiben lokal gespeichert.
           </p>
         </Card>
       )}

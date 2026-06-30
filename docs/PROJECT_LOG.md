@@ -5,6 +5,31 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-30 (Forts. 3) — Robustheit: Retry, API-Key-Hinweis, CI
+
+**Was:**
+- **Streaming-Retry:** Bricht der Stream ab, lässt sich dieselbe Nachricht/
+  Reflexion ohne Neutippen erneut senden — `ChatThread` (hinterlegt einen Retry
+  auf die bereits gespeicherte Nutzer-Nachricht) und `EntryDetail` (Retry-Button
+  im Fehlerblock).
+- **Proaktiver API-Key-Hinweis:** neuer `useConfig`-Hook (`/api/config`); ruhige
+  Notiz in `EntryDetail`, wenn kein Key gesetzt ist (Schreiben bleibt lokal
+  möglich).
+- **Themen-Normalisierung getestet:** `normalizeTopic`/`themeClusters` (Synonyme +
+  konservatives Stemming) waren bereits implementiert, aber ungetestet — jetzt mit
+  Regressionstests abgesichert.
+- **CI:** `.github/workflows/ci.yml` (Lint/Typecheck/Test/Build bei Push/PR) und
+  `.github/workflows/smoke.yml` (Post-Deploy-Smoke, manuell + täglich, URL aus
+  Eingabe oder `vars.SMOKE_URL`).
+
+**Warum:** Verlässlichkeit im echten Moment — ein stiller Streaming-Abbruch oder
+ein fehlender Key soll nicht in einer Sackgasse enden. CI spiegelt das lokale
+pre-commit-Gate serverseitig.
+
+**Ergebnis/Status:** 20 Web- + 18 Server-Tests grün; Build, Lint, Typecheck grün.
+
+---
+
 ## 2026-06-30 (Forts. 2) — Insights-Vielfalt + Modell-Staffelung
 
 **Was:**

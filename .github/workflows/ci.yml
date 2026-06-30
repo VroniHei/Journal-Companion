@@ -1,0 +1,42 @@
+name: CI
+
+# Qualitäts-Gate: Lint, Typecheck, Tests und Build bei jedem Push/PR.
+# Spiegelt das lokale pre-commit-Gate (.githooks/pre-commit) auf dem Server,
+# damit nichts Ungeprüftes auf main landet.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Laufende Jobs für denselben Branch/PR abbrechen, wenn neu gepusht wird.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm test
+
+      - name: Build
+        run: npm run build

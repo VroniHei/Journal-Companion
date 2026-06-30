@@ -5,6 +5,11 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Streaming-Retry braucht den Verlaufs-Stand VOR der Nachricht.** Da die
+  Nutzer-Nachricht im Chat sofort persistiert wird, darf ein Retry sie nicht neu
+  anlegen: Den `prior`-Verlauf + den Text in einem Closure festhalten und exakt
+  denselben Stream-Aufruf wiederholen (Teil-Stream wird verworfen, erst bei
+  Erfolg wird die Assistenz-Antwort gespeichert). (2026-06-30)
 - **Modell-Wahl nach Aufgabe staffeln, nicht global.** Tiefe Reflexion = Opus
   (Qualität = Produktkern), mechanische Kurztexte (Titel, Teilen-Karte) = Sonnet
   (fest serverseitig, spart Kosten ohne Qualitätsverlust). Default-Modell als
