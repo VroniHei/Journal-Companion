@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { JournalEntry } from "@journal/shared";
+import type { JournalEntry, ReflectionContext } from "@journal/shared";
 import { Button } from "./ui";
 import { DictationButton } from "./DictationButton";
 import { FormattedText } from "./FormattedText";
@@ -7,6 +7,7 @@ import { SpeakButton } from "./SpeakButton";
 import { useMessages, useSettings } from "../hooks/useData";
 import { addChatMessage, updateEntry } from "../db/queries";
 import { toPrefs } from "../lib/settings";
+import { buildChatContext } from "../lib/context";
 import { streamChat } from "../lib/apiClient";
 
 function Bubble({
@@ -64,6 +65,7 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
   async function runStream(
     prior: { role: "user" | "assistant"; content: string }[],
     text: string,
+    context: ReflectionContext,
   ) {
     setError(null);
     setRetry(null);
@@ -77,6 +79,7 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
           conversationSummary: entry.conversationSummary,
           recentMessages: prior,
           userMessage: text,
+          context,
           prefs: toPrefs(settings),
         },
         (delta) => {
@@ -91,7 +94,7 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unbekannter Fehler.");
       setRetry(() => () => {
-        void runStream(prior, text);
+        void runStream(prior, text, context);
       });
     } finally {
       setStreaming(false);
@@ -105,7 +108,10 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
     const prior = messages.map((m) => ({ role: m.role, content: m.content }));
     setInput("");
     await addChatMessage(entry.id, "user", text);
-    void runStream(prior, text);
+    // Hintergrundwissen (Muster + kompakter Digest) einmal pro Nachricht laden;
+    // der Retry verwendet denselben Kontext.
+    const context = await buildChatContext(entry);
+    void runStream(prior, text, context);
   }
 
   return (

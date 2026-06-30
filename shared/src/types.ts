@@ -217,6 +217,12 @@ export interface ChatRequest {
   /** Die letzten N Nachrichten (Kurzkontext). */
   recentMessages: Pick<ChatMessage, "role" | "content">[];
   userMessage: string;
+  /**
+   * Hintergrundwissen für behutsamen Recall im Gespräch: neuestes Muster-Summary
+   * + kompakter Verlaufs-Digest (analog zur Reflexion). Optional — fehlt es,
+   * arbeitet der Chat wie bisher nur mit Eintrag + Thread.
+   */
+  context?: ReflectionContext;
   prefs: ResponsePrefs;
 }
 

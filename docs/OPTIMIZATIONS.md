@@ -6,6 +6,11 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 ---
 
 ## Erledigt (jüngste oben)
+- ✅ **In-Conversation-Recall im Chat:** neuestes Muster-Summary + kompakter
+  Digest (3) auch im Chat (`buildChatContext` → `ChatRequest.context` →
+  `buildChatSystem`), behutsam gerahmt (`CHAT_MEMORY_NOTE`), Fokus bleibt beim
+  aktuellen Eintrag. 2 Server-Tests. Strategie-Doc Teil 4.2. (2026-06-30) Offen:
+  semantischer Recall (Embeddings) als größeres Folge-Ticket.
 - ✅ **Sprach-Entwürfe in dediziertem Dexie-Store** (Dexie v11, `voiceDrafts`,
   nicht gesynct): Transkript wird sofort gesichert, beim Öffnen Wiederherstellen-
   Angebot (< 24 h), nach Speichern gelöscht, Aufräumen beim App-Start. Ersetzt für
@@ -134,7 +139,12 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
   Aggregation) und Themen-Verschiebungen sprachlich glätten, sobald genug Daten.
 - 🟡 **Automatische Gesprächs-Zusammenfassung** bei sehr langen Chats (>~12
   Nachrichten): ältere Turns serverseitig zu `conversationSummary` verdichten,
-  statt nur die letzten 8 zu schicken.
+  statt nur die letzten 8 zu schicken. (Feld + Prompt-Einbettung sind da; es fehlt
+  nur die Erzeugung.)
+- 🟡 **Semantischer Recall statt Recency (Folge-Ticket):** Embeddings über frühere
+  Einträge (lokal-first) + Ähnlichkeitssuche, um THEMATISCH passende statt nur die
+  letzten N Einträge in Reflexions-/Chat-Kontext zu holen. Eigene Architektur-
+  Entscheidung; erst nach dem billigen Recency-Gewinn (jetzt erledigt).
 
 - 🟡 **Adaptives Thinking reaktivieren**, sobald die SDK-Version `adaptive`
   typisiert — verbessert die Qualität der Reflexionen.

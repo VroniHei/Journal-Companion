@@ -5,6 +5,31 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-30 (Forts. 7) — In-Conversation-Recall im Chat
+
+**Was:** Der Chat-Begleiter bekommt jetzt dasselbe Hintergrundwissen wie die
+Reflexion und kann behutsam an Früheres anknüpfen.
+- Client: neuer `buildChatContext` (`web/src/lib/context.ts`) — neuestes
+  `PatternSummary` + **kompakter** Digest (3 Einträge ohne den aktuellen).
+  `ChatThread` sendet ihn pro Nachricht (Retry nutzt denselben Kontext).
+- API: `ChatRequest.context?` (reused `ReflectionContext`); `chat.ts` nimmt es an.
+- Server: `buildChatSystem` bettet Muster + Digest NACH dem aktuellen Eintrag ein
+  (Fokus bleibt) und rahmt es mit `CHAT_MEMORY_NOTE` („leiser Resonanzboden, nur
+  anknüpfen wenn es passt, nicht aufzählen, keine neuen Muster-Behauptungen, keine
+  Spekulation über andere"). Ohne Kontext = Verhalten wie bisher.
+
+**Warum:** Der „erinnert sich an Früheres"-Moment erzeugt Bindung (Strategie-Doc
+Teil 4.2, größter Erlebnis-Hebel). Bisher vergaß der Chat alles außer Eintrag +
+Thread.
+
+**Ergebnis/Status:** 2 neue Server-Tests (`builders.test.ts`); gesamt 32 Web- +
+20 Server-Tests grün; Build, Lint, Typecheck grün. Token-Budget knapp gehalten
+(3er-Digest). `conversationSummary`-Aktivierung bewusst NICHT mitgemacht (eigener
+offener Punkt). Semantischer Recall bleibt späteres Folge-Ticket.
+`INNERLINE_STATE_EXPORT.md` Abschnitt 3 nachgezogen.
+
+---
+
 ## 2026-06-30 (Forts. 6) — Sprach-Entwürfe: dedizierter Dexie-Store v11
 
 **Was:** Für den Sprach-Check-in den localStorage-Entwurf durch einen robusten,

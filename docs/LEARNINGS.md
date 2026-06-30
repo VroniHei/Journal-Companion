@@ -5,6 +5,12 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Recall im Chat = Reflexions-Kontext wiederverwenden, nicht neu erfinden.** Der
+  Chat bekam denselben `ReflectionContext` (Muster-Summary + Digest), nur knapper
+  (3 statt 5) und NACH dem aktuellen Eintrag platziert, damit der Fokus bleibt.
+  Entscheidend ist die Prompt-Rahmung (leiser Resonanzboden, nur anknüpfen wenn es
+  passt) — sonst plappert das Modell altes Material aus. Reine String-Builder
+  (`buildChatSystem`) lassen sich ohne Modell testen. (2026-06-30)
 - **Verlustschutz nach Sensibilität staffeln.** Für den verletzlichsten Fall
   (gesprochene Roh-Transkripte) lohnt ein eigener, in IndexedDB auffindbarer,
   nicht-gesyncter Dexie-Store (`voiceDrafts`) mit Wiederherstellen-Angebot —

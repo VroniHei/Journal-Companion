@@ -379,23 +379,24 @@ Der Client baut über `buildReflectionContext` (`web/src/lib/context.ts`) einen
    50 Turns) und das menschenlesbare **Anliegen** aus dem Startscreen.
 
 ### 3.2 Chat (`/api/chat`)
-Der Begleiter erhält im Gespräch:
+Der Begleiter erhält im Gespräch (Stand 2026-06-30):
 - den **aktuellen Eintrag** (vollständig) als Hintergrund,
 - die **letzten Nachrichten**: Client schickt bis zu 20, der Server nutzt die
   **letzten 8** (`RECENT_LIMIT = 8`) plus die neue Nachricht,
+- **Hintergrundwissen für Recall**: das **neueste `PatternSummary`** und einen
+  **kompakten Verlaufs-Digest (3 Einträge** ohne den aktuellen, via
+  `buildChatContext`) — eingebettet mit behutsamer Rahmung („leiser
+  Resonanzboden, nur anknüpfen wenn es passt, Fokus bleibt beim aktuellen
+  Anliegen"), nach dem aktuellen Eintrag platziert.
 - optional eine **`conversationSummary`**.
-
-**Wichtige Einschränkung:** Im Chat wird **kein** Verlaufs-Digest und **kein**
-Muster mitgegeben. Der Begleiter greift im Gespräch also **nicht** auf andere
-frühere Einträge zurück — sein „Gedächtnis" ist auf den aktuellen Eintrag + den
-laufenden Thread begrenzt.
 
 ### 3.3 Greift der Begleiter auf frühere Einträge zurück?
 - **In der Reflexion: ja, begrenzt** — über den Digest der **letzten 5** Einträge
   und das neueste Muster-Summary. Auswahl = Recency (nicht thematisch/semantisch).
-  Ein gezieltes „letzte Woche sagtest du X" ist damit nur möglich, soweit es in
-  den letzten 5 Einträgen + im Muster-Summary steht.
-- **Im Chat: nein** (nur aktueller Eintrag + Thread).
+- **Im Chat: ja, behutsam** (seit 2026-06-30) — neuestes Muster-Summary + Digest
+  der letzten 3 Einträge. Auswahl ebenfalls Recency; der Fokus bleibt per Prompt
+  beim aktuellen Eintrag. (Semantischer Recall via Embeddings ist ein späteres,
+  größeres Folge-Ticket.)
 - **`conversationSummary` ist plumbed, aber nicht aktiv:** Das Feld existiert im
   Datenmodell und wird an den Chat-Prompt durchgereicht, **wird aber nirgends
   erzeugt/gesetzt** (keine automatische Verdichtung langer Chats). Praktisch ist

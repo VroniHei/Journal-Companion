@@ -16,6 +16,21 @@ export async function buildReflectionContext(
   return { recentDigest, latestPattern };
 }
 
+/**
+ * Hintergrundwissen fürs Gespräch: dasselbe Muster-Summary wie in der Reflexion,
+ * aber ein bewusst KNAPPER Verlaufs-Digest (3 statt 5 Einträge, ohne den
+ * aktuellen) — der Chat soll behutsam anknüpfen können, ohne teuer/träge zu werden.
+ */
+export async function buildChatContext(
+  entry: JournalEntry,
+): Promise<ReflectionContext> {
+  const [recentDigest, latestPattern] = await Promise.all([
+    recentDigests(3, entry.id),
+    getLatestPattern(),
+  ]);
+  return { recentDigest, latestPattern };
+}
+
 /** Client-Signal für Grübelschleifen: mehrere Einträge zum selben Thema am selben Tag. */
 export async function clientRuminationHint(
   entry: JournalEntry,
