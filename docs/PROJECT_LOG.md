@@ -5,6 +5,24 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-30 (Forts. 5) — Entwurfs-Sicherung gegen Text-/Transkript-Verlust
+
+**Was:** Frei geschriebener/gesprochener Text wird laufend lokal als Entwurf
+gesichert, bevor daraus ein Eintrag wird. Neu: `web/src/lib/draft.ts` (pure
+read/write/clear über localStorage) + `web/src/hooks/useDraft.ts` (State-Hook mit
+Auto-Save + Wiederherstellung). Verdrahtet am Voice-Transkript (`VoiceCheckin`)
+und am Schreib-Text (`NewEntry`); Entwurf wird nach erfolgreichem Speichern
+gelöscht.
+
+**Warum:** Bisher lebten Transkript/Text nur im Komponenten-State → Tab-Verlust/
+Reload = Text weg (genau Rosebuds meistkritisierter Fehler; Strategie-Doc Teil
+4.3 + Phase Privat #1). Billiger High-Value-Fix gegen echtes Datenverlust-Risiko.
+
+**Ergebnis/Status:** 5 neue Tests (`draft.test.ts`), gesamt 25 Web- + 18
+Server-Tests grün; Build, Lint, Typecheck grün.
+
+---
+
 ## 2026-06-30 (Forts. 4) — Strategiedokument als Projektquelle verankert
 
 **Was:** `Innerline_Standort_und_Strategie.md` (Markt-/Wettbewerbs-/Marken-

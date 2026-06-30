@@ -5,6 +5,11 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Frei eingegebener Text gehört sofort lokal gesichert, nicht erst beim
+  Speichern.** Transkript/Schreibtext nur im Komponenten-State zu halten heißt:
+  Tab-Verlust = weg. Lösung: ein leichter localStorage-Entwurf (`useDraft`),
+  getrennt von Dexie (kein halbfertiger Eintrag), der nach echtem Speichern
+  gelöscht wird. Reine Persistenz-Logik aus dem Hook ziehen → testbar. (2026-06-30)
 - **Streaming-Retry braucht den Verlaufs-Stand VOR der Nachricht.** Da die
   Nutzer-Nachricht im Chat sofort persistiert wird, darf ein Retry sie nicht neu
   anlegen: Den `prior`-Verlauf + den Text in einem Closure festhalten und exakt

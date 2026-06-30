@@ -6,6 +6,7 @@ import { ScaleField } from "../components/fields/ScaleField";
 import { DictationButton } from "../components/DictationButton";
 import { SpeakButton } from "../components/SpeakButton";
 import { useSettings } from "../hooks/useData";
+import { useDraft } from "../hooks/useDraft";
 import { toPrefs } from "../lib/settings";
 import { postVoiceReflect } from "../lib/apiClient";
 import { createEntry, updateEntry } from "../db/queries";
@@ -43,7 +44,9 @@ export function VoiceCheckin() {
   const navigate = useNavigate();
   const settings = useSettings();
 
-  const [transcript, setTranscript] = useState("");
+  // Transkript wird laufend lokal als Entwurf gesichert — überlebt Tab-Verlust/
+  // Reload, bevor daraus ein echter Eintrag wird (sonst wäre frei Gesprochenes weg).
+  const [transcript, setTranscript, clearTranscript] = useDraft("voice-checkin");
   const [mood, setMood] = useState(5);
   const [intensity, setIntensity] = useState(5);
   const [loading, setLoading] = useState(false);
@@ -98,6 +101,7 @@ export function VoiceCheckin() {
       mainNeed: result.mainNeed,
     });
     void generateTitleFor(entry.id, transcript.trim());
+    clearTranscript(); // Entwurf ist jetzt ein echter Eintrag.
     navigate(`/eintrag/${entry.id}`);
   }
 

@@ -6,6 +6,11 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 ---
 
 ## Erledigt (jüngste oben)
+- ✅ **Roh-Text/Transkript sofort lokal sichern** (Strategie-Doc Phase Privat #1):
+  neue Draft-Persistenz (`lib/draft.ts` + `hooks/useDraft.ts`, localStorage) am
+  Voice-Transkript (`VoiceCheckin`) UND am Schreib-Text (`NewEntry`). Überlebt
+  Tab-Verlust/Reload vor der KI-Analyse; Entwurf wird nach echtem Speichern
+  gelöscht. 5 Tests. Behebt Rosebuds meistkritisierten Fehler. (2026-06-30)
 - ✅ **Modell-Staffelung umgesetzt:** tiefe Reflexion → Opus (Default), Titel/
   Teilen-Karte → fest Sonnet (`LIGHT_MODEL`, server). Behebt den Sonnet-vs-Opus-
   Widerspruch zu CLAUDE.md. (2026-06-30)
