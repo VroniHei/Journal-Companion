@@ -1,28 +1,38 @@
+import { lazy, type ComponentType } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { Dashboard } from "./pages/Dashboard";
-import { NewEntry } from "./pages/NewEntry";
-import { VoiceCheckin } from "./pages/VoiceCheckin";
-import { EntryDetail } from "./pages/EntryDetail";
-import { ContactImpulse } from "./pages/ContactImpulse";
-import { Patterns } from "./pages/Patterns";
-import { WeeklyReview } from "./pages/WeeklyReview";
-import { Settings } from "./pages/Settings";
-import { Search } from "./pages/Search";
-import { Clarity } from "./pages/Clarity";
-import { Ritual } from "./pages/Ritual";
-import { RitualHistory } from "./pages/RitualHistory";
-import { Archive } from "./pages/Archive";
-import { RedThread } from "./pages/RedThread";
-import { Progress } from "./pages/Progress";
-import { Loosen } from "./pages/Loosen";
-import { Impulses } from "./pages/Impulses";
-import { ShareCard } from "./pages/ShareCard";
-import { WeeklyLetter } from "./pages/WeeklyLetter";
-import { Energy } from "./pages/Energy";
-import { Relief } from "./pages/Relief";
-import { Routine } from "./pages/Routine";
-import { SummaryExport } from "./pages/SummaryExport";
+
+// Code-Splitting: nur Shell + Startseite (Dashboard) werden eager geladen, alle
+// übrigen Seiten lazy pro Route. Spart Bytes beim Erststart; die Suspense-Grenze
+// für den Ladezustand sitzt im Layout um den <Outlet/>. Named Exports → .then(...).
+const lazyPage = <K extends string>(
+  load: () => Promise<Record<K, ComponentType>>,
+  key: K,
+) => lazy(() => load().then((m) => ({ default: m[key] })));
+
+const NewEntry = lazyPage(() => import("./pages/NewEntry"), "NewEntry");
+const VoiceCheckin = lazyPage(() => import("./pages/VoiceCheckin"), "VoiceCheckin");
+const EntryDetail = lazyPage(() => import("./pages/EntryDetail"), "EntryDetail");
+const ContactImpulse = lazyPage(() => import("./pages/ContactImpulse"), "ContactImpulse");
+const Patterns = lazyPage(() => import("./pages/Patterns"), "Patterns");
+const WeeklyReview = lazyPage(() => import("./pages/WeeklyReview"), "WeeklyReview");
+const Settings = lazyPage(() => import("./pages/Settings"), "Settings");
+const Search = lazyPage(() => import("./pages/Search"), "Search");
+const Clarity = lazyPage(() => import("./pages/Clarity"), "Clarity");
+const Ritual = lazyPage(() => import("./pages/Ritual"), "Ritual");
+const RitualHistory = lazyPage(() => import("./pages/RitualHistory"), "RitualHistory");
+const Archive = lazyPage(() => import("./pages/Archive"), "Archive");
+const RedThread = lazyPage(() => import("./pages/RedThread"), "RedThread");
+const Progress = lazyPage(() => import("./pages/Progress"), "Progress");
+const Loosen = lazyPage(() => import("./pages/Loosen"), "Loosen");
+const Impulses = lazyPage(() => import("./pages/Impulses"), "Impulses");
+const ShareCard = lazyPage(() => import("./pages/ShareCard"), "ShareCard");
+const WeeklyLetter = lazyPage(() => import("./pages/WeeklyLetter"), "WeeklyLetter");
+const Energy = lazyPage(() => import("./pages/Energy"), "Energy");
+const Relief = lazyPage(() => import("./pages/Relief"), "Relief");
+const Routine = lazyPage(() => import("./pages/Routine"), "Routine");
+const SummaryExport = lazyPage(() => import("./pages/SummaryExport"), "SummaryExport");
 
 export const router = createBrowserRouter([
   {

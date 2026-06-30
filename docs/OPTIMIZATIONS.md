@@ -64,8 +64,10 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
   Datenschutzerklärung, ggf. EU-Region/Proxy, Lösch-/Export-Recht (Export ist da).
   Therapeutische Abgrenzung („kein Therapieersatz") ist vorhanden — juristisch
   final prüfen lassen.
-- 🟡 **Performance/Bundle:** `index.js` ~679 kB (gzip ~202 kB). Routen per
-  `React.lazy`/dynamic import code-splitten; größte Abhängigkeiten prüfen.
+- ✅ **Performance/Bundle:** Routen per `React.lazy` code-gesplittet (Suspense im
+  Layout) + Vendor-Chunk via `manualChunks`. Aus einem 679-kB-Chunk wurden
+  vendor ~388 kB (gzip 125, gut gecacht) + App-Shell ~116 kB (gzip 32) +
+  Seiten-Chunks je ~2–5 kB on demand. 500-kB-Warnung weg. (2026-06-30)
 - 🟡 **Onboarding & Retention:** sanfter, aber klarer Erststart; optionale,
   freundliche Tageserinnerung (kein Druck); Streak bewusst niederschwellig
   (bereits entschärft) — Balance Motivation vs. Calm halten.
@@ -227,7 +229,8 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 - 🟢 **`icons.tsx` Lint-Warnung** (react-refresh/only-export-components): ICONS +
   tileRelief in eigene Nicht-Komponenten-Datei auslagern, damit Fast-Refresh
   sauber bleibt (kein Fehler, nur Warnung).
-- 🟢 **Bundle-Größe** >500 KB: Code-Splitting per Route (`React.lazy`) erwägen.
+- ✅ **Bundle-Größe** >500 KB: erledigt durch Route-Code-Splitting + Vendor-Chunk
+  (s. o., 2026-06-30).
 
 ## Gesamt-Audit 2026-06-23 (UI/UX · Brand · Psychologie)
 

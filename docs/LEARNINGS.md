@@ -5,6 +5,12 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Code-Splitting: Shell eager, Rest lazy + Vendor separat.** Nur Layout +
+  Startseite eager laden, alle übrigen Routen per `React.lazy` (eine Suspense-
+  Grenze ums `<Outlet/>` genügt). Named-Export-Seiten via `.then(m => ({default:
+  m.X}))`. Ein `manualChunks`-Vendor-Chunk trennt selten wechselnde Libs ab → der
+  App-Code-Chunk bleibt klein und der Browser-Cache greift über Deploys hinweg.
+  (2026-06-30)
 - **Deskriptiv-Garantie strukturell absichern, nicht dem Modell überlassen.** Die
   Therapeuten-Zusammenfassung ist Default KI-frei: nur vorhandene, bereits
   bestätigte Daten (`userConfirmed === true`) werden getemplatet zusammengestellt

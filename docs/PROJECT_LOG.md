@@ -5,6 +5,22 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-30 (Forts. 9) — Performance: Route-Code-Splitting + Vendor-Chunk
+
+**Was:** Seiten werden per `React.lazy` pro Route geladen (Suspense-Grenze im
+`Layout` um den `<Outlet/>`; `router.tsx` mit `lazyPage`-Helfer für die benannten
+Exporte). Nur Shell + Startseite (Dashboard) sind eager. Zusätzlich Vendor-Chunk
+über `build.rollupOptions.output.manualChunks` (`vite.config.ts`).
+
+**Warum:** Erststart war ein einzelner ~679-kB-Chunk. Jetzt: vendor ~388 kB
+(gzip 125, selten ändernd → gut gecacht) + App-Shell ~116 kB (gzip 32) +
+Seiten-Chunks je ~2–5 kB on demand. Spürbar schnellerer/leichterer Start, keine
+500-kB-Warnung mehr. Kein Logik-/UI-Eingriff, keine sensible Logik berührt.
+
+**Ergebnis/Status:** Build, Lint, Typecheck grün; 39 Web- + 20 Server-Tests grün.
+
+---
+
 ## 2026-06-30 (Forts. 8) — „Brücke zur Versorgung": Zusammenfassung exportieren
 
 **Was:** Neuer Screen `/zusammenfassung` (Einstieg aus Einstellungen → Daten):
