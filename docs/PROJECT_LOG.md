@@ -5,6 +5,34 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-07-01 — Ruhiger Ton: native `alert()`/`confirm()` ersetzt
+
+**Was:** Seiten- & Zustands-Pass, erster Block. Alle nativen Browser-Dialoge
+(`alert`/`confirm`), die den ruhigen App-Ton mit OS-Chrome brachen, durch einen
+wiederverwendbaren In-App-Dialog + ruhigen Inline-Status ersetzt.
+- **Neu `components/ConfirmDialog.tsx`** (präsentational): zentriertes Panel im
+  App-Stil über gedimmtem Scrim, auf allen Breiten (nicht nur Desktop). Fokus
+  startet bewusst auf „Abbrechen" (sichere Aktion), Escape + Scrim-Klick brechen
+  ab, Scroll-Lock, Fokus-Rückgabe, `role="dialog"`/`aria-modal`. Danger-Variante
+  = gefüllter Brick-Button.
+- **Neu `hooks/useConfirm.tsx`** (`ask(config, onConfirm)` + `dialog`): ein
+  Dialog pro Seite, mehrere Aufrufer teilen ihn — ersetzt pro-Stelle-State.
+  Bewusst vom Präsentations-Component getrennt (Fast-Refresh sauber, keine
+  `react-refresh`-Warnung).
+- **Ersetzt an:** EntryDetail (Eintrag löschen), Clarity (Schleife + Entscheidung
+  löschen, 2×), Settings (alle Daten löschen). Settings-Import/Löschen-Erfolg →
+  ruhiger Inline-Status (`aria-live`) statt `alert()`.
+- **Nebenbei:** `Button` leitet jetzt Refs weiter (React-19-ref-as-prop, für den
+  Fokus auf „Abbrechen"). Settings-`selectClass` von Alt-Stil (`rounded-lg`,
+  `bg-transparent`) auf App-Stil gehoben (`rounded-xl`, weiße Fläche, Fokus-Ring).
+
+**Warum:** Native Dialoge sind der sichtbarste Bruch des ruhigen, wertschätzenden
+Tons (Audit §C „native alert/confirm brechen den ruhigen Ton"; §B). Gerade beim
+Löschen eines Tagebucheintrags soll die Bestätigung warm und in der App bleiben.
+
+**Ergebnis/Status:** Keine nativen `alert`/`confirm` mehr im Seiten-Code
+(verifiziert). Gate grün: Lint (0 Warnungen), Typecheck, Build, 52 Web-Tests.
+
 ## 2026-06-30 (Forts. 11) — Semantischer Rückblick (Browser-Embeddings)
 
 **Was:** Reflexion und Chat ziehen jetzt THEMATISCH passende frühere Einträge

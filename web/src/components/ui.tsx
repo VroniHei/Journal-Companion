@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode, Ref } from "react";
 
 export function Card({
   children,
@@ -46,8 +46,12 @@ type ButtonVariant = "primary" | "ghost" | "danger";
 export function Button({
   variant = "primary",
   className = "",
+  ref,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant }) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: ButtonVariant;
+  ref?: Ref<HTMLButtonElement>;
+}) {
   // Innerline: Pill-Buttons, Figtree 600, sanfter Lift beim Hover.
   // min-h-[44px]: WCAG-Touch-Target (≥44px) an der Quelle, ohne die Optik der
   // Pille zu verändern (Padding bleibt, Höhe wird nur garantiert).
@@ -60,7 +64,9 @@ export function Button({
       "border border-[var(--border)] text-[var(--foreground)] hover:-translate-y-0.5 hover:border-[var(--foreground)] hover:bg-[var(--surface-2)]",
     danger: "text-[var(--danger)] hover:underline",
   };
-  return <button className={`${base} ${styles[variant]} ${className}`} {...props} />;
+  return (
+    <button ref={ref} className={`${base} ${styles[variant]} ${className}`} {...props} />
+  );
 }
 
 export function Eyebrow({ children }: { children: ReactNode }) {

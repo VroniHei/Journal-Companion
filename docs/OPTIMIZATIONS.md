@@ -6,6 +6,14 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 ---
 
 ## Erledigt (jüngste oben)
+- ✅ **Ruhiger Ton statt System-Dialoge** (Audit §C/§B): native `alert()`/
+  `confirm()` in EntryDetail, Clarity (2×) und Settings durch einen
+  wiederverwendbaren `ConfirmDialog` + `useConfirm`-Hook ersetzt; Settings-
+  Import/Löschen-Erfolg als ruhiger Inline-`aria-live`-Status. `Button` leitet
+  jetzt Refs weiter; Settings-Inputs (`selectClass`) von Alt-Stil auf App-Stil
+  gehoben. 0 native Dialoge im Seiten-Code. (2026-07-01) Offen (🟢): Clarity-
+  `inputClass`/`areaClass` (noch `rounded-lg`/`bg-transparent`) im Style-Pass
+  mitnehmen.
 - ✅ **Diktat-Interpunktion:** nach der Spracherkennung wird der „Worthaufen"
   automatisch in Sätze gegliedert (`/api/punctuate`, `LIGHT_MODEL`, rein
   mechanisch). Nur wenn `looksUnpunctuated()` zutrifft (spart Kosten, wenn schon
@@ -320,14 +328,15 @@ offene Optimierungs-Backlog, priorisiert und entdoppelt.
 
 ### C · UI/UX (seitenübergreifend)
 
-- 🔴 **Touch-Targets <44px global:** Basis-`Button` (`ui.tsx:53`, ~38px),
-  `Chips`/Scale-Kreise (`NewEntry`), Inputs (`Clarity.tsx:21`), Range-/Feedback-/
-  Filter-Buttons (Patterns, WeeklyReview, Archive). → an der Quelle `py-3`.
+- 🟡 **Touch-Targets <44px global:** ✅ Basis-`Button` hat jetzt `min-h-[44px]`
+  an der Quelle. Offen: `Chips`/Scale-Kreise (`NewEntry`), Inputs, Range-/
+  Feedback-/Filter-Buttons (Patterns, WeeklyReview, Archive) gegenchecken.
 - 🔴 **Doppelte Exit-Affordanzen:** Topbar-Zurück + eigenes Schließen-X auf
   Tool-/Modal-Seiten (ShareCard, Energy, Relief, Impulses, EntryDetail) —
   navigieren teils unterschiedlich. → X nur im `DesktopModal`-Kontext.
-- 🔴 **VoiceCheckin + ContactImpulse alte UI-Generation** (`rounded-lg`,
-  transparente Inputs) — sichtbarster Stilbruch. → auf neuen App-Style heben.
+- ✅ **VoiceCheckin + ContactImpulse alte UI-Generation** — beide Seiten nutzen
+  inzwischen den neuen App-Style (`Card`, `rounded-[18px]`-Inputs, `FieldLabel`,
+  Fokus-Ring). (verifiziert 2026-07-01)
 - 🟡 **„Große Zahl"-Pattern dreifach uneinheitlich:** 46px (Dashboard) / 40px
   (Patterns) / 26px (WeeklyReview). → 2-stufige Skala definieren.
 - 🟡 **Patterns untere Hälfte „alt"** (`Patterns.tsx:467`, generische Card/Stat
@@ -335,11 +344,12 @@ offene Optimierungs-Backlog, priorisiert und entdoppelt.
 - 🟡 **WeeklyReview:** Range-Auswahl steuert Kennzahlen, aber MoodCard fix 14
   Tage + Titel „Diese Woche" entkoppelt (`WeeklyReview.tsx:187,240`); Control
   steht zudem unter den gesteuerten Inhalten.
-- 🟡 **Settings:** native `alert`/`confirm` (`:51,66`) brechen den ruhigen Ton →
-  Inline-Status; Section-Titel ohne Hierarchie; native Mini-Checkboxen.
-- 🟡 **EntryDetail:** Default-Tab „reflexion" landet bei leeren Einträgen im
-  Leerzustand → bei fehlender Reflexion „eintrag" defaulten; Fehlermeldung
-  außerhalb des Viewports nach Scroll.
+- 🟡 **Settings:** ✅ native `alert`/`confirm` → ruhiger In-App-Dialog +
+  Inline-Status (2026-07-01). Offen: Section-Titel ohne Hierarchie; native
+  Mini-Checkboxen.
+- 🟡 **EntryDetail:** ✅ Default-Tab datengetrieben (leere Einträge starten in
+  „eintrag" statt Reflexions-Leerzustand). Offen: Fehlermeldung außerhalb des
+  Viewports nach Scroll.
 - 🟡 **Archive:** Monatsgruppen ohne Jahr (Dez 2025/2024 verschmelzen),
   Filter-Chips als Inline-`style` (3 verschiedene Chip-Implementierungen).
 - 🟢 Empty-States mit CTA (Archive/RitualHistory/Search-Idle); Suchtreffer-Grid

@@ -5,6 +5,20 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Native `alert()`/`confirm()` haben in dieser App nichts verloren.** Sie
+  rendern OS-Chrome und brechen den ruhigen, wertschätzenden Ton — besonders bei
+  emotional bedeutsamen Aktionen (Eintrag löschen). Stattdessen: ein ruhiger
+  In-App-`ConfirmDialog` (zentriertes Panel, Scrim, Escape, Scroll-Lock, Fokus
+  startet auf der sicheren Aktion) + `useConfirm`-Hook für minimalen Boilerplate,
+  und Inline-`aria-live`-Status statt Erfolgs-`alert`.
+- **Präsentations-Component und Hook in getrennte Dateien.** Exportiert eine
+  `.tsx`-Datei sowohl eine Komponente als auch einen Hook/Helfer, warnt
+  `react-refresh/only-export-components`. Hook nach `hooks/*.tsx` auslagern hält
+  Fast Refresh und den Lint sauber (dieselbe Regel wie bei `icons.tsx`).
+- **`Button` leitet Refs via React-19-ref-as-prop weiter.** Kein `forwardRef`
+  nötig; `ref?: Ref<HTMLButtonElement>` als normales Prop deklarieren und an das
+  `<button>` durchreichen (gebraucht für programmatischen Fokus im Dialog).
+
 - **Semantischer Recall lokal-first via transformers.js.** Embeddings im Browser
   (`Xenova/multilingual-e5-small`, multilingual wg. Deutsch) statt serverseitig →
   kein Eintragstext verlässt das Gerät. Das schwere Paket MUSS in einen eigenen

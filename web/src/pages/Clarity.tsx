@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { Decision, OpenLoop } from "@journal/shared";
 import { Button, Card, Eyebrow } from "../components/ui";
+import { useConfirm } from "../hooks/useConfirm";
 import { DictationButton } from "../components/DictationButton";
 import { useDecisions, useOpenLoops } from "../hooks/useData";
 import {
@@ -29,6 +30,7 @@ function LoopCard({ loop }: { loop: OpenLoop }) {
   const open = loop.status === "offen";
   const [resolving, setResolving] = useState(false);
   const [note, setNote] = useState("");
+  const { ask, dialog } = useConfirm();
 
   async function resolve() {
     await resolveOpenLoop(loop.id, note);
@@ -95,16 +97,23 @@ function LoopCard({ loop }: { loop: OpenLoop }) {
           )}
           <button
             type="button"
-            onClick={() => {
-              if (confirm("Diese Schleife wirklich löschen?"))
-                deleteOpenLoop(loop.id);
-            }}
+            onClick={() =>
+              ask(
+                {
+                  title: "Diese Schleife löschen?",
+                  confirmLabel: "Löschen",
+                  danger: true,
+                },
+                () => deleteOpenLoop(loop.id),
+              )
+            }
             className="text-sm text-[var(--danger)] hover:underline"
           >
             Löschen
           </button>
         </div>
       )}
+      {dialog}
     </Card>
   );
 }
@@ -195,6 +204,7 @@ function DecisionCard({ d }: { d: Decision }) {
   const open = d.status === "offen";
   const [reviewing, setReviewing] = useState(false);
   const [note, setNote] = useState("");
+  const { ask, dialog } = useConfirm();
 
   async function review(feltRight: boolean) {
     await reviewDecision(d.id, { feltRight, reviewNote: note });
@@ -287,16 +297,23 @@ function DecisionCard({ d }: { d: Decision }) {
           )}
           <button
             type="button"
-            onClick={() => {
-              if (confirm("Diese Entscheidung wirklich löschen?"))
-                deleteDecision(d.id);
-            }}
+            onClick={() =>
+              ask(
+                {
+                  title: "Diese Entscheidung löschen?",
+                  confirmLabel: "Löschen",
+                  danger: true,
+                },
+                () => deleteDecision(d.id),
+              )
+            }
             className="text-sm text-[var(--danger)] hover:underline"
           >
             Löschen
           </button>
         </div>
       )}
+      {dialog}
     </Card>
   );
 }

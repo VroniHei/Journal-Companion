@@ -1,6 +1,7 @@
-import { useRef, type ChangeEvent, type ReactNode } from "react";
+import { useRef, useState, type ChangeEvent, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card } from "../components/ui";
+import { useConfirm } from "../hooks/useConfirm";
 import { useSettings } from "../hooks/useData";
 import { useSyncStatus } from "../hooks/useSync";
 import { useEmbeddingStatus } from "../hooks/useEmbeddingStatus";
@@ -37,7 +38,7 @@ function Row({
 }
 
 const selectClass =
-  "w-full max-w-md rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--accent)]";
+  "w-full max-w-md rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm outline-none transition focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_rgba(168,232,79,.18)]";
 
 export function Settings() {
   const s = useSettings();
@@ -46,6 +47,9 @@ export function Settings() {
   const navigate = useNavigate();
   const emb = useEmbeddingStatus();
   const fileRef = useRef<HTMLInputElement>(null);
+  const { ask, dialog } = useConfirm();
+  // Ruhiger Inline-Status für Import/Löschen statt nativer `alert()`-Dialoge.
+  const [dataMsg, setDataMsg] = useState<string | null>(null);
 
   const recallOn = s.semanticRecall !== false;
   const recallStatus = !recallOn
@@ -64,11 +68,11 @@ export function Settings() {
     if (!file) return;
     try {
       const r = await importAllJson(file);
-      alert(
+      setDataMsg(
         `Import abgeschlossen: ${r.added} neu, ${r.updated} aktualisiert, ${r.skipped} übersprungen.`,
       );
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Import fehlgeschlagen.");
+      setDataMsg(err instanceof Error ? err.message : "Import fehlgeschlagen.");
     }
   }
   const {
@@ -77,15 +81,19 @@ export function Settings() {
     speak,
   } = useSpeech({ voiceURI: s.speechVoiceURI });
 
-  async function clearAll() {
-    if (
-      !confirm(
-        "Wirklich ALLE Einträge, Gespräche und Muster löschen? Das kann nicht rückgängig gemacht werden.",
-      )
-    )
-      return;
-    await clearAllData();
-    alert("Alle Daten wurden gelöscht.");
+  function clearAll() {
+    ask(
+      {
+        title: "Wirklich alle Daten löschen?",
+        body: "Alle Einträge, Gespräche und Muster in diesem Browser werden dauerhaft entfernt. Das lässt sich nicht rückgängig machen — erwäge vorher einen Export.",
+        confirmLabel: "Alles löschen",
+        danger: true,
+      },
+      async () => {
+        await clearAllData();
+        setDataMsg("Alle Daten wurden gelöscht.");
+      },
+    );
   }
 
   return (
@@ -418,6 +426,15 @@ export function Settings() {
           Import führt zusammen: Vorhandenes bleibt erhalten, nur Neueres aus der
           Sicherung wird ergänzt. Einstellungen werden nicht überschrieben.
         </p>
+        {dataMsg && (
+          <p
+            role="status"
+            aria-live="polite"
+            className="rounded-xl border-l-2 border-l-[var(--accent)] bg-[var(--surface-2)] p-3 text-sm"
+          >
+            {dataMsg}
+          </p>
+        )}
       </Card>
       </div>
 
@@ -434,6 +451,7 @@ export function Settings() {
         Reflektieren und Stabilisieren. Bei akuter Gefahr: 112 ·
         TelefonSeelsorge 0800 111 0 111.
       </p>
+      {dialog}
     </section>
   );
 }

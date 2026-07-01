@@ -6,6 +6,7 @@ import { FormattedText } from "../components/FormattedText";
 import { SessionClose } from "../components/SessionClose";
 import { ChatThread } from "../components/ChatThread";
 import { DesktopModal } from "../components/DesktopModal";
+import { useConfirm } from "../hooks/useConfirm";
 import { useEntry, useMessages, useSettings } from "../hooks/useData";
 import { useConfig } from "../hooks/useConfig";
 import {
@@ -65,6 +66,7 @@ export function EntryDetail() {
   const messages = useMessages(id);
   const settings = useSettings();
   const config = useConfig();
+  const { ask, dialog } = useConfirm();
   // Proaktiver, ruhiger Hinweis: Reflexion/Chat brauchen einen API-Key. Wird erst
   // gezeigt, wenn der Zustand bekannt ist (config !== null) und kein Key da ist.
   const noApiKey = config !== null && !config.hasApiKey;
@@ -167,10 +169,19 @@ export function EntryDetail() {
     }
   }
 
-  async function remove() {
-    if (!confirm("Diesen Eintrag wirklich löschen?")) return;
-    await deleteEntry(e.id);
-    navigate("/");
+  function remove() {
+    ask(
+      {
+        title: "Diesen Eintrag löschen?",
+        body: "Der Eintrag und seine Reflexionen werden dauerhaft entfernt. Das lässt sich nicht rückgängig machen.",
+        confirmLabel: "Löschen",
+        danger: true,
+      },
+      async () => {
+        await deleteEntry(e.id);
+        navigate("/");
+      },
+    );
   }
 
   async function closeSession() {
@@ -419,6 +430,7 @@ export function EntryDetail() {
           Löschen
         </Button>
       </div>
+      {dialog}
     </section>
     </DesktopModal>
   );
