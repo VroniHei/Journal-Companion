@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { JournalCard } from "../components/JournalCard";
-import { useEntries } from "../hooks/useData";
+import { useConversationEntryIds, useEntries } from "../hooks/useData";
 import { entryTitle } from "../lib/entryCard";
 
 export function Search() {
   const [params, setParams] = useSearchParams();
   const [query, setQuery] = useState(params.get("q") ?? "");
   const entries = useEntries();
+  const conversationIds = useConversationEntryIds();
 
 
   const term = query.trim().toLowerCase();
@@ -65,7 +66,11 @@ export function Search() {
       {results.length > 0 && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {results.map((e) => (
-            <JournalCard key={e.id} entry={e} />
+            <JournalCard
+              key={e.id}
+              entry={e}
+              hasConversation={conversationIds.has(e.id)}
+            />
           ))}
         </div>
       )}

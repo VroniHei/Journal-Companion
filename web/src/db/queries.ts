@@ -133,6 +133,18 @@ export function listMessages(entryId: string): Promise<ChatMessage[]> {
   return db.chatMessages.where("entryId").equals(entryId).sortBy("createdAt");
 }
 
+/**
+ * Menge aller Eintrags-IDs, zu denen es mindestens eine Chat-Nachricht gibt.
+ * Quelle der Wahrheit dafür, ob ein Eintrag ein „Gespräch" ist — unabhängig von
+ * `conversationSummary` (das nur optional serverseitig verdichtet wird).
+ */
+export async function listConversationEntryIds(): Promise<Set<string>> {
+  const ids = (await db.chatMessages
+    .orderBy("entryId")
+    .uniqueKeys()) as string[];
+  return new Set(ids);
+}
+
 // --- Muster ---------------------------------------------------------------
 
 export function listPatternsDesc(): Promise<PatternSummary[]> {

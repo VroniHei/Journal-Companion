@@ -9,6 +9,7 @@ import { ThemeMiniCard } from "../components/ThemeMiniCard";
 import { RoterFadenLink, ShareCardLink } from "../components/ShareLinks";
 import { withAccents } from "../lib/accents";
 import {
+  useConversationEntryIds,
   useDailyRitual,
   useEnergyToday,
   useEntries,
@@ -258,6 +259,7 @@ function MoodSparkline({ days }: { days: MoodDay[] }) {
 export function Dashboard() {
   const navigate = useNavigate();
   const entries = useEntries();
+  const conversationIds = useConversationEntryIds();
   const settings = useSettings();
   const ritual = useDailyRitual(dayKey());
   const today = dayKey();
@@ -363,7 +365,7 @@ export function Dashboard() {
 
   function matchesFilter(e: (typeof entries)[number]): boolean {
     if (filter === "alle") return true;
-    return entryKind(e) === filter;
+    return entryKind(e, conversationIds.has(e.id)) === filter;
   }
   const shown = entries.filter(matchesFilter).slice(0, 3);
 
@@ -1509,7 +1511,11 @@ export function Dashboard() {
         <>
           <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-3">
             {shown.map((e) => (
-              <JournalCard key={e.id} entry={e} />
+              <JournalCard
+                key={e.id}
+                entry={e}
+                hasConversation={conversationIds.has(e.id)}
+              />
             ))}
           </div>
           <div className="flex justify-end pt-1">

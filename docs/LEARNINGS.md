@@ -5,6 +5,12 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Kategorien aus der echten Datenquelle ableiten, nicht aus totem Feld.**
+  Die „Gespräch"-Kategorie hing an `conversationSummary`, das nie geschrieben
+  wird → Kategorie war praktisch tot. Ob ein Eintrag ein Gespräch ist, ergibt
+  sich aus den tatsächlichen Chat-Nachrichten (`chatMessages`-Store), nicht aus
+  einem optionalen Verdichtungsfeld. Bei abgeleiteten Kategorien immer prüfen,
+  ob das ausgewertete Feld überhaupt befüllt wird.
 - **Antwort folgt auf Frage — am selben Ort.** Wenn der Begleiter am Ende einer
   Reflexion eine offene Frage stellt, muss das Antwortfeld direkt darunter
   stehen. Ein separater Reiter für das Gespräch bricht den Gedankenfluss und

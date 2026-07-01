@@ -6,6 +6,7 @@ import {
   getRoutineDay,
   listDecisions,
   listEnergyLevels,
+  listConversationEntryIds,
   listEntriesDesc,
   listMessages,
   listOpenLoops,
@@ -43,6 +44,15 @@ export function useMessages(entryId: string | undefined): ChatMessage[] {
     [entryId],
     [],
   );
+}
+
+/**
+ * IDs aller Einträge mit mindestens einer Chat-Nachricht — für Badge + Filter
+ * „Gespräch". Reaktiv: sobald im Detail eine Nachricht dazukommt, aktualisiert
+ * sich die Kategorisierung auf dem Dashboard/Archiv automatisch.
+ */
+export function useConversationEntryIds(): Set<string> {
+  return useLiveQuery(() => listConversationEntryIds(), [], new Set<string>());
 }
 
 export function useOpenLoops(): OpenLoop[] {

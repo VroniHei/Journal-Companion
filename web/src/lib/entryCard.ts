@@ -46,9 +46,16 @@ export function entryTitle(e: JournalEntry): string {
 // damit Anzeige und Filter immer zusammenpassen).
 export type EntryKind = "ritual" | "eintrag" | "reflexion" | "gespraech";
 
-export function entryKind(e: JournalEntry): EntryKind {
+/**
+ * Art des Eintrags. `hasConversation` = es existieren Chat-Nachrichten zu diesem
+ * Eintrag (Quelle: `chatMessages`-Store, siehe `useConversationEntryIds`). Ein
+ * geführtes Gespräch gewinnt gegenüber der reinen Reflexion — so taucht ein
+ * weitergeführter Eintrag korrekt unter „Gespräch" auf. `conversationSummary`
+ * bleibt als zusätzliches (optionales) Signal erhalten.
+ */
+export function entryKind(e: JournalEntry, hasConversation = false): EntryKind {
   if (e.startIntent === "tagesritual") return "ritual";
-  if (e.conversationSummary?.trim()) return "gespraech";
+  if (hasConversation || e.conversationSummary?.trim()) return "gespraech";
   if (e.aiReflection) return "reflexion";
   return "eintrag";
 }

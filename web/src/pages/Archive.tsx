@@ -4,7 +4,7 @@ import type { JournalEntry } from "@journal/shared";
 import { JournalCard } from "../components/JournalCard";
 import { Eyebrow } from "../components/ui";
 import { entryKind, entryTitle, KIND_DOT, type EntryKind } from "../lib/entryCard";
-import { useEntries } from "../hooks/useData";
+import { useConversationEntryIds, useEntries } from "../hooks/useData";
 
 type Filter = "alle" | EntryKind;
 
@@ -22,7 +22,15 @@ function rowDate(iso: string, mode: "weekday" | "date"): string {
 
 // Kompakte Zeilen-Liste (Mobile, Master): Punkt + Titel + eine Vorschauzeile +
 // Datum/Tag rechts. Desktop nutzt weiter die JournalCard-Kacheln.
-function CompactRow({ e, dateMode }: { e: JournalEntry; dateMode: "weekday" | "date" }) {
+function CompactRow({
+  e,
+  dateMode,
+  hasConversation = false,
+}: {
+  e: JournalEntry;
+  dateMode: "weekday" | "date";
+  hasConversation?: boolean;
+}) {
   const prev = previewLine(e);
   return (
     <Link
@@ -31,7 +39,7 @@ function CompactRow({ e, dateMode }: { e: JournalEntry; dateMode: "weekday" | "d
     >
       <span
         className="h-[11px] w-[11px] flex-none rounded-full"
-        style={{ background: KIND_DOT[entryKind(e)] }}
+        style={{ background: KIND_DOT[entryKind(e, hasConversation)] }}
       />
       <div className="min-w-0 flex-1">
         <div className="truncate text-[15px] font-[650] tracking-[-0.01em] text-[var(--foreground)]">
@@ -75,6 +83,7 @@ function monthLabel(iso: string): string {
 // Breite als mehrspaltiges Raster (App-Style: Desktop ist kein verkleinertes Mobile).
 export function Archive() {
   const entries = useEntries();
+  const conversationIds = useConversationEntryIds();
   const [filter, setFilter] = useState<Filter>("alle");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
@@ -90,7 +99,9 @@ export function Archive() {
   const shown =
     filter === "alle"
       ? entries
-      : entries.filter((e) => entryKind(e) === filter);
+      : entries.filter(
+          (e) => entryKind(e, conversationIds.has(e.id)) === filter,
+        );
 
   const now = new Date();
   const thisWeekStart = startOfWeek(now).getTime();
@@ -142,13 +153,22 @@ export function Archive() {
         {/* Mobile: kompakte Zeilen */}
         <div className="flex flex-col gap-2.5 sm:hidden">
           {visible.map((e) => (
-            <CompactRow key={e.id} e={e} dateMode={dateMode} />
+            <CompactRow
+              key={e.id}
+              e={e}
+              dateMode={dateMode}
+              hasConversation={conversationIds.has(e.id)}
+            />
           ))}
         </div>
         {/* Desktop: Karten-Raster */}
         <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
           {visible.map((e) => (
-            <JournalCard key={e.id} entry={e} />
+            <JournalCard
+              key={e.id}
+              entry={e}
+              hasConversation={conversationIds.has(e.id)}
+            />
           ))}
         </div>
         {items.length > 3 && (
@@ -251,12 +271,21 @@ export function Archive() {
                         <>
                           <div className="flex flex-col gap-2.5 sm:hidden">
                             {m.items.map((e) => (
-                              <CompactRow key={e.id} e={e} dateMode="date" />
+                              <CompactRow
+                                key={e.id}
+                                e={e}
+                                dateMode="date"
+                                hasConversation={conversationIds.has(e.id)}
+                              />
                             ))}
                           </div>
                           <div className="hidden space-y-4 sm:block">
                             {m.items.map((e) => (
-                              <JournalCard key={e.id} entry={e} />
+                              <JournalCard
+                                key={e.id}
+                                entry={e}
+                                hasConversation={conversationIds.has(e.id)}
+                              />
                             ))}
                           </div>
                         </>

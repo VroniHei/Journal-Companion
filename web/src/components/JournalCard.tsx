@@ -31,9 +31,15 @@ function dayLabel(iso: string): string {
 
 // Eintrags-Kachel nach Prototyp (Innerline App.dc.html · Letzte Einträge):
 // Mood-Punkt + Tages-Label, KI-Titel, kurzer Anriss. Radius 24, weicher Lift.
-export function JournalCard({ entry }: { entry: JournalEntry }) {
+export function JournalCard({
+  entry,
+  hasConversation = false,
+}: {
+  entry: JournalEntry;
+  hasConversation?: boolean;
+}) {
   const e = entry;
-  const kind = entryKind(e);
+  const kind = entryKind(e, hasConversation);
   const kindStyle = KIND_STYLE[kind];
   const isRitual = kind === "ritual";
   return (

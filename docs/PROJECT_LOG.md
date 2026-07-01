@@ -5,6 +5,35 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-07-01 (Forts.) — „Gespräch"-Kategorie greift wieder (Badge + Filter)
+
+**Was:** Die Eintrags-Kategorie „Gespräch" (Badge auf den Karten + Filter auf
+Dashboard/Archiv) hat nie funktioniert — kein Eintrag wurde je so eingestuft.
+- **Ursache:** `entryKind` (`web/src/lib/entryCard.ts`) stufte nur dann als
+  „gespraech" ein, wenn `conversationSummary` gesetzt war. Dieses Feld wird aber
+  **nirgends geschrieben** (nur gelesen). Das eigentliche Gespräch liegt als
+  Chat-Nachrichten im `chatMessages`-Store.
+- **Fix:** Quelle der Wahrheit ist jetzt „hat dieser Eintrag Chat-Nachrichten?".
+  - Neue Query `listConversationEntryIds()` (`db/queries.ts`) → `Set` aller
+    Eintrags-IDs mit ≥1 Nachricht (via `chatMessages.orderBy("entryId")
+    .uniqueKeys()`).
+  - Neuer reaktiver Hook `useConversationEntryIds()` (`hooks/useData.ts`).
+  - `entryKind(e, hasConversation = false)` bekommt ein Flag; ein geführtes
+    Gespräch gewinnt gegenüber reiner Reflexion. `conversationSummary` bleibt als
+    optionales Zusatzsignal erhalten.
+  - Flag durchgereicht: `JournalCard` (Prop `hasConversation`), Dashboard
+    (Filter + Karten), Archiv (Punkt + Filter + Karten, `CompactRow`), Suche.
+- **Reaktiv:** Da der neue Inline-Chat im Reflexion-Tab Nachrichten sofort
+  speichert (`notifyDataChanged` → liveQuery), springt die Kategorie eines
+  weitergeführten Eintrags ohne Reload auf „Gespräch".
+
+**Warum:** Nutzerin meldete, dass die „Gespräch"-Kachel/-Filter leer bleibt,
+selbst wenn ein Gespräch weitergeführt wurde — die Logik wertete nur Eintrag/
+Reflexion, nie das Gespräch.
+
+**Ergebnis:** `npm run build` + `npm run lint` grün. Neue Unit-Tests
+`entryCard.test.ts` (5) sichern die Kategorisierung ab.
+
 ## 2026-07-01 — Reflexion & Gespräch zusammengeführt (ein Flow)
 
 **Was:** In der Eintrags-Detailansicht (`web/src/pages/EntryDetail.tsx`) sind

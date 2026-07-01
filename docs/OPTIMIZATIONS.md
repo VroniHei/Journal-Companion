@@ -6,6 +6,13 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 ---
 
 ## Erledigt (jüngste oben)
+- ✅ **„Gespräch"-Kategorie repariert:** Badge + Dashboard-/Archiv-Filter werteten
+  nur `conversationSummary` (nie geschrieben) statt echter Chat-Nachrichten.
+  Jetzt via `useConversationEntryIds()` (Set aus `chatMessages`) →
+  `entryKind(e, hasConversation)`. Reaktiv, ohne Reload. 5 Tests
+  (`entryCard.test.ts`). (2026-07-01) Offen (🟢): `conversationSummary`
+  serverseitig tatsächlich verdichten (spart Chat-Prompt-Kosten) — dann ist es
+  ein echtes Zusatzsignal statt Altlast.
 - ✅ **Reflexion & Gespräch in einem Flow:** Gespräch nicht mehr als separater
   Tab, sondern inline direkt unter der Reflexion — die Frage des Begleiters lässt
   sich sofort darunter beantworten. Re-Reflexions-Button unter das Gespräch
