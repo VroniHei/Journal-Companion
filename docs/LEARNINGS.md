@@ -5,6 +5,11 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Antwort folgt auf Frage — am selben Ort.** Wenn der Begleiter am Ende einer
+  Reflexion eine offene Frage stellt, muss das Antwortfeld direkt darunter
+  stehen. Ein separater Reiter für das Gespräch bricht den Gedankenfluss und
+  wirkt unintuitiv. Reflexion → Antwort → erneutes Reflektieren gehören in einen
+  durchgehenden vertikalen Flow (`EntryDetail.tsx`, „Reflexion & Gespräch"-Tab).
 - **Semantischer Recall lokal-first via transformers.js.** Embeddings im Browser
   (`Xenova/multilingual-e5-small`, multilingual wg. Deutsch) statt serverseitig →
   kein Eintragstext verlässt das Gerät. Das schwere Paket MUSS in einen eigenen

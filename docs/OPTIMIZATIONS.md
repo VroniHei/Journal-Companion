@@ -6,6 +6,12 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 ---
 
 ## Erledigt (jüngste oben)
+- ✅ **Reflexion & Gespräch in einem Flow:** Gespräch nicht mehr als separater
+  Tab, sondern inline direkt unter der Reflexion — die Frage des Begleiters lässt
+  sich sofort darunter beantworten. Re-Reflexions-Button unter das Gespräch
+  verschoben. Aus 3 Tabs werden 2 („Eintrag", „Reflexion & Gespräch").
+  (`EntryDetail.tsx`, 2026-07-01) Offen (🟢): bei sehr langen Gesprächen ggf.
+  Auto-Scroll/„Frühere Nachrichten einklappen" prüfen.
 - ✅ **Diktat-Interpunktion:** nach der Spracherkennung wird der „Worthaufen"
   automatisch in Sätze gegliedert (`/api/punctuate`, `LIGHT_MODEL`, rein
   mechanisch). Nur wenn `looksUnpunctuated()` zutrifft (spart Kosten, wenn schon

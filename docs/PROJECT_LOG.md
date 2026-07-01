@@ -5,6 +5,33 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-07-01 — Reflexion & Gespräch zusammengeführt (ein Flow)
+
+**Was:** In der Eintrags-Detailansicht (`web/src/pages/EntryDetail.tsx`) sind
+Reflexion und Gespräch nicht mehr zwei getrennte Tabs, sondern **ein
+durchgehender Flow**.
+- Aus drei Tabs (Eintrag · Reflexion · Gespräch) werden **zwei**: „Eintrag"
+  und „Reflexion & Gespräch".
+- Direkt **unter** der Reflexion (die am Ende meist eine Frage stellt) sitzt
+  jetzt der `ChatThread` inline — man antwortet sofort darunter, ohne den Tab
+  zu wechseln.
+- Der Re-Reflexions-Button wandert vom Kopf **unter** das Gespräch, wo er
+  logisch hingehört: bei bestehendem Gespräch „Mit Gespräch neu reflektieren"
+  (fasst Eintrag + Gespräch zusammen), sonst „Neu reflektieren". Die dazu
+  passende Erklärzeile wechselt mit.
+- Der separate „Gespräch"-Tab-Block entfällt; `ChatThread` wird
+  wiederverwendet.
+
+**Warum:** Die Nutzerin bekommt am Ende der Reflexion eine offene Frage
+(„Was wäre dein nächster Schritt?" / „Was bräuchtest du?"). Bisher musste sie
+zum Antworten aktiv in einen anderen Reiter klicken — unintuitiv und bruchhaft.
+Jetzt folgt Antwort direkt auf Frage; das erneute Reflektieren mit dem Gespräch
+schließt den Kreis am selben Ort.
+
+**Ergebnis:** `npm run build` (inkl. Typecheck) + `npm run lint` grün. Die
+Entrags-Kategorisierung „gespraech" (Dashboard/Archive-Filter, `entryCard.ts`)
+bleibt unberührt — sie bezieht sich auf `conversationSummary`, nicht auf den Tab.
+
 ## 2026-06-30 (Forts. 11) — Semantischer Rückblick (Browser-Embeddings)
 
 **Was:** Reflexion und Chat ziehen jetzt THEMATISCH passende frühere Einträge

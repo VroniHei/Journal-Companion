@@ -23,7 +23,7 @@ import { intentLabel } from "../lib/intents";
 import { CLOSE_MICROCOPY, reflectionMicrocopy } from "../lib/microcopy";
 import { downloadEntryMarkdown } from "../lib/export";
 
-type Tab = "eintrag" | "reflexion" | "gespraech";
+type Tab = "eintrag" | "reflexion";
 
 /**
  * Kurzer, einzeiliger Anriss einer Reflexion für die Verlaufs-Liste.
@@ -184,8 +184,11 @@ export function EntryDetail() {
   const tab: Tab = tabOverride ?? (reflexionCount > 0 ? "reflexion" : "eintrag");
   const TABS: { key: Tab; label: string; count?: number }[] = [
     { key: "eintrag", label: "Eintrag" },
-    { key: "reflexion", label: "Reflexion", count: reflexionCount || undefined },
-    { key: "gespraech", label: "Gespräch", count: messages.length || undefined },
+    {
+      key: "reflexion",
+      label: "Reflexion & Gespräch",
+      count: reflexionCount || undefined,
+    },
   ];
 
   return (
@@ -288,22 +291,13 @@ export function EntryDetail() {
       {tab === "reflexion" && (
         <div ref={reflectionTopRef} className="scroll-mt-20 space-y-4">
           {(e.aiReflection || reflecting) && (
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm text-[var(--muted)]">
-                {reflecting
-                  ? e.aiReflection
-                    ? "Der Begleiter denkt neu nach…"
-                    : "Der Begleiter denkt nach…"
-                  : "Reflexion des Begleiters"}
-              </p>
-              {!reflecting && e.aiReflection && (
-                <Button variant="ghost" onClick={reflect}>
-                  {messages.length > 0
-                    ? "Mit Gespräch neu reflektieren"
-                    : "Neu reflektieren"}
-                </Button>
-              )}
-            </div>
+            <p className="text-sm text-[var(--muted)]">
+              {reflecting
+                ? e.aiReflection
+                  ? "Der Begleiter denkt neu nach…"
+                  : "Der Begleiter denkt nach…"
+                : "Reflexion des Begleiters"}
+            </p>
           )}
 
           {e.aiReflection || reflecting ? (
@@ -316,12 +310,6 @@ export function EntryDetail() {
                 }
                 crisis={!reflecting && e.crisisFlag}
               />
-              {!reflecting && e.aiReflection && messages.length > 0 && (
-                <p className="text-[13px] text-[var(--muted)]">
-                  Bezieht Eintrag + Gespräch ein. „Mit Gespräch neu reflektieren"
-                  greift die neuen Themen auf.
-                </p>
-              )}
               {!reflecting && e.aiReflection && !e.crisisFlag && (
                 <p className="text-sm italic text-[var(--muted)]">
                   {reflectionMicrocopy(e)}
@@ -364,6 +352,31 @@ export function EntryDetail() {
                     </ul>
                   </details>
                 )}
+              {/* Direkt unter der Reflexion antworten: Der Begleiter stellt am
+                  Ende meist eine Frage — hier lässt sie sich sofort beantworten,
+                  ohne den Tab zu wechseln. Das Gespräch wächst darunter weiter. */}
+              {!reflecting && e.aiReflection && (
+                <div className="space-y-3 border-t border-[var(--border)] pt-4">
+                  <ChatThread entry={e} />
+                  <div className="space-y-1.5">
+                    <Button
+                      variant="ghost"
+                      onClick={reflect}
+                      disabled={reflecting}
+                    >
+                      {messages.length > 0
+                        ? "Mit Gespräch neu reflektieren"
+                        : "Neu reflektieren"}
+                    </Button>
+                    <p className="text-[13px] text-[var(--muted)]">
+                      {messages.length > 0
+                        ? "Fasst Eintrag + Gespräch zu einer aktualisierten Reflexion zusammen."
+                        : "Lässt den Begleiter den Eintrag noch einmal neu betrachten."}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {!reflecting && e.aiReflection && (
                 <SessionClose onClose={closeSession} note={CLOSE_MICROCOPY} />
               )}
@@ -378,34 +391,6 @@ export function EntryDetail() {
                 <Button onClick={reflect}>Mit dem Begleiter reflektieren</Button>
               </div>
             </Card>
-          )}
-        </div>
-      )}
-
-      {/* --- Tab: Gespräch --- */}
-      {tab === "gespraech" && (
-        <div className="space-y-4">
-          <Card>
-            <ChatThread entry={e} />
-          </Card>
-          {messages.length > 0 && (
-            <div className="space-y-1.5">
-              <Button
-                onClick={reflect}
-                disabled={reflecting}
-                className="w-full sm:w-auto"
-              >
-                {reflecting
-                  ? "Der Begleiter denkt nach…"
-                  : e.aiReflection
-                    ? "Mit Gespräch neu reflektieren"
-                    : "Mit Gespräch reflektieren"}
-              </Button>
-              <p className="text-[13px] text-[var(--muted)]">
-                Fasst Eintrag + Gespräch zu einer aktualisierten Reflexion
-                zusammen (öffnet den Reflexion-Tab).
-              </p>
-            </div>
           )}
         </div>
       )}
