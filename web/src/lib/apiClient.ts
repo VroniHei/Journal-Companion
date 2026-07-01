@@ -8,6 +8,8 @@ import type {
   ReflectRequest,
   ShareSuggestionRequest,
   ShareSuggestionResponse,
+  SummarizeConversationRequest,
+  SummarizeConversationResponse,
   SyncPullResponse,
   SyncRecord,
   WeeklyLetterResponse,
@@ -69,6 +71,28 @@ export async function postPunctuate(text: string): Promise<string> {
     return (data.text ?? "").trim() || text;
   } catch {
     return text;
+  }
+}
+
+/**
+ * Verdichtet ein laufendes Gespräch zu einer kurzen Zusammenfassung. Gibt bei
+ * Fehler/ohne Key `null` zurück — nie blockierend; der Aufrufer behält dann die
+ * bisherige Zusammenfassung.
+ */
+export async function summarizeConversation(
+  body: SummarizeConversationRequest,
+): Promise<string | null> {
+  try {
+    const res = await fetch("/api/summarize-conversation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as SummarizeConversationResponse;
+    return (data.summary ?? "").trim() || null;
+  } catch {
+    return null;
   }
 }
 

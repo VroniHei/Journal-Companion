@@ -8,7 +8,12 @@ import { useMessages, useSettings } from "../hooks/useData";
 import { addChatMessage, updateEntry } from "../db/queries";
 import { toPrefs } from "../lib/settings";
 import { buildChatContext } from "../lib/context";
-import { streamChat } from "../lib/apiClient";
+import { streamChat, summarizeConversation } from "../lib/apiClient";
+
+// So viele Nachrichten bleiben unverdichtet im Kurzfenster (wörtlich im Prompt);
+// alles Ältere wird in `conversationSummary` gefaltet. Hält den (teuren) Opus-
+// Chat-Prompt schlank, ohne früheren Kontext zu verlieren.
+const SUMMARY_TAIL = 6;
 
 function Bubble({
   role,
@@ -59,6 +64,31 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
   // einzutippen (die Nutzer-Nachricht ist bereits gespeichert).
   const [retry, setRetry] = useState<(() => void) | null>(null);
 
+  // Faltet die älteren Nachrichten (jenseits des Kurzfensters) in eine kompakte,
+  // fortschreibbare `conversationSummary`. Läuft im Hintergrund und schluckt
+  // Fehler still — die Zusammenfassung ist nur eine Gedächtnisstütze.
+  async function maybeSummarize(
+    all: { role: "user" | "assistant"; content: string }[],
+  ) {
+    if (all.length <= SUMMARY_TAIL) return;
+    // Höchstens die letzten 60 älteren Nachrichten (Server-Limit); der Rest ist
+    // bereits in der bisherigen Zusammenfassung aufgehoben.
+    const older = all.slice(0, all.length - SUMMARY_TAIL).slice(-60);
+    const summary = await summarizeConversation({
+      entry: {
+        text: entry.text,
+        topics: entry.topics,
+        emotions: entry.emotions,
+        needs: entry.needs,
+      },
+      previousSummary: entry.conversationSummary,
+      messages: older,
+    });
+    if (summary && summary !== entry.conversationSummary) {
+      await updateEntry(entry.id, { conversationSummary: summary });
+    }
+  }
+
   // Streamt die Antwort auf eine bereits gespeicherte Nutzer-Nachricht. `prior`
   // ist der Verlauf VOR dieser Nachricht, `text` ihr Inhalt. Schlägt es fehl,
   // wird ein Retry hinterlegt, der exakt diesen Aufruf wiederholt.
@@ -91,6 +121,13 @@ export function ChatThread({ entry }: { entry: JournalEntry }) {
       if (result.crisis && !entry.crisisFlag) {
         await updateEntry(entry.id, { crisisFlag: true });
       }
+      // Laufende Verdichtung im Hintergrund (schlankes Modell), sobald das
+      // Gespräch über das Kurzfenster hinauswächst. Best-effort, nie blockierend.
+      void maybeSummarize([
+        ...prior,
+        { role: "user", content: text },
+        { role: "assistant", content: acc },
+      ]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unbekannter Fehler.");
       setRetry(() => () => {

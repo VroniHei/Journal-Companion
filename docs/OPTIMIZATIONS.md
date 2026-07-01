@@ -6,13 +6,18 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
 ---
 
 ## Erledigt (jüngste oben)
+- ✅ **Laufende Gesprächs-Zusammenfassung:** `conversationSummary` wird jetzt
+  erzeugt und fortgeschrieben (`POST /api/summarize-conversation`, `LIGHT_MODEL`,
+  best-effort im Hintergrund). Ältere Nachrichten (jenseits `SUMMARY_TAIL = 6`)
+  werden in eine kompakte Summary gefaltet → der Opus-Chat-Prompt bleibt schlank,
+  ohne früheren Kontext zu verlieren. 3 Server-Tests. (2026-07-01)
+  Offen (🟢): perspektivisch das Kurzfenster serverseitig noch enger ziehen,
+  sobald eine Summary existiert (weitere Token-Ersparnis).
 - ✅ **„Gespräch"-Kategorie repariert:** Badge + Dashboard-/Archiv-Filter werteten
   nur `conversationSummary` (nie geschrieben) statt echter Chat-Nachrichten.
   Jetzt via `useConversationEntryIds()` (Set aus `chatMessages`) →
   `entryKind(e, hasConversation)`. Reaktiv, ohne Reload. 5 Tests
-  (`entryCard.test.ts`). (2026-07-01) Offen (🟢): `conversationSummary`
-  serverseitig tatsächlich verdichten (spart Chat-Prompt-Kosten) — dann ist es
-  ein echtes Zusatzsignal statt Altlast.
+  (`entryCard.test.ts`). (2026-07-01)
 - ✅ **Reflexion & Gespräch in einem Flow:** Gespräch nicht mehr als separater
   Tab, sondern inline direkt unter der Reflexion — die Frage des Begleiters lässt
   sich sofort darunter beantworten. Re-Reflexions-Button unter das Gespräch

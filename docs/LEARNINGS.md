@@ -5,6 +5,11 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Teure Modelle nur für den Kern; Verdichtung ans schlanke Modell.** Die
+  laufende Gesprächs-Zusammenfassung läuft fest auf `LIGHT_MODEL` (Sonnet, low
+  effort) und hält so den Opus-Chat-Prompt klein: kurzes Nachrichtenfenster +
+  kompakte Summary statt wachsendem Volltext. Best-effort im Hintergrund, damit
+  der Chat snappy bleibt und ein Fehlschlag nie den Verlauf blockiert.
 - **Kategorien aus der echten Datenquelle ableiten, nicht aus totem Feld.**
   Die „Gespräch"-Kategorie hing an `conversationSummary`, das nie geschrieben
   wird → Kategorie war praktisch tot. Ob ein Eintrag ein Gespräch ist, ergibt

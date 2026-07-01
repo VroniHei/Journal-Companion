@@ -232,6 +232,27 @@ export interface ChatRequest {
   prefs: ResponsePrefs;
 }
 
+/**
+ * Verdichtet ein laufendes Gespräch zu einer kurzen, fortschreibbaren
+ * Zusammenfassung (schlankes Modell). Damit bleibt der Chat-Prompt kompakt,
+ * ohne älteren Kontext zu verlieren.
+ */
+export interface SummarizeConversationRequest {
+  /** Etwas Erdung: worum es im Eintrag geht (knapp). */
+  entry: Pick<
+    JournalEntry,
+    "text" | "topics" | "emotions" | "needs"
+  >;
+  /** Bisherige Zusammenfassung (wird fortgeschrieben, nicht neu erfunden). */
+  previousSummary?: string;
+  /** Die (älteren) Nachrichten, die verdichtet werden sollen. */
+  messages: Pick<ChatMessage, "role" | "content">[];
+}
+
+export interface SummarizeConversationResponse {
+  summary: string;
+}
+
 export type ContactImpulseRecommendation =
   | "nicht-senden"
   | "später-prüfen"

@@ -5,6 +5,33 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-07-01 (Forts. 2) — Laufende Gesprächs-Zusammenfassung (Kosten/Kontext)
+
+**Was:** `conversationSummary` wird jetzt tatsächlich erzeugt und fortgeschrieben
+— vorher totes Feld (nur gelesen, nie geschrieben).
+- **Neue Route** `POST /api/summarize-conversation`
+  (`server/src/routes/summarizeConversation.ts`): faltet ältere Nachrichten zu
+  einer kurzen, deskriptiven Zusammenfassung. Fest **`LIGHT_MODEL`** (Sonnet),
+  `effort: "low"`, 320 Token — rein mechanisch, unabhängig von der Modellwahl.
+- **Prompt** `CONVERSATION_SUMMARY_SYSTEM` + `buildConversationSummaryUser`
+  (`prompts/builders.ts`): 2–5 knappe Sätze, schreibt eine vorhandene
+  Zusammenfassung fort, strikt deskriptiv (keine Ratschläge/Deutungen/Diagnosen).
+- **Shared** `SummarizeConversationRequest/Response`.
+- **Client**: `summarizeConversation()` (`apiClient.ts`, best-effort → `null` bei
+  Fehler/ohne Key). `ChatThread` faltet nach jeder Begleiter-Antwort im
+  **Hintergrund** alles jenseits des Kurzfensters (`SUMMARY_TAIL = 6`) in
+  `entry.conversationSummary` (`updateEntry`). Nie blockierend.
+- **Wirkung:** Der (teure) Opus-Chat-Prompt bleibt schlank — kurzes
+  Nachrichtenfenster + kompakte Summary statt wachsendem Volltext-Verlauf; der
+  Server bettet die Summary bereits ein (`buildChatSystem`). Kosten sinken bei
+  langen Gesprächen, ohne früheren Kontext zu verlieren.
+
+**Warum:** Offener Optimierungspunkt aus der vorigen Einheit; macht das bereits
+gelesene, aber nie befüllte Feld zu echtem Nutzen.
+
+**Ergebnis:** `npm run build` + `npm run lint` grün. 3 neue Server-Tests
+(`builders.test.ts`) für Summary-Prompt + Nutzung im Chat-System.
+
 ## 2026-07-01 (Forts.) — „Gespräch"-Kategorie greift wieder (Badge + Filter)
 
 **Was:** Die Eintrags-Kategorie „Gespräch" (Badge auf den Karten + Filter auf

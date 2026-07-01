@@ -216,6 +216,47 @@ export function buildChatSystem(opts: {
     .join("\n");
 }
 
+// --- Gesprächs-Zusammenfassung (laufend, schlankes Modell) -----------------
+
+export const CONVERSATION_SUMMARY_SYSTEM = `Du verdichtest ein laufendes Gespräch zwischen einer Person und ihrem einfühlsamen Tagebuch-Begleiter zu einer kurzen, sachlichen Zusammenfassung. Diese dient nur als Gedächtnisstütze für das weitere Gespräch.
+
+Regeln:
+- Deutsch, 2 bis 5 knappe Sätze (oder kurze Stichpunkte). Höchstens ~120 Wörter.
+- Schreibe die vorhandene Zusammenfassung FORT: bewahre weiterhin Wichtiges, ergänze das Neue, lass Überholtes weg. Erfinde nichts dazu.
+- Halte fest, was die Person beschäftigt (Themen, Gefühle, Bedürfnisse), was sie schon einordnen oder ausprobieren wollte, und welche Frage oder welcher nächste Schritt zuletzt offen war.
+- Rein deskriptiv. Keine Ratschläge, keine Deutungen über andere Personen, keine Diagnosen, keine Wertung.
+- Gib AUSSCHLIESSLICH die Zusammenfassung aus, ohne Vorrede oder Überschrift.`;
+
+export function buildConversationSummaryUser(opts: {
+  entry: { text: string; topics: string[]; emotions: string[]; needs: string[] };
+  previousSummary?: string;
+  messages: { role: "user" | "assistant"; content: string }[];
+}): string {
+  const anchor = [
+    `Worum es im Eintrag geht: ${opts.entry.text.slice(0, 600)}`,
+    opts.entry.topics.length ? `Themen: ${opts.entry.topics.join(", ")}` : "",
+    opts.entry.emotions.length ? `Gefühle: ${opts.entry.emotions.join(", ")}` : "",
+    opts.entry.needs.length ? `Bedürfnisse: ${opts.entry.needs.join(", ")}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  const transcript = opts.messages
+    .map((m) => `${m.role === "user" ? "Person" : "Begleiter"}: ${m.content}`)
+    .join("\n");
+
+  return [
+    anchor,
+    opts.previousSummary
+      ? `\nBisherige Zusammenfassung (fortschreiben):\n${opts.previousSummary}`
+      : "",
+    `\nGesprächsverlauf, der verdichtet werden soll:\n${transcript}`,
+    `\nGib die aktualisierte, kurze Zusammenfassung aus.`,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
 // --- Voice-Check-in --------------------------------------------------------
 
 const VOICE_JSON_CONTRACT = `Antworte AUSSCHLIESSLICH mit gültigem JSON (kein Markdown, keine Code-Fences), genau in diesem Format:

@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 import type { EntryDigest, JournalEntry, PatternSummary } from "@journal/shared";
-import { buildChatSystem } from "./builders";
+import {
+  buildChatSystem,
+  buildConversationSummaryUser,
+  CONVERSATION_SUMMARY_SYSTEM,
+} from "./builders";
 
 function entry(text = "Heute war viel los."): JournalEntry {
   return {
@@ -79,5 +83,52 @@ describe("buildChatSystem — Recall-Hintergrund", () => {
     const sys = buildChatSystem({ style: "klar", entry: entry() });
     expect(sys).not.toContain("Resonanzboden");
     expect(sys).toContain("Heute war viel los.");
+  });
+
+  it("nutzt die vorhandene conversationSummary im Prompt", () => {
+    const sys = buildChatSystem({
+      style: "klar",
+      entry: entry(),
+      conversationSummary: "Ging um Abgrenzung bei der Arbeit; offen: erstes Nein.",
+    });
+    expect(sys).toContain("Bisheriges Gespräch (Zusammenfassung)");
+    expect(sys).toContain("offen: erstes Nein");
+  });
+});
+
+describe("buildConversationSummaryUser — laufende Verdichtung", () => {
+  const base = {
+    entry: {
+      text: "Heute war viel los.",
+      topics: ["Arbeit"],
+      emotions: ["Unruhe"],
+      needs: ["Ruhe"],
+    },
+    messages: [
+      { role: "user" as const, content: "Ich komme nicht zur Ruhe." },
+      { role: "assistant" as const, content: "Was raubt dir gerade die Ruhe?" },
+    ],
+  };
+
+  it("bettet Erdung, Verlauf und die Aufforderung zur Verdichtung ein", () => {
+    const user = buildConversationSummaryUser(base);
+    expect(user).toContain("Worum es im Eintrag geht");
+    expect(user).toContain("Person: Ich komme nicht zur Ruhe.");
+    expect(user).toContain("Begleiter: Was raubt dir gerade die Ruhe?");
+    expect(user).not.toContain("Bisherige Zusammenfassung");
+  });
+
+  it("schreibt eine vorhandene Zusammenfassung fort, wenn übergeben", () => {
+    const user = buildConversationSummaryUser({
+      ...base,
+      previousSummary: "Bisher ging es um Überforderung.",
+    });
+    expect(user).toContain("Bisherige Zusammenfassung (fortschreiben)");
+    expect(user).toContain("Bisher ging es um Überforderung.");
+  });
+
+  it("das System bleibt strikt deskriptiv (kein Ratschlag)", () => {
+    expect(CONVERSATION_SUMMARY_SYSTEM).toContain("deskriptiv");
+    expect(CONVERSATION_SUMMARY_SYSTEM).toContain("Keine Ratschläge");
   });
 });

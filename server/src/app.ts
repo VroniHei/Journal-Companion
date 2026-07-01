@@ -13,6 +13,7 @@ import { shareSuggestionRouter } from "./routes/shareSuggestion";
 import { syncRouter } from "./routes/sync";
 import { titleRouter } from "./routes/title";
 import { punctuateRouter } from "./routes/punctuate";
+import { summarizeConversationRouter } from "./routes/summarizeConversation";
 
 // Die konfigurierte Express-App — ohne `listen`, damit sie sowohl lokal
 // (server/src/index.ts) als auch als Vercel-Serverless-Funktion (api/index.ts)
@@ -59,5 +60,6 @@ app.use("/api", shareSuggestionRouter);
 app.use("/api", syncRouter);
 app.use("/api", titleRouter);
 app.use("/api", punctuateRouter);
+app.use("/api", summarizeConversationRouter);
 
 export default app;
