@@ -14,6 +14,7 @@ import type {
   StabilityMoment,
   SyncKind,
   VoiceDraft,
+  EntryEmbedding,
 } from "@journal/shared";
 
 /**
@@ -44,6 +45,8 @@ export class JournalDB extends Dexie {
   tombstones!: Table<Tombstone, string>;
   // Rein lokal, NICHT gesynct (kein SyncKind): Verlustschutz für Sprach-Entwürfe.
   voiceDrafts!: Table<VoiceDraft, string>;
+  // Rein lokal, NICHT gesynct: Embeddings für den semantischen Rückblick.
+  entryEmbeddings!: Table<EntryEmbedding, string>;
 
   constructor() {
     super("journal-companion");
@@ -84,6 +87,10 @@ export class JournalDB extends Dexie {
     // Additiv: nur der neue lokale Store; bestehende Daten bleiben unberührt.
     this.version(11).stores({
       voiceDrafts: "id, updatedAt, status",
+    });
+    // Additiv: lokaler Embedding-Store für den semantischen Rückblick.
+    this.version(12).stores({
+      entryEmbeddings: "id, updatedAt, model",
     });
   }
 }

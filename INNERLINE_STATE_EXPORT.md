@@ -22,7 +22,7 @@ bzw. Vercel-Env-Vars).
   läuft als Serverless-Function unter `api/` (alle `/api/*`-Anfragen).
 
 ### Local-first-Storage: Dexie/IndexedDB
-- DB-Name: `journal-companion`, **Dexie-Schema-Version 11** (`web/src/db/dexie.ts`).
+- DB-Name: `journal-companion`, **Dexie-Schema-Version 12** (`web/src/db/dexie.ts`).
 - Alle Tagebuchinhalte liegen **lokal im Browser** (IndexedDB). Server ist
   stateless bis auf den optionalen Sync-Speicher.
 
@@ -42,6 +42,7 @@ Stores (Store → indizierte Felder → Inhalt/Zweck):
 | `routineDays` | `id(=Datum), date, updatedAt` | `replaced(bool), trigger?` | Routine-Wechsel (alte Gewohnheit durch Alternative ersetzt). |
 | `restDays` | `id(=Datum), date, updatedAt` | `createdAt, updatedAt` | Bewusst eingelöster Pausentag (Streak-Schutz). |
 | `voiceDrafts` | `id, updatedAt, status` | `transcript, status('aktiv'\|'verworfen'), createdAt, updatedAt` | Verlustschutz für (gesprochene) Transkripte: Sofort-Sicherung vor der KI-Analyse, Wiederherstellen beim nächsten Öffnen. **Rein lokal, NICHT gesynct.** |
+| `entryEmbeddings` | `id, updatedAt, model` | `vector(number[]), dim, model, updatedAt` | Embeddings je Eintrag für den semantischen Rückblick (thematisch ähnliche frühere Einträge). Im Browser berechnet (transformers.js). **Rein lokal, NICHT gesynct.** |
 | `settings` | `id` | `appName, userName?, claudeModel, responseStyle, maxResponseLength, apiMode, highQualityMode?, autoSpeak?, speechVoiceURI?, preferFreeSpeech?, focusArea?, reminderTime?, onboarded?, routineOld?, routineNew?` | App-Einstellungen (Singleton). **Kein API-Key-Feld.** Wird NICHT synchronisiert. |
 | `tombstones` | `id, updatedAt, kind` | `kind(SyncKind), recordId, updatedAt` | Grabsteine für den Lösch-Sync (Löschung über Geräte propagieren). |
 
@@ -68,8 +69,9 @@ Der einmalige Disclaimer-Status liegt separat in `localStorage`
   patternInsights, openLoops, decisions, dailyRituals, energyLevels, routineDays,
   restDays`.
 - **Was bleibt lokal (nie gesynct)?** `settings` (geräte-spezifisch, z. B.
-  Stimme), `voiceDrafts` (Sprach-Entwürfe, sensibler Roh-Text), der
-  Disclaimer-Flag, und Audio (siehe Abschnitt 4).
+  Stimme), `voiceDrafts` (Sprach-Entwürfe, sensibler Roh-Text), `entryEmbeddings`
+  (aus dem Eintragstext abgeleitete Vektoren), der Disclaimer-Flag, und Audio
+  (siehe Abschnitt 4).
 - **Verschlüsselung?** Transport via HTTPS. **Keine Ende-zu-Ende- oder
   At-Rest-Anwendungsverschlüsselung** der Inhalte: in Supabase liegen die
   Datensätze als Klartext-JSON. Vertraulichkeit hängt an Supabase-Zugriffsschutz
@@ -391,12 +393,17 @@ Der Begleiter erhält im Gespräch (Stand 2026-06-30):
 - optional eine **`conversationSummary`**.
 
 ### 3.3 Greift der Begleiter auf frühere Einträge zurück?
-- **In der Reflexion: ja, begrenzt** — über den Digest der **letzten 5** Einträge
-  und das neueste Muster-Summary. Auswahl = Recency (nicht thematisch/semantisch).
-- **Im Chat: ja, behutsam** (seit 2026-06-30) — neuestes Muster-Summary + Digest
-  der letzten 3 Einträge. Auswahl ebenfalls Recency; der Fokus bleibt per Prompt
-  beim aktuellen Eintrag. (Semantischer Recall via Embeddings ist ein späteres,
-  größeres Folge-Ticket.)
+- **In der Reflexion: ja** — Digest (5) + neuestes Muster-Summary.
+- **Im Chat: ja, behutsam** — Muster-Summary + Digest (3); Fokus bleibt per Prompt
+  beim aktuellen Eintrag.
+- **Auswahl: semantisch ODER Recency** (seit 2026-06-30, `semanticRecall`-Flag,
+  Default an). Ist das Embedding-Modell warm und das Feature an, werden thematisch
+  ähnliche frühere Einträge gewählt (Cosine über lokale `entryEmbeddings`,
+  `web/src/lib/recall.ts`/`embeddings.ts`), Semantik zuerst und mit Recency
+  aufgefüllt. Sonst (Feature aus, Modell nicht geladen, keine Treffer) **exakt das
+  alte Recency-Verhalten**. Reflexion/Chat warten nie auf den Modell-Ladevorgang
+  (`embedIfReady`). Embeddings entstehen im Browser (transformers.js,
+  `Xenova/multilingual-e5-small`); kein Eintragstext verlässt das Gerät.
 - **`conversationSummary` ist plumbed, aber nicht aktiv:** Das Feld existiert im
   Datenmodell und wird an den Chat-Prompt durchgereicht, **wird aber nirgends
   erzeugt/gesetzt** (keine automatische Verdichtung langer Chats). Praktisch ist

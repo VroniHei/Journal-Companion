@@ -16,6 +16,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   autoSpeak: false,
   preferFreeSpeech: true,
   onboarded: false, // Erststart-Flow für neue, leere Profile zeigen
+  semanticRecall: true, // thematischer Rückblick an (graceful Fallback auf Recency)
 };
 
 export async function getSettings(): Promise<AppSettings> {

@@ -5,6 +5,40 @@ Format pro Eintrag: Datum · Was · Warum · Ergebnis/Status.
 
 ---
 
+## 2026-06-30 (Forts. 11) — Semantischer Rückblick (Browser-Embeddings)
+
+**Was:** Reflexion und Chat ziehen jetzt THEMATISCH passende frühere Einträge
+heran, nicht nur die zeitlich letzten.
+- **Embeddings rein im Browser** (transformers.js, `Xenova/multilingual-e5-small`,
+  384-dim) — kein Eintragstext verlässt das Gerät. Paket `@xenova/transformers`
+  als eigener, **dynamisch geladener** Chunk (Vite `manualChunks` schließt es vom
+  Vendor-Chunk aus); lädt nur beim Rückblick, nicht beim Erststart.
+- **Neuer lokaler Store `entryEmbeddings`** (Dexie v11 → v12, additiv; NICHT
+  gesynct; in `clearAllData` mit gelöscht). Typ in `shared`.
+- `web/src/lib/embeddings.ts`: lazy Modell-Load, `embed`/`embedIfReady`,
+  `ensureEmbedding`, Idle-`backfillEmbeddings` (batched, fortsetzbar, blockiert
+  nie), `findSimilarEntries`, Status + `startSemanticRecall`/`warmSemanticRecall`
+  (Idle-Start + Reaktion auf `innerline:data-changed`). Reine Mathematik in
+  `web/src/lib/recall.ts` (`cosineSimilarity`, `findSimilar`).
+- Wiring in `context.ts`: `buildReflectionContext`/`buildChatContext` nutzen
+  semantische Top-k (Semantik zuerst, mit Recency aufgefüllt). Prompt-Rahmung
+  unverändert behutsam.
+- **Feature-Flag** `semanticRecall` (Default an) + Settings-Sektion „Rückblick"
+  mit ruhigem Status (lädt/indexiert/bereit). **Graceful Fallback:** Feature aus,
+  Modell nicht geladen oder keine Treffer → exakt das alte Recency-Verhalten.
+
+**Warum:** Mustererkennung über Zeit ist der Produktkern; der „roter Faden über
+Wochen"-Moment fehlte, weil die Auswahl rein recency-basiert war (Strategie-Doc
+Kandidat #3).
+
+**Ergebnis/Status:** 7 neue Tests (`recall.test.ts`); gesamt 52 Web- + 20
+Server-Tests grün; Build, Lint, Typecheck grün. Reflexion/Chat warten nie auf den
+Modell-Ladevorgang. (Hinweis: `@xenova/transformers` zieht `sharp`; lokal mit
+`--ignore-scripts` installiert — auf CI/Vercel mit offenem Netz unproblematisch.)
+State-Export auf v12 + Memory-Abschnitt nachgezogen.
+
+---
+
 ## 2026-06-30 (Forts. 10) — Diktat: Interpunktion nach der Spracherkennung
 
 **Was:** Sprach-Eingaben kamen als langer „Worthaufen" ohne Satzzeichen

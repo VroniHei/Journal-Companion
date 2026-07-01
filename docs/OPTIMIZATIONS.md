@@ -153,10 +153,11 @@ neue Erkenntnisse ableiten. Priorität: 🔴 hoch · 🟡 mittel · 🟢 niedrig
   Nachrichten): ältere Turns serverseitig zu `conversationSummary` verdichten,
   statt nur die letzten 8 zu schicken. (Feld + Prompt-Einbettung sind da; es fehlt
   nur die Erzeugung.)
-- 🟡 **Semantischer Recall statt Recency (Folge-Ticket):** Embeddings über frühere
-  Einträge (lokal-first) + Ähnlichkeitssuche, um THEMATISCH passende statt nur die
-  letzten N Einträge in Reflexions-/Chat-Kontext zu holen. Eigene Architektur-
-  Entscheidung; erst nach dem billigen Recency-Gewinn (jetzt erledigt).
+- ✅ **Semantischer Recall statt Recency:** Reflexion/Chat ziehen thematisch
+  passende frühere Einträge heran (Embeddings im Browser via transformers.js,
+  Cosine über lokalen `entryEmbeddings`-Store v12). Default an, graceful Fallback
+  auf Recency. Kein Eintragstext verlässt das Gerät. (2026-06-30) Offen (🟢):
+  Modellwahl/minScore an echten Daten feinjustieren; ggf. WebGPU-Pfad prüfen.
 
 - 🟡 **Adaptives Thinking reaktivieren**, sobald die SDK-Version `adaptive`
   typisiert — verbessert die Qualität der Reflexionen.

@@ -161,6 +161,12 @@ export interface AppSettings {
   routineOld?: string;
   /** Routine-Wechsel: die kleine Alternative (z.B. „Tee + 10 Min raus"). */
   routineNew?: string;
+  /**
+   * Semantischer Rückblick: zieht thematisch passende frühere Einträge in
+   * Reflexion/Chat (statt nur die zeitlich letzten). Embeddings rein lokal im
+   * Browser. Default an; bei `false` exakt das alte Recency-Verhalten.
+   */
+  semanticRecall?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -528,6 +534,21 @@ export interface RestDay {
   date: string; // YYYY-MM-DD (lokaler Tag)
   createdAt: string; // ISO
   updatedAt: string; // ISO
+}
+
+// --- Eintrags-Embedding (lokaler semantischer Rückblick) ------------------
+// Vektor-Repräsentation eines Eintrags für thematische Ähnlichkeitssuche
+// (Reflexion/Chat ziehen passende frühere Einträge heran, nicht nur die
+// zeitlich letzten). Vollständig im Browser berechnet (transformers.js); KEIN
+// Eintragstext verlässt das Gerät. Bewusst rein lokal: NICHT in SyncKind/
+// sync_records.
+
+export interface EntryEmbedding {
+  id: string; // = entryId
+  updatedAt: string; // ISO — Stand des Eintrags beim Embedden (zum Invalidieren)
+  model: string; // Modell-Kennung (zum Invalidieren bei Modellwechsel)
+  dim: number; // Dimensionen des Vektors
+  vector: number[]; // normalisierter Embedding-Vektor
 }
 
 // --- Sprach-Entwurf (lokaler Verlustschutz) -------------------------------

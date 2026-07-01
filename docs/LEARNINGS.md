@@ -5,6 +5,16 @@ Eine Erkenntnis pro Punkt; veraltete Punkte korrigieren statt duplizieren.
 
 ---
 
+- **Semantischer Recall lokal-first via transformers.js.** Embeddings im Browser
+  (`Xenova/multilingual-e5-small`, multilingual wg. Deutsch) statt serverseitig →
+  kein Eintragstext verlässt das Gerät. Das schwere Paket MUSS in einen eigenen
+  dynamischen Chunk (Vite `manualChunks` darf es NICHT in „vendor" ziehen, sonst
+  lädt es eager beim Erststart). `@xenova/transformers` zieht `sharp` (nur Node/
+  Vision) als reguläre Dep — lokal mit `--ignore-scripts` installierbar, im
+  Browser-Build via „browser"-Feld ausgeschlossen. Reflexion/Chat dürfen nie auf
+  den Modell-Load warten (`embedIfReady` → sonst Recency). Reine Cosine-Mathematik
+  vom Dexie/Modell trennen → testbar ohne IndexedDB/Netz. Backfill im Idle,
+  fortsetzbar, an `innerline:data-changed` gehängt. (2026-06-30)
 - **Browser-Spracherkennung liefert keine Satzzeichen.** Die Web Speech API (de-DE,
   Standard wegen „kostenlos zuerst") hängt nur finale Segmente aneinander → langer
   Worthaufen. Lösung: ein mechanischer Interpunktions-Pass (schlankes Modell,
